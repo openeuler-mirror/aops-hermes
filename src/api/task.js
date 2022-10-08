@@ -1,4 +1,4 @@
-import request from '@/vendor/ant-design-pro/utils/request'
+import request from '@/vendor/ant-design-pro/utils/request';
 
 const api = {
   // 获取部署任务列表
@@ -15,17 +15,17 @@ const api = {
   templateList: '/manage/template/get',
   // 删除playbook模板
   deleteTemplate: '/manage/template/delete'
-}
+};
 
-export default api
+export default api;
 
 const directionMap = {
-  'ascend': 'asc',
-  'descend': 'desc'
-}
+  ascend: 'asc',
+  descend: 'desc'
+};
 
 // 获取部署任务列表
-export function getTaskList ({ tableInfo, ...parameter }) {
+export function getTaskList({tableInfo, ...parameter}) {
   return request({
     url: api.tasklist,
     method: 'post',
@@ -37,18 +37,18 @@ export function getTaskList ({ tableInfo, ...parameter }) {
       page: tableInfo.pagination.current,
       per_page: tableInfo.pagination.pageSize
     }
-  })
+  });
 }
 // 生成部署任务
-export function generateTask (data) {
+export function generateTask(data) {
   return request({
     url: api.generateTask,
     method: 'post',
     data: data
-  })
+  });
 }
 // 删除部署任务
-export function deleteTask ({ taskList, ...parameter }) {
+export function deleteTask({taskList, ...parameter}) {
   return request({
     url: api.deleteTask,
     method: 'delete',
@@ -56,10 +56,10 @@ export function deleteTask ({ taskList, ...parameter }) {
       task_list: taskList,
       ...parameter
     }
-  })
+  });
 }
 // 执行部署任务
-export function executeTask ({ taskList, ...parameter }) {
+export function executeTask({taskList, ...parameter}) {
   return request({
     url: api.executeTask,
     method: 'post',
@@ -67,33 +67,36 @@ export function executeTask ({ taskList, ...parameter }) {
       task_list: taskList,
       ...parameter
     }
-  })
+  });
 }
 // 生成playbook模板
-export function imporTemplate (data) {
+export function imporTemplate(data) {
   return request({
     url: api.imporTemplate,
     method: 'post',
     data: data
-  })
+  });
 }
 // 获取playbook模板列表
-export function getTemplateList ({ tableInfo, ...parameter }) {
+export function getTemplateList({tableInfo, ...parameter}) {
   return request({
     url: api.templateList,
     method: 'post',
     data: {
       ...parameter,
       template_list: []
-      // sort: tableInfo.sorter.field,
-      // direction: directionMap[tableInfo.sorter.order],
-      // page: tableInfo.pagination.current,
-      // per_page: tableInfo.pagination.pageSize
+
+      /*
+       * sort: tableInfo.sorter.field,
+       * direction: directionMap[tableInfo.sorter.order],
+       * page: tableInfo.pagination.current,
+       * per_page: tableInfo.pagination.pageSize
+       */
     }
-  })
+  });
 }
 // 删除playbook模板
-export function deleteTemplate ({ templateList, ...parameter }) {
+export function deleteTemplate({templateList, ...parameter}) {
   return request({
     url: api.deleteTemplate,
     method: 'delete',
@@ -101,5 +104,5 @@ export function deleteTemplate ({ templateList, ...parameter }) {
       template_list: templateList,
       ...parameter
     }
-  })
+  });
 }

@@ -1,6 +1,11 @@
 <template>
   <div>
-    <a-row v-if="standalone && (scanningHostIds.length > 0 && scanStatusloading)" type="flex" justify="end" align="middle">
+    <a-row
+      v-if="standalone && scanningHostIds.length > 0 && scanStatusloading"
+      type="flex"
+      justify="end"
+      align="middle"
+    >
       <a-icon type="loading" />
       <p class="scan-result-message">{{ `目前有${scanningHostIds.length}台机器正在扫描` }}</p>
     </a-row>
@@ -10,7 +15,7 @@
           <a-col v-if="selectedRowKeys.length > 0">
             <a-alert type="info" show-icon>
               <div slot="message">
-                <span>{{ `已选择`+ selectedRowKeys.length +`项` }}</span>
+                <span>{{ `已选择` + selectedRowKeys.length + `项` }}</span>
                 <a @click="resetSelection"> 清除选择</a>
               </div>
             </a-alert>
@@ -43,11 +48,7 @@
             />
           </a-col>
           <a-col v-if="standalone && selectedRowKeys.length !== 0">
-            <a-button
-              @click="handleScan"
-              type="primary"
-              :loading="scanloading"
-            >
+            <a-button @click="handleScan" type="primary" :loading="scanloading">
               漏洞扫描
             </a-button>
           </a-col>
@@ -89,24 +90,30 @@
       @change="handleTableChange"
       :loading="standalone ? hostTableIsLoading : inputLoading"
     >
-      <router-link :to="{ path: `/leaks/host-leak-list/${record.host_id}` }" slot="host_name" slot-scope="host_name, record">{{ host_name }}</router-link>
+      <router-link
+        :to="{path: `/leaks/host-leak-list/${record.host_id}`}"
+        slot="host_name"
+        slot-scope="host_name, record"
+        >{{ host_name }}</router-link
+      >
     </a-table>
   </div>
 </template>
 
 <script>
-/****************
-/* host表格组件
-/* hostlist 表格的业务逻辑公共组件。根据props中standalone属性确定是自动获取列表信息，还是通过外部获取列表信息。
-****************/
 
-import CreateRepairTaskDrawer from './CreateRepairTaskDrawer'
-import { getHostLeakList, scanHost, getHostScanStatus, getRepoList } from '@/api/leaks'
-import { hostGroupList } from '@/api/assest'
-import { getSelectedRow } from '../utils/getSelectedRow'
+/**
+ * host表格组件
+ * hostlist 表格的业务逻辑公共组件。根据props中standalone属性确定是自动获取列表信息，还是通过外部获取列表信息。
+ */
 
-import { dateFormat } from '@/views/utils/Utils'
-import configs from '@/config/defaultSettings'
+import CreateRepairTaskDrawer from './CreateRepairTaskDrawer';
+import {getHostLeakList, scanHost, getHostScanStatus, getRepoList} from '@/api/leaks';
+import {hostGroupList} from '@/api/assest';
+import {getSelectedRow} from '../utils/getSelectedRow';
+
+import {dateFormat} from '@/views/utils/Utils';
+import configs from '@/config/defaultSettings';
 
 const defaultPagination = {
   current: 1,
@@ -114,7 +121,7 @@ const defaultPagination = {
   total: 10,
   showSizeChanger: true,
   showQuickJumper: true
-}
+};
 
 export default {
   name: 'HostTable',
@@ -153,22 +160,22 @@ export default {
     }
   },
   computed: {
-    hostTableColumnsStandalone () {
-      let { filters } = this
-      filters = filters || {}
+    hostTableColumnsStandalone() {
+      let {filters} = this;
+      filters = filters || {};
       return [
         {
           dataIndex: 'host_name',
           key: 'host_name',
           title: '主机名',
-          scopedSlots: { customRender: 'host_name' }
+          scopedSlots: {customRender: 'host_name'}
         },
         {
           dataIndex: 'host_ip',
           key: 'host_ip',
           title: 'ip地址'
         },
-         {
+        {
           dataIndex: 'host_group',
           key: 'host_group',
           title: '主机组',
@@ -193,19 +200,19 @@ export default {
           key: 'last_scan',
           title: '上次扫描',
           sorter: true,
-          customRender: (time) => dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)
+          customRender: time => dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)
         }
-      ]
+      ];
     },
-    hostTableColumns () {
-      let { filters } = this
-      filters = filters || {}
+    hostTableColumns() {
+      let {filters} = this;
+      filters = filters || {};
       return [
         {
           dataIndex: 'host_name',
           key: 'host_name',
           title: '主机名',
-          scopedSlots: { customRender: 'host_name' }
+          scopedSlots: {customRender: 'host_name'}
         },
         {
           dataIndex: 'host_ip',
@@ -231,37 +238,37 @@ export default {
           key: 'last_scan',
           title: '上次扫描',
           sorter: true,
-          customRender: (time) => dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)
+          customRender: time => dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)
         }
-      ]
+      ];
     },
-    rowSelection () {
+    rowSelection() {
       return {
         selectedRowKeys: this.selectedRowKeys,
         onChange: this.onSelectChange
-      }
+      };
     },
     // 通过repo筛选时的数据转换
-    repoList () {
+    repoList() {
       const arr = this.repoListProps.map(repo => {
         return {
           text: repo.repo_name,
           value: repo.repo_name
-        }
-      })
+        };
+      });
       arr.push({
         text: '未设置',
         value: ''
-      })
-      return arr
+      });
+      return arr;
     }
   },
   watch: {
-    paginationTotal () {
-      this.pagination.total = this.paginationTotal
+    paginationTotal() {
+      this.pagination.total = this.paginationTotal;
     }
   },
-  data () {
+  data() {
     return {
       hostTableData: [],
       hostTableIsLoading: false,
@@ -283,181 +290,196 @@ export default {
       scanStatusData: {},
       scanningHostIds: [],
       scanStatueAllTimeout: null
-    }
+    };
   },
   methods: {
-    handleTableChange (pagination, filters, sorter) {
+    handleTableChange(pagination, filters, sorter) {
       // 存储翻页状态
-      this.pagination = pagination
-      this.filters = Object.assign({}, this.filters, filters)
-      this.sorter = sorter
+      this.pagination = pagination;
+      this.filters = Object.assign({}, this.filters, filters);
+      this.sorter = sorter;
       // 排序、筛选、分页时，重新请求主机列表
-      this.getHostList()
+      this.getHostList();
       if (this.standalone) {
-        this.getHostListAll()
+        this.getHostListAll();
       }
     },
-    onSelectChange (selectedRowKeys, selectedRows) {
-      const tableData = this.standalone ? this.hostTableData : this.inputList
-      this.selectedRowKeys = selectedRowKeys
-      this.selectedRowsAll = getSelectedRow(selectedRowKeys, this.selectedRowsAll, tableData, 'host_id')
+    onSelectChange(selectedRowKeys, selectedRows) {
+      const tableData = this.standalone ? this.hostTableData : this.inputList;
+      this.selectedRowKeys = selectedRowKeys;
+      this.selectedRowsAll = getSelectedRow(selectedRowKeys, this.selectedRowsAll, tableData, 'host_id');
     },
-    resetSelection () {
-      this.selectedRowKeys = []
-      this.selectedRowsAll = []
+    resetSelection() {
+      this.selectedRowKeys = [];
+      this.selectedRowsAll = [];
     },
-    handleScan () {
-      const _this = this
-      this.scanloading = true
+    handleScan() {
+      const _this = this;
+      this.scanloading = true;
       // 检查要扫描的主机是否有正在被扫描
       getHostScanStatus({
         hostList: this.selectedRowKeys
-      }).then(function (res) {
-        const scanningHost = _this.getScanningHost(res.result, _this.selectedRowsAll)
-        if (scanningHost.length > 0) {
-          _this.$warning({
-            title: `以下主机正在进行扫描，不能批量执行：`,
-            content: scanningHost.map(host => host.host_name).join('、')
-          })
-        } else {
-          _this.$confirm({
-            title: `确定扫描以下主机?`,
-            content: _this.selectedRowsAll.map(host => host.host_name).join('、'),
-            icon: () => <a-icon type="exclamation-circle" />,
-            onOk: function () {
-              _this.scanloading = true
-              const requestIds = _this.selectedRowKeys
-              return scanHost({
-                hostList: requestIds
-              }).then(function (res) {
-                _this.$message.success(res.msg)
-                _this.handleRefresh()
-                _this.getScanStatusAll([])
-              }).catch(function (err) {
-                _this.$message.error(err.response.data.msg)
-              }).finally(function () {
-                _this.scanloading = false
-              })
-            }
-          })
-        }
-      }).catch(function (err) {
-        _this.$message.error(err.response.data.msg)
-      }).finally(function () {
-        _this.scanloading = false
       })
+        .then(function(res) {
+          const scanningHost = _this.getScanningHost(res.result, _this.selectedRowsAll);
+          if (scanningHost.length > 0) {
+            _this.$warning({
+              title: '以下主机正在进行扫描，不能批量执行：',
+              content: scanningHost.map(host => host.host_name).join('、')
+            });
+          } else {
+            _this.$confirm({
+              title: '确定扫描以下主机?',
+              content: _this.selectedRowsAll.map(host => host.host_name).join('、'),
+              icon: () => <a-icon type="exclamation-circle" />,
+              onOk: function() {
+                _this.scanloading = true;
+                const requestIds = _this.selectedRowKeys;
+                return scanHost({
+                  hostList: requestIds
+                })
+                  .then(function(res) {
+                    _this.$message.success(res.msg);
+                    _this.handleRefresh();
+                    _this.getScanStatusAll([]);
+                  })
+                  .catch(function(err) {
+                    _this.$message.error(err.response.data.msg);
+                  })
+                  .finally(function() {
+                    _this.scanloading = false;
+                  });
+              }
+            });
+          }
+        })
+        .catch(function(err) {
+          _this.$message.error(err.response.data.msg);
+        })
+        .finally(function() {
+          _this.scanloading = false;
+        });
     },
-    handleScanAll () {
-      const _this = this
-      this.scanloading = true
+    handleScanAll() {
+      const _this = this;
+      this.scanloading = true;
       getHostScanStatus({
         hostList: this.selectedRowKeys
-      }).then(function (res) {
-        if (_this.hasScanningHost(res.result)) {
-          _this.$warning({
-            title: `有主机正在进行扫描，不能扫描全部主机！`
-          })
-        } else {
-          const hasFilter = _this.checkHasFilter(_this.filters)
-          _this.$confirm({
-            title: hasFilter ? `按当前筛选条件扫描主机？` : `确定扫描全部主机?`,
-            icon: () => <a-icon type="exclamation-circle" />,
-            onOk: function () {
-              _this.scanloading = true
-              return scanHost({
-                hostList: [],
-                filter: _this.filters
-              }).then(function (res) {
-                _this.$message.success(res.msg)
-                _this.handleRefresh()
-                _this.getScanStatusAll([])
-              }).catch(function (err) {
-                _this.$message.error(err.response.data.msg)
-              }).finally(function () {
-                _this.scanloading = false
-              })
-            }
-          })
-        }
-      }).catch(function (err) {
-        _this.$message.error(err.response.data.msg)
-      }).finally(function () {
-        _this.scanloading = false
       })
+        .then(function(res) {
+          if (_this.hasScanningHost(res.result)) {
+            _this.$warning({
+              title: '有主机正在进行扫描，不能扫描全部主机！'
+            });
+          } else {
+            const hasFilter = _this.checkHasFilter(_this.filters);
+            _this.$confirm({
+              title: hasFilter ? '按当前筛选条件扫描主机？' : '确定扫描全部主机?',
+              icon: () => <a-icon type="exclamation-circle" />,
+              onOk: function() {
+                _this.scanloading = true;
+                return scanHost({
+                  hostList: [],
+                  filter: _this.filters
+                })
+                  .then(function(res) {
+                    _this.$message.success(res.msg);
+                    _this.handleRefresh();
+                    _this.getScanStatusAll([]);
+                  })
+                  .catch(function(err) {
+                    _this.$message.error(err.response.data.msg);
+                  })
+                  .finally(function() {
+                    _this.scanloading = false;
+                  });
+              }
+            });
+          }
+        })
+        .catch(function(err) {
+          _this.$message.error(err.response.data.msg);
+        })
+        .finally(function() {
+          _this.scanloading = false;
+        });
     },
     // 轮训检查主机扫描状态，当没有‘scanning’状态的主机后停止
-    getScanStatusAll (hostList) {
-      const _this = this
-      this.scanStatusloading = true
-      clearTimeout(this.scanStatueAllTimeout)
+    getScanStatusAll(hostList) {
+      const _this = this;
+      this.scanStatusloading = true;
+      clearTimeout(this.scanStatueAllTimeout);
       getHostScanStatus({
         hostList
-      }).then(function (res) {
-        _this.scanStatusData = res.result || {}
-        if (_this.standalone) {
-          _this.scanningHostIds = _this.getScanningHostAll(res.result)
-          // if (_this.scanningHostIds.length > 0) {
-          _this.scanStatueAllTimeout = setTimeout(function () {
-            _this.getScanStatusAll(_this.scanningHostIds)
-          }, configs.scanProgressInterval)
-          // }
-        }
-      }).catch(function (err) {
-        _this.$message.error(err.response.data.msg)
-      }).finally(function () {
-        _this.scanStatusloading = false
       })
+        .then(function(res) {
+          _this.scanStatusData = res.result || {};
+          if (_this.standalone) {
+            _this.scanningHostIds = _this.getScanningHostAll(res.result);
+            // if (_this.scanningHostIds.length > 0) {
+            _this.scanStatueAllTimeout = setTimeout(function() {
+              _this.getScanStatusAll(_this.scanningHostIds);
+            }, configs.scanProgressInterval);
+            // }
+          }
+        })
+        .catch(function(err) {
+          _this.$message.error(err.response.data.msg);
+        })
+        .finally(function() {
+          _this.scanStatusloading = false;
+        });
     },
     // 返回扫描状态的主机
-    getScanningHost (scanMap, hostList) {
-      const arr = []
+    getScanningHost(scanMap, hostList) {
+      const arr = [];
       hostList.forEach(host => {
         if (scanMap[host.host_id] === 'scanning') {
-          arr.push(host)
+          arr.push(host);
         }
-      })
-      return arr
+      });
+      return arr;
     },
-    getScanningHostAll (scanMap) {
-      const arr = []
+    getScanningHostAll(scanMap) {
+      const arr = [];
       for (const hostId in scanMap) {
         if (scanMap[hostId] === 'scanning') {
-          arr.push(hostId)
+          arr.push(hostId);
         }
       }
-      return arr
+      return arr;
     },
     // 检查是否有扫描状态的主机
-    hasScanningHost (scanMap) {
+    hasScanningHost(scanMap) {
       for (const hostId in scanMap) {
         if (scanMap[hostId] === 'scanning') {
-          return true
+          return true;
         }
       }
-      return false
+      return false;
     },
-    handleRefresh () {
-      this.selectedRowKeys = []
-      this.selectedRows = []
-      this.getHostList()
+    handleRefresh() {
+      this.selectedRowKeys = [];
+      this.selectedRows = [];
+      this.getHostList();
     },
-    handleReset () {
-      this.pagination = defaultPagination
-      this.sorter = null
-      this.filters = null
-      this.selectedRowKeys = []
-      this.selectedRows = []
-      this.getHostList()
+    handleReset() {
+      this.pagination = defaultPagination;
+      this.sorter = null;
+      this.filters = null;
+      this.selectedRowKeys = [];
+      this.selectedRows = [];
+      this.getHostList();
       if (this.standalone) {
-        this.getHostListAll()
+        this.getHostListAll();
       }
     },
-    getHostList () {
-      const _this = this
-      this.hostTableIsLoading = true
-      const pagination = this.pagination || {}
-      const filters = this.filters || {}
-      const sorter = this.sorter || {}
+    getHostList() {
+      const _this = this;
+      this.hostTableIsLoading = true;
+      const pagination = this.pagination || {};
+      const filters = this.filters || {};
+      const sorter = this.sorter || {};
       // 非standalone模式下触发外部获取数据
       if (!this.standalone) {
         this.$emit('getTableData', {
@@ -472,8 +494,8 @@ export default {
               order: sorter.order
             }
           }
-        })
-        return
+        });
+        return;
       }
 
       getHostLeakList({
@@ -488,23 +510,25 @@ export default {
             order: sorter.order
           }
         }
-      }).then(function (res) {
-        _this.hostTableData = res.result || []
+      }).then(function(res) {
+        _this.hostTableData = res.result || [];
         _this.pagination = {
           ..._this.pagination,
           current: pagination.current,
           pageSize: pagination.pageSize,
           total: res.total_count || (res.total_count === 0 ? 0 : pagination.total)
-        }
-      }).catch(function (err) {
-        _this.$message.error(err.response.data.msg)
-      }).finally(function () { _this.hostTableIsLoading = false })
+        };
+      }).catch(function(err) {
+        _this.$message.error(err.response.data.msg);
+      }).finally(function() {
+        _this.hostTableIsLoading = false;
+      });
     },
-    getHostListAll () {
+    getHostListAll() {
       // only excute when it's standalone
-      const _this = this
-      this.hostListAllIsLoading = true
-      const filters = this.filters || {}
+      const _this = this;
+      this.hostListAllIsLoading = true;
+      const filters = this.filters || {};
 
       getHostLeakList({
         tableInfo: {
@@ -512,90 +536,98 @@ export default {
           filters: filters,
           sorter: {}
         }
-      }).then(function (res) {
-        _this.hostListAll = res.result || []
-      }).catch(function (err) {
-        _this.$message.error(err.response.data.msg)
-      }).finally(function () { _this.hostListAllIsLoading = false })
+      })
+        .then(function(res) {
+          _this.hostListAll = res.result || [];
+        })
+        .catch(function(err) {
+          _this.$message.error(err.response.data.msg);
+        })
+        .finally(function() {
+          _this.hostListAllIsLoading = false;
+        });
     },
-    onSearch (text) {
-      this.pagination = defaultPagination
+    onSearch(text) {
+      this.pagination = defaultPagination;
       if (!this.filters) {
-        this.filters = {}
+        this.filters = {};
       }
       if (text !== '') {
-        this.filters.hostName = text
+        this.filters.hostName = text;
       } else {
-        this.filters.hostName = undefined
+        this.filters.hostName = undefined;
       }
-      this.getHostList()
+      this.getHostList();
       if (this.standalone) {
-        this.getHostListAll()
+        this.getHostListAll();
       }
     },
-    handleTaskCreateSuccess () {
-      this.handleRefresh()
+    handleTaskCreateSuccess() {
+      this.handleRefresh();
     },
-    getHostGroup () {
-      const _this = this
+    getHostGroup() {
+      const _this = this;
       hostGroupList({
-        tableInfo: { sorter: {}, pagination: {} }
-      }).then(function (res) {
-        _this.hostGroupList = res.host_group_infos.map(hg => {
-        return {
-          text: hg.host_group_name,
-          value: hg.host_group_name
-        }
+        tableInfo: {sorter: {}, pagination: {}}
       })
-      }).catch(function (err) {
-        _this.$message.error(err.response.data.msg)
-      })
+        .then(function(res) {
+          _this.hostGroupList = res.host_group_infos.map(hg => {
+            return {
+              text: hg.host_group_name,
+              value: hg.host_group_name
+            };
+          });
+        })
+        .catch(function(err) {
+          _this.$message.error(err.response.data.msg);
+        });
     },
-    getRepoList () {
-      const _this = this
+    getRepoList() {
+      const _this = this;
       getRepoList()
-      .then(function (res) {
-        const arr = (res.result || []).map(repo => {
-          return {
-            text: repo.repo_name,
-            value: repo.repo_name
-          }
+        .then(function(res) {
+          const arr = (res.result || []).map(repo => {
+            return {
+              text: repo.repo_name,
+              value: repo.repo_name
+            };
+          });
+          arr.push({
+            text: '未设置',
+            value: ''
+          });
+          _this.repoFilterList = arr;
         })
-        arr.push({
-          text: '未设置',
-          value: ''
-        })
-        _this.repoFilterList = arr
-      }).catch(function (err) {
-        _this.$message.error(err.response.data.msg)
-      })
+        .catch(function(err) {
+          _this.$message.error(err.response.data.msg);
+        });
     },
     // 检查是否有筛选条件
-    checkHasFilter (filters) {
+    checkHasFilter(filters) {
       if (!filters) {
-        return false
+        return false;
       }
       for (const key in filters) {
         if (filters[key] && filters[key].length > 0) {
-          return true
+          return true;
         }
       }
-      return false
+      return false;
     }
   },
-  mounted () {
-    this.getHostList()
-    this.getHostGroup()
+  mounted() {
+    this.getHostList();
+    this.getHostGroup();
     if (this.standalone) {
       // 主机列表页面中要自行获取全量主机和扫描状态
-      this.getScanStatusAll([])
-      this.getHostListAll()
+      this.getScanStatusAll([]);
+      this.getHostListAll();
     } else {
       // 主机详情页面中要自行获取repo列表
-      this.getRepoList()
+      this.getRepoList();
     }
   }
-}
+};
 </script>
 
 <style lang="less" scoped>

@@ -12,15 +12,14 @@
   >
     <template v-slot:menuHeaderRender>
       <div>
-        <img src="~@/assets/vertical-left.png" class="logo" alt="logo">
+        <img src="~@/assets/vertical-left.png" class="logo" alt="logo" />
         <h1>{{ title }}</h1>
       </div>
     </template>
     <!-- 1.0.0+ 版本 pro-layout 提供 API,
           增加 Header 左侧内容区自定义
     -->
-    <template v-slot:headerContentRender>
-    </template>
+    <template v-slot:headerContentRender> </template>
     <template v-slot:rightContentRender>
       <right-content :top-menu="settings.layout === 'topmenu'" :is-mobile="isMobile" :theme="settings.theme" />
     </template>
@@ -33,14 +32,14 @@
 </template>
 
 <script>
-import { updateTheme } from '@ant-design-vue/pro-layout'
-import { i18nRender } from '@/vendor/ant-design-pro/locales'
-import { mapState } from 'vuex'
-import { CONTENT_WIDTH_TYPE, SIDEBAR_TYPE, TOGGLE_MOBILE_TYPE } from '@/vendor/ant-design-pro/store/mutation-types'
+import {updateTheme} from '@ant-design-vue/pro-layout';
+import {i18nRender} from '@/vendor/ant-design-pro/locales';
+import {mapState} from 'vuex';
+import {CONTENT_WIDTH_TYPE, SIDEBAR_TYPE, TOGGLE_MOBILE_TYPE} from '@/vendor/ant-design-pro/store/mutation-types';
 
-import defaultSettings from '@/vendor/ant-design-pro/config/defaultSettings'
-import RightContent from '@/vendor/ant-design-pro/components/GlobalHeader/RightContent'
-import GlobalFooter from '@/vendor/ant-design-pro/components/GlobalFooter'
+import defaultSettings from '@/vendor/ant-design-pro/config/defaultSettings';
+import RightContent from '@/vendor/ant-design-pro/components/GlobalHeader/RightContent';
+import GlobalFooter from '@/vendor/ant-design-pro/components/GlobalFooter';
 
 export default {
   name: 'BasicLayout',
@@ -48,7 +47,7 @@ export default {
     RightContent,
     GlobalFooter
   },
-  data () {
+  data() {
     return {
       // preview.pro.antdv.com only use.
       isProPreviewSite: process.env.VUE_APP_PREVIEW === 'true' && process.env.NODE_ENV !== 'development',
@@ -81,7 +80,7 @@ export default {
 
       // 是否手机模式
       isMobile: false
-    }
+    };
   },
   computed: {
     ...mapState({
@@ -89,58 +88,58 @@ export default {
       mainMenu: state => state.permission.addRouters
     })
   },
-  created () {
-    const routes = this.mainMenu.find(item => item.path === '/')
-    this.menus = (routes && routes.children) || []
+  created() {
+    const routes = this.mainMenu.find(item => item.path === '/');
+    this.menus = (routes && routes.children) || [];
     // 处理侧栏收起状态
     this.$watch('collapsed', () => {
-      this.$store.commit(SIDEBAR_TYPE, this.collapsed)
-    })
+      this.$store.commit(SIDEBAR_TYPE, this.collapsed);
+    });
     this.$watch('isMobile', () => {
-      this.$store.commit(TOGGLE_MOBILE_TYPE, this.isMobile)
-    })
+      this.$store.commit(TOGGLE_MOBILE_TYPE, this.isMobile);
+    });
   },
-  mounted () {
-    const userAgent = navigator.userAgent
+  mounted() {
+    const userAgent = navigator.userAgent;
     if (userAgent.indexOf('Edge') > -1) {
       this.$nextTick(() => {
-        this.collapsed = !this.collapsed
+        this.collapsed = !this.collapsed;
         setTimeout(() => {
-          this.collapsed = !this.collapsed
-        }, 16)
-      })
+          this.collapsed = !this.collapsed;
+        }, 16);
+      });
     }
 
     // first update color
     // TIPS: THEME COLOR HANDLER!! PLEASE CHECK THAT!!
     if (process.env.NODE_ENV !== 'production' || process.env.VUE_APP_PREVIEW === 'true') {
-      updateTheme(this.settings.primaryColor)
+      updateTheme(this.settings.primaryColor);
     }
   },
   methods: {
     i18nRender,
-    handleMediaQuery (val) {
-      this.query = val
+    handleMediaQuery(val) {
+      this.query = val;
       if (this.isMobile && !val['screen-xs']) {
-        this.isMobile = false
-        return
+        this.isMobile = false;
+        return;
       }
       if (!this.isMobile && val['screen-xs']) {
-        this.isMobile = true
-        this.collapsed = false
-        this.settings.contentWidth = CONTENT_WIDTH_TYPE.Fluid
+        this.isMobile = true;
+        this.collapsed = false;
+        this.settings.contentWidth = CONTENT_WIDTH_TYPE.Fluid;
         // this.settings.fixSiderbar = false
       }
     },
-    handleCollapse (val) {
-      this.collapsed = val
+    handleCollapse(val) {
+      this.collapsed = val;
     }
   }
-}
+};
 </script>
 
 <style lang="less" scoped>
-@import "./BasicLayout.less";
+@import './BasicLayout.less';
 .logo {
   height: auto;
   width: 32px;

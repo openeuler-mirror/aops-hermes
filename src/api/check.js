@@ -1,10 +1,13 @@
 import request from '@/vendor/ant-design-pro/utils/request';
-import { hostBasicInfo } from '@/api/assest';
+import {hostBasicInfo} from '@/api/assest';
 import qs from 'qs';
 
 const api = {
-// API for the first phase of Aops.
-// haven't been used, may be deleted later.
+
+  /*
+   * API for the first phase of Aops.
+   * haven't been used, may be deleted later.
+   */
   // 获取异常检测结果
   getResult: '/check/result/get',
   // 导出异常检测规则
@@ -56,8 +59,8 @@ const api = {
 export default api;
 
 const directionMap = {
-  'ascend': 'asc',
-  'descend': 'desc'
+  ascend: 'asc',
+  descend: 'desc'
 };
 
 // 获取异常检测结果
@@ -76,13 +79,13 @@ export function getResult({timeRange, checkItems, hostList, value, sort, directi
       page: page || 1, // 当前的⻚码
       per_page: perPage || 10 // 每⻚的数量，最⼤为50
     }
-  }).then(function (data) {
-    return hostBasicInfo(data.check_result).then(function (hostMap) {
+  }).then(function(data) {
+    return hostBasicInfo(data.check_result).then(function(hostMap) {
       setHostInfo(data.check_result, hostMap);
       return data;
     });
   });
-};
+}
 // 导出异常检测规则
 export function getRule({checkItems, sort, direction, page, perPage}) {
   return request({
@@ -97,7 +100,7 @@ export function getRule({checkItems, sort, direction, page, perPage}) {
       per_page: perPage || 10 // 每⻚的数量，最⼤为50
     }
   });
-};
+}
 // 获取全量规则
 export function getRuleAll() {
   return request({
@@ -107,7 +110,7 @@ export function getRuleAll() {
       check_items: []
     }
   });
-};
+}
 // 导⼊异常检测规则
 export function importRule(checkItems) {
   return request({
@@ -115,7 +118,7 @@ export function importRule(checkItems) {
     method: 'post',
     data: {check_items: checkItems}
   });
-};
+}
 // 删除异常检测规则 DELETE
 export function deleteRule(checkItems) {
   return request({
@@ -123,7 +126,7 @@ export function deleteRule(checkItems) {
     method: 'delete',
     data: {check_items: checkItems}
   });
-};
+}
 // 获取异常检测规则数量, abandened
 export function getRuleCount(data) {
   return request({
@@ -131,7 +134,7 @@ export function getRuleCount(data) {
     method: 'post',
     data: data || {}
   });
-};
+}
 // 获取检测结果统计
 export function getResultCount({hostList, sort, direction, page, perPage}) {
   return request({
@@ -145,13 +148,13 @@ export function getResultCount({hostList, sort, direction, page, perPage}) {
       page: page || 1, // 当前的⻚码
       per_page: perPage || 10 // 每⻚的数量，最⼤为50
     }
-  }).then(function (data) {
-    return hostBasicInfo(data.results).then(function (hostMap) {
+  }).then(function(data) {
+    return hostBasicInfo(data.results).then(function(hostMap) {
       setHostInfo(data.results, hostMap);
       return data;
     });
   });
-};
+}
 // 获取检测结果统计
 export function getResultCountTopTen() {
   return request({
@@ -164,29 +167,29 @@ export function getResultCountTopTen() {
       page: 1,
       per_page: 10
     }
-  }).then(function (data) {
-    return hostBasicInfo(data.results).then(function (hostMap) {
+  }).then(function(data) {
+    return hostBasicInfo(data.results).then(function(hostMap) {
       setHostInfo(data.results, hostMap);
       return data;
     });
   });
-};
+}
 // 获取主机信息
 export function setHostInfo(dataList, hostMap) {
-  dataList.forEach(function (item, index) {
+  dataList.forEach(function(item, index) {
     var host = hostMap[item.host_id];
     if (host) {
       item.hostName = host.host_name;
       item.ip = host.public_ip;
-    };
+    }
   });
-};
+}
 
 // 获取工作流列表
 export function getWorkFlowList({tableInfo}) {
-  const domain = (tableInfo.filters.domain && tableInfo.filters.domain[0]) ? tableInfo.filters.domain : undefined;
-  const app = (tableInfo.filters.app_name && tableInfo.filters.app_name[0]) ? tableInfo.filters.app_name : undefined;
-  const status = (tableInfo.filters.status && tableInfo.filters.status[0]) ? tableInfo.filters.status : undefined;
+  const domain = tableInfo.filters.domain && tableInfo.filters.domain[0] ? tableInfo.filters.domain : undefined;
+  const app = tableInfo.filters.app_name && tableInfo.filters.app_name[0] ? tableInfo.filters.app_name : undefined;
+  const status = tableInfo.filters.status && tableInfo.filters.status[0] ? tableInfo.filters.status : undefined;
   const sort = tableInfo.sorter.order && tableInfo.sorter.field;
   const direction = directionMap[tableInfo.sorter.order];
   return request({
@@ -204,7 +207,7 @@ export function getWorkFlowList({tableInfo}) {
       per_page: tableInfo.pagination.pageSize
     }
   });
-};
+}
 // 获取工作流详情信息
 export function getWorkflowDatail(id) {
   return request({
@@ -212,7 +215,7 @@ export function getWorkflowDatail(id) {
     method: 'get',
     params: {workflow_id: id}
   });
-};
+}
 // 创建工作流
 export function createWorkFlow(data) {
   return request({
@@ -226,7 +229,7 @@ export function createWorkFlow(data) {
       input: data.input
     }
   });
-};
+}
 // 修改工作流
 export function updateWorkflow(workflowDetail, workflowId) {
   return request({
@@ -237,7 +240,7 @@ export function updateWorkflow(workflowDetail, workflowId) {
       workflow_id: workflowId
     }
   });
-};
+}
 // 执行工作流
 export function executeWorkflow({workflowId}) {
   return request({
@@ -245,7 +248,7 @@ export function executeWorkflow({workflowId}) {
     method: 'post',
     data: {workflow_id: workflowId}
   });
-};
+}
 // 暂停工作流
 export function stopWorkflow({workflowId}) {
   return request({
@@ -253,7 +256,7 @@ export function stopWorkflow({workflowId}) {
     method: 'post',
     data: {workflow_id: workflowId}
   });
-};
+}
 // 删除工作流
 export function deleteWorkflow({workflowId}) {
   return request({
@@ -261,7 +264,7 @@ export function deleteWorkflow({workflowId}) {
     method: 'delete',
     data: {workflow_id: workflowId}
   });
-};
+}
 // 获取应用列表
 export function getAppList({page, perPage}) {
   return request({
@@ -272,7 +275,7 @@ export function getAppList({page, perPage}) {
       per_page: perPage
     }
   });
-};
+}
 // 获取app信息
 export function getWorkflowAppExtraInfo(id) {
   return request({
@@ -280,7 +283,7 @@ export function getWorkflowAppExtraInfo(id) {
     method: 'get',
     params: {app_id: id}
   });
-};
+}
 // 新增应用（暂未开发）
 export function createApp(appInfo) {
   return request({
@@ -288,7 +291,7 @@ export function createApp(appInfo) {
     method: 'post',
     data: appInfo
   });
-};
+}
 
 // 获取模型列表
 export function moduleList({tableInfo, ...parameter}) {
@@ -309,14 +312,14 @@ export function moduleList({tableInfo, ...parameter}) {
       per_page: tableInfo.pagination.pageSize
     }
   });
-};
+}
 
 export function getAlertCount() {
   return request({
     url: api.getAlertCount,
     method: 'get'
   });
-};
+}
 export function getAlertInfoResult(parameter) {
   return request({
     url: api.getAlertInfoResult,
@@ -328,7 +331,7 @@ export function getAlertInfoResult(parameter) {
       per_page: parameter.per_page || 10
     }
   });
-};
+}
 export function getAlertRecordResult(parameter) {
   return request({
     url: api.getAlertRecordResult,
@@ -344,7 +347,7 @@ export function getAlertRecordResult(parameter) {
       return qs.stringify(params, {indices: false});
     }
   });
-};
+}
 export function confirmTheAlert(parameter) {
   return request({
     url: api.confirmTheAlert,
@@ -353,7 +356,7 @@ export function confirmTheAlert(parameter) {
       alert_id: parameter.alert_id
     }
   });
-};
+}
 export function downloadReport(parameter) {
   return request({
     url: api.downloadReport,
@@ -362,7 +365,7 @@ export function downloadReport(parameter) {
       alert_id: parameter.alert_id
     }
   });
-};
+}
 export function getAlertDetail(parameter) {
   return request({
     url: api.getAlertDetail,
@@ -371,4 +374,4 @@ export function getAlertDetail(parameter) {
       alert_id: parameter.alert_id
     }
   });
-};
+}

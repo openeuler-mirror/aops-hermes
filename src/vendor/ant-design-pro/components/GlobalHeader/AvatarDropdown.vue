@@ -21,22 +21,22 @@
     </template>
   </a-dropdown>
   <span v-else>
-    <a-spin size="small" :style="{ marginLeft: 8, marginRight: 8 }" />
+    <a-spin size="small" :style="{marginLeft: 8, marginRight: 8}" />
   </span>
 </template>
 
 <script>
-import { Modal } from 'ant-design-vue'
-import ChangePasswordModal from '@/components/GlobalHeader/ChangePasswordModal'
+import {Modal} from 'ant-design-vue';
+import ChangePasswordModal from '@/components/GlobalHeader/ChangePasswordModal';
 
 export default {
   name: 'AvatarDropdown',
-  components: { ChangePasswordModal },
-  data () {
+  components: {ChangePasswordModal},
+  data() {
     return {
       changePWVisible: false,
       certificateVisible: false
-    }
+    };
   },
   props: {
     currentUser: {
@@ -49,35 +49,32 @@ export default {
     }
   },
   methods: {
-    showChangePW () {
-      this.changePWVisible = true
+    showChangePW() {
+      this.changePWVisible = true;
     },
-    closeChangePW () {
-      this.changePWVisible = false
+    closeChangePW() {
+      this.changePWVisible = false;
     },
-    showCertificate () {
-      this.certificateVisible = true
+    showCertificate() {
+      this.certificateVisible = true;
     },
-    closeCertificate () {
-      this.certificateVisible = false
+    closeCertificate() {
+      this.certificateVisible = false;
     },
-    handleLogout (e) {
+    handleLogout(e) {
       Modal.confirm({
         title: this.$t('layouts.usermenu.dialog.title'),
         content: this.$t('layouts.usermenu.dialog.content'),
         onOk: () => {
-          // return new Promise((resolve, reject) => {
-          //   setTimeout(Math.random() > 0.5 ? resolve : reject, 1500)
-          // }).catch(() => console.log('Oops errors!'))
           return this.$store.dispatch('Logout').then(() => {
-            this.$router.push({ name: 'login' })
-          })
+            this.$router.push({name: 'login'});
+          });
         },
-        onCancel () {}
-      })
+        onCancel() {}
+      });
     }
   }
-}
+};
 </script>
 
 <style lang="less" scoped>

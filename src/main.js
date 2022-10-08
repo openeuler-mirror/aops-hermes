@@ -15,8 +15,7 @@ import {VueAxios} from '@/vendor/ant-design-pro/utils/request';
 import ProLayout, {PageHeaderWrapper} from '@ant-design-vue/pro-layout';
 import themePluginConfig from '@/vendor/ant-design-pro/config/themePluginConfig';
 
-// mock
-// WARNING: `mockjs` NOT SUPPORT `IE` PLEASE DO NOT USE IN `production` ENV.
+// run mock. WARNING: `mockjs` NOT SUPPORT `IE` PLEASE DO NOT USE IN `production` ENV.
 import './mock';
 
 import bootstrap from '@/vendor/ant-design-pro/core/bootstrap';
@@ -37,10 +36,10 @@ Vue.component('page-header-wrapper', PageHeaderWrapper);
 window.umi_plugin_ant_themeVar = themePluginConfig.theme;
 
 new Vue({
-    router,
-    store,
-    i18n,
-    // init localstorage, vuex, Logo message
-    created: bootstrap,
-    render: h => h(App)
+  router,
+  store,
+  i18n,
+  // init localstorage, vuex, Logo message
+  created: bootstrap,
+  render: h => h(App)
 }).$mount('#app');

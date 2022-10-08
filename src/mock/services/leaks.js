@@ -1,6 +1,6 @@
-// import Mock from 'mockjs2'
-// import { builder, getBody } from '../util'
-/*
+import Mock from 'mockjs2'
+import { builder, getBody } from '../util'
+
 const cvesMockData = [
   {
     cve_id: 'CEV-2021-29534',
@@ -21,9 +21,7 @@ const cvesMockData = [
     description: 'Around advice is the most general kind of advice. Since Spring AOP, like AspectJ, provides a full range of advice types, we recommend that you use the least powerful advice type that can implement the required behavior. For example, if you need only to update a cache with the return value of a method, you are better off implementing an after returning advice than an around advice, although an around advice can accomplish the same thing. Using the most specific advice type provides a simpler programming model with less potential for errors. For example, you do not need to invoke the proceed() method on the JoinPoint used for around advice, and, hence, you cannot fail to invoke it.'
   }
 ]
-*/
 
-/*
 const hostListMockData = [
   {
     host_id: '192.168.1.1',
@@ -96,11 +94,8 @@ const repoMockData = [
     repo_attr: 'ope'
   }
 ]
-/*
-const getCVES = (options) => {
-  const body = getBody(options)
-  console.log(body)
 
+const getCVES = (options) => {
   return builder({
     'msg': Mock.mock('success'),
     'total_count': 2,
@@ -110,9 +105,6 @@ const getCVES = (options) => {
 }
 
 const getCVEInfo = (options) => {
-  const body = getBody(options)
-  console.log(body)
-
   return builder({
     'msg': Mock.mock('success'),
     info: {
@@ -149,9 +141,6 @@ const getHostUnderCVE = (options) => {
 }
 
 const getHostList = (options) => {
-  const body = getBody(options)
-  console.log(body)
-
   return builder({
     'msg': Mock.mock('success'),
     list: hostListMockData
@@ -159,9 +148,6 @@ const getHostList = (options) => {
 }
 
 const getHostInfo = (options) => {
-  const body = getBody(options)
-  console.log(body)
-
   return builder({
     'msg': Mock.mock('success'),
     info: {
@@ -176,9 +162,6 @@ const getHostInfo = (options) => {
 }
 
 const addRepo = (options) => {
-  const body = getBody(options)
-  console.log(body)
-
   return builder({
     'msg': Mock.mock('success')
   }, '新建repo', 200, { 'Custom-Header': Mock.mock('@guid') })
@@ -186,7 +169,6 @@ const addRepo = (options) => {
 
 const getRepo = (options) => {
   const body = getBody(options)
-  console.log(body)
   let result = []
 
   if (body.repo_name_list.length < 1) {
@@ -200,12 +182,8 @@ const getRepo = (options) => {
     result
   }, '新建repo', 200, { 'Custom-Header': Mock.mock('@guid') })
 }
-*/
-/*
-const getTaskList = (options) => {
-  const body = getBody(options)
-  console.log(body)
 
+const getTaskList = (options) => {
   return builder({
     'msg': Mock.mock('success'),
     'total_count': 2,
@@ -224,55 +202,45 @@ const getTaskList = (options) => {
 }
 
 const getTaskProgress = (options) => {
-  const body = getBody(options)
-  console.log(body)
-
   return builder({
     'msg': Mock.mock('success'),
     'total_count': 2,
     'total_page': 1,
     'result': {
       task1: {
-          'succeed': 1,
-          'fail': 0,
-          'running': 11,
-          'on standby': 0
+        'succeed': 1,
+        'fail': 0,
+        'running': 11,
+        'on standby': 0
       },
       task2: {
-          'succeed': 5,
-          'fail': 0,
-          'running': 13,
-          'on standby': 0
+        'succeed': 5,
+        'fail': 0,
+        'running': 13,
+        'on standby': 0
       }
-   }
+    }
   }, '查询成功', 200, { 'Custom-Header': Mock.mock('@guid') })
 }
-*/
-/*
-const getCveInfoUnderTask = (options) => {
-  const body = getBody(options)
-  console.log(body)
 
+const getCveInfoUnderTask = (options) => {
   return builder({
     'msg': Mock.mock('success'),
     'total_count': 2,
     'total_page': 1,
     'result': [
       {
-          'cve_id': 'cve1',
-          'package': 'test-p',
-          'reboot': true,
-          'host_num': 3,
-          'status': 'running'
+        'cve_id': 'cve1',
+        'package': 'test-p',
+        'reboot': true,
+        'host_num': 3,
+        'status': 'running'
       }
-  ]
+    ]
   }, '查询成功', 200, { 'Custom-Header': Mock.mock('@guid') })
 }
 
 const getHostOfCveInCveTask = (options) => {
-  const body = getBody(options)
-  console.log(body)
-
   return builder({
     'msg': Mock.mock('success'),
     'total_count': 2,
@@ -292,19 +260,18 @@ const getHostOfCveInCveTask = (options) => {
           'status': 'fixed'
         }
       ]
-  }
+    }
   }, '查询成功', 200, { 'Custom-Header': Mock.mock('@guid') })
 }
-*/
 
-// Mock.mock(/\/vulnerability\/cve\/host\/get/, 'post', getHostUnderCVE)
-// Mock.mock(/\/leaks\/get_cves_info/, 'post', getCVEInfo)
-// Mock.mock(/\/leaks\/get_cves/, 'post', getCVES)
-// Mock.mock(/\/leaks\/get_host_leak_info/, 'post', getHostInfo)
-// Mock.mock(/\/leaks\/get_host_leak_list/, 'post', getHostList)
-// Mock.mock(/\/vulnerability\/repo\/import/, 'post', addRepo)
-// Mock.mock(/\/vulnerability\/repo\/get/, 'post', getRepo)
-// Mock.mock(/\/vulnerability\/task\/list\/get/, 'post', getTaskList)
-// Mock.mock(/\/vulnerability\/task\/progress\/get/, 'post', getTaskProgress)
-// Mock.mock(/\/vulnerability\/task\/cve\/info\/get/, 'post', getCveInfoUnderTask)
-// Mock.mock(/\/vulnerability\/task\/cve\/status\/get/, 'post', getHostOfCveInCveTask)
+Mock.mock(/\/vulnerability\/cve\/host\/get/, 'post', getHostUnderCVE)
+Mock.mock(/\/leaks\/get_cves_info/, 'post', getCVEInfo)
+Mock.mock(/\/leaks\/get_cves/, 'post', getCVES)
+Mock.mock(/\/leaks\/get_host_leak_info/, 'post', getHostInfo)
+Mock.mock(/\/leaks\/get_host_leak_list/, 'post', getHostList)
+Mock.mock(/\/vulnerability\/repo\/import/, 'post', addRepo)
+Mock.mock(/\/vulnerability\/repo\/get/, 'post', getRepo)
+Mock.mock(/\/vulnerability\/task\/list\/get/, 'post', getTaskList)
+Mock.mock(/\/vulnerability\/task\/progress\/get/, 'post', getTaskProgress)
+Mock.mock(/\/vulnerability\/task\/cve\/info\/get/, 'post', getCveInfoUnderTask)
+Mock.mock(/\/vulnerability\/task\/cve\/status\/get/, 'post', getHostOfCveInCveTask)

@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <a-row type="flex" justify="space-between">
@@ -15,9 +14,7 @@
             @confirm="confirm"
             @cancel="cancel"
           >
-            <a-button type="primary" size="small">
-              <a-icon type="sync" />全部同步
-            </a-button>
+            <a-button type="primary" size="small"> <a-icon type="sync" />全部同步 </a-button>
           </a-popconfirm>
         </div>
       </a-col>
@@ -34,9 +31,24 @@
         >
           <span slot="isSynced" slot-scope="isSynced">
             <span>
-              <a-icon v-if="isSynced === statusEnum.sync" type="check-circle" theme="twoTone" two-tone-color="#52c41a"/>
-              <a-icon v-if="isSynced === statusEnum.notSync" type="close-circle" theme="twoTone" two-tone-color="#f00"/>
-              <a-icon v-if="isSynced === statusEnum.notFound" type="question-circle" theme="twoTone" two-tone-color="#ccc"/>
+              <a-icon
+                v-if="isSynced === statusEnum.sync"
+                type="check-circle"
+                theme="twoTone"
+                two-tone-color="#52c41a"
+              />
+              <a-icon
+                v-if="isSynced === statusEnum.notSync"
+                type="close-circle"
+                theme="twoTone"
+                two-tone-color="#f00"
+              />
+              <a-icon
+                v-if="isSynced === statusEnum.notFound"
+                type="question-circle"
+                theme="twoTone"
+                two-tone-color="#ccc"
+              />
               {{ statusTitleEnum[isSynced] }}
             </span>
           </span>
@@ -47,70 +59,70 @@
 </template>
 
 <script>
-  import { STATUS_ENUM } from '../utils/statusCheckTools'
+import {STATUS_ENUM} from '../utils/statusCheckTools';
 
-  const STATUS_TITLE_ENUM = {}
-  STATUS_TITLE_ENUM[STATUS_ENUM.sync] = '已同步'
-  STATUS_TITLE_ENUM[STATUS_ENUM.notSync] = '未同步'
-  STATUS_TITLE_ENUM[STATUS_ENUM.notFound] = '未找到'
+const STATUS_TITLE_ENUM = {};
+STATUS_TITLE_ENUM[STATUS_ENUM.sync] = '已同步';
+STATUS_TITLE_ENUM[STATUS_ENUM.notSync] = '未同步';
+STATUS_TITLE_ENUM[STATUS_ENUM.notFound] = '未找到';
 
-  export default {
-    name: 'GetDomainStatusDrawer',
-    inject: ['onload'], // 来自祖辈们provide中声明的参数、方法
-    components: {},
-    data () {
-      return {
-        host: {},
-        columns: [
-          {
-            title: '配置文件',
-            dataIndex: 'file_path'
-          },
-          {
-            title: '同步状态',
-            dataIndex: 'isSynced',
-            scopedSlots: { customRender: 'isSynced' }
-          }
-        ],
-        statusEnum: STATUS_ENUM,
-        statusTitleEnum: STATUS_TITLE_ENUM
+export default {
+  name: 'GetDomainStatusDrawer',
+  inject: ['onload'], // 来自祖辈们provide中声明的参数、方法
+  components: {},
+  data() {
+    return {
+      host: {},
+      columns: [
+        {
+          title: '配置文件',
+          dataIndex: 'file_path'
+        },
+        {
+          title: '同步状态',
+          dataIndex: 'isSynced',
+          scopedSlots: {customRender: 'isSynced'}
+        }
+      ],
+      statusEnum: STATUS_ENUM,
+      statusTitleEnum: STATUS_TITLE_ENUM
+    };
+  },
+  props: {
+    tableData: {
+      type: Array,
+      default: () => {
+        return [];
       }
     },
-    props: {
-      tableData: {
-        type: Array,
-        default: () => { return [] }
-      },
-      domainStatusIsLoading: {
-        type: Boolean,
-        default: false
-      }
-    },
-    computed: {
-      syncStatusList () {
-        const matchedHost = this.tableData.filter(hostInfo => hostInfo.hostId === this.host.hostId)[0] || {}
-        console.log('list', matchedHost)
-        return matchedHost.syncStatusList || []
-      }
-    },
-    methods: {
-      confirm (e) {
-        this.$message.success('该功能暂未实现')
-      },
-      cancel (e) {
-      }
-    },
-    mounted: function () {
-      const _this = this
-      this.onload(function (host) {
-        _this.host = host
-      })
+    domainStatusIsLoading: {
+      type: Boolean,
+      default: false
     }
+  },
+  computed: {
+    syncStatusList() {
+      const matchedHost = this.tableData.filter(hostInfo => hostInfo.hostId === this.host.hostId)[0] || {};
+      return matchedHost.syncStatusList || [];
+    }
+  },
+  methods: {
+    confirm(e) {
+      this.$message.success('该功能暂未实现');
+    },
+    cancel(e) {}
+  },
+  mounted: function() {
+    const _this = this;
+    this.onload(function(host) {
+      _this.host = host;
+    });
   }
+};
 </script>
 
 <style>
-  .ip-left{
-    margin-left: 10px;
-  }
+.ip-left {
+  margin-left: 10px;
+}
 </style>

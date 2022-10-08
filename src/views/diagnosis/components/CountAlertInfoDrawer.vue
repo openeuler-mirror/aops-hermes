@@ -2,7 +2,7 @@
   <div id="alertInfoDrawer" style="width: 100%;overflow: auto;">
     <p>共获取到 {{ alertInfoResult.length }} 条告警信息</p>
     <a-table
-      :rowKey="(record,index) => index"
+      :rowKey="(record, index) => index"
       :columns="columns"
       :data-source="alertInfoResult"
       :loading="isLoading"
@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { getAlertInfoResult } from '@/api/check'
+import {getAlertInfoResult} from '@/api/check';
 
 const defaultPagination = {
   current: 1,
@@ -23,7 +23,7 @@ const defaultPagination = {
   showQuickJumper: true,
   size: 'small',
   pageSizeOptions: ['10', '15', '20']
-}
+};
 export default {
   name: 'CountAlertInfoDrawer',
   data() {
@@ -31,7 +31,7 @@ export default {
       isLoading: false,
       alertInfoResult: [],
       pagination: defaultPagination
-    }
+    };
   },
   computed: {
     columns() {
@@ -52,42 +52,45 @@ export default {
           dataIndex: 'count',
           customRender: (text, record, index) => {
             if (index < 5) {
-              return <span class="result-count high-light">{text}</span>
+              return <span class="result-count high-light">{text}</span>;
             } else {
-              return <span class="result-count">{text}</span>
+              return <span class="result-count">{text}</span>;
             }
           }
         }
-      ]
+      ];
     }
   },
   mounted() {
-    this.getAlertInfoResult()
+    this.getAlertInfoResult();
   },
   methods: {
     getAlertInfoResult({page, pageSize, direction} = {}) {
-      const that = this
-      const pagination = this.pagination
-      this.isLoading = true
+      const that = this;
+      const pagination = this.pagination;
+      this.isLoading = true;
       getAlertInfoResult({
         page: pagination.current,
         per_page: pagination.pageSize,
         direction: direction
-      }).then(res => {
-        that.alertInfoResult = res.results
-        that.pagination.total = res.total_count
-      }).catch(err => {
-        that.$message.error(err.error_msg)
-      }).finally(() => {
-        that.isLoading = false
       })
+        .then(res => {
+          that.alertInfoResult = res.results;
+          that.pagination.total = res.total_count;
+        })
+        .catch(err => {
+          that.$message.error(err.error_msg);
+        })
+        .finally(() => {
+          that.isLoading = false;
+        });
     },
-    handleTableChange (pagination, filters, sorter) {
-      this.pagination = pagination
-      this.getAlertInfoResult()
+    handleTableChange(pagination, filters, sorter) {
+      this.pagination = pagination;
+      this.getAlertInfoResult();
     }
   }
-}
+};
 </script>
 
 <style lang="less" scoped>
@@ -96,13 +99,13 @@ export default {
     color: #000;
   }
   /deep/ .ant-table-thead > tr > th {
-    padding:12px 10px;
+    padding: 12px 10px;
     font-weight: 500;
     color: #000;
     border-bottom: 0px;
   }
   /deep/ .ant-table-tbody > tr > td {
-    padding:10px 10px;
+    padding: 10px 10px;
   }
   .result-count {
     &.high-light {

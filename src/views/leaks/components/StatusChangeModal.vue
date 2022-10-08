@@ -1,18 +1,9 @@
 <template>
   <div @click="showModal">
-    <a-button
-      :disabled="selectedRowsAll.length < 1"
-      @click="showModal"
-      type="primary"
-    >
+    <a-button :disabled="selectedRowsAll.length < 1" @click="showModal" type="primary">
       修改状态
     </a-button>
-    <a-modal
-      :visible="visible"
-      :confirm-loading="isLoading"
-      @ok="handleOk"
-      @cancel="handleCancel"
-    >
+    <a-modal :visible="visible" :confirm-loading="isLoading" @ok="handleOk" @cancel="handleCancel">
       <h3>
         修改以下CVE
       </h3>
@@ -42,10 +33,11 @@
 </template>
 
 <script>
-/****************
-/* 修改cve状态弹窗组件
-****************/
-import { setCveStatus } from '@/api/leaks'
+
+/**
+ * 修改cve状态弹窗组件
+ */
+import {setCveStatus} from '@/api/leaks';
 export default {
   name: 'StatushangeModal',
   props: {
@@ -54,43 +46,45 @@ export default {
       default: () => []
     }
   },
-  data () {
+  data() {
     return {
       visible: false,
       isLoading: false,
       value: 'in review'
-    }
+    };
   },
   methods: {
-    handleChange (value) {
-      this.value = value
+    handleChange(value) {
+      this.value = value;
     },
-    showModal () {
-      this.visible = true
-      this.value = 'in review'
+    showModal() {
+      this.visible = true;
+      this.value = 'in review';
     },
-    handleCancel () {
-      this.visible = false
+    handleCancel() {
+      this.visible = false;
     },
-    handleOk () {
-      const _this = this
-      this.isLoading = true
+    handleOk() {
+      const _this = this;
+      this.isLoading = true;
       setCveStatus({
         cveList: _this.selectedRowsAll.map(row => row.cve_id),
         status: _this.value
-      }).then(function (res) {
-        _this.$message.success(res.msg)
-        _this.$emit('statusUpdated')
-
-        _this.visible = false
-      }).catch(function (err) {
-        _this.$message.error(err.response.data.msg)
-      }).finally(function () {
-        _this.isLoading = false
       })
+        .then(function(res) {
+          _this.$message.success(res.msg);
+          _this.$emit('statusUpdated');
+
+          _this.visible = false;
+        })
+        .catch(function(err) {
+          _this.$message.error(err.response.data.msg);
+        })
+        .finally(function() {
+          _this.isLoading = false;
+        });
     }
   }
-}
+};
 </script>
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

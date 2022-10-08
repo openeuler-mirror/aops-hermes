@@ -5,15 +5,15 @@
 </template>
 
 <script>
-import yaml from 'js-yaml'
+import yaml from 'js-yaml';
 const TYPE_ENUM = {
-  'json': 'application/json',
-  'yaml': 'application/x-yaml'
-}
+  json: 'application/json',
+  yaml: 'application/x-yaml'
+};
 const REG_TYPE_ENUM = {
-  'json': /.json$/,
-  'yaml': /.yaml$/
-}
+  json: /.json$/,
+  yaml: /.yaml$/
+};
 
 export default {
   name: 'Uploader',
@@ -35,8 +35,10 @@ export default {
       default: ''
     },
     /* eslint-disable */
-    // this props.value can not set default value because of the rule of antd form.
-    // and this prop is not used in this component for now.
+    /*
+     * this props.value can not set default value because of the rule of antd form.
+     * and this prop is not used in this component for now.
+     */
     value: {
       type: [String, Object, Array]
     }
@@ -44,64 +46,66 @@ export default {
   },
   methods: {
     // call this.$refs.<refName>.getFile() to get file content in parent component
-    getFile () {
-      const _this = this
+    getFile() {
+      const _this = this;
       return new Promise((resolve, reject) => {
         try {
-          const file = document.getElementById(_this.uid).files[0]
+          const file = document.getElementById(_this.uid).files[0];
           if (!file) {
-            throw new Error('请上传文件')
+            throw new Error('请上传文件');
           }
-          
-          if (_this.fileType && TYPE_ENUM[_this.fileType] !== file.type && !file.name.match(REG_TYPE_ENUM[_this.fileType])) {
-            throw new Error(`请上传${_this.fileType}类型文件!`)
+
+          if (
+            _this.fileType &&
+            TYPE_ENUM[_this.fileType] !== file.type &&
+            !file.name.match(REG_TYPE_ENUM[_this.fileType])
+          ) {
+            throw new Error(`请上传${_this.fileType}类型文件!`);
           }
           if (_this.sizeLimit && _this.sizeLimit < file.size && !file.name.match(REG_TYPE_ENUM[_this.fileType])) {
-            throw new Error(`文件大小超过${_this.sizeLimit / 1024}KB`)
+            throw new Error(`文件大小超过${_this.sizeLimit / 1024}KB`);
           }
-          const reader = new FileReader()
-          reader.readAsText(file)
-          reader.onload = function (e) {
+          const reader = new FileReader();
+          reader.readAsText(file);
+          reader.onload = function(e) {
             try {
-              let content = e.target.result
+              let content = e.target.result;
               if (_this.toJSON) {
                 if (TYPE_ENUM[_this.fileType] === 'application/x-yaml') {
-                  content = yaml.load(content)
+                  content = yaml.load(content);
                   if (typeof content !== 'object' || Array.isArray(content))
-                  throw new Error('content is not a json object')
+                    throw new Error('content is not a json object');
                 } else {
-                  content = JSON.parse(content)
+                  content = JSON.parse(content);
                   if (Array.isArray(content)) {
-                    throw new Error('content is not a json object')
+                    throw new Error('content is not a json object');
                   }
                 }
               }
-              _this.$emit('load', content)
-              _this.$emit('change', content)
-              resolve(content)
+              _this.$emit('load', content);
+              _this.$emit('change', content);
+              resolve(content);
             } catch (err_async) {
-              _this.$emit('error', err_async)
-              _this.$emit('change')
-              reject(err_async)
+              _this.$emit('error', err_async);
+              _this.$emit('change');
+              reject(err_async);
             }
-          }
+          };
         } catch (err) {
-          _this.$emit('error', err)
-          _this.$emit('change')
-          reject(err)
+          _this.$emit('error', err);
+          _this.$emit('change');
+          reject(err);
         }
-      })
+      });
     }
   },
-  mounted () {
-    const _this = this
-    document.getElementById(this.uid).addEventListener('change', function () {
-      _this.getFile()
-    })
+  mounted() {
+    const _this = this;
+    document.getElementById(this.uid).addEventListener('change', function() {
+      _this.getFile();
+    });
   }
-}
+};
 </script>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

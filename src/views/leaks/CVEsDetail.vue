@@ -14,7 +14,9 @@
             </a-col>
             <a-col :span="8">
               严重性:
-              <span :style="`color: ${severityColorMap[detail.severity]}`">{{ severityMap[detail.severity] || '' }}</span>
+              <span :style="`color: ${severityColorMap[detail.severity]}`">{{
+                severityMap[detail.severity] || ''
+              }}</span>
             </a-col>
           </a-row>
           <a-row type="flex" justify="space-between">
@@ -24,7 +26,7 @@
             <a-col :span="8">
               {{ `状态： ${statusMap[detail.status] || ''}` }}
               <a-dropdown :trigger="['click']">
-                <a-icon type="edit" class="edit-icon"/>
+                <a-icon type="edit" class="edit-icon" />
                 <a-menu slot="overlay">
                   <a-menu-item key="0">
                     <a @click="setStatus(statusMenuList[0].value)">{{ statusMenuList[0].text }}</a>
@@ -51,14 +53,16 @@
             </a-col>
             <a-col :span="8">
               关联CVE：
-              <span v-if="detail.related_cve && detail.related_cve.length" ><a @click="relatedCveDrawerOpen">{{ detail.related_cve && detail.related_cve.length }}</a>个</span>
-              <span v-else>无</span>
-              <a-drawer
-                title="关联CVE"
-                :visible="relatedCveDrawerVisble"
-                @close="relatedCveDrawerClose"
-                width="400"
+              <span
+                v-if="detail.related_cve && detail.related_cve.length"
               >
+                <a @click="relatedCveDrawerOpen">
+                  {{ detail.related_cve && detail.related_cve.length }}
+                </a>
+                个
+              </span>
+              <span v-else>无</span>
+              <a-drawer title="关联CVE" :visible="relatedCveDrawerVisble" @close="relatedCveDrawerClose" width="400">
                 <table class="drawer-cve-table">
                   <tr v-for="(cve, index) in detail.related_cve" :key="index">
                     <td>{{ index + 1 }}</td>
@@ -89,16 +93,17 @@
 </template>
 
 <script>
-/****************
-/* cve 详情页
-****************/
 
-import { i18nRender } from '@/vendor/ant-design-pro/locales'
-import { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
-import HostTable from './components/HostTable'
+/**
+ * cve 详情页
+ */
 
-import { statusList, statusMap, severityMap, severityColorMap } from './config'
-import { getCveInfo, getHostUnderCVE, setCveStatus } from '@/api/leaks'
+import {i18nRender} from '@/vendor/ant-design-pro/locales';
+import {PageHeaderWrapper} from '@ant-design-vue/pro-layout';
+import HostTable from './components/HostTable';
+
+import {statusList, statusMap, severityMap, severityColorMap} from './config';
+import {getCveInfo, getHostUnderCVE, setCveStatus} from '@/api/leaks';
 
 export default {
   name: 'CVEsDetail',
@@ -107,28 +112,28 @@ export default {
     HostTable
   },
   computed: {
-    breadcrumb () {
-      const routes = this.$route.meta.diyBreadcrumb.map((route) => {
+    breadcrumb() {
+      const routes = this.$route.meta.diyBreadcrumb.map(route => {
         return {
           path: route.path,
           breadcrumbName: i18nRender(route.breadcrumbName)
-        }
-      })
+        };
+      });
       return {
         props: {
           routes,
-          itemRender: ({ route, params, routes, paths, h }) => {
+          itemRender: ({route, params, routes, paths, h}) => {
             if (routes.indexOf(route) === routes.length - 1) {
-              return <span>{this.cve_id}</span>
+              return <span>{this.cve_id}</span>;
             } else {
-              return <router-link to={route.path}>{route.breadcrumbName}</router-link>
+              return <router-link to={route.path}>{route.breadcrumbName}</router-link>;
             }
           }
         }
-      }
+      };
     }
   },
-  data () {
+  data() {
     return {
       cve_id: this.$route.params.cve_id,
       detail: {},
@@ -147,72 +152,80 @@ export default {
       statusMap,
       severityMap,
       severityColorMap
-    }
+    };
   },
   methods: {
-    getDetail () {
-      const _this = this
-      this.infoLoading = true
+    getDetail() {
+      const _this = this;
+      this.infoLoading = true;
       getCveInfo({
         cve_id: this.cve_id
-      }).then(function (res) {
-        _this.detail = res.result || {}
-      }).finally(function () {
-        _this.infoLoading = false
       })
+        .then(function(res) {
+          _this.detail = res.result || {};
+        })
+        .finally(function() {
+          _this.infoLoading = false;
+        });
     },
-    getHostData (data) {
-      this.getHostList(this.cve_id, data)
+    getHostData(data) {
+      this.getHostList(this.cve_id, data);
     },
-    getHostList (cveId, data) {
-      const _this = this
-      this.hostIsLoading = true
+    getHostList(cveId, data) {
+      const _this = this;
+      this.hostIsLoading = true;
       getHostUnderCVE({
         ...data,
         cve_id: cveId
-      }).then(function (res) {
-        _this.hostList = res.result || []
-        _this.paginationTotal = res.total_count || (res.total_count === 0 ? 0 : undefined)
-      }).catch(function (err) {
-        _this.$message.error(err.response.data.msg)
-      }).finally(function () {
-        _this.hostIsLoading = false
       })
+        .then(function(res) {
+          _this.hostList = res.result || [];
+          _this.paginationTotal = res.total_count || (res.total_count === 0 ? 0 : undefined);
+        })
+        .catch(function(err) {
+          _this.$message.error(err.response.data.msg);
+        })
+        .finally(function() {
+          _this.hostIsLoading = false;
+        });
     },
-    setStatus (status) {
-      const _this = this
-      this.setStatusLoading = true
+    setStatus(status) {
+      const _this = this;
+      this.setStatusLoading = true;
       setCveStatus({
         cveList: [this.cve_id],
         status
-      }).then(function (res) {
-        _this.$message.success(res.msg)
-        _this.getDetail()
-      }).catch(function (err) {
-        _this.$message.error(err.response.data.msg)
-      }).finally(function () {
-        _this.setStatusLoading = false
       })
+        .then(function(res) {
+          _this.$message.success(res.msg);
+          _this.getDetail();
+        })
+        .catch(function(err) {
+          _this.$message.error(err.response.data.msg);
+        })
+        .finally(function() {
+          _this.setStatusLoading = false;
+        });
     },
-    relatedCveDrawerOpen () {
-      this.relatedCveDrawerVisble = true
+    relatedCveDrawerOpen() {
+      this.relatedCveDrawerVisble = true;
     },
-    relatedCveDrawerClose () {
-      this.relatedCveDrawerVisble = false
+    relatedCveDrawerClose() {
+      this.relatedCveDrawerVisble = false;
     },
-    jumpToAnotherCVE (cve) {
-      const _this = this
-      this.$router.push(cve)
-      this.$router.push('/leaks/cves-management')
-      setTimeout(function () {
-        _this.$router.go(-1)
-      }, 100)
+    jumpToAnotherCVE(cve) {
+      const _this = this;
+      this.$router.push(cve);
+      this.$router.push('/leaks/cves-management');
+      setTimeout(function() {
+        _this.$router.go(-1);
+      }, 100);
     }
   },
-  mounted: function () {
-    this.getDetail()
+  mounted: function() {
+    this.getDetail();
   }
-}
+};
 </script>
 
 <style lang="less" scoped>
@@ -227,7 +240,7 @@ export default {
 
   .edit-icon {
     &:hover {
-      color: #3265F2;
+      color: #3265f2;
       cursor: pointer;
     }
   }
@@ -243,5 +256,4 @@ export default {
     padding: 6px;
   }
 }
-
 </style>

@@ -1,16 +1,16 @@
 <template>
   <div :class="wrpCls">
     <span class="support" @click="toSupprotFile">
-        <a-icon type="question-circle" />
-        帮助文档
+      <a-icon type="question-circle" />
+      帮助文档
     </span>
-    <avatar-dropdown :menu="showMenu" :current-user="{ name: userName}" :class="prefixCls" />
+    <avatar-dropdown :menu="showMenu" :current-user="{name: userName}" :class="prefixCls" />
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import AvatarDropdown from './AvatarDropdown'
+import {mapState} from 'vuex';
+import AvatarDropdown from './AvatarDropdown';
 
 export default {
   name: 'RightContent',
@@ -35,11 +35,11 @@ export default {
       required: true
     }
   },
-  data () {
+  data() {
     return {
       showMenu: true,
       currentUser: {}
-    }
+    };
   },
   methods: {
     toSupprotFile() {
@@ -47,19 +47,18 @@ export default {
     }
   },
   computed: {
-    wrpCls () {
+    wrpCls() {
       return {
         'ant-pro-global-header-index-right': true,
-        [`ant-pro-global-header-index-${(this.isMobile || !this.topMenu) ? 'light' : this.theme}`]: true
-      }
+        [`ant-pro-global-header-index-${this.isMobile || !this.topMenu ? 'light' : this.theme}`]: true
+      };
     },
     ...mapState({
       userName: state => state.user.name
     })
   },
-  mounted () {
-  }
-}
+  mounted() {}
+};
 </script>
 
 <style lang="less" scoped>
@@ -68,6 +67,6 @@ export default {
   transition: all 0.3s;
 }
 .support:hover {
-  color: #002FA7;
+  color: #002fa7;
 }
 </style>

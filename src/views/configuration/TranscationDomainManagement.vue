@@ -1,4 +1,3 @@
-
 <template>
   <page-header-wrapper :breadcrumb="breadcrumb">
     <a-card :bordered="false" class="aops-theme">
@@ -7,9 +6,13 @@
         <span>共有业务域{{ domainData.length }}个</span>
       </div>
       <div>
-        <a-list :loading="domainLoading" :data-source="cardListData" :grid="{ gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1 }" >
+        <a-list
+          :loading="domainLoading"
+          :data-source="cardListData"
+          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}"
+        >
           <a-list-item slot="renderItem" slot-scope="domain, index">
-            <a-card :bodyStyle="{ padding: 0 }" :bordered="false" :class="index !== 0 ? 'aops-theme-incard' : ''">
+            <a-card :bodyStyle="{padding: 0}" :bordered="false" :class="index !== 0 ? 'aops-theme-incard' : ''">
               <div class="aops-card-body">
                 <router-link :to="`${domain.domainName || ''}`">
                   <div class="aops-card-content">
@@ -20,12 +23,13 @@
                   <a-row type="flex" justify="space-between">
                     <a-col>priority</a-col>
                     <a-col>
-                      <router-link :to="`/configuration/transcation-domain-configurations/${domain.domainName}`">查看域内配置</router-link>
+                      <router-link
+                        :to="`/configuration/transcation-domain-configurations/${domain.domainName}`">
+                        查看域内配置
+                        </router-link>
                       <a-divider type="vertical" />
                       <a-dropdown>
-                        <a class="ant-dropdown-link" @click="e => e.preventDefault()">
-                          更多 <a-icon type="down" />
-                        </a>
+                        <a class="ant-dropdown-link" @click="e => e.preventDefault()"> 更多 <a-icon type="down" /> </a>
                         <a-menu slot="overlay">
                           <a-menu-item>
                             <a href="javascript:;" @click="showAddHostDrawer(domain.domainName)">添加主机</a>
@@ -48,7 +52,7 @@
         </a-row>
       </div>
     </a-card>
-    <drawer-view title="添加主机" ref="addHostDrawer" :bodyStyle="{ paddingBottom: '80px' }">
+    <drawer-view title="添加主机" ref="addHostDrawer" :bodyStyle="{paddingBottom: '80px'}">
       <template slot="drawerView">
         <add-host-drawer :domainName="domainName"></add-host-drawer>
       </template>
@@ -57,118 +61,130 @@
 </template>
 
 <script>
-import { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
-import { i18nRender } from '@/vendor/ant-design-pro/locales'
+import {PageHeaderWrapper} from '@ant-design-vue/pro-layout';
+import {i18nRender} from '@/vendor/ant-design-pro/locales';
 
-import DrawerView from '@/views/utils/DrawerView'
-import AddHostDrawer from './components/AddHostDrawer'
-import AddTranscationDomainModal from './components/AddTranscationDomainModal'
+import DrawerView from '@/views/utils/DrawerView';
+import AddHostDrawer from './components/AddHostDrawer';
+import AddTranscationDomainModal from './components/AddTranscationDomainModal';
 
-import { domainList, deleteDomain } from '@/api/configuration'
+import {domainList, deleteDomain} from '@/api/configuration';
 
 export default {
-    name: 'TranscationDomainManagement',
-    components: {
-      PageHeaderWrapper,
-      DrawerView,
-      AddHostDrawer,
-      AddTranscationDomainModal
-    },
-    data () {
+  name: 'TranscationDomainManagement',
+  components: {
+    PageHeaderWrapper,
+    DrawerView,
+    AddHostDrawer,
+    AddTranscationDomainModal
+  },
+  data() {
+    return {
+      domainData: [],
+      showNumber: 6,
+      domainLoading: false,
+      domainName: ''
+    };
+  },
+  computed: {
+    // 自定义面包屑内容
+    breadcrumb() {
+      const routes = this.$route.meta.diyBreadcrumb.map(route => {
         return {
-          domainData: [],
-          showNumber: 6,
-          domainLoading: false,
-          domainName: ''
-        }
-    },
-    computed: {
-      // 自定义面包屑内容
-      breadcrumb () {
-          const routes = this.$route.meta.diyBreadcrumb.map((route) => {
-              return {
-                  path: route.path,
-                  breadcrumbName: i18nRender(route.breadcrumbName)
-              }
-          })
-          return {
-              props: {
-                  routes,
-                  itemRender: ({ route, params, routes, paths, h }) => {
-                      if (routes.indexOf(route) === routes.length - 1) {
-                          return <span>{route.breadcrumbName}</span>
-                      } else {
-                          return <router-link to={route.path}>{route.breadcrumbName}</router-link>
-                      }
-                  }
-              }
+          path: route.path,
+          breadcrumbName: i18nRender(route.breadcrumbName)
+        };
+      });
+      return {
+        props: {
+          routes,
+          itemRender: ({route, params, routes, paths, h}) => {
+            if (routes.indexOf(route) === routes.length - 1) {
+              return <span>{route.breadcrumbName}</span>;
+            } else {
+              return <router-link to={route.path}>{route.breadcrumbName}</router-link>;
+            }
           }
-      },
-      cardListData () {
-        if (this.domainData.length > 0) {
-          return [{}].concat(this.domainData).slice(0, this.showNumber)
-        } else {
-          return [{}]
         }
-      }
+      };
     },
-    methods: {
-      getDomainList () {
-        const _this = this
-        this.domainLoading = true
-        domainList().then(function (res) {
-          // 特殊处理
-          _this.domainData = res || []
-        }).catch(function (err) {
-          if (err.response.data.code === 400) return
-          _this.$message.error(err.response.data.msg)
-        }).finally(function () { _this.domainLoading = false })
-      },
-      showAddHostDrawer (domainName) {
-        this.$refs.addHostDrawer.open(domainName)
-      },
-      handleAddSuccess () {
-        // 添加完成后，清空table设置，刷新列表
-        this.getDomainList()
-      },
-      showMore () {
-        this.showNumber += 6
-      },
-      delDomain (domainName) {
-        const _this = this
-        this.$confirm({
-            title: (<div><p>你确定要删除这个业务域吗？</p></div>),
-            content: (<span>删除后业务域无法恢复</span>),
-            icon: () => <a-icon type="exclamation-circle" />,
-              okType: 'danger',
-              okText: '删除',
-              onOk: function () { return _this.handleDelDomain(domainName) },
-            onCancel () {}
-          })
-      },
-      handleDelDomain (domainName) {
-        const domainNameArray = []
-        domainNameArray.push(domainName)
-        const _this = this
-        return new Promise((resolve, reject) => {
-          deleteDomain({
-            domainNameArray
-          }).then((res) => {
-            _this.$message.success(res.msg)
-            _this.getDomainList()
-            resolve()
-          })
-            .catch((err) => {
-              _this.$message.error(err.response.data.msg)
-              reject(err)
-            })
-        })
+    cardListData() {
+      if (this.domainData.length > 0) {
+        return [{}].concat(this.domainData).slice(0, this.showNumber);
+      } else {
+        return [{}];
       }
-    },
-    created: function () {
-      this.getDomainList()
     }
-}
+  },
+  methods: {
+    getDomainList() {
+      const _this = this;
+      this.domainLoading = true;
+      domainList()
+        .then(function(res) {
+          // 特殊处理
+          _this.domainData = res || [];
+        })
+        .catch(function(err) {
+          if (err.response.data.code === 400) return;
+          _this.$message.error(err.response.data.msg);
+        })
+        .finally(function() {
+          _this.domainLoading = false;
+        });
+    },
+    showAddHostDrawer(domainName) {
+      this.$refs.addHostDrawer.open(domainName);
+    },
+    handleAddSuccess() {
+      // 添加完成后，清空table设置，刷新列表
+      this.getDomainList();
+    },
+    showMore() {
+      this.showNumber += 6;
+    },
+    delDomain(domainName) {
+      const _this = this;
+      this.$confirm({
+        title: (
+          <div>
+            <p>你确定要删除这个业务域吗？</p>
+          </div>
+        ),
+        content: <span>删除后业务域无法恢复</span>,
+        icon: () => <a-icon type="exclamation-circle" />,
+        okType: 'danger',
+        okText: '删除',
+        onOk: function() {
+          return _this.handleDelDomain(domainName);
+        },
+        onCancel() {}
+      });
+    },
+    handleDelDomain(domainName) {
+      const domainNameArray = [];
+      domainNameArray.push(domainName);
+      const _this = this;
+      return new Promise((resolve, reject) => {
+        deleteDomain({
+          domainNameArray
+        })
+          .then(res => {
+            _this.$message.success(res.msg);
+            _this.getDomainList();
+            resolve();
+          })
+          .catch(err => {
+            _this.$message.error(err.response.data.msg);
+            reject(err);
+          });
+      });
+    }
+  },
+  created: function() {
+    this.getDomainList();
+  }
+};
 </script>
 
 <style lang="less" scoped>
