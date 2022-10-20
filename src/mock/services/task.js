@@ -1,5 +1,5 @@
-import Mock from 'mockjs2'
-import { builder, getBody } from '../util'
+import Mock from 'mockjs2';
+import {builder, getBody} from '../util';
 // 部署任务列表
 const taskMockData = [
   {
@@ -32,7 +32,7 @@ const taskMockData = [
     description: '这个描述很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长',
     playbook_name: 'playbook5'
   }
-]
+];
 // playbook列表
 const templateMockData = [
   {
@@ -90,103 +90,131 @@ const templateMockData = [
     template_content: '{}',
     description: '这是template10'
   }
-]
+];
 
-const getTask = (options) => {
-  const body = getBody(options)
-  console.log('mock: body', body)
-
-  if (body.uid !== '123') {
-    return builder({ 'msg': '用户错误' }, '用户错误', 410)
-  }
-
-  return builder({
-    'msg': Mock.mock('success'),
-    'total_count': 5,
-    'total_page': 1,
-    'task_infos': taskMockData
-  }, '查询成功', 200, { 'Custom-Header': Mock.mock('@guid') })
-}
-const generateTask = (options) => {
-  const body = getBody(options)
-  console.log('----->mock: body', body)
+const getTask = options => {
+  const body = getBody(options);
 
   if (body.uid !== '123') {
-    return builder({ 'msg': '用户错误' }, '用户错误', 410)
+    return builder({msg: '用户错误'}, '用户错误', 410);
   }
 
-  return builder({
-    'msg': Mock.mock('success')
-  }, '执行成功', 200, { 'Custom-Header': Mock.mock('@guid') })
-}
-const deleteTask = (options) => {
-  const body = getBody(options)
-  console.log('----->mock: body', body)
+  return builder(
+    {
+      msg: Mock.mock('success'),
+      total_count: 5,
+      total_page: 1,
+      task_infos: taskMockData
+    },
+    '查询成功',
+    200,
+    {'Custom-Header': Mock.mock('@guid')}
+  );
+};
+const generateTask = options => {
+  const body = getBody(options);
 
   if (body.uid !== '123') {
-    return builder({ 'msg': '用户错误' }, '用户错误', 410)
+    return builder({msg: '用户错误'}, '用户错误', 410);
   }
 
-  return builder({
-    'msg': Mock.mock('success')
-  }, '删除成功', 200, { 'Custom-Header': Mock.mock('@guid') })
-}
-const executeTask = (options) => {
-  const body = getBody(options)
-  console.log('----->mock: body', body)
+  return builder(
+    {
+      msg: Mock.mock('success')
+    },
+    '执行成功',
+    200,
+    {'Custom-Header': Mock.mock('@guid')}
+  );
+};
+const deleteTask = options => {
+  const body = getBody(options);
 
   if (body.uid !== '123') {
-    return builder({ 'msg': '用户错误' }, '用户错误', 410)
+    return builder({msg: '用户错误'}, '用户错误', 410);
   }
 
-  return builder({
-    'msg': Mock.mock('success')
-  }, '执行成功', 200, { 'Custom-Header': Mock.mock('@guid') })
-}
-const imporTemplate = (options) => {
-  const body = getBody(options)
-  console.log('----->mock: body', body)
+  return builder(
+    {
+      msg: Mock.mock('success')
+    },
+    '删除成功',
+    200,
+    {'Custom-Header': Mock.mock('@guid')}
+  );
+};
+const executeTask = options => {
+  const body = getBody(options);
 
   if (body.uid !== '123') {
-    return builder({ 'msg': '用户错误' }, '用户错误', 410)
+    return builder({msg: '用户错误'}, '用户错误', 410);
   }
 
-  return builder({
-    'msg': Mock.mock('success')
-  }, '执行成功', 200, { 'Custom-Header': Mock.mock('@guid') })
-}
-const getTemplate = (options) => {
-  const body = getBody(options)
-  console.log('mock: body', body)
+  return builder(
+    {
+      msg: Mock.mock('success')
+    },
+    '执行成功',
+    200,
+    {'Custom-Header': Mock.mock('@guid')}
+  );
+};
+const imporTemplate = options => {
+  const body = getBody(options);
 
   if (body.uid !== '123') {
-    return builder({ 'msg': '用户错误' }, '用户错误', 410)
+    return builder({msg: '用户错误'}, '用户错误', 410);
   }
 
-  return builder({
-    'msg': Mock.mock('success'),
-    'total_count': 5,
-    'total_page': 1,
-    'template_infos': templateMockData
-  }, '查询成功', 200, { 'Custom-Header': Mock.mock('@guid') })
-}
-const deleteTemplate = (options) => {
-  const body = getBody(options)
-  console.log('----->mock: body', body)
+  return builder(
+    {
+      msg: Mock.mock('success')
+    },
+    '执行成功',
+    200,
+    {'Custom-Header': Mock.mock('@guid')}
+  );
+};
+const getTemplate = options => {
+  const body = getBody(options);
 
   if (body.uid !== '123') {
-    return builder({ 'msg': '用户错误' }, '用户错误', 410)
+    return builder({msg: '用户错误'}, '用户错误', 410);
   }
 
-  return builder({
-    'msg': Mock.mock('success')
-  }, '删除成功', 200, { 'Custom-Header': Mock.mock('@guid') })
-}
+  return builder(
+    {
+      msg: Mock.mock('success'),
+      total_count: 5,
+      total_page: 1,
+      template_infos: templateMockData
+    },
+    '查询成功',
+    200,
+    {'Custom-Header': Mock.mock('@guid')}
+  );
+};
+const deleteTemplate = options => {
+  const body = getBody(options);
 
-Mock.mock(/\/task\/getTask/, 'get', getTask)
-Mock.mock(/\/task\/generateTask/, 'post', generateTask)
-Mock.mock(/\/task\/deleteTask/, 'delete', deleteTask)
-Mock.mock(/\/task\/executeTask/, 'post', executeTask)
-Mock.mock(/\/template\/imporTemplate/, 'post', imporTemplate)
-Mock.mock(/\/template\/getTemplate/, 'get', getTemplate)
-Mock.mock(/\/template\/deleteTemplate/, 'delete', deleteTemplate)
+  if (body.uid !== '123') {
+    return builder({msg: '用户错误'}, '用户错误', 410);
+  }
+
+  return builder(
+    {
+      msg: Mock.mock('success')
+    },
+    '删除成功',
+    200,
+    {'Custom-Header': Mock.mock('@guid')}
+  );
+};
+
+Mock.mock(/\/task\/getTask/, 'get', getTask);
+Mock.mock(/\/task\/generateTask/, 'post', generateTask);
+Mock.mock(/\/task\/deleteTask/, 'delete', deleteTask);
+Mock.mock(/\/task\/executeTask/, 'post', executeTask);
+Mock.mock(/\/template\/imporTemplate/, 'post', imporTemplate);
+Mock.mock(/\/template\/getTemplate/, 'get', getTemplate);
+Mock.mock(/\/template\/deleteTemplate/, 'delete', deleteTemplate);

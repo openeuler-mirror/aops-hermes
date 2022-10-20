@@ -1,23 +1,23 @@
 <template>
   <div class="exceptionInfo" style="width: 100%;height: 100%;">
     <a-table
-    :rowKey="(record,index) => index"
-    :columns="columns"
-    :data-source="data"
-    :loading="isLoading"
-    :pagination="false"
-    class="outerTable"
+      :rowKey="(record, index) => index"
+      :columns="columns"
+      :data-source="data"
+      :loading="isLoading"
+      :pagination="false"
+      class="outerTable"
     >
       <a-table
-      :rowKey="(record,index) => index"
-      slot="expandedRowRender"
-      slot-scope="record"
-      :columns="innerColumns"
-      :data-source="record.host_check_result"
-      :pagination="false"
+        :rowKey="(record, index) => index"
+        slot="expandedRowRender"
+        slot-scope="record"
+        :columns="innerColumns"
+        :data-source="record.host_check_result"
+        :pagination="false"
       >
         <span slot="metric_label" slot-scope="text">
-          <ExceptionDetailCutText :text="text" :length="10"/>
+          <ExceptionDetailCutText :text="text" :length="10" />
         </span>
       </a-table>
     </a-table>
@@ -25,9 +25,9 @@
 </template>
 
 <script>
-import { getAlertDetail } from '@/api/check'
-import { dateFormat } from '@/views/utils/Utils'
-import ExceptionDetailCutText from '@/views/diagnosis/components/ExceptionDetailCutText'
+import {getAlertDetail} from '@/api/check';
+import {dateFormat} from '@/views/utils/Utils';
+import ExceptionDetailCutText from '@/views/diagnosis/components/ExceptionDetailCutText';
 export default {
   name: 'ExceptionDetailDrawer',
   props: {
@@ -36,12 +36,12 @@ export default {
       default: ''
     }
   },
-  components: { ExceptionDetailCutText },
+  components: {ExceptionDetailCutText},
   data() {
     return {
       data: [],
       isLoading: false
-    }
+    };
   },
   computed: {
     columns() {
@@ -73,13 +73,17 @@ export default {
           align: 'center',
           customRender: (text, record, index) => {
             if (text) {
-              return <a-tag color="red" style="font-weight:500;">是</a-tag>
+              return (
+                <a-tag color="red" style="font-weight:500;">
+                  是
+                </a-tag>
+              );
             } else {
-              return '否'
+              return '否';
             }
           }
         }
-      ]
+      ];
     },
     innerColumns() {
       return [
@@ -102,7 +106,7 @@ export default {
           title: '标签',
           dataIndex: 'metric_label',
           align: 'center',
-          scopedSlots: { customRender: 'metric_label' }
+          scopedSlots: {customRender: 'metric_label'}
         },
         {
           title: '根因异常',
@@ -110,44 +114,51 @@ export default {
           align: 'center',
           customRender: (text, record, index) => {
             if (text) {
-              return <a-tag color="red" style="font-weight:500;">是</a-tag>
+              return (
+                <a-tag color="red" style="font-weight:500;">
+                  是
+                </a-tag>
+              );
             } else {
-              return '否'
+              return '否';
             }
           }
         }
-      ]
+      ];
     }
   },
   mounted() {
-    this.getAlertDetail()
+    this.getAlertDetail();
   },
   methods: {
     getAlertDetail() {
-      const that = this
-      this.isLoading = true
+      const that = this;
+      this.isLoading = true;
       getAlertDetail({
         alert_id: this.alertId
-      }).then(res => {
-        for (const key in res.result) {
-          const tempObj = res.result[key]
-          tempObj.key = key
-          that.data.push(tempObj)
-        }
-      }).catch(err => {
-        that.$message.error(err.error_msg)
-      }).finally(() => {
-        that.isLoading = false
       })
+        .then(res => {
+          for (const key in res.result) {
+            const tempObj = res.result[key];
+            tempObj.key = key;
+            that.data.push(tempObj);
+          }
+        })
+        .catch(err => {
+          that.$message.error(err.error_msg);
+        })
+        .finally(() => {
+          that.isLoading = false;
+        });
     }
   }
-}
+};
 </script>
 
 <style lang="less" scoped>
 .exceptionInfo {
   /deep/ .ant-table-thead > tr > th {
-    padding:12px 10px;
+    padding: 12px 10px;
     font-weight: 500;
     color: #000;
     border-bottom: none;
@@ -157,7 +168,7 @@ export default {
     }
   }
   /deep/ .ant-table-tbody > tr > th {
-    padding:10px 10px;
+    padding: 10px 10px;
     border-bottom: none;
     &:first-child {
       width: 30px;

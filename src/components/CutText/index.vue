@@ -9,7 +9,6 @@
 </template>
 
 <script>
-
 export default {
   name: 'CutText',
   props: {
@@ -26,34 +25,33 @@ export default {
       default: 'top'
     }
   },
-  data () {
+  data() {
     return {
       output: '',
       toolTip: ''
-    }
+    };
   },
   watch: {
-    text: function (val) {
-      this.output = this.cutoff(this.text, this.length)
+    text: function(val) {
+      this.output = this.cutoff(this.text, this.length);
     }
   },
   methods: {
-    cutoff (text, length) {
-      const oldText = text
+    cutoff(text, length) {
+      const oldText = text;
       if (text && text.length > length) {
-        text = text.substr(0, length) + '...'
-        this.toolTip = oldText
+        text = text.substr(0, length) + '...';
+        this.toolTip = oldText;
       } else {
-        this.toolTip = ''
+        this.toolTip = '';
       }
-      return text
+      return text;
     }
   },
-  mounted () {
-    this.output = this.cutoff(this.text, this.length)
+  mounted() {
+    this.output = this.cutoff(this.text, this.length);
   }
-}
+};
 </script>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

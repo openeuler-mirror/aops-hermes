@@ -46,7 +46,7 @@ export function getTaskList(data) {
       time_range: data.time_range
     }
   });
-};
+}
 // 获取诊断任务进度
 export function getProgress(taskList) {
   return request({
@@ -56,7 +56,7 @@ export function getProgress(taskList) {
       task_list: taskList
     }
   });
-};
+}
 // 获取故障诊断报告列表
 export function getReportList(parameter) {
   return request({
@@ -68,7 +68,7 @@ export function getReportList(parameter) {
       per_page: parameter.pagination.pageSize
     }
   });
-};
+}
 // 获取故障诊断报告
 export function getdiagreport(reportList) {
   return request({
@@ -78,7 +78,7 @@ export function getdiagreport(reportList) {
       report_list: reportList
     }
   });
-};
+}
 export function getDiagTree({treeList}) {
   return request({
     url: api.getdiagtree,
@@ -93,7 +93,7 @@ export function getDiagTree({treeList}) {
     //   access_token: ''
     // }
   });
-};
+}
 export function delDiagReport(reportList) {
   return request({
     url: api.deletediagreport,
@@ -102,7 +102,7 @@ export function delDiagReport(reportList) {
       report_list: reportList
     }
   });
-};
+}
 export function delDiagTree({treeList}) {
   return request({
     url: api.deletediagtree,
@@ -111,7 +111,7 @@ export function delDiagTree({treeList}) {
       tree_list: treeList
     }
   });
-};
+}
 export function executeDiag(data) {
   return request({
     url: api.execute_diag,
@@ -123,7 +123,7 @@ export function executeDiag(data) {
       interval: data.interval
     }
   });
-};
+}
 // 导⼊故障树
 export function importDiagTree(data) {
   return request({
@@ -133,7 +133,7 @@ export function importDiagTree(data) {
       trees: [data]
     }
   });
-};
+}
 // 获取故障诊断报告
 export function importCheckRule(checkItems) {
   return request({
@@ -144,7 +144,7 @@ export function importCheckRule(checkItems) {
       access_token: ''
     }
   });
-};
+}
 // 获取异常检测的结果
 export function getcheckresult({tableInfo, ...parameter}) {
   return request({
@@ -162,4 +162,4 @@ export function getcheckresult({tableInfo, ...parameter}) {
       access_token: ''
     }
   });
-};
+}

@@ -6,9 +6,10 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint",
+    "lint": "vue-cli-service lint --fix",
     "build:preview": "vue-cli-service build --mode preview",
-    "lint:nofix": "vue-cli-service lint --no-fix"
+    "lint:nofix": "vue-cli-service lint --no-fix",
+    "format": "npx prettier --write 'src/**/*.{js,scss,vue}'"
   },
   "dependencies": {
     "@ant-design-vue/pro-layout": "^1.0.8",

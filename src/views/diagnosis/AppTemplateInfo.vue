@@ -4,7 +4,7 @@
       <a-card :bordered="false" class="aops-theme">
         <a-row class="app-info-container" type="flex" justify="space-between" align="middle">
           <p class="app-info-icon height-100">
-              <img src="~@/assets/app_logo.png">
+            <img src="~@/assets/app_logo.png" />
           </p>
           <a-col :span="16">
             <div class="height-50">
@@ -14,16 +14,16 @@
           </a-col>
         </a-row>
         <a-row type="flex" justify="end">
-            <drawer-view title="创建工作流" :body-style="{ paddingBottom: '80px' }">
-              <template slot="click">
-                <a-button type="primary">
-                  创建工作流
-                </a-button>
-              </template>
-              <template slot="drawerView">
-                <create-work-flow :appInfo="appInfo"></create-work-flow>
-              </template>
-            </drawer-view>
+          <drawer-view title="创建工作流" :body-style="{paddingBottom: '80px'}">
+            <template slot="click">
+              <a-button type="primary">
+                创建工作流
+              </a-button>
+            </template>
+            <template slot="drawerView">
+              <create-work-flow :appInfo="appInfo"></create-work-flow>
+            </template>
+          </drawer-view>
         </a-row>
       </a-card>
       <a-card :bordered="false" class="aops-theme">
@@ -34,11 +34,11 @@
 </template>
 
 <script>
-import MyPageHeaderWrapper from '@/views/utils/MyPageHeaderWrapper'
-import CreateWorkFlow from '@/views/diagnosis/components/CreateWorkFlow'
+import MyPageHeaderWrapper from '@/views/utils/MyPageHeaderWrapper';
+import CreateWorkFlow from '@/views/diagnosis/components/CreateWorkFlow';
 import G6 from '@antv/g6';
-import { getWorkflowAppExtraInfo } from '@/api/check';
-import DrawerView from '@/views/utils/DrawerView'
+import {getWorkflowAppExtraInfo} from '@/api/check';
+import DrawerView from '@/views/utils/DrawerView';
 // g6画图数据，自行编写的
 const NodeData = {
   nodes: [
@@ -88,7 +88,7 @@ const singleItemCheckColum = [
     dataIndex: 'model',
     key: 'model'
   }
-]
+];
 const multiItemCheckColum = [
   {
     title: '算法',
@@ -100,14 +100,14 @@ const multiItemCheckColum = [
     dataIndex: 'model',
     key: 'model'
   }
-]
+];
 export default {
   name: 'AppTemplateInfo',
   components: {
     MyPageHeaderWrapper,
     CreateWorkFlow,
     DrawerView
-},
+  },
   data() {
     return {
       appInfo: '',
@@ -115,25 +115,26 @@ export default {
       multiItemCheckColum,
       label: '',
       detail: []
-    }
+    };
   },
   created() {
-      this.app_id = this.$route.params.appId
+    this.app_id = this.$route.params.appId;
   },
-  mounted: function () {
-    this.drawMap()
-    this.getAppInformation()
+  mounted: function() {
+    this.drawMap();
+    this.getAppInformation();
   },
   methods: {
     getAppInformation() {
-      const _this = this
+      const _this = this;
       getWorkflowAppExtraInfo(this.app_id)
-        .then(function (res) {
-          _this.appInfo = res.result
-        }).catch(function (err) {
-          _this.$message.error(err.response.data.msg)
-        }).finally(function () {
+        .then(function(res) {
+          _this.appInfo = res.result;
         })
+        .catch(function(err) {
+          _this.$message.error(err.response.data.msg);
+        })
+        .finally(function() {});
     },
     drawMap() {
       const graph = new G6.Graph({
@@ -169,7 +170,7 @@ export default {
       graph.render();
     }
   }
-}
+};
 </script>
 <style lang="less" scoped>
 #mountNode {

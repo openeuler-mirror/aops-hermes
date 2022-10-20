@@ -23,16 +23,14 @@ const api = {
 
 export default api;
 
-const directionMap = {'ascend': 'asc',
-  'descend': 'desc'};
-const managementMap = {'true': true,
-  'false': false};
+const directionMap = {ascend: 'asc', descend: 'desc'};
+const managementMap = {true: true, false: false};
 
 // 主机管理
 export function hostList({tableInfo, ...parameter}) {
   const management = tableInfo.filters.management
-  ? managementMap[tableInfo.filters.management[0]] // 将字符串true false转换成boolean
-  : undefined;
+    ? managementMap[tableInfo.filters.management[0]] // 将字符串true false转换成boolean
+    : undefined;
   return request({
     url: api.hostList,
     method: 'post',
@@ -46,7 +44,7 @@ export function hostList({tableInfo, ...parameter}) {
       per_page: tableInfo.pagination.pageSize
     }
   });
-};
+}
 // 主机统计
 export function hostCount() {
   return request({
@@ -54,7 +52,7 @@ export function hostCount() {
     method: 'post',
     data: {}
   });
-};
+}
 
 export function hostInfo(parameter) {
   return request({
@@ -65,11 +63,11 @@ export function hostInfo(parameter) {
       host_list: parameter.host_list
     }
   });
-};
+}
 // 获取指定主机的基本信息，并以map形式返回。需要特别的代码结构配合使用;
 export function hostBasicInfo(list, key) {
   var hostList = [];
-  list.forEach(function (item) {
+  list.forEach(function(item) {
     hostList.push(item[key || 'host_id']);
   });
   return request({
@@ -79,34 +77,36 @@ export function hostBasicInfo(list, key) {
       host_list: hostList,
       basic: true
     }
-  }).then(function (data) {
+  }).then(function(data) {
     var map = {};
-    data.host_infos.forEach(function (host) {
+    data.host_infos.forEach(function(host) {
       map[host.host_id] = host;
     });
     return map;
   });
-};
+}
 
 export function addHost(parameter) {
   return request({
     url: api.addHost,
     method: 'post',
     data: {
-      host_list: [{
-        host_name: parameter.host_name,
-        host_group_name: parameter.host_group_name,
-        public_ip: parameter.public_ip,
-        ssh_port: parameter.ssh_port,
-        management: parameter.management,
-        username: parameter.username,
-        password: parameter.password,
-        sudo_password: parameter.sudo_password
-      }],
+      host_list: [
+        {
+          host_name: parameter.host_name,
+          host_group_name: parameter.host_group_name,
+          public_ip: parameter.public_ip,
+          ssh_port: parameter.ssh_port,
+          management: parameter.management,
+          username: parameter.username,
+          password: parameter.password,
+          sudo_password: parameter.sudo_password
+        }
+      ],
       key: parameter.key
     }
   });
-};
+}
 
 export function deleteHost({hostList, parameter}) {
   return request({
@@ -117,7 +117,7 @@ export function deleteHost({hostList, parameter}) {
       ...parameter
     }
   });
-};
+}
 
 // 主机组管理
 export function hostGroupList({tableInfo, ...parameter}) {
@@ -132,7 +132,7 @@ export function hostGroupList({tableInfo, ...parameter}) {
       per_page: tableInfo.pagination.pageSize
     }
   });
-};
+}
 
 export function addHostGroup({name, description, ...parameter}) {
   return request({
@@ -144,7 +144,7 @@ export function addHostGroup({name, description, ...parameter}) {
       description
     }
   });
-};
+}
 
 export function deleteHostGroup({hostGroupList, parameter}) {
   return request({
@@ -155,7 +155,7 @@ export function deleteHostGroup({hostGroupList, parameter}) {
       ...parameter
     }
   });
-};
+}
 
 // host detail plugin control
 export function sceneGet({hostId}) {
@@ -166,7 +166,7 @@ export function sceneGet({hostId}) {
       host_id: hostId
     }
   });
-};
+}
 
 export function pluginInfoGet({hostId}) {
   return request({
@@ -176,7 +176,7 @@ export function pluginInfoGet({hostId}) {
       host_id: hostId
     }
   });
-};
+}
 
 export function metricSet({metricStatus, parameter}) {
   return request({
@@ -188,7 +188,7 @@ export function metricSet({metricStatus, parameter}) {
       ...parameter
     }
   });
-};
+}
 
 export function pluginSet({pluginStatus, parameter}) {
   return request({
@@ -200,12 +200,12 @@ export function pluginSet({pluginStatus, parameter}) {
       ...parameter
     }
   });
-};
+}
 
 /*
-*  isBasicInfo: 值为true时，获取主机的基本信息（主机名、ip地址等）；
-*               值为false时，获取主机下详细的资源信息（缓存、Cpu信息等）。
-*/
+ *  isBasicInfo: 值为true时，获取主机的基本信息（主机名、ip地址等）；
+ *               值为false时，获取主机下详细的资源信息（缓存、Cpu信息等）。
+ */
 export function getHostDetail(hostId, isBasicInfo = false) {
   return request({
     url: api.getHostDetail,
@@ -215,4 +215,4 @@ export function getHostDetail(hostId, isBasicInfo = false) {
       basic: isBasicInfo
     }
   });
-};
+}

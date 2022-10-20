@@ -6,7 +6,7 @@
           <a-col v-if="selectedRowKeys.length > 0">
             <a-alert type="info" show-icon>
               <div slot="message">
-                <span>{{ `已选择`+ selectedRowKeys.length +`项` }}</span>
+                <span>{{ `已选择` + selectedRowKeys.length + `项` }}</span>
                 <a @click="resetSelection"> 清除选择</a>
               </div>
             </a-alert>
@@ -19,10 +19,7 @@
             <a-input-search placeholder="按CVE ID搜索" style="width: 200px" @search="onSearch" />
           </a-col>
           <a-col>
-            <status-change-modal
-              :selectedRowsAll="selectedRowsAll"
-              @statusUpdated="handleStatusUpdated"
-            />
+            <status-change-modal :selectedRowsAll="selectedRowsAll" @statusUpdated="handleStatusUpdated" />
           </a-col>
           <a-col>
             <upload-file v-if="standalone ? true : false" @addSuccess="handleUploadSuccess" />
@@ -32,7 +29,7 @@
               text="生成修复任务"
               taskType="cve"
               :cveListProps="standalone ? cveAllList : cveAllListProp"
-              :loading="standalone ? cveAllIsLoading: cveAllIsLoadingProp"
+              :loading="standalone ? cveAllIsLoading : cveAllIsLoadingProp"
               :hostListType="standalone ? 'byLoading' : 'byOneHost'"
               :hostList="hostList"
               @createSuccess="handleTaskCreateSuccess"
@@ -66,7 +63,7 @@
       @change="handleTableChange"
       :loading="standalone ? tableIsLoading : inputLoading"
     >
-      <router-link :to="{ path: `/leaks/cves-management/${id}` }" slot="cve_id" slot-scope="id">{{ id }}</router-link>
+      <router-link :to="{path: `/leaks/cves-management/${id}`}" slot="cve_id" slot-scope="id">{{ id }}</router-link>
       <div slot="expandedRowRender" slot-scope="record" style="margin: 0">
         <p>Description:</p>
         <p>{{ record.description }}</p>
@@ -76,18 +73,19 @@
 </template>
 
 <script>
-/****************
-/* cve表格组件
-/* cve 表格的业务逻辑公共组件。根据props中standalone属性确定是自动获取列表信息，还是通过外部获取列表信息。
-****************/
 
-import CreateRepairTaskDrawer from './CreateRepairTaskDrawer'
-import StatusChangeModal from './StatusChangeModal'
-import { getSelectedRow } from '../utils/getSelectedRow'
-import { getCveList } from '@/api/leaks'
+/**
+ * cve表格组件
+ * cve 表格的业务逻辑公共组件。根据props中standalone属性确定是自动获取列表信息，还是通过外部获取列表信息。
+ */
 
-import { statusList, statusMap, severityMap } from '../config'
-import UploadFile from './UploadFile.vue'
+import CreateRepairTaskDrawer from './CreateRepairTaskDrawer';
+import StatusChangeModal from './StatusChangeModal';
+import {getSelectedRow} from '../utils/getSelectedRow';
+import {getCveList} from '@/api/leaks';
+
+import {statusList, statusMap, severityMap} from '../config';
+import UploadFile from './UploadFile.vue';
 
 const defaultPagination = {
   current: 1,
@@ -95,7 +93,7 @@ const defaultPagination = {
   total: 10,
   showSizeChanger: true,
   showQuickJumper: true
-}
+};
 
 export default {
   name: 'CVEsTable',
@@ -119,8 +117,11 @@ export default {
       type: Boolean,
       default: false
     },
-    // 生成修复任务时，如果任务中的host是指定的，则使用此属性
-    // 目前只有主机详情页中生成修复任务时会用到
+
+    /*
+     * 生成修复任务时，如果任务中的host是指定的，则使用此属性
+     * 目前只有主机详情页中生成修复任务时会用到
+     */
     hostList: {
       type: Array,
       default: () => []
@@ -141,16 +142,16 @@ export default {
     }
   },
   computed: {
-    tableColumnsStandalone () {
-      let { filters } = this
-      filters = filters || {}
+    tableColumnsStandalone() {
+      let {filters} = this;
+      filters = filters || {};
       return [
         {
           dataIndex: 'cve_id',
           key: 'cve_id',
           title: 'CVE_ID',
           sorter: true,
-          scopedSlots: { customRender: 'cve_id' },
+          scopedSlots: {customRender: 'cve_id'},
           width: 250
         },
         {
@@ -163,7 +164,7 @@ export default {
           dataIndex: 'severity',
           key: 'severity',
           title: '严重性',
-          customRender: (severity) => severityMap[severity],
+          customRender: severity => severityMap[severity],
           filteredValue: filters.severity || null,
           filters: [
             {
@@ -206,19 +207,19 @@ export default {
           title: '状态',
           filteredValue: filters.status || null,
           filters: statusList,
-          customRender: (status) => statusMap[status]
+          customRender: status => statusMap[status]
         }
-      ]
+      ];
     },
-    tableColumns () {
-      let { filters } = this
-      filters = filters || {}
+    tableColumns() {
+      let {filters} = this;
+      filters = filters || {};
       return [
         {
           dataIndex: 'cve_id',
           key: 'cve_id',
           title: 'CVE_ID',
-          scopedSlots: { customRender: 'cve_id' },
+          scopedSlots: {customRender: 'cve_id'},
           width: 250
         },
         {
@@ -231,7 +232,7 @@ export default {
           dataIndex: 'severity',
           key: 'severity',
           title: '严重性',
-          customRender: (severity) => severityMap[severity],
+          customRender: severity => severityMap[severity],
           filteredValue: filters.severity || null,
           filters: [
             {
@@ -268,23 +269,23 @@ export default {
           title: '状态',
           filteredValue: filters.status || null,
           filters: statusList,
-          customRender: (status) => statusMap[status]
+          customRender: status => statusMap[status]
         }
-      ]
+      ];
     },
-    rowSelection () {
+    rowSelection() {
       return {
         selectedRowKeys: this.selectedRowKeys,
         onChange: this.onSelectChange
-      }
+      };
     }
   },
   watch: {
-    paginationTotal () {
-      this.pagination.total = this.paginationTotal
+    paginationTotal() {
+      this.pagination.total = this.paginationTotal;
     }
   },
-  data () {
+  data() {
     return {
       tableData: [],
       tableIsLoading: false,
@@ -300,46 +301,46 @@ export default {
       cveAllIsLoading: false,
       // 控制上传弹框显隐
       upLoadFileVisible: false
-    }
+    };
   },
   methods: {
-    handleTableChange (pagination, filters, sorter) {
+    handleTableChange(pagination, filters, sorter) {
       // 存储翻页状态
-      this.pagination = pagination
-      this.filters = Object.assign({}, this.filters, filters)
-      this.sorter = sorter
+      this.pagination = pagination;
+      this.filters = Object.assign({}, this.filters, filters);
+      this.sorter = sorter;
       // 出发排序、筛选、分页时，重新请求主机列表
-      this.getCves()
+      this.getCves();
     },
-    onSelectChange (selectedRowKeys, selectedRows) {
-      const tableData = this.standalone ? this.tableData : this.inputList
-      this.selectedRowKeys = selectedRowKeys
-      this.selectedRowsAll = getSelectedRow(selectedRowKeys, this.selectedRowsAll, tableData, 'cve_id')
+    onSelectChange(selectedRowKeys, selectedRows) {
+      const tableData = this.standalone ? this.tableData : this.inputList;
+      this.selectedRowKeys = selectedRowKeys;
+      this.selectedRowsAll = getSelectedRow(selectedRowKeys, this.selectedRowsAll, tableData, 'cve_id');
     },
-    resetSelection () {
-      this.selectedRowKeys = []
-      this.selectedRowsAll = []
+    resetSelection() {
+      this.selectedRowKeys = [];
+      this.selectedRowsAll = [];
     },
-    handleRefresh () {
-      this.selectedRowKeys = []
-      this.selectedRowsAll = []
-      this.getCves()
+    handleRefresh() {
+      this.selectedRowKeys = [];
+      this.selectedRowsAll = [];
+      this.getCves();
     },
-    handleReset () {
-      this.pagination = defaultPagination
-      this.sorter = null
-      this.filters = null
-      this.selectedRowKeys = []
-      this.selectedRowsAll = []
-      this.getCves()
+    handleReset() {
+      this.pagination = defaultPagination;
+      this.sorter = null;
+      this.filters = null;
+      this.selectedRowKeys = [];
+      this.selectedRowsAll = [];
+      this.getCves();
     },
     // 获取cve列表数据
-    getCves () {
-      const _this = this
-      this.tableIsLoading = true
-      const pagination = this.pagination || {}
-      const filters = this.filters || {}
-      const sorter = this.sorter || {}
+    getCves() {
+      const _this = this;
+      this.tableIsLoading = true;
+      const pagination = this.pagination || {};
+      const filters = this.filters || {};
+      const sorter = this.sorter || {};
       // 非standalone模式下，触发事件通过父组件获取数据
       if (!this.standalone) {
         this.$emit('getTableData', {
@@ -354,8 +355,8 @@ export default {
               order: sorter.order
             }
           }
-        })
-        return
+        });
+        return;
       }
       getCveList({
         tableInfo: {
@@ -369,22 +370,24 @@ export default {
             order: sorter.order
           }
         }
-      }).then(function (res) {
-        _this.tableData = res.result || []
+      }).then(function(res) {
+        _this.tableData = res.result || [];
         _this.pagination = {
           ..._this.pagination,
           current: pagination.current,
           pageSize: pagination.pageSize,
           total: res.total_count || (res.total_count === 0 ? 0 : pagination.total)
-        }
-      }).catch(function (err) {
-        _this.$message.error(err.response.data.msg)
-      }).finally(function () { _this.tableIsLoading = false })
+        };
+      }).catch(function(err) {
+        _this.$message.error(err.response.data.msg);
+      }).finally(function() {
+        _this.tableIsLoading = false;
+      });
     },
     // 获取全部cve数据，用于生成修复任务时选择全部cve
-    getCvesAll () {
-      const _this = this
-      this.cveAllIsLoading = true
+    getCvesAll() {
+      const _this = this;
+      this.cveAllIsLoading = true;
       if (!this.standalone) {
         this.$emit('getCveAll', {
           tableInfo: {
@@ -392,8 +395,8 @@ export default {
             filters: {},
             sorter: {}
           }
-        })
-        return
+        });
+        return;
       }
       getCveList({
         tableInfo: {
@@ -401,36 +404,41 @@ export default {
           filters: {},
           sorter: {}
         }
-      }).then(function (res) {
-        _this.cveAllList = res.result || []
-      }).catch(function (err) {
-        _this.$message.error(err.response.data.msg)
-      }).finally(function () { _this.cveAllIsLoading = false })
+      })
+        .then(function(res) {
+          _this.cveAllList = res.result || [];
+        })
+        .catch(function(err) {
+          _this.$message.error(err.response.data.msg);
+        })
+        .finally(function() {
+          _this.cveAllIsLoading = false;
+        });
     },
-    onSearch (text) {
-      this.pagination = defaultPagination
+    onSearch(text) {
+      this.pagination = defaultPagination;
       if (!this.filters) {
-        this.filters = {}
+        this.filters = {};
       }
       if (text !== '') {
-        this.filters.cveId = text
+        this.filters.cveId = text;
       } else {
-        this.filters.cveId = undefined
+        this.filters.cveId = undefined;
       }
-      this.getCves()
+      this.getCves();
     },
-    handleTaskCreateSuccess () {
-      this.handleRefresh()
+    handleTaskCreateSuccess() {
+      this.handleRefresh();
     },
-    handleStatusUpdated () {
-      this.selectedRowKeys = []
-      this.selectedRowsAll = []
+    handleStatusUpdated() {
+      this.selectedRowKeys = [];
+      this.selectedRowsAll = [];
       if (this.standalone) {
-        this.handleRefresh()
+        this.handleRefresh();
       } else {
-        const pagination = this.pagination || {}
-        const filters = this.filters || {}
-        const sorter = this.sorter || {}
+        const pagination = this.pagination || {};
+        const filters = this.filters || {};
+        const sorter = this.sorter || {};
         this.$emit('statusUpdated', {
           tableInfo: {
             pagination: {
@@ -443,20 +451,17 @@ export default {
               order: sorter.order
             }
           }
-        })
+        });
       }
     },
-    uploadfile() {
-    },
-    handleUploadSuccess() {
-    }
+    uploadfile() {},
+    handleUploadSuccess() {}
   },
-  mounted () {
-    this.getCves()
-    this.getCvesAll()
+  mounted() {
+    this.getCves();
+    this.getCvesAll();
   }
-}
+};
 </script>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

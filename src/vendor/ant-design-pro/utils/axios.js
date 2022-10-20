@@ -1,33 +1,31 @@
 const VueAxios = {
   vm: {},
-  install (Vue, instance) {
+  install(Vue, instance) {
     if (this.installed) {
-      return
+      return;
     }
-    this.installed = true
+    this.installed = true;
 
     if (!instance) {
-      console.error('You have to install axios')
-      return
+      console.error('You have to install axios');
+      return;
     }
 
-    Vue.axios = instance
+    Vue.axios = instance;
 
     Object.defineProperties(Vue.prototype, {
       axios: {
-        get: function get () {
-          return instance
+        get: function get() {
+          return instance;
         }
       },
       $http: {
-        get: function get () {
-          return instance
+        get: function get() {
+          return instance;
         }
       }
-    })
+    });
   }
-}
+};
 
-export {
-  VueAxios
-}
+export {VueAxios};

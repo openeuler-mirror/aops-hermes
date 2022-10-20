@@ -1,11 +1,5 @@
 <template>
-  <a-drawer
-    title="垂直层级"
-    closable
-    @close="handleCancel"
-    :visible="visible"
-    width="600"
-  >
+  <a-drawer title="垂直层级" closable @close="handleCancel" :visible="visible" width="600">
     <vertical-tree
       :isShow="visible"
       :treeData="treeData"
@@ -16,40 +10,38 @@
 </template>
 
 <script>
-import VerticalTree from './VerticalTree.vue'
+import VerticalTree from './VerticalTree.vue';
 export default {
-    name: 'VerticalMapDrawer',
-    components: {
-        VerticalTree
+  name: 'VerticalMapDrawer',
+  components: {
+    VerticalTree
+  },
+  props: {
+    visible: {
+      type: Boolean,
+      default: false
     },
-    props: {
-        visible: {
-          type: Boolean,
-          default: false
-        },
-        treeData: {
-            type: Object,
-            default: () => {}
-        },
-        selectedNodeId: {
-            type: String,
-            default: null
-        }
+    treeData: {
+      type: Object,
+      default: () => {}
     },
-    data () {
-        return {
-        }
-    },
-    methods: {
-        handleCancel () {
-            this.$emit('close')
-        },
-        treeNodeClicked (nodeId) {
-            this.$emit('treeNodeClicked', nodeId)
-        }
+    selectedNodeId: {
+      type: String,
+      default: null
     }
-}
+  },
+  data() {
+    return {};
+  },
+  methods: {
+    handleCancel() {
+      this.$emit('close');
+    },
+    treeNodeClicked(nodeId) {
+      this.$emit('treeNodeClicked', nodeId);
+    }
+  }
+};
 </script>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

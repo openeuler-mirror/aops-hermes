@@ -1,6 +1,8 @@
 // this tool is abandoned
 export function treeDataProcesser(rawTreeData, id = '0') {
-  if (!rawTreeData['node name']) { return null; };
+  if (!rawTreeData['node name']) {
+    return null;
+  }
   const {children, ...params} = rawTreeData;
   const nodeTemp = {
     ...params,
@@ -13,7 +15,7 @@ export function treeDataProcesser(rawTreeData, id = '0') {
       childsArrayTemp.push(treeDataProcesser(node, `${id}-${idx}`));
     });
     nodeTemp.children = childsArrayTemp;
-  };
+  }
 
   return nodeTemp;
-};
+}

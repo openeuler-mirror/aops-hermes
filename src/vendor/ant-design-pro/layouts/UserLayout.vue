@@ -1,5 +1,4 @@
 <template>
-
   <div id="userLayout" :class="['user-layout-wrapper', isMobile && 'mobile']">
     <div class="container">
       <div class="user-layout-content">
@@ -11,7 +10,7 @@
             <div class="top">
               <div class="header">
                 <a href="/">
-                  <img src="~@/assets/vertical-left.png" class="logo" alt="logo">
+                  <img src="~@/assets/vertical-left.png" class="logo" alt="logo" />
                 </a>
               </div>
               <div class="desc">
@@ -37,18 +36,18 @@
 </template>
 
 <script>
-import { deviceMixin } from '@/vendor/ant-design-pro/store/device-mixin'
+import {deviceMixin} from '@/vendor/ant-design-pro/store/device-mixin';
 
 export default {
   name: 'UserLayout',
   mixins: [deviceMixin],
-  mounted () {
-    document.body.classList.add('userLayout')
+  mounted() {
+    document.body.classList.add('userLayout');
   },
-  beforeDestroy () {
-    document.body.classList.remove('userLayout')
+  beforeDestroy() {
+    document.body.classList.remove('userLayout');
   }
-}
+};
 </script>
 
 <style lang="less" scoped>
@@ -66,7 +65,7 @@ export default {
 
   .left-side {
     height: 100%;
-    background: #EDEFF3;
+    background: #edeff3;
     img {
       width: 500px;
       display: block;
@@ -108,7 +107,6 @@ export default {
     }
 
     .user-layout-content {
-
       .top {
         text-align: center;
 
@@ -131,7 +129,7 @@ export default {
 
           .title {
             font-size: 33px;
-            color: rgba(0, 0, 0, .85);
+            color: rgba(0, 0, 0, 0.85);
             font-family: Avenir, 'Helvetica Neue', Arial, Helvetica, sans-serif;
             font-weight: 600;
             position: relative;
@@ -180,7 +178,6 @@ export default {
     a {
       text-decoration: none;
     }
-
   }
 }
 </style>

@@ -2,7 +2,7 @@
   <my-page-header-wrapper>
     <a-card :bordered="false" class="aops-theme">
       <div style="height: 110px;position: relative;">
-        <img class="avatar-img" src="~@/assets/dtree-icon.png">
+        <img class="avatar-img" src="~@/assets/dtree-icon.png" />
         <div class="content-div">
           <div class="title">
             <span style="padding-right: 5px">{{ faultTree.tree_name }}</span>
@@ -22,22 +22,17 @@
                   cancel-text="取消"
                   @confirm="deletediagtree(faultTree.tree_name)"
                 >
-                  <a href="javascript:;" >删除</a>
+                  <a href="javascript:;">删除</a>
                 </a-popconfirm>
               </div>
             </a-col>
             <a-col>
               <drawer-view title="新建故障诊断">
                 <template slot="click">
-                  <a-button type="primary">
-                    故障诊断<a-icon type="plus"/>
-                  </a-button>
+                  <a-button type="primary"> 故障诊断<a-icon type="plus" /> </a-button>
                 </template>
                 <template slot="drawerView">
-                  <add-fault-diagnosis
-                    :saveSuccess="addFaultDiagnosisSuccess"
-                    :faultTreeList="treeDataAll"
-                  />
+                  <add-fault-diagnosis :saveSuccess="addFaultDiagnosisSuccess" :faultTreeList="treeDataAll" />
                 </template>
               </drawer-view>
             </a-col>
@@ -46,10 +41,7 @@
       </div>
       <a-tabs default-active-key="1" style="min-height: 350px">
         <a-tab-pane key="1" tab="树图">
-          <fault-tree
-            :treeData="faultTree.tree_content || {}"
-            :treeDataLoading="treeDataLoading"
-          />
+          <fault-tree :treeData="faultTree.tree_content || {}" :treeDataLoading="treeDataLoading" />
         </a-tab-pane>
         <a-tab-pane key="2" tab="文件" force-render>
           <a-card style="white-space: pre-wrap;">
@@ -63,12 +55,12 @@
 
 <script>
 // this component is abandoned
-import { getDiagTree, delDiagTree } from '@/api/diagnosis'
+import {getDiagTree, delDiagTree} from '@/api/diagnosis';
 
-import MyPageHeaderWrapper from '@/views/utils/MyPageHeaderWrapper'
-import DrawerView from '@/views/utils/DrawerView'
-import AddFaultDiagnosis from '@/views/diagnosis/components/AddFaultDiagnosis'
-import FaultTree from './components/FaultTree.vue'
+import MyPageHeaderWrapper from '@/views/utils/MyPageHeaderWrapper';
+import DrawerView from '@/views/utils/DrawerView';
+import AddFaultDiagnosis from '@/views/diagnosis/components/AddFaultDiagnosis';
+import FaultTree from './components/FaultTree.vue';
 
 export default {
   name: 'FaultTrees',
@@ -78,66 +70,72 @@ export default {
     AddFaultDiagnosis,
     FaultTree
   },
-  created () {
-    this.getFaultTree()
+  created() {
+    this.getFaultTree();
   },
-  data () {
+  data() {
     return {
       faultTreeId: this.$route.params.id,
       faultTree: {},
       treeDataLoading: false,
       treeDataAll: []
-    }
+    };
   },
-  mounted () {
-    const _this = this
+  mounted() {
+    const _this = this;
     getDiagTree({
       treeList: []
-    }).then(function (res) {
-      _this.treeDataAll = [{}].concat(res.trees)
-    }).catch(function (err) {
-      _this.$message.error(err.response.data.msg)
-    }).finally(function () {
     })
+      .then(function(res) {
+        _this.treeDataAll = [{}].concat(res.trees);
+      })
+      .catch(function(err) {
+        _this.$message.error(err.response.data.msg);
+      })
+      .finally(function() {});
   },
   methods: {
-    getFaultTree () {
-      const _this = this
-      const treeList = []
-      treeList.push(_this.faultTreeId)
-      this.treeDataLoading = true
+    getFaultTree() {
+      const _this = this;
+      const treeList = [];
+      treeList.push(_this.faultTreeId);
+      this.treeDataLoading = true;
       getDiagTree({
         treeList
-      }).then(function (res) {
-        _this.faultTree = res.trees[0] || {}
-        if (!_this.faultTree.tree_content || !_this.faultTree.tree_content['node name']) {
-          console.warn('no data for tree')
-        }
-      }).catch(function (err) {
-        _this.$message.error(err.response.data.msg)
-      }).finally(function () {
-        _this.treeDataLoading = false
       })
+        .then(function(res) {
+          _this.faultTree = res.trees[0] || {};
+          if (!_this.faultTree.tree_content || !_this.faultTree.tree_content['node name']) {
+            _this.$message.error('no data for tree');
+          }
+        })
+        .catch(function(err) {
+          _this.$message.error(err.response.data.msg);
+        })
+        .finally(function() {
+          _this.treeDataLoading = false;
+        });
     },
-    deletediagtree (treeName) {
-      const _this = this
-      const treeList = []
-      treeList.push(treeName)
+    deletediagtree(treeName) {
+      const _this = this;
+      const treeList = [];
+      treeList.push(treeName);
       delDiagTree({
         treeList
-      }).then(function (res) {
-        _this.$message.success(res.msg)
-        // 跳转回故障诊断页面
-        _this.$router.push('/diagnosis/fault-diagnosis')
-      }).catch(function (err) {
-        _this.$message.error(err.response.data.msg)
-      }).finally(function () {
       })
+        .then(function(res) {
+          _this.$message.success(res.msg);
+          // 跳转回故障诊断页面
+          _this.$router.push('/diagnosis/fault-diagnosis');
+        })
+        .catch(function(err) {
+          _this.$message.error(err.response.data.msg);
+        })
+        .finally(function() {});
     },
-    addFaultDiagnosisSuccess () {
-    }
+    addFaultDiagnosisSuccess() {}
   }
-}
+};
 </script>
 <style lang="less" scoped>
 .avatar-img {
@@ -175,10 +173,10 @@ export default {
 }
 .conotrl-box {
   position: absolute;
-  right:0;
+  right: 0;
   top: 0;
 }
-.btn-box a{
+.btn-box a {
   margin-right: 20px;
   user-select: none;
 }

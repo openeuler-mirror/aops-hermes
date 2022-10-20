@@ -11,18 +11,18 @@
       </div>
     </template>
     <template v-slot:copyright>
-      <img src="~@/assets/horizontal-left.png" style="height: 20px" class="logo" alt="logo">
+      <img src="~@/assets/horizontal-left.png" style="height: 20px" class="logo" alt="logo" />
     </template>
   </global-footer>
 </template>
 
 <script>
-import { GlobalFooter } from '@ant-design-vue/pro-layout'
+import {GlobalFooter} from '@ant-design-vue/pro-layout';
 
 export default {
   name: 'ProGlobalFooter',
   components: {
     GlobalFooter
   }
-}
+};
 </script>

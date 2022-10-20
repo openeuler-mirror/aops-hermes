@@ -16,22 +16,22 @@
             </div>
           </div>
           <a-table
-          rowKey="alert_id"
-          :columns="alertRecordColumns"
-          :data-source="alertRecordData"
-          :pagination="pagination"
-          :loading="alertRecordLoading"
-          @change="handleTableChange"
-          class="alert-record-table"
+            rowKey="alert_id"
+            :columns="alertRecordColumns"
+            :data-source="alertRecordData"
+            :pagination="pagination"
+            :loading="alertRecordLoading"
+            @change="handleTableChange"
+            class="alert-record-table"
           >
-            <span slot="operation" slot-scope="text,record">
+            <span slot="operation" slot-scope="text, record">
               <a-popconfirm
-              title="确认后,该告警将不再提示"
-              ok-text="确定"
-              cancel-text="取消"
-              @confirm="confirmAlert(record.alert_id)"
+                title="确认后,该告警将不再提示"
+                ok-text="确定"
+                cancel-text="取消"
+                @confirm="confirmAlert(record.alert_id)"
               >
-                <img slot="icon" src="~@/assets/alertConfirmIcon.png" style="width:16px;position:absolute;top:5px;"/>
+                <img slot="icon" src="~@/assets/alertConfirmIcon.png" style="width:16px;position:absolute;top:5px;" />
                 <a>确认</a>
               </a-popconfirm>
               <a-divider type="vertical" />
@@ -40,7 +40,7 @@
                   <a>异常详情</a>
                 </template>
                 <template slot="drawerView">
-                  <exception-detail-drawer :alertId="record.alert_id"/>
+                  <exception-detail-drawer :alertId="record.alert_id" />
                 </template>
               </drawer-view>
               <a-divider type="vertical" />
@@ -54,15 +54,15 @@
 </template>
 
 <script>
-import store from '@/store'
-import MyPageHeaderWrapper from '@/views/utils/MyPageHeaderWrapper'
-import AlertHeaderBoard from './components/AlertHeaderBoard'
-import ExceptionDetailDrawer from '@/views/diagnosis/components/ExceptionDetailDrawer'
-import DrawerView from '@/views/utils/DrawerView'
-import { confirmTheAlert, downloadReport, getAlertRecordResult } from '@/api/check'
-import { hostGroupList } from '@/api/assest'
-import { dateFormat } from '@/views/utils/Utils'
-import { downloadBlobFile } from '@/views/utils/downloadBlobFile'
+import store from '@/store';
+import MyPageHeaderWrapper from '@/views/utils/MyPageHeaderWrapper';
+import AlertHeaderBoard from './components/AlertHeaderBoard';
+import ExceptionDetailDrawer from '@/views/diagnosis/components/ExceptionDetailDrawer';
+import DrawerView from '@/views/utils/DrawerView';
+import {confirmTheAlert, downloadReport, getAlertRecordResult} from '@/api/check';
+import {hostGroupList} from '@/api/assest';
+import {dateFormat} from '@/views/utils/Utils';
+import {downloadBlobFile} from '@/views/utils/downloadBlobFile';
 
 const defaultPagination = {
   current: 1,
@@ -83,7 +83,7 @@ export default {
   },
   computed: {
     alertRecordColumns() {
-      const filters = this.filters || {}
+      const filters = this.filters || {};
       return [
         {
           title: '时间',
@@ -116,7 +116,7 @@ export default {
           align: 'center',
           customRender: (text, reccord, index) => {
             if (text === null) {
-              return '暂无'
+              return '暂无';
             }
           }
         },
@@ -125,10 +125,10 @@ export default {
           align: 'center',
           scopedSlots: {customRender: 'operation'}
         }
-      ]
+      ];
     }
   },
-  data () {
+  data() {
     return {
       alertRecordLoading: false,
       buttonLoading: false,
@@ -137,90 +137,99 @@ export default {
       sorter: null,
       filters: null,
       pagination: defaultPagination
-    }
+    };
   },
   methods: {
     getAlertRecordResult({page, pageSize, domain, direction} = {}) {
-      const that = this
-      this.alertRecordLoading = true
-      const sorter = this.sorter || {}
-      const pagination = this.pagination || {}
-      const filters = this.filters || {}
+      const that = this;
+      this.alertRecordLoading = true;
+      const sorter = this.sorter || {};
+      const pagination = this.pagination || {};
+      const filters = this.filters || {};
 
       getAlertRecordResult({
         page: pagination.current,
         per_page: pagination.pageSize,
         domain: filters.domain,
         direction: sorter.order
-      }).then(res => {
-        that.alertRecordData = res.result
-        that.pagination.total = res.total_count
-      }).catch(err => {
-        this.$message.error(err.error_msg)
-      }).finally(() => {
-        that.alertRecordLoading = false
       })
+        .then(res => {
+          that.alertRecordData = res.result;
+          that.pagination.total = res.total_count;
+        })
+        .catch(err => {
+          this.$message.error(err.error_msg);
+        })
+        .finally(() => {
+          that.alertRecordLoading = false;
+        });
     },
     confirmAlert(e) {
       confirmTheAlert({
         alert_id: e
-      }).then(res => {
-        this.$message.success(res.msg)
-        this.getAlertRecordResult()
-        // update alert count data in AlertHeaderBoard component
-        store.dispatch('updateCount')
-        store.dispatch('getAlertInfoResult')
-      }).catch(err => {
-        this.$message.error(err.error_msg)
       })
+        .then(res => {
+          this.$message.success(res.msg);
+          this.getAlertRecordResult();
+          // update alert count data in AlertHeaderBoard component
+          store.dispatch('updateCount');
+          store.dispatch('getAlertInfoResult');
+        })
+        .catch(err => {
+          this.$message.error(err.error_msg);
+        });
     },
     downloadReport(e) {
       downloadReport({
         alert_id: e
-      }).then(res => {
-        downloadBlobFile(res.data, res.fileName)
-      }).catch(err => {
-        this.$message.error(err.error_msg)
       })
+        .then(res => {
+          downloadBlobFile(res.data, res.fileName);
+        })
+        .catch(err => {
+          this.$message.error(err.error_msg);
+        });
     },
-    handleTableChange (pagination, filters, sorter) {
+    handleTableChange(pagination, filters, sorter) {
       // 存储状态
-      this.pagination = pagination
-      this.filters = filters
-      this.sorter = sorter
-      this.getAlertRecordResult()
+      this.pagination = pagination;
+      this.filters = filters;
+      this.sorter = sorter;
+      this.getAlertRecordResult();
     },
     getDomainFilters() {
-      const that = this
+      const that = this;
       hostGroupList({
         tableInfo: {
           pagination: {},
           filters: {},
           sorter: {}
         }
-      }).then(res => {
-        that.domainFilters = res.host_group_infos.map(item => {
-          return {
-            text: item.host_group_name,
-            value: item.host_group_name
-          }
-        })
-      }).catch(err => {
-        that.$message.error(err.response.data.msg)
       })
+        .then(res => {
+          that.domainFilters = res.host_group_infos.map(item => {
+            return {
+              text: item.host_group_name,
+              value: item.host_group_name
+            };
+          });
+        })
+        .catch(err => {
+          that.$message.error(err.response.data.msg);
+        });
     }
   },
   mounted() {
-    this.getAlertRecordResult()
-    this.getDomainFilters()
+    this.getAlertRecordResult();
+    this.getDomainFilters();
   }
-}
+};
 </script>
 
 <style lang="less" scoped>
-.alert-record-card{
+.alert-record-card {
   margin-bottom: 20px;
-  /deep/ .alert-record-table{
+  /deep/ .alert-record-table {
     .ant-table-thead > tr > th {
       padding: 16px 10px;
     }
@@ -228,7 +237,7 @@ export default {
       overflow: auto;
     }
     .ant-table-tbody > tr > td {
-      padding:14px 10px;
+      padding: 14px 10px;
     }
   }
   .ant-btn-primary {

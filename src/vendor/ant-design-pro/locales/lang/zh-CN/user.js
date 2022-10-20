@@ -44,4 +44,4 @@ export default {
   'user.phone-number.required': '请输入正确的手机号',
   'user.phone-number.wrong-format': '手机号格式错误！',
   'user.verification-code.required': '请输入验证码！'
-}
+};

@@ -7,10 +7,7 @@
     @cancel="handleCancel"
     destroyOnClose
   >
-    <a-form
-      :label-col="{ span: 5 }"
-      :wrapper-col="{ span: 19 }"
-    >
+    <a-form :label-col="{span: 5}" :wrapper-col="{span: 19}">
       <a-form-item label="REPO源名称">
         {{ detailProps.repo_name }}
       </a-form-item>
@@ -25,49 +22,48 @@
 </template>
 
 <script>
-  /****************
-  /* 查看repo信息弹窗
-  ****************/
 
-  export default {
-    name: 'CheckRepoModal',
-    components: {
+/**
+ * 查看repo信息弹窗
+ */
+
+export default {
+  name: 'CheckRepoModal',
+  components: {},
+  props: {
+    visible: {
+      type: Boolean,
+      default: false
     },
-    props: {
-      visible: {
-        type: Boolean,
-        default: false
-      },
-      repoId: {
-        type: String,
-        default: ''
-      },
-      detailProps: {
-        type: Object,
-        default: () => {}
-      }
+    repoId: {
+      type: String,
+      default: ''
     },
-    data () {
-      return {
-        isLoading: false,
-        repoData: {}
-      }
-    },
-    watch: {
-      visible () {
-        if (this.visible) {
-          this.handleOepn()
-        }
-      }
-    },
-    methods: {
-      handleOepn () {
-      },
-      handleCancel () {
-        this.$emit('close')
+    detailProps: {
+      type: Object,
+      default: () => {}
+    }
+  },
+  data() {
+    return {
+      isLoading: false,
+      repoData: {}
+    };
+  },
+  watch: {
+    visible() {
+      if (this.visible) {
+        this.handleOepn();
       }
     }
+  },
+  methods: {
+    handleOepn() {},
+    handleCancel() {
+      this.$emit('close');
+    }
   }
+};
 </script>
 <style lang="less" scoped>
 .aops-add-repo {
@@ -84,14 +80,14 @@
   cursor: pointer;
   border: 1px dashed #d9d9d9;
   &:hover {
-    border-color: #3265F2;
+    border-color: #3265f2;
   }
 }
 /deep/ .ant-form-item-label {
-  line-height: 1.5em !important
+  line-height: 1.5em !important;
 }
 /deep/ .ant-form-item-control {
-  line-height: 1.5em !important
+  line-height: 1.5em !important;
 }
 .repo-content {
   white-space: pre-wrap;
