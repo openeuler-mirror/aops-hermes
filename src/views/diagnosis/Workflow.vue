@@ -17,7 +17,7 @@
             <span>共获取到&nbsp;{{ pagination.total }}&nbsp;条工作流信息</span>
           </a-col>
           <a-col>
-            <a-button type="primary" @click="refreshWorkFlow" :loading="tableIsLoading">
+            <a-button type="primary" @click="refreshWorkFlow" :loading="tableIsLoading" ref="tableRefresh">
               <a-icon type="reload"></a-icon>
               刷新
             </a-button>
@@ -96,7 +96,7 @@
             <span>共获取到&nbsp;{{ appListPagination.total }}&nbsp;个应用信息</span>
           </a-col>
           <a-col>
-            <a-button type="primary" @click="refreshAppList" :loading="appIsLoading">
+            <a-button type="primary" @click="refreshAppList" :loading="appIsLoading" ref="appRefresh">
               <a-icon type="reload"></a-icon>
               刷新
             </a-button>

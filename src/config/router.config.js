@@ -311,357 +311,242 @@ export const asyncRouterMap = [
        *        ]
        *    },
        */
-      /*
-       *    {
-       *        path: routeMap.leaks.path,
-       *        name: 'leaks',
-       *        redirect:
-       *            routeMap.leaks.children.CVEsView.children.CVEsManagement
-       *                .path,
-       *        component: RouteView,
-       *        meta: {
-       *            title: routeMap.leaks.title,
-       *            icon: 'bug',
-       *            permission: ['leaks']
-       *        },
-       *        children: [
-       *            {
-       *                path: routeMap.leaks.children.CVEsView.path,
-       *                name: 'CVEsView',
-       *                redirect:
-       *                    routeMap.leaks.children.CVEsView.children
-       *                        .CVEsManagement.path,
-       *                component: RouteView,
-       *                hideChildrenInMenu: true,
-       *                meta: {
-       *                    title: routeMap.leaks.children.CVEsView.title,
-       *                    permission: ['leaks']
-       *                },
-       *                children: [
-       *                    {
-       *                        path:
-       *                            routeMap.leaks.children.CVEsView.children
-       *                                .CVEsManagement.path,
-       *                        name: 'CVEsManagement',
-       *                        hidden: true,
-       *                        component: () =>
-       *                            import('@/views/leaks/CVEsManagement'),
-       *                        meta: {
-       *                            title:
-       *                                routeMap.leaks.children.CVEsView
-       *                                    .children.CVEsManagement.title,
-       *                            permission: ['leaks'],
-       *                            // isUseCache: false,
-       *                            keepAlive: true,
-       *                            diyBreadcrumb: [
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.index.title,
-       *                                    path: routeMap.index.path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.title,
-       *                                    path: routeMap.leaks.path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.children.CVEsView
-       *                                            .children.CVEsManagement
-       *                                            .title,
-       *                                    path:
-       *                                        routeMap.leaks.children.CVEsView
-       *                                            .children.CVEsManagement
-       *                                            .path
-       *                                }
-       *                            ]
-       *                        }
-       *                    },
-       *                    {
-       *                        path:
-       *                            routeMap.leaks.children.CVEsView.children
-       *                                .CVEsDetail.path,
-       *                        name: 'CVEsDetail',
-       *                        hidden: true,
-       *                        component: () =>
-       *                            import('@/views/leaks/CVEsDetail'),
-       *                        meta: {
-       *                            title:
-       *                                routeMap.leaks.children.CVEsView
-       *                                    .children.CVEsDetail.title,
-       *                            permission: ['leaks'],
-       *                            diyBreadcrumb: [
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.index.title,
-       *                                    path: routeMap.index.path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.title,
-       *                                    path: routeMap.leaks.path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.children.CVEsView
-       *                                            .children.CVEsManagement
-       *                                            .title,
-       *                                    path:
-       *                                        routeMap.leaks.children.CVEsView
-       *                                            .children.CVEsManagement
-       *                                            .path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.children.CVEsView
-       *                                            .children.CVEsDetail.title,
-       *                                    path:
-       *                                        routeMap.leaks.children.CVEsView
-       *                                            .children.CVEsDetail.path
-       *                                }
-       *                            ]
-       *                        }
-       *                    }
-       *                ]
-       *            },
-       *            {
-       *                path: routeMap.leaks.children.HostView.path,
-       *                name: 'HostView',
-       *                redirect:
-       *                    routeMap.leaks.children.HostView.children
-       *                        .HostLeakList.path,
-       *                component: RouteView,
-       *                hideChildrenInMenu: true,
-       *                meta: {
-       *                    title: routeMap.leaks.children.HostView.title,
-       *                    permission: ['leaks']
-       *                },
-       *                children: [
-       *                    {
-       *                        path:
-       *                            routeMap.leaks.children.HostView.children
-       *                                .HostLeakList.path,
-       *                        name: 'HostLeakList',
-       *                        hidden: true,
-       *                        component: () =>
-       *                            import('@/views/leaks/HostLeakList'),
-       *                        meta: {
-       *                            title:
-       *                                routeMap.leaks.children.HostView
-       *                                    .children.HostLeakList.title,
-       *                            permission: ['leaks'],
-       *                            keepAlive: true,
-       *                            diyBreadcrumb: [
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.index.title,
-       *                                    path: routeMap.index.path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.title,
-       *                                    path: routeMap.leaks.path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.children.HostView
-       *                                            .children.HostLeakList
-       *                                            .title,
-       *                                    path:
-       *                                        routeMap.leaks.children.HostView
-       *                                            .children.HostLeakList.path
-       *                                }
-       *                            ]
-       *                        }
-       *                    },
-       *                    {
-       *                        path:
-       *                            routeMap.leaks.children.HostView.children
-       *                                .HostLeakDetail.path,
-       *                        name: 'HostLeakDetail',
-       *                        hidden: true,
-       *                        component: () =>
-       *                            import('@/views/leaks/HostLeakDetail'),
-       *                        meta: {
-       *                            title:
-       *                                routeMap.leaks.children.HostView
-       *                                    .children.HostLeakDetail.title,
-       *                            permission: ['leaks'],
-       *                            diyBreadcrumb: [
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.index.title,
-       *                                    path: routeMap.index.path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.title,
-       *                                    path: routeMap.leaks.path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.children.HostView
-       *                                            .children.HostLeakList
-       *                                            .title,
-       *                                    path:
-       *                                        routeMap.leaks.children.HostView
-       *                                            .children.HostLeakList.path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.children.HostView
-       *                                            .children.HostLeakDetail
-       *                                            .title,
-       *                                    path:
-       *                                        routeMap.leaks.children.HostView
-       *                                            .children.HostLeakDetail
-       *                                            .path
-       *                                }
-       *                            ]
-       *                        }
-       *                    }
-       *                ]
-       *            },
-       *            {
-       *                path: routeMap.leaks.children.leakTaskView.path,
-       *                name: 'LeakTask',
-       *                redirect:
-       *                    routeMap.leaks.children.leakTaskView.children
-       *                        .leakTaskList.path,
-       *                component: RouteView,
-       *                hideChildrenInMenu: true,
-       *                meta: {
-       *                    title: routeMap.leaks.children.leakTaskView.title,
-       *                    permission: ['leaks']
-       *                },
-       *                children: [
-       *                    {
-       *                        path:
-       *                            routeMap.leaks.children.leakTaskView
-       *                                .children.leakTaskList.path,
-       *                        name: 'LeakTaskList',
-       *                        hidden: true,
-       *                        component: () =>
-       *                            import('@/views/leaks/LeakTaskList'),
-       *                        meta: {
-       *                            title:
-       *                                routeMap.leaks.children.leakTaskView
-       *                                    .children.leakTaskList.title,
-       *                            permission: ['leaks'],
-       *                            keepAlive: true,
-       *                            diyBreadcrumb: [
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.index.title,
-       *                                    path: routeMap.index.path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.title,
-       *                                    path: routeMap.leaks.path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.children
-       *                                            .leakTaskView.children
-       *                                            .leakTaskList.title,
-       *                                    path:
-       *                                        routeMap.leaks.children
-       *                                            .leakTaskView.children
-       *                                            .leakTaskList.path
-       *                                }
-       *                            ]
-       *                        }
-       *                    },
-       *                    {
-       *                        path:
-       *                            routeMap.leaks.children.leakTaskView
-       *                                .children.leakTaskDetail.path,
-       *                        name: 'LeakTaskDetail',
-       *                        hidden: true,
-       *                        component: () =>
-       *                            import('@/views/leaks/LeakTaskDetail'),
-       *                        meta: {
-       *                            title:
-       *                                routeMap.leaks.children.leakTaskView
-       *                                    .children.leakTaskDetail.title,
-       *                            permission: ['leaks'],
-       *                            diyBreadcrumb: [
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.index.title,
-       *                                    path: routeMap.index.path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.title,
-       *                                    path: routeMap.leaks.path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.children
-       *                                            .leakTaskView.children
-       *                                            .leakTaskList.title,
-       *                                    path:
-       *                                        routeMap.leaks.children
-       *                                            .leakTaskView.children
-       *                                            .leakTaskList.path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.children
-       *                                            .leakTaskView.children
-       *                                            .leakTaskDetail.title,
-       *                                    path:
-       *                                        routeMap.leaks.children
-       *                                            .leakTaskView.children
-       *                                            .leakTaskDetail.path
-       *                                }
-       *                            ]
-       *                        }
-       *                    },
-       *                    {
-       *                        path:
-       *                            routeMap.leaks.children.leakTaskView
-       *                                .children.taskResultReport.path,
-       *                        name: 'TaskResultReport',
-       *                        hidden: true,
-       *                        component: () =>
-       *                            import('@/views/leaks/TaskResultReport'),
-       *                        meta: {
-       *                            title:
-       *                                routeMap.leaks.children.leakTaskView
-       *                                    .children.taskResultReport.title,
-       *                            permission: ['leaks'],
-       *                            diyBreadcrumb: [
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.index.title,
-       *                                    path: routeMap.index.path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.title,
-       *                                    path: routeMap.leaks.path
-       *                                },
-       *                                {
-       *                                    breadcrumbName:
-       *                                        routeMap.leaks.children
-       *                                            .leakTaskView.children
-       *                                            .taskResultReport.title,
-       *                                    path:
-       *                                        routeMap.leaks.children
-       *                                            .leakTaskView.children
-       *                                            .taskResultReport.path
-       *                                }
-       *                            ]
-       *                        }
-       *                    }
-       *                ]
-       *            }
-       *        ]
-       *    },
-       */
+      {
+        path: routeMap.leaks.path,
+        name: 'leaks',
+        redirect: routeMap.leaks.children.CVEsView.children.CVEsManagement.path,
+        component: RouteView,
+        meta: {
+          title: routeMap.leaks.title,
+          icon: 'bug',
+          permission: ['leaks']
+        },
+        children: [
+          {
+            path: routeMap.leaks.children.CVEsView.path,
+            name: 'CVEsView',
+            redirect: routeMap.leaks.children.CVEsView.children.CVEsManagement.path,
+            component: RouteView,
+            hideChildrenInMenu: true,
+            meta: {
+              title: routeMap.leaks.children.CVEsView.title,
+              permission: ['leaks']
+            },
+            children: [
+              {
+                path: routeMap.leaks.children.CVEsView.children.CVEsManagement.path,
+                name: 'CVEsManagement',
+                hidden: true,
+                component: () => import('@/views/leaks/CVEsManagement'),
+                meta: {
+                  title: routeMap.leaks.children.CVEsView.children.CVEsManagement.title,
+                  permission: ['leaks'],
+                  // isUseCache: false,
+                  keepAlive: true,
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.title,
+                      path: routeMap.leaks.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.children.CVEsView.children.CVEsManagement.title,
+                      path: routeMap.leaks.children.CVEsView.children.CVEsManagement.path
+                    }
+                  ]
+                }
+              },
+              {
+                path: routeMap.leaks.children.CVEsView.children.CVEsDetail.path,
+                name: 'CVEsDetail',
+                hidden: true,
+                component: () => import('@/views/leaks/CVEsDetail'),
+                meta: {
+                  title: routeMap.leaks.children.CVEsView.children.CVEsDetail.title,
+                  permission: ['leaks'],
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.title,
+                      path: routeMap.leaks.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.children.CVEsView.children.CVEsManagement.title,
+                      path: routeMap.leaks.children.CVEsView.children.CVEsManagement.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.children.CVEsView.children.CVEsDetail.title,
+                      path: routeMap.leaks.children.CVEsView.children.CVEsDetail.path
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            path: routeMap.leaks.children.HostView.path,
+            name: 'HostView',
+            redirect: routeMap.leaks.children.HostView.children.HostLeakList.path,
+            component: RouteView,
+            hideChildrenInMenu: true,
+            meta: {
+              title: routeMap.leaks.children.HostView.title,
+              permission: ['leaks']
+            },
+            children: [
+              {
+                path: routeMap.leaks.children.HostView.children.HostLeakList.path,
+                name: 'HostLeakList',
+                hidden: true,
+                component: () => import('@/views/leaks/HostLeakList'),
+                meta: {
+                  title: routeMap.leaks.children.HostView.children.HostLeakList.title,
+                  permission: ['leaks'],
+                  keepAlive: true,
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.title,
+                      path: routeMap.leaks.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.children.HostView.children.HostLeakList.title,
+                      path: routeMap.leaks.children.HostView.children.HostLeakList.path
+                    }
+                  ]
+                }
+              },
+              {
+                path: routeMap.leaks.children.HostView.children.HostLeakDetail.path,
+                name: 'HostLeakDetail',
+                hidden: true,
+                component: () => import('@/views/leaks/HostLeakDetail'),
+                meta: {
+                  title: routeMap.leaks.children.HostView.children.HostLeakDetail.title,
+                  permission: ['leaks'],
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.title,
+                      path: routeMap.leaks.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.children.HostView.children.HostLeakList.title,
+                      path: routeMap.leaks.children.HostView.children.HostLeakList.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.children.HostView.children.HostLeakDetail.title,
+                      path: routeMap.leaks.children.HostView.children.HostLeakDetail.path
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            path: routeMap.leaks.children.leakTaskView.path,
+            name: 'LeakTask',
+            redirect: routeMap.leaks.children.leakTaskView.children.leakTaskList.path,
+            component: RouteView,
+            hideChildrenInMenu: true,
+            meta: {
+              title: routeMap.leaks.children.leakTaskView.title,
+              permission: ['leaks']
+            },
+            children: [
+              {
+                path: routeMap.leaks.children.leakTaskView.children.leakTaskList.path,
+                name: 'LeakTaskList',
+                hidden: true,
+                component: () => import('@/views/leaks/LeakTaskList'),
+                meta: {
+                  title: routeMap.leaks.children.leakTaskView.children.leakTaskList.title,
+                  permission: ['leaks'],
+                  keepAlive: true,
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.title,
+                      path: routeMap.leaks.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.children.leakTaskView.children.leakTaskList.title,
+                      path: routeMap.leaks.children.leakTaskView.children.leakTaskList.path
+                    }
+                  ]
+                }
+              },
+              {
+                path: routeMap.leaks.children.leakTaskView.children.leakTaskDetail.path,
+                name: 'LeakTaskDetail',
+                hidden: true,
+                component: () => import('@/views/leaks/LeakTaskDetail'),
+                meta: {
+                  title: routeMap.leaks.children.leakTaskView.children.leakTaskDetail.title,
+                  permission: ['leaks'],
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.title,
+                      path: routeMap.leaks.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.children.leakTaskView.children.leakTaskList.title,
+                      path: routeMap.leaks.children.leakTaskView.children.leakTaskList.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.children.leakTaskView.children.leakTaskDetail.title,
+                      path: routeMap.leaks.children.leakTaskView.children.leakTaskDetail.path
+                    }
+                  ]
+                }
+              },
+              {
+                path: routeMap.leaks.children.leakTaskView.children.taskResultReport.path,
+                name: 'TaskResultReport',
+                hidden: true,
+                component: () => import('@/views/leaks/TaskResultReport'),
+                meta: {
+                  title: routeMap.leaks.children.leakTaskView.children.taskResultReport.title,
+                  permission: ['leaks'],
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.title,
+                      path: routeMap.leaks.path
+                    },
+                    {
+                      breadcrumbName: routeMap.leaks.children.leakTaskView.children.taskResultReport.title,
+                      path: routeMap.leaks.children.leakTaskView.children.taskResultReport.path
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
       {
         path: routeMap.diagnosis.path,
         name: 'diagnosis',
