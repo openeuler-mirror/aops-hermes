@@ -18,7 +18,11 @@ const api = {
   pluginInfoGet: '/manage/agent/plugin/info',
   pluginSet: '/manage/agent/plugin/set',
   metricSet: '/manage/agent/metric/set',
-  getHostDetail: '/manage/host/info/query'
+  getHostDetail: '/manage/host/info/query',
+
+  getHostMetrics: '/check/host/metric/names',
+  getMetricDetails: '/check/host/metric/list',
+  getMetricData: '/check/host/metric/data'
 };
 
 export default api;
@@ -213,6 +217,39 @@ export function getHostDetail(hostId, isBasicInfo = false) {
     data: {
       host_list: [hostId],
       basic: isBasicInfo
+    }
+  });
+}
+
+export function getHostMetrics (parameter) {
+  return request({
+    url: api.getHostMetrics,
+    method: 'get',
+    params: {
+      query_ip: parameter.query_ip
+    }
+  });
+}
+
+export function getMetricDetails (parameter) {
+  return request({
+    url: api.getMetricDetails,
+    method: 'post',
+    data: {
+      metric_names: parameter.metric_names,
+      query_ip: parameter.query_ip
+    }
+  });
+}
+
+export function getMetricData (parameter) {
+  return request({
+    url: api.getMetricData,
+    method: 'post',
+    data: {
+      query_ip: parameter.query_ip,
+      time_range: parameter.time_range,
+      query_info: parameter.query_info
     }
   });
 }

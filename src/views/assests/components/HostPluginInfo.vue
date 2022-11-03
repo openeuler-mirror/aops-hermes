@@ -1,18 +1,16 @@
 <template>
   <div class="footor-wrapper">
     <div class="scene-identify">
-      <a-button @click="sceneIdentify()" type="primary" :loading="sceneLoading">
-        场景识别
-      </a-button>
+      <a-button @click="sceneIdentify()" type="primary" :loading="sceneLoading"> 场景识别 </a-button>
       <div class="recommend-list">
         <div>当前场景：{{ scene }}</div>
-        <div style="display: flex; width: 100%;">
+        <div style="display: flex; width: 100%">
           建议开启：
           <a-collapse v-if="scenePropertys.length">
             <a-collapse-panel v-for="(item, index) in scenePropertys" :key="index">
               <span slot="header">
                 <span>{{ item }}</span>
-                <span style="marginLeft: 30px">({{ sceneData.collect_items[item].length }})</span>
+                <span style="marginleft: 30px">({{ sceneData.collect_items[item].length }})</span>
               </span>
               <p>采集项：{{ recommendListMap[item] }}</p>
             </a-collapse-panel>
@@ -79,25 +77,15 @@
             @change="ProbeStatuChange(record, index)"
             button-style="solid"
           >
-            <a-radio-button value="on">
-              on
-            </a-radio-button>
-            <a-radio-button value="off">
-              off
-            </a-radio-button>
-            <a-radio-button v-if="item.support_auto" value="auto">
-              auto
-            </a-radio-button>
+            <a-radio-button value="on"> on </a-radio-button>
+            <a-radio-button value="off"> off </a-radio-button>
+            <a-radio-button v-if="item.support_auto" value="auto"> auto </a-radio-button>
           </a-radio-group>
         </div>
       </span>
       <!-- 插件关闭时隐藏probe和resource -->
-      <span v-else-if="!record.info.is_installed">
-        插件未安装，暂无数据
-      </span>
-      <span v-else-if="!record.info.status">
-        插件已关闭，暂无服务信息
-      </span>
+      <span v-else-if="!record.info.is_installed"> 插件未安装，暂无数据 </span>
+      <span v-else-if="!record.info.status"> 插件已关闭，暂无服务信息 </span>
     </a-table>
   </div>
 </template>
@@ -160,14 +148,17 @@ export default {
       saveLoading: false,
       tableLoading: false,
       hostId: this.$route.params.hostId,
-      // resultEnum枚举plugin修改结果：0——无修改，1——成功，2——失败，pluginChangeResult记录修改结果
+      // resultEnum枚举plugin修改结果：0——无修改，1——成功，2——部分成功，3——失败，4——接口异常，pluginChangeResult记录修改结果
       resultEnum: {
         inAction: 0,
         success: 1,
-        failure: 2
+        successList: 2,
+        failure: 3,
+        err: 4
       },
       pluginChangeResult: 0,
-      pluginErrorCode: ''
+      notifyType: '',
+      notifyMsg: ''
     };
   },
   methods: {
@@ -177,7 +168,7 @@ export default {
       pluginInfoGet({
         hostId: _this.hostId
       })
-        .then(res => {
+        .then((res) => {
           const pluginData = []; // 创建数组处理获取到的数据，再赋值给tableData，防止再次请求时导致的tableData重复数据
           res.info.forEach((element, index) => {
             if (element.status === 'active') {
@@ -193,7 +184,7 @@ export default {
           _this.tableData = pluginData;
           _this.originData = JSON.parse(JSON.stringify(pluginData)); // 保存原始数据
         })
-        .catch(err => {
+        .catch((err) => {
           _this.$message.error(err.response.data.message, 5);
         })
         .finally(() => {
@@ -201,7 +192,8 @@ export default {
         });
     },
     PluginStatuChange(rowData) {
-      const index = this.changedPlugin.indexOf(rowData.key); // index：判断将要压入数组的plugin在数组中是否存在，如存在则弹出数组并终止执行
+      // index：判断将要压入数组的plugin在数组中是否存在，如存在则弹出数组并终止执行
+      const index = this.changedPlugin.indexOf(rowData.key);
       if (index !== -1) {
         this.changedPlugin.splice(index, 1);
       } else {
@@ -211,11 +203,11 @@ export default {
       // 如果修改的插件状态中有“关闭”状态，则将其对应的探针从changedProbe中移除并恢复探针修改前状态
       if (!rowData.info.status) {
         // 创建数组array记录插件状态为false的所有探针，并根据array将changedProbe中的对应探针剔除，重置探针状态
-        const array = this.changedProbe.filter(element => element.fatherFlugin === rowData.key);
-        array.forEach(element => {
+        const array = this.changedProbe.filter((element) => element.fatherFlugin === rowData.key);
+        array.forEach((element) => {
           this.changedProbe.splice(this.changedProbe.indexOf(element), 1);
-          rowData.info.collect_items[element.probeFlag].probe_status = this.originData[rowData.key].info
-            .collect_items[element.probeFlag].probe_status;
+          rowData.info.collect_items[element.probeFlag].probe_status =
+            this.originData[rowData.key].info.collect_items[element.probeFlag].probe_status;
         });
       }
     },
@@ -247,14 +239,14 @@ export default {
       sceneGet({
         hostId: _this.hostId
       })
-        .then(function(res) {
+        .then(function (res) {
           _this.$set(_this.sceneData, 'collect_items', res.collect_items);
           // 创建数组scenePropertys存储sceneData.collect_items的属性，即推荐开启的插件列表
           _this.scenePropertys = Object.keys(_this.sceneData.collect_items);
           if (_this.scenePropertys.length === 0) {
             _this.isEmpty = true;
           } else {
-            _this.scenePropertys.forEach(element => {
+            _this.scenePropertys.forEach((element) => {
               if (_this.sceneData.collect_items[element].length === 0) {
                 _this.$set(_this.recommendListMap, element, '暂无');
               } else {
@@ -263,10 +255,10 @@ export default {
             });
           }
         })
-        .catch(function(err) {
+        .catch(function (err) {
           _this.$message.error(err.response.data.msg, 5);
         })
-        .finally(function() {
+        .finally(function () {
           _this.sceneLoading = false;
         });
     },
@@ -276,10 +268,10 @@ export default {
       this.$confirm({
         title: '是否取消修改？',
         onOk() {
-          _this.changedPlugin.forEach(pluginKey => {
+          _this.changedPlugin.forEach((pluginKey) => {
             _this.tableData[pluginKey].info.status = _this.originData[pluginKey].info.status;
           });
-          _this.changedProbe.forEach(probe => {
+          _this.changedProbe.forEach((probe) => {
             _this.tableData[probe.fatherFlugin].info.collect_items[probe.probeFlag].probe_status =
               _this.originData[probe.fatherFlugin].info.collect_items[probe.probeFlag].probe_status;
           });
@@ -298,129 +290,165 @@ export default {
           _this.saveLoading = true;
           // 分别判断changedPlugin和changedProbe中是否有数据，有的就进行请求
           if (_this.changedPlugin.length !== 0) {
-            _this.$options.methods.doPluginSet(_this)
+            // 根据changePlugin生成需要传递的参数
+            const pluginsVariation = {};
+            _this.changedPlugin.forEach((element) => {
+              const status = _this.tableData[element].info.status ? 'active' : 'inactive';
+              _this.$set(pluginsVariation, _this.tableData[element].info.plugin_name, status);
+            });
+            _this.$options.methods.handlePluginSet(_this, pluginsVariation);
           }
           if (_this.changedProbe.length !== 0) {
             // 根据changeProbe生成需要传递的参数
             const probesVariation = {};
             // 去重，fatherList用以合并plugin相同的probe
             const fatherList = [_this.changedProbe[0].fatherFlugin];
-            _this.changedProbe.forEach(element => {
+            _this.changedProbe.forEach((element) => {
               if (fatherList.indexOf(element.fatherFlugin) === -1) {
                 fatherList.push(element.fatherFlugin);
               }
             });
             // 根据fatherList创建数组，存储plugin相同的probe，最后将数组压入最终要传递的参数中（即probesVariation）
-            fatherList.forEach(element => {
+            fatherList.forEach((element) => {
               const probeList = {};
-              _this.changedProbe.forEach(item => {
+              _this.changedProbe.forEach((item) => {
                 const index = _this.tableData[element].info.collect_items[item.probeFlag];
                 _this.$set(probeList, index.probe_name, index.probe_status);
               });
               _this.$set(probesVariation, _this.tableData[element].info.plugin_name, probeList);
             });
-            _this.$options.methods.doMetricSet(_this, probesVariation)
+            _this.$options.methods.handleMetricSet(_this, probesVariation);
           }
         },
         onCancel() {}
       });
     },
-    doPluginSet(This) {
+
+    /**
+     * 设置插件状态：
+     * 返回数据会包含一个succeed_list和failure_list.
+     * 前端需要根据情况分别展示成功、失败、部分成功（显示失败的插件名）
+     */
+    handlePluginSet(This, pluginsVariation) {
       const _this = This;
-      // 根据changePlugin生成需要传递的参数
-      const pluginsVariation = {};
-      _this.changedPlugin.forEach(element => {
-        const status = _this.tableData[element].info.status ? 'active' : 'inactive';
-        _this.$set(pluginsVariation, _this.tableData[element].info.plugin_name, status);
-      });
       pluginSet({
         pluginStatus: {
           hostId: _this.hostId,
           plugins: pluginsVariation
         }
       })
-        .then(function() {
-          _this.pluginChangeResult = _this.resultEnum.success;
-          _this.changedPlugin = [];
-          if (_this.changedProbe.length === 0) {
-            _this.$options.methods.pluginDataGet(_this);
-            _this.$options.methods.notifyResult(
-              _this,
-              'success',
-              '修改配置成功',
-              '你所提交的修改已成功，页面数据已刷新！'
-            );
+        .then(function (e) {
+          _this.notifyType = 'success';
+          if (e.failed_list.length === 0) {
+            _this.pluginChangeResult = _this.resultEnum.success;
+          } else {
+            if (e.succeed_list.length === 0) {
+              _this.pluginChangeResult = _this.resultEnum.failure;
+              _this.notifyType = 'error';
+            } else {
+              _this.pluginChangeResult = _this.resultEnum.successList;
+              _this.notifyType = 'warning';
+            }
+            _this.notifyMsg = '失败插件：' + e.failed_list.toString();
           }
         })
-        .catch(function(err) {
-          _this.pluginChangeResult = _this.resultEnum.failure;
-          _this.pluginErrorCode = err.response.data.code;
-          if (_this.changedProbe.length === 0) {
-            _this.$options.methods.notifyResult(
-              _this,
-              'error',
-              '修改配置失败',
-              '你所提交的插件修改失败 失败代码:' + _this.pluginErrorCode
-            );
-          }
+        .catch(function (err) {
+          _this.pluginChangeResult = _this.resultEnum.err;
+          _this.notifyType = 'error';
+          _this.notifyMsg = '插件修改失败：' + err.response.data.msg;
         })
-        .finally(function() {
+        .finally(function () {
+          if (_this.changedProbe.length === 0) {
+            _this.notifyMsg =
+              _this.notifyType === 'success' ? '你所提交的修改已成功，页面数据已刷新！' : _this.notifyMsg;
+            if (_this.notifyType !== 'error') {
+              _this.$options.methods.pluginDataGet(_this);
+              _this.changedPlugin = [];
+            }
+            _this.$options.methods.notifyResult(_this);
+          }
           _this.saveLoading = false;
         });
     },
-    doMetricSet(This, probesVariation) {
+
+    /**
+     * 设置探针状态：
+     * 返回数据会针对每一个插件，给出其中探针状态的修改情况。实例：
+     * resp: {
+     *   '插件1': {
+     *      failure: ['探针1']，
+     *      success: ['探针2'、'探针3'']
+     *   }
+     * }
+     * 前端需要根据情况分别展示成功、失败、部分成功（显示失败的探针名）
+     */
+    handleMetricSet(This, probesVariation) {
       const _this = This;
       metricSet({
         metricStatus: {
           hostId: _this.hostId,
           plugins: probesVariation
         }
-      }).then(function() {
-        _this.$options.methods.pluginDataGet(_this);
-        if (_this.pluginChangeResult === 2) {
-          _this.$options.methods.notifyResult(
-            _this, 'warning', '请注意！修改配置未完全成功',
-            '你所提交的探针修改成功！\n你所提交的插件修改失败 失败代码:' + _this.pluginErrorCode
-          );
-          _this.changedPlugin = [];
-        } else {
-          _this.$options.methods.notifyResult(
-            _this, 'success', '修改配置成功',
-            '你所提交的修改已成功，页面数据已刷新！'
-          );
-        }
-        _this.changedProbe = [];
-      }).catch(function(err) {
-        switch (_this.pluginChangeResult) {
-          case 0:
-            _this.$options.methods.notifyResult(
-              _this, 'error', '修改配置失败',
-              '你所提交的探针修改失败 失败代码:' + err.response.data.code
-            );
-            break;
-          case 1:
+      })
+        .then(function (e) {
+          const failedProbes = [];
+          for (var key in e.resp) {
+            failedProbes.push(...e.resp[key].failure);
+          }
+          if (failedProbes.length === 0) {
+            if (_this.pluginChangeResult <= 1) {
+              _this.notifyType = 'success';
+              _this.notifyMsg = '你所提交的修改已成功，页面数据已刷新！';
+            } else {
+              _this.notifyType = 'warning';
+            }
+          } else if (failedProbes.length === _this.changedProbe.length) {
+            _this.notifyMsg = _this.notifyMsg + '\n失败探针：' + failedProbes.toString();
+            _this.notifyType =
+              _this.pluginChangeResult === _this.resultEnum.success ||
+              _this.pluginChangeResult === _this.resultEnum.successList
+                ? 'warning'
+                : 'error';
+          } else {
+            _this.notifyType = 'warning';
+            _this.notifyMsg = _this.notifyMsg + '\n失败探针：' + failedProbes.toString();
+          }
+        })
+        .catch(function (err) {
+          _this.notifyMsg = _this.notifyMsg + '\n探针修改失败：' + err.response.data.msg;
+          _this.notifyType =
+            _this.pluginChangeResult === _this.resultEnum.success ||
+            _this.pluginChangeResult === _this.resultEnum.successList
+              ? 'warning'
+              : 'error';
+        })
+        .finally(function () {
+          if (_this.notifyType !== 'error') {
             _this.$options.methods.pluginDataGet(_this);
+            _this.changedPlugin = [];
             _this.changedProbe = [];
-            _this.$options.methods.notifyResult(
-              _this, 'warning', '请注意！修改配置未完全成功',
-              '你所提交的插件修改成功！\n你所提交的探针修改失败 失败代码:' + err.response.data.code
-            );
-            break;
-          case 2:
-            _this.$options.methods.notifyResult(
-              _this, 'error', '修改配置失败',
-              `你所提交的插件修改失败 失败代码: ${_this.pluginErrorCode}${'\n'}你所提交的探针修改失败 失败代码: ${err.response.data.code}`
-            );
-            break;
-        }
-      }).finally(function() {
-        _this.saveLoading = false;
-      });
+          }
+          _this.$options.methods.notifyResult(_this);
+          _this.saveLoading = false;
+        });
     },
-    notifyResult(This, type, title, message) {
-      This.$notification[type]({
+    notifyResult(This) {
+      const _this = This;
+      let title = '';
+      switch (_this.notifyType) {
+        case 'success':
+          title = '修改配置成功';
+          break;
+        case 'warning':
+          title = '修改部分成功';
+          break;
+        case 'error':
+          title = '修改失败';
+          break;
+      }
+      This.$notification[_this.notifyType]({
         message: title,
-        description: message,
+        description: _this.notifyMsg,
         style: {
           whiteSpace: 'pre-wrap'
         }
@@ -428,7 +456,7 @@ export default {
     }
   },
   // 初始化请求插件信息
-  mounted: function() {
+  mounted: function () {
     this.$options.methods.pluginDataGet(this);
   }
 };

@@ -343,8 +343,17 @@ export function getAlertRecordResult(parameter) {
       sort: 'time',
       direction: directionMap[parameter.direction] || 'asc'
     },
-    paramsSerializer: params => {
-      return qs.stringify(params, {indices: false});
+
+    /**
+     * 解决 axios 升级至 1.x后报错
+     * paramsSerializer: params => {
+     *   return qs.stringify(params, {indices: false});
+     * }
+     */
+    paramsSerializer: {
+      serialize: params => {
+        return qs.stringify(params, {indices: false});
+      }
     }
   });
 }
