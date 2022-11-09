@@ -1,22 +1,32 @@
 <template>
   <page-header-wrapper>
     <a-card :bordered="false" class="aops-theme">
-      <HostBasicInfo
-        :basicHostInfo="basicHostInfo"
-        :basicInfo="basicInfo"
-        :isLoading="basicHostInfoIsLoading || basicInfoIsLoading"
-      >
-      </HostBasicInfo>
+      <a-tabs type="card">
+        <a-tab-pane key="1" tab="概览">
+          <a-card class="aops-theme">
+            <HostBasicInfo
+              :basicHostInfo="basicHostInfo"
+              :basicInfo="basicInfo"
+              :isLoading="basicHostInfoIsLoading || basicInfoIsLoading"
+            >
+            </HostBasicInfo>
+          </a-card>
+        </a-tab-pane>
+        <a-tab-pane key="2" tab="插件">
+          <a-card class="aops-theme">
+            <HostPluginInfo :scene="scene" @reFetchHostInfo="reFetchHostInfo"></HostPluginInfo>
+          </a-card>
+        </a-tab-pane>
+      </a-tabs>
     </a-card>
-    <a-card :bordered="false" class="aops-theme">
-      <HostPluginInfo :scene="scene" @reFetchHostInfo="reFetchHostInfo"></HostPluginInfo>
-    </a-card>
+    <HostChartInfo :queryIp="basicHostInfo.public_ip" v-if="basicHostInfo.public_ip"/>
   </page-header-wrapper>
 </template>
 
 <script>
 import {PageHeaderWrapper} from '@ant-design-vue/pro-layout';
 import HostPluginInfo from './components/HostPluginInfo.vue';
+import HostChartInfo from './components/HostChartInfo'
 import HostBasicInfo from '@/views/assests/components/HostBasicInfo.vue';
 import {getHostDetail} from '@/api/assest';
 
@@ -25,7 +35,8 @@ export default {
   components: {
     PageHeaderWrapper,
     HostPluginInfo,
-    HostBasicInfo
+    HostBasicInfo,
+    HostChartInfo
   },
   data() {
     return {
@@ -74,4 +85,8 @@ export default {
 };
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+/deep/ .ant-tabs-bar {
+  margin-bottom: 0px;
+}
+</style>

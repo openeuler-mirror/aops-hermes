@@ -419,6 +419,34 @@ const getHostInfoQuery = options => {
   );
 };
 
+const setPlugin = options => {
+  return builder(
+    {
+      failed_list: [1],
+      succeed_list: [2]
+    },
+    'operation succeed',
+    200,
+    {'Custom-Header': Mock.mock('@guid')}
+  );
+};
+
+const setMetrix = options => {
+  return builder(
+    {
+      resp: {
+        2: {
+          failure: ['test2'],
+          success: ['test2', 'test1', 'test3']
+        }
+      }
+    },
+    'operation succeed',
+    200,
+    {'Custom-Header': Mock.mock('@guid')}
+  );
+};
+
 Mock.mock(/\/manage\/host\/group\/get/, 'post', getHostGroupList);
 Mock.mock(/\/manage\/host\/add_host_group/, 'post', addHostGroup);
 Mock.mock(/\/manage\/host\/delete_host_group/, 'delete', deleteHostGroup);
@@ -433,3 +461,5 @@ Mock.mock(/\/manage\/agent\/plugin\/info/, 'get', pluginInfoGet);
 // 获取主机列表
 Mock.mock(/\/manage\/host\/get/, 'post', getHostList);
 Mock.mock(/\/manage\/host\/get_host_group/, 'post', getHostGroupList);
+Mock.mock(/\/manage\/agent\/plugin\/set/, 'post', setPlugin)
+Mock.mock(/\/manage\/agent\/metric\/set/, 'post', setMetrix)
