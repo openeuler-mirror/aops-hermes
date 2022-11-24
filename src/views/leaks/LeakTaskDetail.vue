@@ -69,9 +69,6 @@
             <a-col>
               <a-button type="primary" @click="executeTask">执行</a-button>
             </a-col>
-            <a-col>
-              <a-button @click="handleGetPlaybook">下载playbook</a-button>
-            </a-col>
           </a-row>
         </a-spin>
       </div>
@@ -90,14 +87,14 @@
           <a-row type="flex" :gutter="6">
             <a-col>
               <a-input-search
-                :placeholder="taskType === 'cve' ? `按CVE ID搜索` : `按主机名搜索`"
+                :placeholder="taskType === 'cve fix' ? `按CVE ID搜索` : `按主机名搜索`"
                 style="width: 200px"
                 @search="onSearch"
               />
             </a-col>
             <a-col>
               <a-button
-                v-if="taskType === 'cve'"
+                v-if="taskType === 'cve fix'"
                 type="danger"
                 @click="handleRollback"
                 :loading="detail.statuses['running'] > 0"
@@ -110,10 +107,10 @@
       </a-row>
       <a-table
         :rowKey="rowKeyMap[taskType]"
-        :columns="taskType === 'cve' ? cveColumns : repoColumns"
+        :columns="taskType === 'cve fix' ? cveColumns : repoColumns"
         :data-source="tableData"
         :pagination="pagination"
-        :row-selection="taskType === 'cve' ? rowSelection : undefined"
+        :row-selection="taskType === 'cve fix' ? rowSelection : undefined"
         @change="handleTableChange"
         :loading="tableIsLoading"
       >
@@ -122,9 +119,9 @@
           <a-progress :percent="Math.ceil(((progress || 0) / record.host_num) * 100)" />
         </div>
         <div slot="status" slot-scope="status, record">
-          <span class="task-status" @click="handleCheckResult(taskType === 'cve' ? record.cve_id : record.host_id)">
+          <span class="task-status" @click="handleCheckResult(taskType === 'cve fix' ? record.cve_id : record.host_id)">
             <a-badge :status="statusValueMap[status]" />
-            {{ status ? statusTextMap[status] : '未知' }}
+            {{ taskType === 'cve fix' ? cveStatusTextMap[status] : repoStatusTextMap[status] }}
             <a-icon v-if="statusValueMap[status] === 'processing'" type="loading" class="color-running-circle" />
           </span>
         </div>
@@ -149,14 +146,12 @@ import {PageHeaderWrapper} from '@ant-design-vue/pro-layout';
 import HostStatusInTaskDrawer from './components/HostStatusInTaskDrawer';
 import {i18nRender} from '@/vendor/ant-design-pro/locales';
 import {dateFormat} from '@/views/utils/Utils';
-import {downloadBlobFile} from '@/views/utils/downloadBlobFile';
 import {getSelectedRow} from '../utils/getSelectedRow';
 import {
   getTaskInfo,
   getCveUnderCveTask,
   getCveProgressUnderCveTask,
   getHostUnderRepoTask,
-  getPlaybook,
   executeTask,
   getTaskProgress,
   rollbackCveTask
@@ -164,21 +159,26 @@ import {
 import configs from '@/config/defaultSettings';
 
 const taskTypeMap = {
-  cve: '漏洞修复',
-  repo: 'REPO设置'
+  'cve fix': '漏洞修复',
+  'repo set': 'REPO设置'
 };
 const rowKeyMap = {
-  cve: 'cve_id',
-  repo: 'host_id'
+  'cve fix': 'cve_id',
+  'repo set': 'host_id'
 };
 
-const statusTextMap = {
+const cveStatusTextMap = {
   succeed: '修复成功',
   fail: '待修复',
   running: '运行中',
-  unknown: '未知',
-  set: '已设置',
-  unset: '未设置'
+  unknown: '未知'
+};
+
+const repoStatusTextMap = {
+  succeed: '已设置',
+  fail: '未设置',
+  running: '运行中',
+  unknown: '未知'
 };
 
 const statusValueMap = {
@@ -222,10 +222,10 @@ export default {
       // 每个cve下host详情数据
       hostListUnderCveVisible: false,
       hostListOfCveId: null,
-
+      cveStatusTextMap,
+      repoStatusTextMap,
       taskTypeMap,
       rowKeyMap,
-      statusTextMap,
       statusValueMap
     };
   },
@@ -315,7 +315,7 @@ export default {
         {
           dataIndex: 'host_name',
           title: '主机名称',
-          scopedSlots: {customRender: 'hostName'}
+          scopedSlots: {customRender: 'host_name'}
         },
         {
           dataIndex: 'host_ip',
@@ -335,7 +335,7 @@ export default {
             {text: '未设置', value: 'fail'},
             {text: '运行中', value: 'running'},
             {text: '未知', value: 'unknown'},
-            {text: '已设置', value: 'set'}
+            {text: '已设置', value: 'succeed'}
           ]
         }
       ];
@@ -349,7 +349,7 @@ export default {
       this.filters = Object.assign({}, this.filters, filters);
       this.sorter = sorter;
       // 出发排序、筛选、分页时，重新请求主机列表
-      if (this.taskType === 'cve') {
+      if (this.taskType === 'cve fix') {
         this.getCveList();
       } else {
         this.getHostList();
@@ -540,21 +540,6 @@ export default {
         return false;
       }
     },
-    // 下载playbook
-    handleGetPlaybook() {
-      const _this = this;
-      getPlaybook({
-        taskId: this.taskId,
-        taskType: this.taskType
-      })
-        .then(function(res) {
-          // download files
-          downloadBlobFile(res.data, res.fileName);
-        })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
-        });
-    },
     executeTask() {
       const _this = this;
       if (this.detail.statuses['running'] > 0) {
@@ -592,11 +577,12 @@ export default {
     },
     getInitalData() {
       this.getInfo();
+      console.log(this.taskType + '211');
       switch (this.taskType) {
-        case 'cve':
+        case 'cve fix':
           this.getCveList();
           break;
-        case 'repo':
+        case 'repo set':
           this.getHostList();
           break;
       }
@@ -645,7 +631,7 @@ export default {
       if (!this.filters) {
         this.filters = {};
       }
-      if (this.taskType === 'cve') {
+      if (this.taskType === 'cve fix') {
         if (text !== '') {
           this.filters.cveId = text;
         } else {
@@ -654,9 +640,9 @@ export default {
         this.getCveList();
       } else {
         if (text !== '') {
-          this.filters.hostName = text;
+          this.filters.host_name = text;
         } else {
-          this.filters.hostName = undefined;
+          this.filters.host_name = undefined;
         }
         this.getHostList();
       }

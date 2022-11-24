@@ -26,13 +26,13 @@
                   <a-descriptions-item label="主机地址">
                     {{ resultItem.host_ip }}
                   </a-descriptions-item>
-                  <a-descriptions-item label="状态" v-if="resultData.task_type === 'cve'">
+                  <a-descriptions-item label="状态" v-if="resultData.task_type === 'cve fix'">
                     {{ cveStatusTextMap[resultItem.status] }}
                   </a-descriptions-item>
-                  <a-descriptions-item label="状态" v-if="resultData.task_type === 'repo'">
+                  <a-descriptions-item label="状态" v-if="resultData.task_type === 'repo set'">
                     {{ repoStatusTextMap[resultItem.status] }}
                   </a-descriptions-item>
-                  <a-descriptions-item label="REPO" v-if="taskType === 'repo'">
+                  <a-descriptions-item label="REPO" v-if="taskType === 'repo set'">
                     {{ resultItem.repo }}
                   </a-descriptions-item>
                 </a-descriptions>
@@ -51,7 +51,7 @@
                     </a-descriptions>
                   </a-col>
                 </a-row>
-                <div v-if="taskType === 'cve'">
+                <div v-if="taskType === 'cve fix'">
                   <p class="reuslt-item-title" style="margin-top: 12px">CVE修复情况:</p>
                   <a-collapse :bordered="false">
                     <a-collapse-panel v-for="(cve, rkidx) in resultItem.cves" :key="rkidx" :header="`${cve.cve_id}`">
@@ -67,7 +67,7 @@
                     </a-collapse-panel>
                   </a-collapse>
                 </div>
-                <div v-if="taskType === 'repo'">
+                <div v-if="taskType === 'repo set'">
                   <p class="reuslt-item-title" style="margin-top: 16px">Log:</p>
                   <p class="result-log">{{ resultItem.log }}</p>
                 </div>
@@ -170,7 +170,7 @@ export default {
       const _this = this;
       this.resultLoading = true;
       switch (this.taskType) {
-        case 'cve':
+        case 'cve fix':
           getCveTaskResult({
             taskId: this.taskId,
             cveList: []
@@ -185,7 +185,7 @@ export default {
               _this.resultLoading = false;
             });
           break;
-        case 'repo':
+        case 'repo set':
           getRepoTaskResult({
             taskId: this.taskId,
             hostList: []

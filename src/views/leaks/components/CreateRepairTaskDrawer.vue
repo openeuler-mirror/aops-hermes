@@ -1,10 +1,10 @@
 <template>
   <div>
     <a-button :disabled="disabled" :loading="loading" @click="handleOpen" type="primary">
-      {{ taskType === 'cve' ? `${text}` : '设置REPO' }}
+      {{ taskType === 'cve fix' ? `${text}` : '设置REPO' }}
     </a-button>
     <a-drawer
-      :title="`生成任务${taskType === 'repo' ? ' 设置REPO' : ''}`"
+      :title="`生成任务${taskType === 'repo set' ? ' 设置REPO' : ''}`"
       closable
       @close="handleCancel"
       :visible="visible"
@@ -36,13 +36,13 @@
               placeholder="请输入任务描述，60个字符以内"
             />
           </a-form-item>
-          <a-form-item label="自动重启" v-if="taskType === 'cve'">
+          <a-form-item label="自动重启" v-if="taskType === 'cve fix'">
             <a-switch :checked="isResetChecked" @click="handleResetChanage">
               <a-icon slot="checkedChildren" type="check" />
               <a-icon slot="unCheckedChildren" type="close" />
             </a-switch>
           </a-form-item>
-          <a-form-item label="选择REPO" v-if="taskType === 'repo'">
+          <a-form-item label="选择REPO" v-if="taskType === 'repo set'">
             <a-select
               v-decorator="['repo', {rules: [{required: true, message: '请选择REPO'}]}]"
               placeholder="请选择REPO"
@@ -53,7 +53,7 @@
             </a-select>
           </a-form-item>
         </a-form>
-        <div v-if="taskType === 'cve'">
+        <div v-if="taskType === 'cve fix'">
           <a-table rowKey="cve_id" :columns="tableColumns" :data-source="cveList" :pagination="false">
             <div slot="hostsList" slot-scope="hostsList">
               <a-spin v-if="hostUnderCveLoading" />
@@ -84,10 +84,10 @@
             </a-table>
           </a-table>
         </div>
-        <div v-if="taskType === 'repo' && dataType === 'all'" style="margin-bottom: 4px;">
+        <div v-if="taskType === 'repo set' && dataType === 'all'" style="margin-bottom: 4px;">
           根据筛选条件获取到以下主机：
         </div>
-        <div v-if="taskType === 'repo'">
+        <div v-if="taskType === 'repo set'">
           <a-table
             rowKey="host_id"
             :columns="tableColumnsRepo"
@@ -170,11 +170,11 @@ import {
   generateRepoTask
 } from '@/api/leaks';
 
-const taskTypes = ['cve', 'repo'];
+const taskTypes = ['cve fix', 'repo set'];
 const dataTypes = ['selected', 'all'];
 const taskTypsEnum = {
-  cve: 'cve修复',
-  repo: 'repo设置'
+  'cve fix': 'cve修复',
+  'repo set': 'repo设置'
 };
 const hostListTypes = ['byLoading', 'bySelection', 'byOneHost'];
 const restartTypesEnum = {
@@ -326,6 +326,9 @@ export default {
     }
   },
   watch: {},
+  created() {
+    // console.log(this.cveListProps)
+  },
   methods: {
     jumpToPage() {
       clearTimeout(this.jumpModalInterval);
@@ -350,7 +353,7 @@ export default {
       this.selectedRowsAllMaps = {};
       this.setDefaultInfo();
       // 设置repo任务时，直接使用传入的host数据
-      if (this.taskType === 'repo') {
+      if (this.taskType === 'repo set') {
         this.selectedRepoKeys = this.hostList.map(host => host.host_id);
         this.selectedRepoRows = this.hostList;
         return;
@@ -417,7 +420,7 @@ export default {
           }
 
           switch (this.taskType) {
-            case 'cve':
+            case 'cve fix':
               // prepare data
               const params = {
                 ...values,
@@ -452,38 +455,48 @@ export default {
                   }
                 });
               break;
-            case 'repo':
+            case 'repo set':
               // prepare data
-              const repoParams = {
-                ...values,
-                info: this.hostList.map(host => {
-                  return {
-                    host_id: host.host_id,
-                    host_name: host.host_name,
-                    host_ip: host.host_ip
-                  };
-                })
-              };
-              // make request
-              generateRepoTask(repoParams)
-                .then(function(res) {
-                  _this.$message.success(res.msg);
-                  if (excuteASAP) {
-                    _this.handleExcuteASAP(res.task_id, res);
-                  } else {
-                    _this.visible = false;
-                    _this.handleGenerateSuccess(res, 'REPO设置', 'normal');
-                  }
-                })
-                .catch(function(err) {
-                  _this.$message.error(err.response.data.msg);
-                })
-                .finally(function() {
-                  if (!excuteASAP) {
-                    _this.submitLoading = false;
-                  }
-                });
-              break;
+              if (this.selectedRepoRows.length !== 0) {
+                 const repoParams = {
+                   ...values,
+                   info: this.selectedRepoRows.map(host => {
+                     return {
+                       host_id: host.host_id,
+                       host_name: host.host_name,
+                       host_ip: host.host_ip
+                     };
+                   })
+                 };
+                 // make request
+                generateRepoTask(repoParams)
+                  .then(function(res) {
+                    _this.$message.success(res.msg);
+                    console.log(excuteASAP);
+                    if (excuteASAP) {
+                      console.log(_this.hostList);
+                      _this.handleExcuteASAP(res.task_id, res);
+                    } else {
+                      _this.visible = false;
+                      _this.handleGenerateSuccess(res, 'REPO设置', 'normal');
+                    }
+                  })
+                  .catch(function(err) {
+                    _this.$message.error(err.response.data.msg);
+                    _this.submitAndExecuteLoading = false;
+                  })
+                  .finally(function() {
+                    if (!excuteASAP) {
+                      _this.submitLoading = false;
+                    }
+                  });
+                break;
+              } else {
+                 this.$message.info('至少需要选择一个主机才能设置repo任务!');
+                 this.submitLoading = false;
+                 this.submitAndExecuteLoading = false;
+                 break;
+              }
           }
         }
       });
@@ -495,10 +508,10 @@ export default {
         .then(function(res) {
           let text = '';
           switch (data.type) {
-            case 'cve':
+            case 'cve fix':
               text = 'CVE修复';
               break;
-            case 'repo':
+            case 'repo set':
               text = 'REPO设置';
               break;
           }
@@ -586,14 +599,14 @@ export default {
     },
     // 自动填写任务信息
     setDefaultInfo() {
-      this.taskNameDefault = `${this.taskType === 'cve' ? 'CVE修复任务' : 'REPO设置任务'}`;
+      this.taskNameDefault = `${this.taskType === 'cve fix' ? 'CVE修复任务' : 'REPO设置任务'}`;
       switch (this.taskType) {
-        case 'cve':
+        case 'cve fix':
           this.taskDescDefault = `修复以下${this.cveListProps.length}个CVE：${this.cveListProps
             .map(cve => cve.cve_id)
             .join('、')}`;
           break;
-        case 'repo':
+        case 'repo set':
           this.taskDescDefault = `为以下${this.hostList.length}个主机设置Repo：${this.hostList
             .map(host => host.host_name)
             .join('、')}`;

@@ -147,12 +147,9 @@ export default {
   mounted: function() {
     this.getHostCount();
     store.dispatch('updateCount');
-
-    /*
-     * this.getResultCountTopTen()
-     * this.getResultList()
-     * this.getCveOverview()
-     */
+    //  this.getResultCountTopTen()
+    //  this.getResultList()
+     this.getCveOverview()
   },
   data() {
     return {
