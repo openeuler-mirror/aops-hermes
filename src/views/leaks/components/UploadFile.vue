@@ -3,14 +3,27 @@
     <a-button type="primary">上传安全公告</a-button>
     <a-modal title="上传文件" :visible="visible" :footer="null" @cancel="closeModal">
       <div>
-        <a-upload :file-list="fileDataList" :remove="removeFile" :before-upload="preUpload">
+        <a-upload
+        :file-list="fileDataList"
+        :remove="removeFile"
+        :before-upload="preUpload">
           <div style="display:flex;">
             <div style="flex">
               <a-button> <a-icon type="upload" /> 选择文件 </a-button>
             </div>
-            <div style="margin-left: 35px;margin-top: 3px;font-size:15px;">支持类型: xml、zip、tar.gz、tar.bz2</div>
+            <div style="margin-left: 35px;margin-top: 3px;font-size:15px;">支持类型: xml、zip</div>
           </div>
         </a-upload>
+      </div>
+      <div style="margin-top: 14px;font-size: 15px;">
+        <a-radio-group name="radioGroup" :default-value="1" @change="onChange">
+          <a-radio :value="1">
+            不受影响
+          </a-radio>
+          <a-radio :value="2">
+            受影响
+          </a-radio>
+        </a-radio-group>
       </div>
       <a-button
         type="primary"
@@ -26,7 +39,7 @@
 </template>
 
 <script>
-import {upload} from '@/api/leaks';
+import {upload, reupload} from '@/api/leaks';
 
 export default {
   name: 'AddRepoModal',
@@ -34,6 +47,7 @@ export default {
   props: {},
   data() {
     return {
+      value: 1,
       fileDataList: [],
       visible: false,
       uploading: false
@@ -47,6 +61,9 @@ export default {
       this.visible = false;
       this.fileDataList = [];
     },
+    onChange(e) {
+      this.value = e.target.value;
+    },
     removeFile(file) {
       const index = this.fileDataList.indexOf(file);
       const newfileDataList = this.fileDataList.slice();
@@ -57,7 +74,7 @@ export default {
       this.fileDataList = [file];
       // 文件类型
       var suffix = file.name.substring(file.name.lastIndexOf('.') + 1);
-      var arr = ['xml', 'zip', 'tar.gz', 'tar.bz2'];
+      var arr = ['xml', 'zip'];
       if (!arr.includes(suffix)) {
         this.$message.error('文件类型不符合规定!');
         this.removeFile(file);
@@ -71,6 +88,7 @@ export default {
         this.removeFile(file);
         return false;
       }
+      return false;
     },
     goUpload() {
       const {fileDataList} = this;
@@ -80,7 +98,9 @@ export default {
       });
       this.uploading = true;
       const _this = this;
-      upload(formData)
+      console.log(this.value);
+      if (this.value === 1) {
+        reupload(formData)
         .then(function(res) {
           _this.$message.success(res.msg);
           _this.$emit('addSuccess');
@@ -95,6 +115,23 @@ export default {
           _this.visible = false;
           _this.fileDataList = [];
         });
+      } else {
+        upload(formData)
+        .then(function(res) {
+          _this.$message.success(res.msg);
+          _this.$emit('addSuccess');
+          _this.fileDataList = [];
+          _this.uploading = false;
+        })
+        .catch(function(err) {
+          _this.uploading = false;
+          _this.$message.error(err.response.data.msg || err.response.data.detail);
+        })
+        .finally(function() {
+          _this.visible = false;
+          _this.fileDataList = [];
+        });
+      }
     }
   }
 };
@@ -116,5 +153,9 @@ export default {
   bottom: 270px;
   height: 24px;
   left: -80px;
+}
+
+.influnceIcon{
+  margin-right: 10px;
 }
 </style>

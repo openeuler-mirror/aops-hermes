@@ -11,6 +11,9 @@
     </a-row>
     <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
       <a-col>
+        <a-input-search placeholder="按主机名搜索" style="width: 200px" @search="onSearch" />
+      </a-col>
+      <a-col>
         <a-row type="flex" :gutter="6">
           <a-col v-if="selectedRowKeys.length > 0">
             <a-alert type="info" show-icon>
@@ -24,12 +27,12 @@
       </a-col>
       <a-col>
         <a-row type="flex" :gutter="6">
-          <a-col>
+          <!-- <a-col>
             <a-input-search placeholder="按主机名搜索" style="width: 200px" @search="onSearch" />
-          </a-col>
+          </a-col> -->
           <a-col v-if="standalone && selectedRowKeys.length > 0">
             <create-repair-task-drawer
-              taskType="repo"
+              taskType="repo set"
               dataType="selected"
               hostListType="bySelection"
               :hostList="selectedRowsAll"
@@ -39,7 +42,7 @@
           </a-col>
           <a-col v-if="standalone && selectedRowKeys.length === 0">
             <create-repair-task-drawer
-              taskType="repo"
+              taskType="repo set"
               dataType="all"
               hostListType="bySelection"
               :hostList="hostListAll"
@@ -55,10 +58,13 @@
           <a-col v-if="standalone && selectedRowKeys.length === 0">
             <a-button @click="handleScanAll" :loading="scanloading" type="primary">漏洞扫描</a-button>
           </a-col>
+          <a-col v-if="standalone">
+            <a-button @click="handleExport" type="primary">导出</a-button>
+          </a-col>
           <a-col v-if="!standalone && selectedRowKeys.length === 0">
             <create-repair-task-drawer
               text="生成修复任务"
-              taskType="cve"
+              taskType="cve fix"
               :cveListProps="cveList"
               hostListType="byLoading"
               @createSuccess="handleTaskCreateSuccess"
@@ -66,13 +72,14 @@
           </a-col>
           <a-col v-if="!standalone && selectedRowKeys.length !== 0">
             <create-repair-task-drawer
-              taskType="cve"
+              taskType="cve fix"
               :cveListProps="cveList"
               hostListType="bySelection"
               :hostList="selectedRowsAll"
               @createSuccess="handleTaskCreateSuccess"
             />
           </a-col>
+          <a-col></a-col>
           <a-col v-if="standalone">
             <a-button @click="handleRefresh">
               <a-icon type="redo" />
@@ -108,9 +115,10 @@
  */
 
 import CreateRepairTaskDrawer from './CreateRepairTaskDrawer';
-import {getHostLeakList, scanHost, getHostScanStatus, getRepoList} from '@/api/leaks';
+import {getHostLeakList, scanHost, getHostScanStatus, getRepoList, getCveExport} from '@/api/leaks';
 import {hostGroupList} from '@/api/assest';
 import {getSelectedRow} from '../utils/getSelectedRow';
+import {downloadBlobFile} from '@/views/utils/downloadBlobFile';
 
 import {dateFormat} from '@/views/utils/Utils';
 import configs from '@/config/defaultSettings';
@@ -293,6 +301,28 @@ export default {
     };
   },
   methods: {
+    handleExport() {
+      if (this.selectedRowKeys.length !== 0) {
+        console.log(this.selectedRowKeys);
+        const _this = this;
+        getCveExport(
+          _this.selectedRowKeys
+        )
+        .then(function(res) {
+          console.log(res);
+          downloadBlobFile(res.data, res.fileName);
+          // _this.scanStatusData = res.result || {};
+        })
+        .catch(function(err) {
+          _this.$message.error(err.response.data.msg);
+        })
+        .finally(function() {
+          _this.scanStatusloading = false;
+        });
+      } else {
+        this.$message.info('请至少选择一组主机!');
+      }
+    },
     handleTableChange(pagination, filters, sorter) {
       // 存储翻页状态
       this.pagination = pagination;
@@ -372,6 +402,7 @@ export default {
               title: '有主机正在进行扫描，不能扫描全部主机！'
             });
           } else {
+            console.log(_this.filters)
             const hasFilter = _this.checkHasFilter(_this.filters);
             _this.$confirm({
               title: hasFilter ? '按当前筛选条件扫描主机？' : '确定扫描全部主机?',
@@ -479,6 +510,7 @@ export default {
       this.hostTableIsLoading = true;
       const pagination = this.pagination || {};
       const filters = this.filters || {};
+      console.log(filters);
       const sorter = this.sorter || {};
       // 非standalone模式下触发外部获取数据
       if (!this.standalone) {
@@ -553,10 +585,11 @@ export default {
         this.filters = {};
       }
       if (text !== '') {
-        this.filters.hostName = text;
+        this.filters.host_name = text;
       } else {
-        this.filters.hostName = undefined;
+        this.filters.host_name = undefined;
       }
+      console.log(this.filters);
       this.getHostList();
       if (this.standalone) {
         this.getHostListAll();

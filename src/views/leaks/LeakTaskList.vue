@@ -5,6 +5,9 @@
       <div>
         <a-row type="flex" class="aops-app-table-control-row" :gutter="6" justify="space-between">
           <a-col>
+              <a-input-search placeholder="按任务名称搜索" style="width: 200px" @search="onSearch" />
+          </a-col>
+          <a-col>
             <a-row type="flex" :gutter="6">
               <a-col v-if="selectedRowKeys.length > 0">
                 <a-alert type="info" show-icon class="selection-alert">
@@ -17,9 +20,6 @@
             </a-row>
           </a-col>
           <a-row type="flex" :gutter="6">
-            <a-col>
-              <a-input-search placeholder="按任务名称搜索" style="width: 200px" @search="onSearch" />
-            </a-col>
             <a-col>
               <a-button
                 type="primary"
@@ -50,13 +50,12 @@
           </span>
           <div slot="statuses" slot-scope="statuses">
             <span>
-              {{ statuses && statuses['running'] === 1 ? '运行中' : '等待中' }}
+              {{ statuses && statuses['running'] >= 1 ? '运行中' : '等待中' }}
               <a-icon v-if="statuses && statuses['running']" type="loading" class="status-icon color-running-circle" />
               <a-icon v-else type="clock-circle" />
             </span>
           </div>
           <span slot="action" slot-scope="action, record">
-            <a @click="downloadTask(record.task_id, record.task_type)">下载</a>
             <a-divider type="vertical" />
             <a-popconfirm
               title="你确定执行这个任务吗?"
@@ -95,9 +94,8 @@ import {PageHeaderWrapper} from '@ant-design-vue/pro-layout';
 import CutText from '@/components/CutText';
 
 import {dateFormat} from '@/views/utils/Utils';
-import {downloadBlobFile} from '@/views/utils/downloadBlobFile';
 import {getSelectedRow} from './utils/getSelectedRow';
-import {executeTask, deleteTask, getTaskList, getTaskProgress, getPlaybook} from '@/api/leaks';
+import {executeTask, deleteTask, getTaskList, getTaskProgress} from '@/api/leaks';
 import configs from '@/config/defaultSettings';
 
 const defaultPagination = {
@@ -179,11 +177,11 @@ export default {
           filters: [
             {
               text: '漏铜修复',
-              value: 'cve'
+              value: 'cve fix'
             },
             {
               text: 'REPO设置',
-              value: 'repo'
+              value: 'repo set'
             }
           ]
         },
@@ -220,20 +218,6 @@ export default {
       this.sorter = sorter;
       // 出发排序、筛选、分页时，重新请求主机列表
       this.getTaskList();
-    },
-    downloadTask(taskId, taskType) {
-      const _this = this;
-      getPlaybook({
-        taskId: taskId,
-        taskType: taskType
-      })
-        .then(function(res) {
-          // download files
-          downloadBlobFile(res.data, res.fileName);
-        })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
-        });
     },
     executeTask(taskId) {
       const _this = this;

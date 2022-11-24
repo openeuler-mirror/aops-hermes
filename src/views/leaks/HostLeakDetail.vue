@@ -28,6 +28,12 @@
               <a-button type="primary" @click="sacnHost" :loading="scanloading || scanStatus === 'scanning'">
                 {{ scanStatus === 'scanning' ? '扫描中' : '漏洞扫描' }}
               </a-button>
+              <a-button
+              type="primary"
+              @click="handleExport"
+              style="margin-left: 20px;">
+                导出cve信息
+              </a-button>
             </a-col>
           </a-row>
         </div>
@@ -58,10 +64,10 @@
 
 import {PageHeaderWrapper} from '@ant-design-vue/pro-layout';
 import CvesTable from './components/CvesTable';
-
+import {downloadBlobFile} from '@/views/utils/downloadBlobFile';
 import {i18nRender} from '@/vendor/ant-design-pro/locales';
 import {dateFormat} from '@/views/utils/Utils';
-import {getHostInfo, getCveUnderHost, scanHost, getHostScanStatus} from '@/api/leaks';
+import {getHostInfo, getCveUnderHost, scanHost, getHostScanStatus, getCveExport} from '@/api/leaks';
 import configs from '@/config/defaultSettings';
 
 export default {
@@ -102,7 +108,7 @@ export default {
       cveList: [],
       cveIsLoading: false,
       paginationTotal: undefined,
-
+      affected: true,
       cveAllList: [],
       cveAllIsLoading: false,
       // 主机扫描状态数据
@@ -114,6 +120,22 @@ export default {
   },
   methods: {
     dateFormat,
+    handleExport() {
+        const _this = this;
+        getCveExport(
+          [_this.hostId]
+        )
+        .then(function(res) {
+          console.log(res);
+          downloadBlobFile(res.data, res.fileName);
+        })
+        .catch(function(err) {
+          _this.$message.error(err.response.data.msg);
+        })
+        .finally(function() {
+          _this.scanStatusloading = false;
+        });
+    },
     getDetail() {
       const _this = this;
       this.infoLoading = true;
@@ -138,7 +160,8 @@ export default {
       this.cveIsLoading = true;
       getCveUnderHost({
         ...data,
-        host_id: hostId
+        host_id: hostId,
+        affected: this.affected
       })
         .then(function(res) {
           _this.cveList = res.result;

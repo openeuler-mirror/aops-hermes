@@ -3,7 +3,7 @@
  */
 
 import request from '@/vendor/ant-design-pro/utils/request';
-import {getNotEmptyObjectOrNull} from '@/vendor/ant-design-pro/utils/util';
+// import { getNotEmptyObjectOrNull } from '@/vendor/ant-design-pro/utils/util';
 
 const api = {
   getCveOverview: '/vulnerability/cve/overview',
@@ -37,7 +37,9 @@ const api = {
   getRepoTaskResult: '/vulnerability/task/repo/result/get',
   getPlaybook: '/vulnerability/task/playbook/get',
   getRepoTemplate: '/vulnerability/repo/template/get',
-  upload: '/vulnerability/cve/advisory/upload'
+  upload: '/vulnerability/cve/advisory/upload',
+  reupload: '/vulnerability/cve/unaffected/upload',
+  getCveExport: '/vulnerability/cve/info/export'
 };
 
 const sorterMap = {
@@ -47,12 +49,33 @@ const sorterMap = {
 
 export default api;
 
+export function getCveExport(parameter) {
+  return request({
+    url: api.getCveExport,
+    method: 'post',
+    responseType: 'blob',
+    data: {
+      host_list: parameter
+    },
+    headers: { 'Content-Type': 'application/json;charset=utf-8' }
+  });
+}
+
 export function upload(file) {
   return request({
     url: api.upload,
     method: 'post',
     data: file,
-    headers: {'Content-Type': 'application/json;charset=utf-8'}
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+  });
+}
+
+export function reupload(file) {
+  return request({
+    url: api.reupload,
+    method: 'post',
+    data: file,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   });
 }
 
@@ -63,7 +86,7 @@ export function getCveOverview(parameter) {
   });
 }
 
-export function getCveList({tableInfo, ...parameter}) {
+export function getCveList({ tableInfo, ...parameter }) {
   return request({
     url: api.getCveList,
     method: 'post',
@@ -71,6 +94,7 @@ export function getCveList({tableInfo, ...parameter}) {
       sort: sorterMap[tableInfo.sorter.order] ? tableInfo.sorter.field : undefined,
       direction: sorterMap[tableInfo.sorter.order],
       filter: {
+        affected: tableInfo.affected,
         cve_id: tableInfo.filters.cveId,
         severity: tableInfo.filters.severity || [],
         status: tableInfo.filters.status || []
@@ -91,7 +115,7 @@ export function getCveInfo(parameter) {
   });
 }
 
-export function setCveStatus({cveList, status}) {
+export function setCveStatus({ cveList, status }) {
   return request({
     url: api.setCveStatus,
     method: 'post',
@@ -102,7 +126,7 @@ export function setCveStatus({cveList, status}) {
   });
 }
 
-export function getHostUnderCVE({tableInfo, ...parameter}) {
+export function getHostUnderCVE({ tableInfo, ...parameter }) {
   return request({
     url: api.getHostUnderCVE,
     method: 'post',
@@ -110,14 +134,19 @@ export function getHostUnderCVE({tableInfo, ...parameter}) {
       cve_id: parameter.cve_id,
       sort: tableInfo.sorter.field,
       direction: sorterMap[tableInfo.sorter.order],
-      filter: getNotEmptyObjectOrNull(tableInfo.filters),
+      filter: {
+        host_name: tableInfo.filters.host_name === null ? undefined : tableInfo.filters.host_name,
+        host_group: tableInfo.filters.host_group === null ? undefined : tableInfo.filters.host_group,
+        repo: tableInfo.filters.repo === null ? undefined : tableInfo.filters.repo,
+        last_scan: tableInfo.filters.last_scan
+      },
       page: tableInfo.pagination.current,
       per_page: tableInfo.pagination.pageSize
     }
   });
 }
 
-export function getHostUnderMultipleCVE({tableInfo, ...parameter}) {
+export function getHostUnderMultipleCVE({ tableInfo, ...parameter }) {
   return request({
     url: api.getHostUnderMultipleCVE,
     method: 'post',
@@ -127,7 +156,7 @@ export function getHostUnderMultipleCVE({tableInfo, ...parameter}) {
   });
 }
 
-export function getActionUnderMultipleCVE({tableInfo, ...parameter}) {
+export function getActionUnderMultipleCVE({ tableInfo, ...parameter }) {
   return request({
     url: api.getActionUnderMultipleCVE,
     method: 'post',
@@ -137,7 +166,7 @@ export function getActionUnderMultipleCVE({tableInfo, ...parameter}) {
   });
 }
 
-export function getHostLeakList({tableInfo, ...parameter}) {
+export function getHostLeakList({ tableInfo, ...parameter }) {
   return request({
     url: api.getHostLeakList,
     method: 'post',
@@ -145,7 +174,7 @@ export function getHostLeakList({tableInfo, ...parameter}) {
       sort: tableInfo.sorter.field,
       direction: sorterMap[tableInfo.sorter.order],
       filter: {
-        host_name: tableInfo.filters.hostName,
+        host_name: tableInfo.filters.host_name,
         host_group: tableInfo.filters.host_group,
         repo: tableInfo.filters.repo
       },
@@ -171,7 +200,12 @@ export function scanHost(parameter) {
     method: 'post',
     data: {
       host_list: parameter.hostList,
-      filter: parameter.filter || {}
+      filter: {
+        host_name: parameter.filter.host_name === null ? undefined : parameter.filter.host_name,
+        host_group: parameter.filter.host_group.length === 0 ? undefined : parameter.filter.host_group,
+        repo: parameter.filter.repo.length === 0 ? undefined : parameter.filter.repo,
+        last_scan: parameter.filter.last_scan
+      }
     }
   });
 }
@@ -186,7 +220,7 @@ export function getHostScanStatus(parameter) {
   });
 }
 
-export function getCveUnderHost({tableInfo, ...parameter}) {
+export function getCveUnderHost({ tableInfo, ...parameter }) {
   return request({
     url: api.getCveUnderHost,
     method: 'post',
@@ -196,6 +230,7 @@ export function getCveUnderHost({tableInfo, ...parameter}) {
       direction: sorterMap[tableInfo.sorter.order],
       filter: {
         cve_id: tableInfo.filters.cveId,
+        affected: tableInfo.affected,
         severity: tableInfo.filters.severity || [],
         status: tableInfo.filters.status || []
       },
@@ -205,7 +240,7 @@ export function getCveUnderHost({tableInfo, ...parameter}) {
   });
 }
 
-export function addRepo({repoName, repoData}) {
+export function addRepo({ repoName, repoData }) {
   return request({
     url: api.addRepo,
     method: 'post',
@@ -282,7 +317,7 @@ export function deleteTask(parameters) {
   });
 }
 
-export function getTaskList({tableInfo, ...parameter}) {
+export function getTaskList({ tableInfo, ...parameter }) {
   return request({
     url: api.getTaskList,
     method: 'post',
@@ -319,7 +354,7 @@ export function getTaskInfo(parameters) {
   });
 }
 
-export function getCveUnderCveTask({tableInfo, ...parameters}) {
+export function getCveUnderCveTask({ tableInfo, ...parameters }) {
   const reboot = tableInfo.filters.reboot && tableInfo.filters.reboot[0];
   return request({
     url: api.getCveUnderCveTask,
@@ -372,7 +407,7 @@ export function rollbackCveTask(parameters) {
   });
 }
 
-export function getHostOfCveInCveTask({tableInfo, ...parameters}) {
+export function getHostOfCveInCveTask({ tableInfo, ...parameters }) {
   return request({
     url: api.getHostOfCveInCveTask,
     method: 'post',
@@ -383,7 +418,7 @@ export function getHostOfCveInCveTask({tableInfo, ...parameters}) {
   });
 }
 
-export function getHostUnderRepoTask({tableInfo, ...parameters}) {
+export function getHostUnderRepoTask({ tableInfo, ...parameters }) {
   return request({
     url: api.getHostUnderRepoTask,
     method: 'post',
@@ -410,7 +445,7 @@ export function getRepoTaskResult(parameters) {
   });
 }
 
-export function getPlaybook({tableInfo, ...parameters}) {
+export function getPlaybook({ tableInfo, ...parameters }) {
   return request({
     url: api.getPlaybook,
     method: 'get',

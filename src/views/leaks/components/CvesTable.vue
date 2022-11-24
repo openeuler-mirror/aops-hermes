@@ -1,6 +1,19 @@
 <template>
   <div>
     <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
+      <a-col v-if="!standalone">
+        <a-radio-group default-value="a" button-style="solid" @change="handleChange">
+          <a-radio-button value="a">
+            受影响
+          </a-radio-button>
+          <a-radio-button value="b">
+            不受影响
+          </a-radio-button>
+        </a-radio-group>
+      </a-col>
+      <a-col>
+        <a-input-search placeholder="按CVE ID搜索" style="width: 200px" @search="onSearch" />
+      </a-col>
       <a-col>
         <a-row type="flex" :gutter="6">
           <a-col v-if="selectedRowKeys.length > 0">
@@ -15,9 +28,9 @@
       </a-col>
       <a-col>
         <a-row type="flex" :gutter="6">
-          <a-col>
+          <!-- <a-col>
             <a-input-search placeholder="按CVE ID搜索" style="width: 200px" @search="onSearch" />
-          </a-col>
+          </a-col> -->
           <a-col>
             <status-change-modal :selectedRowsAll="selectedRowsAll" @statusUpdated="handleStatusUpdated" />
           </a-col>
@@ -27,7 +40,7 @@
           <a-col v-if="selectedRowKeys.length === 0">
             <create-repair-task-drawer
               text="生成修复任务"
-              taskType="cve"
+              taskType="cve fix"
               :cveListProps="standalone ? cveAllList : cveAllListProp"
               :loading="standalone ? cveAllIsLoading : cveAllIsLoadingProp"
               :hostListType="standalone ? 'byLoading' : 'byOneHost'"
@@ -37,7 +50,7 @@
           </a-col>
           <a-col v-else>
             <create-repair-task-drawer
-              taskType="cve"
+              taskType="cve fix"
               :cveListProps="selectedRowsAll"
               :hostListType="standalone ? 'byLoading' : 'byOneHost'"
               :hostList="hostList"
@@ -287,6 +300,8 @@ export default {
   },
   data() {
     return {
+      scanloading: false,
+      size: 'small',
       tableData: [],
       tableIsLoading: false,
       // pagination control
@@ -300,10 +315,20 @@ export default {
       cveAllList: [],
       cveAllIsLoading: false,
       // 控制上传弹框显隐
-      upLoadFileVisible: false
+      upLoadFileVisible: false,
+      // 控制获取的cve是否受影响的变量，默认为受影响
+      affected: true
     };
   },
   methods: {
+    handleChange(e) {
+      if (e.target.value === 'a') {
+        this.affected = true;
+      } else {
+        this.affected = false;
+      }
+      this.getCves();
+    },
     handleTableChange(pagination, filters, sorter) {
       // 存储翻页状态
       this.pagination = pagination;
@@ -350,6 +375,7 @@ export default {
               pageSize: pagination.pageSize
             },
             filters: filters,
+            affected: this.affected,
             sorter: {
               field: sorter.field,
               order: sorter.order
@@ -365,6 +391,7 @@ export default {
             pageSize: pagination.pageSize
           },
           filters: filters,
+          affected: this.affected,
           sorter: {
             field: sorter.field,
             order: sorter.order
@@ -402,6 +429,7 @@ export default {
         tableInfo: {
           pagination: {},
           filters: {},
+          affected: this.affected,
           sorter: {}
         }
       })
@@ -429,6 +457,9 @@ export default {
     },
     handleTaskCreateSuccess() {
       this.handleRefresh();
+    },
+    handleScanAll() {
+
     },
     handleStatusUpdated() {
       this.selectedRowKeys = [];
