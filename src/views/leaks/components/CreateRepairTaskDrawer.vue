@@ -344,8 +344,8 @@ export default {
       this.form.resetFields();
     },
     // 判断cve修复任务时是否有选择cve
-    cveLiIsEmpty(){
-      if(this.cveList.length!==0){
+    cveLiIsEmpty() {
+      if (this.cveList.length !== 0) {
         return false
       }
       this.visible = false;
@@ -389,7 +389,7 @@ export default {
       switch (this.hostListType) {
         case hostListTypes[0]:
           _this.hostUnderCveLoading = true;
-          if(this.cveLiIsEmpty()){
+          if (this.cveLiIsEmpty()) {
             return
           }
           getHostUnderMultipleCVE({
@@ -409,7 +409,7 @@ export default {
           break;
         case hostListTypes[1]:
         case hostListTypes[2]:
-          if(this.cveLiIsEmpty()){
+          if (this.cveLiIsEmpty()) {
               return
             }
           const tempObj2 = {};
