@@ -343,6 +343,17 @@ export default {
       this.cveList = [];
       this.form.resetFields();
     },
+    // 判断cve修复任务时是否有选择cve
+    cveLiIsEmpty(){
+      if(this.cveList.length!==0){
+        return false
+      }
+      this.visible = false;
+      this.$message.info('至少需要选择一个CVE才能进行修复!');
+      this.hostUnderCveLoading = false;
+      return true
+    },
+
     // 每次展开抽屉时触发，替代mounted
     handleOpen() {
       // inital defualt data
@@ -378,6 +389,9 @@ export default {
       switch (this.hostListType) {
         case hostListTypes[0]:
           _this.hostUnderCveLoading = true;
+          if(this.cveLiIsEmpty()){
+            return
+          }
           getHostUnderMultipleCVE({
             cveList: this.cveList.map(cve => cve.cve_id)
           })
@@ -395,6 +409,9 @@ export default {
           break;
         case hostListTypes[1]:
         case hostListTypes[2]:
+          if(this.cveLiIsEmpty()){
+              return
+            }
           const tempObj2 = {};
           this.cveList.forEach(cve => {
             tempObj2[cve.cve_id] = this.hostList.map(host => {

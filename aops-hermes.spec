@@ -1,8 +1,8 @@
 %define debug_package %{nil}
 
 Name:		aops-hermes
-Version:	v2.0.0
-Release:	1
+Version:	v1.0.0
+Release:	2
 Summary:	Web for an intelligent diagnose frame
 License:	MulanPSL2
 URL:		https://gitee.com/openeuler/%{name}
@@ -43,5 +43,8 @@ cp -r deploy/aops-hermes.service %{buildroot}/usr/lib/systemd/system/
 
 
 %changelog
-* Fri Sep 30 2022 lostway<luoshengwei@huawei.com> - 2.0.0-1
+* Fri Nov 25 2022 zhuyuncheng<zhuyuncheng@huawei.com> - v1.0.0-2
+- Update cve manager
+
+* Tue Nov 22 2022 zhuyuncheng<zhuyuncheng@huawei.com> - v1.0.0-1
 - Package init

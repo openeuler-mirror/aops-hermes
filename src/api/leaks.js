@@ -200,7 +200,7 @@ export function scanHost(parameter) {
     method: 'post',
     data: {
       host_list: parameter.hostList,
-      filter: {
+      filter: parameter.filter === null ? {} : {
         host_name: parameter.filter.host_name === null ? undefined : parameter.filter.host_name,
         host_group: parameter.filter.host_group.length === 0 ? undefined : parameter.filter.host_group,
         repo: parameter.filter.repo.length === 0 ? undefined : parameter.filter.repo,
