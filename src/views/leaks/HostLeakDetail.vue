@@ -126,7 +126,6 @@ export default {
           [_this.hostId]
         )
         .then(function(res) {
-          console.log(res);
           downloadBlobFile(res.data, res.fileName);
         })
         .catch(function(err) {
@@ -198,7 +197,8 @@ export default {
       const _this = this;
       this.scanloading = true;
       scanHost({
-        hostList: [_this.hostId]
+        hostList: [_this.hostId],
+        filter: null
       })
         .then(function(res) {
           _this.$message.success(res.msg);

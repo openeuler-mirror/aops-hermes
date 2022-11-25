@@ -11,7 +11,10 @@
             <div style="flex">
               <a-button> <a-icon type="upload" /> 选择文件 </a-button>
             </div>
-            <div style="margin-left: 35px;margin-top: 3px;font-size:15px;">支持类型: xml、zip</div>
+            <div style="margin-left: 35px;margin-top: 3px;font-size:15px;">
+              <p>支持类型: xml、zip</p>
+              <p>文件需小于20M、压缩包内文件数小于100</p>
+            </div>
           </div>
         </a-upload>
       </div>
