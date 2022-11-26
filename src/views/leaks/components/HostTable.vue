@@ -366,7 +366,8 @@ export default {
                 _this.scanloading = true;
                 const requestIds = _this.selectedRowKeys;
                 return scanHost({
-                  hostList: requestIds
+                  hostList: requestIds,
+                  filter: null
                 })
                   .then(function(res) {
                     _this.$message.success(res.msg);

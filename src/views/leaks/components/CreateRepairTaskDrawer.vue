@@ -27,13 +27,13 @@
           </a-form-item>
           <a-form-item label="任务描述">
             <a-textarea
-              :maxLength="60"
+              :maxLength="50"
               v-decorator="[
                 'task_desc',
                 {rules: [{required: true, message: '请输入任务描述'}], initialValue: taskDescDefault}
               ]"
               :rows="4"
-              placeholder="请输入任务描述，60个字符以内"
+              placeholder="请输入任务描述，50个字符以内"
             />
           </a-form-item>
           <a-form-item label="自动重启" v-if="taskType === 'cve fix'">
