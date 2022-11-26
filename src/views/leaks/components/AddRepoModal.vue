@@ -13,7 +13,7 @@
         <a-form-item label="REPO源名称">
           <a-input
             :maxLength="19"
-            placeholder="请输入REPO源名称，19个字符以内"
+            placeholder="请输入REPO源名称，20个字符以内"
             v-decorator="['repoName', {rules: [{required: true, message: '请输入REPO名称'}]}]"
           >
           </a-input>
@@ -23,7 +23,8 @@
             <a-textarea
               v-decorator="['repoData', {rules: [{required: true, message: '请输入REPO描述'}]}]"
               :rows="16"
-              placeholder="请输入REPO内容"
+              :maxLength="512"
+              placeholder="请输入REPO内容，512个字符以内"
             />
             <a-button class="download-template" @click="handleGetTemplate">下载模板</a-button>
           </div>
