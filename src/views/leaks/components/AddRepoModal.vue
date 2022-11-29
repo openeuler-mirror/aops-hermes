@@ -12,16 +12,18 @@
       <a-form :form="form" :label-col="{span: 5}" :wrapper-col="{span: 19}">
         <a-form-item label="REPO源名称">
           <a-input
-            :maxLength="19"
+            :maxLength="20"
             placeholder="请输入REPO源名称，20个字符以内"
-            v-decorator="['repoName', {rules: [{required: true, message: '请输入REPO名称'}]}]"
+            v-decorator="['repoName', { rules: [{ required: true, message: '请输入REPO名称' },
+                                                { max: 20, message: '20个字符以内' }]}]"
           >
           </a-input>
         </a-form-item>
         <a-form-item label="REPO内容">
           <div>
             <a-textarea
-              v-decorator="['repoData', {rules: [{required: true, message: '请输入REPO描述'}]}]"
+              v-decorator="['repoData', {rules: [{ required: true, message: '请输入REPO描述' },
+                                        { max: 512, message: '512个字符以内' }]}]"
               :rows="16"
               :maxLength="512"
               placeholder="请输入REPO内容，512个字符以内"

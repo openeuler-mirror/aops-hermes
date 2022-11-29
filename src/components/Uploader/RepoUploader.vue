@@ -1,6 +1,6 @@
 <template>
   <div>
-    <input type="file" name="file" :id="uid" />
+    <input type="file" name="file" @change="getFile" :id="uid" />
     <span class="error-msg">{{ errorMsg }}</span>
   </div>
 </template>
@@ -42,7 +42,6 @@ export default {
             this.errorMsg = `文件大小超过${_this.sizeLimit / 1024}KB`;
             throw new Error(`文件大小超过${_this.sizeLimit / 1024}KB`);
           }
-
           const reader = new FileReader();
           file && reader.readAsText(file);
           reader.onload = function(e) {
@@ -50,26 +49,23 @@ export default {
               const content = e.target.result;
               _this.$emit('load', content);
               _this.$emit('change', content);
+              document.getElementById(_this.uid).value = '';
               resolve(content);
             } catch (errAsync) {
               _this.$emit('error', errAsync);
               _this.$emit('change');
+              document.getElementById(_this.uid).value = '';
               reject(errAsync);
             }
           };
         } catch (err) {
           _this.$emit('error', err);
           _this.$emit('change');
+          document.getElementById(_this.uid).value = '';
           reject(err);
         }
       });
     }
-  },
-  mounted() {
-    const _this = this;
-    document.getElementById(this.uid).addEventListener('change', function() {
-      _this.getFile();
-    });
   }
 };
 </script>
