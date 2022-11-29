@@ -232,13 +232,29 @@ export default {
           _this.$message.error(err.response.data.msg);
         });
     },
+    // 部分删除错误的提示信息
+    deletePartialFailMessage(taskId) {
+      var runningTaskName = this.tableData.filter(task => {
+        if (taskId.indexOf(task.task_id) !== -1) {
+          return task.task_name;
+        }
+      }).map(task => {
+        return task.task_name;
+      });
+      this.$message.warning('部分任务正在运行中请稍后重试!');
+      console.log(runningTaskName);
+    },
     deleteTask(taskList) {
       const _this = this;
       return deleteTask({
         taskList: taskList
       })
-        .then(function(res) {
-          _this.$message.success(res.msg);
+        .then(function (res) {
+          if (res.running_task && res.running_task.length !== 0) {
+            _this.deletePartialFailMessage(res.running_task);
+          } else {
+            _this.$message.success(res.msg);
+          }
           _this.selectedRowsAll = [];
           _this.selectedRowKeys = [];
           _this.getTaskList();
