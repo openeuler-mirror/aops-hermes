@@ -24,8 +24,8 @@
 import {getHostOfCveInCveTask} from '@/api/leaks';
 
 const statusTextMap = {
-  succeed: '已设置',
-  fail: '未设置',
+  succeed: '已修复',
+  fail: '未修复',
   running: '运行中',
   unknown: '未知'
 };

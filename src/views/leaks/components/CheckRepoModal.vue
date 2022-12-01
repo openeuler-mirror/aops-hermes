@@ -11,9 +11,9 @@
       <a-form-item label="REPO源名称">
         {{ detailProps.repo_name }}
       </a-form-item>
-      <a-form-item label="适用版本">
+      <!-- <a-form-item label="适用版本">
         {{ detailProps.repo_attr }}
-      </a-form-item>
+      </a-form-item> -->
       <a-form-item label="REPO内容">
         <div class="repo-content">{{ detailProps.repo_data }}</div>
       </a-form-item>

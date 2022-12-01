@@ -105,8 +105,9 @@
         slot-scope="host_name, record"
         >{{ host_name }}</router-link
       >
-      <div slot="last_scan" slot-scope="last_scan, record">
-            {{ record.last_scan === 0 ? '未扫描' : record.last_scan }}
+      <div slot="last_scan" slot-scope="last_scan">
+          {{ last_scan }}
+            <!-- {{ record.last_scan === null ? '未扫描' : record.last_scan }} -->
       </div>
     </a-table>
   </div>
@@ -520,7 +521,6 @@ export default {
       this.hostTableIsLoading = true;
       const pagination = this.pagination || {};
       const filters = this.filters || {};
-      console.log(filters);
       const sorter = this.sorter || {};
       // 非standalone模式下触发外部获取数据
       if (!this.standalone) {
