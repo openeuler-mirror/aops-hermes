@@ -24,17 +24,17 @@
 import {getHostOfCveInCveTask} from '@/api/leaks';
 
 const statusTextMap = {
-  fixed: '已修复',
-  unfixed: '未修复',
+  succeed: '已修复',
+  fail: '未修复',
   running: '运行中',
-  'on standby': '等待'
+  unknown: '未知'
 };
 
 const statusValueMap = {
-  fixed: 'success',
-  unfixed: 'error',
+  succeed: 'success',
+  fail: 'error',
   running: 'processing',
-  'on standby': 'default'
+  unknown: 'default'
 };
 
 export default {

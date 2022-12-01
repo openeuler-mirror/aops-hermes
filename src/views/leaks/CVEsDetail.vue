@@ -64,6 +64,8 @@
               <span v-else>无</span>
               <a-drawer title="关联CVE" :visible="relatedCveDrawerVisble" @close="relatedCveDrawerClose" width="400">
                 <table class="drawer-cve-table">
+                  <th>序号</th>
+                  <th>cve名称</th>
                   <tr v-for="(cve, index) in detail.related_cve" :key="index">
                     <td>{{ index + 1 }}</td>
                     <td>
@@ -252,6 +254,10 @@ export default {
   border: 1px solid #ccc;
   width: 100%;
   td {
+    border: 1px solid #ccc;
+    padding: 6px;
+  }
+  th {
     border: 1px solid #ccc;
     padding: 6px;
   }

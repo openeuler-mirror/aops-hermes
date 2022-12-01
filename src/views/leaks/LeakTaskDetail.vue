@@ -19,8 +19,13 @@
           </a-row>
           <a-row type="flex">
             <a-col :span="8">
-              <p>自动重启：{{ detail.auto_reboot ? '是' : '否' }}</p>
-              </a-col>
+              <p>自动重启：{{ detail.auto_reboot ? '是' : '否' }} <a-tooltip placement="top">
+                  <template slot="title">
+                    <span>是否开启自动重启，开启后若cve修复后需要重启则会进行重启， 否则不会重启</span>
+                  </template>
+                  <span><a-icon type="question-circle" /></span>
+              </a-tooltip></p>
+            </a-col>
           </a-row>
           <a-row v-if="detail.latest_execute_time">
             <a-col :span="8">
@@ -365,6 +370,16 @@ export default {
     dateFormat,
     handleTableChange(pagination, filters, sorter) {
       // 存储翻页状态
+      for (var key in filters) {
+        if (filters[key] !== null) {
+          if (filters[key].length === 0) {
+            filters[key] = undefined
+          }
+        } else {
+          filters[key] = undefined
+        }
+      }
+      console.log(filters);
       this.pagination = pagination;
       this.filters = Object.assign({}, this.filters, filters);
       this.sorter = sorter;

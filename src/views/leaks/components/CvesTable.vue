@@ -294,6 +294,10 @@ export default {
     }
   },
   watch: {
+    '$route' () {
+      this.getCves();
+      this.getCvesAll();
+    },
     paginationTotal() {
       this.pagination.total = this.paginationTotal;
     }
