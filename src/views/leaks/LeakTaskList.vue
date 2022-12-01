@@ -2,7 +2,7 @@
   <page-header-wrapper :breadcrumb="breadcrumb">
     <a-card :bordered="false" class="aops-theme">
       <h3>修复任务列表</h3>
-      <div>
+      <div class="leakbox">
         <a-row type="flex" class="aops-app-table-control-row" :gutter="6" justify="space-between">
           <a-col>
               <a-input-search placeholder="按任务名称搜索" style="width: 200px" @search="onSearch" />
@@ -48,9 +48,9 @@
           <span slot="desc" slot-scope="text">
             <cut-text :text="text" :length="20" />
           </span>
-          <div slot="statuses" slot-scope="statuses">
+          <div slot="statuses" slot-scope="statuses, record">
             <span>
-              {{ statuses && statuses['running'] >= 1 ? '运行中' : '等待中' }}
+              {{ checkStatus(statuses, record.task_type) }}
               <a-icon v-if="statuses && statuses['running']" type="loading" class="status-icon color-running-circle" />
               <a-icon v-else type="clock-circle" />
             </span>
@@ -98,6 +98,20 @@ import {getSelectedRow} from './utils/getSelectedRow';
 import {executeTask, deleteTask, getTaskList, getTaskProgress} from '@/api/leaks';
 import configs from '@/config/defaultSettings';
 
+const cveStatusTextMap = {
+  succeed: '修复成功',
+  fail: '待修复',
+  running: '运行中',
+  unknown: '未知'
+};
+
+const repoStatusTextMap = {
+  succeed: '已设置',
+  fail: '未设置',
+  running: '运行中',
+  unknown: '未知'
+};
+
 const defaultPagination = {
   current: 1,
   pageSize: 10,
@@ -120,7 +134,6 @@ export default {
       tableIsLoading: false,
       selectedRowKeys: [],
       selectedRowsAll: [],
-
       progressLoading: false,
       progressUpdateCaller: null
     };
@@ -207,6 +220,17 @@ export default {
     }
   },
   methods: {
+    checkStatus(data, tasktype) {
+      for (const key in data) {
+        if (data[key] >= 1) {
+          if (tasktype === 'cve fix') {
+            return cveStatusTextMap[key]
+          } else {
+            return repoStatusTextMap[key]
+          }
+        }
+      }
+    },
     onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys;
       this.selectedRowsAll = getSelectedRow(selectedRowKeys, this.selectedRowsAll, this.tableData, 'task_id');
@@ -350,8 +374,10 @@ export default {
     },
     // 将返回的任务状态更新到表格数据中，用于数据展示
     addStatusToData(statusMap) {
+      console.log(statusMap)
       this.tableData.forEach(task => {
         task.statuses = statusMap[task.task_id];
+        // task.statuses = task.task_type === 'cve fix' ? cveStatusTextMap[statusMap] : repoStatusTextMap[statusMap];
       });
       this.tableData = Object.assign([], this.tableData);
     },
@@ -375,6 +401,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.leakbox {
+  overflow: hidden;
+}
 .status-icon {
   margin: 0 2px;
 }

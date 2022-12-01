@@ -96,16 +96,14 @@ const cveStatusTextMap = {
   succeed: '修复成功',
   fail: '待修复',
   running: '运行中',
-  'on standby': '等待',
-  set: '已设置'
+  unknown: '未知'
 };
 
 const repoStatusTextMap = {
-  succeed: '设置成功',
-  fail: '设置失败',
+  succeed: '已设置',
+  fail: '未设置',
   running: '运行中',
-  'on standby': '等待',
-  set: '已设置'
+  unknown: '未知'
 };
 
 const statusValueMap = {
@@ -117,14 +115,14 @@ const statusValueMap = {
 };
 
 const statusResultTextMap = {
-  fixed: '已修复',
-  unfixed: '未修复',
+  succeed: '修复成功',
+  fail: '待修复',
   running: '运行中',
-  'on standby': '等待'
+  unknown: '未知'
 };
 
 const statusResultValueMap = {
-  fixed: 'success',
+  succeed: 'success',
   unfixed: 'error',
   running: 'processing',
   'on standby': 'default'

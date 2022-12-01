@@ -19,7 +19,7 @@
         </a-upload>
       </div>
       <div style="margin-top: 14px;font-size: 15px;">
-        <a-radio-group name="radioGroup" :default-value="1" @change="onChange">
+        <a-radio-group name="radioGroup" v-model="value" :default-value="1" @change="onChange">
           <a-radio :value="1">
             不受影响
           </a-radio>
@@ -109,14 +109,17 @@ export default {
           _this.$emit('addSuccess');
           _this.fileDataList = [];
           _this.uploading = false;
+          _this.value = 1;
         })
         .catch(function(err) {
           _this.uploading = false;
           _this.$message.error(err.response.data.msg || err.response.data.detail);
+          _this.value = 1;
         })
         .finally(function() {
           _this.visible = false;
           _this.fileDataList = [];
+          _this.value = 1;
         });
       } else {
         upload(formData)
@@ -125,14 +128,17 @@ export default {
           _this.$emit('addSuccess');
           _this.fileDataList = [];
           _this.uploading = false;
+          _this.value = 1;
         })
         .catch(function(err) {
           _this.uploading = false;
           _this.$message.error(err.response.data.msg || err.response.data.detail);
+          _this.value = 1;
         })
         .finally(function() {
           _this.visible = false;
           _this.fileDataList = [];
+          _this.value = 1;
         });
       }
     }

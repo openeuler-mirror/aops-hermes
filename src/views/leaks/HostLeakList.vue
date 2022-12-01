@@ -147,7 +147,7 @@ export default {
     handleDeleteRepo(repo) {
       const _this = this;
       this.$confirm({
-        content: () => `确认删除REPO：${repo.repo_name} 么?`,
+        content: () => `确认删除REPO：${repo.repo_name} ?`,
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '删除',

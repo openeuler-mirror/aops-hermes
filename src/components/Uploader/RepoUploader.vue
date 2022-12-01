@@ -21,7 +21,7 @@ export default {
     },
     sizeLimit: {
       type: Number,
-      default: 1024 * 1024 * 100 // 100MB
+      default: 1024 * 20 // 100MB
     }
   },
   data() {

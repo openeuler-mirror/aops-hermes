@@ -26,17 +26,31 @@
             <a-col :span="8">
               <p>
                 最新状态
-                <span
+                <a-tooltip placement="top">
+                  <template slot="title">
+                    <span>{{ taskType === 'cve fix' ? `修复成功` : `已设置` }}</span>
+                  </template>
+                  <span
                   ><a-icon type="check-circle" class="color-check-circle" />{{
                     detail.statuses && detail.statuses['succeed']
                   }}</span
-                >
-                <span
+                  >
+                </a-tooltip>
+                <a-tooltip placement="top">
+                  <template slot="title">
+                    <span>{{ taskType === 'cve fix' ? `待修复` : `未设置` }}</span>
+                  </template>
+                  <span
                   ><a-icon type="close-circle" class="color-close-circle" />{{
                     detail.statuses && detail.statuses['fail']
                   }}</span
                 >
-                <span>
+                </a-tooltip>
+                <a-tooltip placement="top">
+                  <template slot="title">
+                    <span>运行中</span>
+                  </template>
+                  <span>
                   <a-icon
                     v-if="detail.statuses && detail.statuses['running']"
                     type="loading"
@@ -45,11 +59,17 @@
                   <a-icon v-else type="loading-3-quarters" />
                   {{ detail.statuses && detail.statuses['running'] }}
                 </span>
-                <span
+                </a-tooltip>
+                <a-tooltip placement="top">
+                  <template slot="title">
+                    <span>未知</span>
+                  </template>
+                  <span
                   ><a-icon type="question-circle" class="color-standby-circle" />{{
                     detail.statuses && detail.statuses['unknown']
                   }}</span
                 >
+                </a-tooltip>
               </p>
             </a-col>
             <a-col :span="16">
@@ -93,14 +113,14 @@
               />
             </a-col>
             <a-col>
-              <a-button
+              <!-- <a-button
                 v-if="taskType === 'cve fix'"
                 type="danger"
                 @click="handleRollback"
                 :loading="detail.statuses['running'] > 0"
                 :disabled="selectedRowKeys.length <= 0 || detail.statuses['running'] > 0"
                 >回滚</a-button
-              >
+              > -->
             </a-col>
           </a-row>
         </a-col>

@@ -103,6 +103,9 @@
         slot-scope="host_name, record"
         >{{ host_name }}</router-link
       >
+      <div slot="last_scan" slot-scope="last_scan, record">
+            {{ record.last_scan === 0 ? '未扫描' : record.last_scan }}
+      </div>
     </a-table>
   </div>
 </template>
@@ -669,5 +672,8 @@ export default {
   font-weight: 400;
   font-size: 16px;
   margin: 0 6px;
+}
+.ant-table-wrapper {
+  overflow: hidden;
 }
 </style>
