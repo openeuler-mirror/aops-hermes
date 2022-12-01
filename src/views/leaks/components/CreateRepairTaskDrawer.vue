@@ -17,12 +17,12 @@
           <a-form-item label="任务类型">{{ taskTypsEnum[taskType] }}</a-form-item>
           <a-form-item label="任务名称">
             <a-input
-              :maxLength="50"
+              :maxLength="20"
               v-decorator="[
                 'task_name',
                 {rules: [{required: true, message: '请输入任务名称'}], initialValue: taskNameDefault}
               ]"
-              placeholder="请输入任务名称，50个字符以内"
+              placeholder="请输入任务名称，20个字符以内"
             />
           </a-form-item>
           <a-form-item label="任务描述">
@@ -629,8 +629,11 @@ export default {
             .join('、')}`;
           break;
       }
-      if (this.taskDescDefault.length > 60) {
-        this.taskDescDefault = this.taskDescDefault.slice(0, 60) + '...';
+      if (this.taskNameDefault.length > 20) {
+        this.taskNameDefault = this.taskDescDefault.slice(0, 17) + '...';
+      }
+      if (this.taskDescDefault.length > 50) {
+        this.taskDescDefault = this.taskDescDefault.slice(0, 47) + '...';
       }
     }
   }

@@ -65,7 +65,7 @@
         </a-row>
       </a-col>
     </a-row>
-    <a-table
+      <a-table
       rowKey="cve_id"
       :columns="standalone ? tableColumnsStandalone : tableColumns"
       :data-source="standalone ? tableData : inputList"
@@ -81,7 +81,7 @@
         <p>Description:</p>
         <p>{{ record.description }}</p>
       </div>
-    </a-table>
+      </a-table>
   </div>
 </template>
 
@@ -495,4 +495,8 @@ export default {
 };
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  .ant-table-wrapper {
+    overflow: hidden;
+  }
+</style>

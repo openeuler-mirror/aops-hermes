@@ -43,7 +43,7 @@ export default {
   },
   methods: {
     toSupprotFile() {
-      window.open('https://docs.openeuler.org/zh/docs/22.09/docs/A-Ops/overview.html');
+      window.open('https://docs.openeuler.org/zh/docs/20.03_LTS_SP1/docs/Releasenotes/%E6%B3%95%E5%BE%8B%E5%A3%B0%E6%98%8E.html');
     }
   },
   computed: {

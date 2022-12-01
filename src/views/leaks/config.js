@@ -44,7 +44,7 @@ export const severityMap = {
 export const severityColorMap = {
   Critical: '#f62f2f',
   High: '#fda72c',
-  Medium: '#fde92c',
+  Medium: 'rgb(167 152 27)',
   Low: '#3bd065',
   Unknown: '#ccc'
 };
