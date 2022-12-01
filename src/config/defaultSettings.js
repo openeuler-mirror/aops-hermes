@@ -8,5 +8,5 @@ export default {
   faultDiagnosisPropressInterval: 5000,
   // cve
   taskProgressUpdateInterval: 5000,
-  scanProgressInterval: 5000
+  scanProgressInterval: 500000
 };

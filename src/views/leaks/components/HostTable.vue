@@ -1,6 +1,7 @@
 <template>
   <div>
-    <a-row
+    <div class="mesinfo">
+      <a-row
       v-if="standalone && scanningHostIds.length > 0 && scanStatusloading"
       type="flex"
       justify="end"
@@ -9,6 +10,7 @@
       <a-icon type="loading" />
       <p class="scan-result-message">{{ `目前有${scanningHostIds.length}台机器正在扫描` }}</p>
     </a-row>
+    </div>
     <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
       <a-col>
         <a-input-search placeholder="按主机名搜索" style="width: 200px" @search="onSearch" />
@@ -275,6 +277,10 @@ export default {
     }
   },
   watch: {
+    '$route' () {
+      this.getHostList();
+      this.getHostGroup();
+    },
     paginationTotal() {
       this.pagination.total = this.paginationTotal;
     }
@@ -668,6 +674,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.mesinfo {
+  height: 20px;
+}
 .scan-result-message {
   font-weight: 400;
   font-size: 16px;

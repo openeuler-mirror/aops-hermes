@@ -11,7 +11,7 @@
         {{ `${selectedRowsAll.map(row => row.cve_id).join('、')}` }}
       </p>
       <p>的状态为：</p>
-      <a-select default-value="in review" style="width: 120px" @change="handleChange" :value="value">
+      <a-select v-model="value" style="width: 120px" @change="handleChange" :value="value">
         <a-select-option value="not reviewed">
           未关注
         </a-select-option>
@@ -50,7 +50,7 @@ export default {
     return {
       visible: false,
       isLoading: false,
-      value: 'in review'
+      value: ''
     };
   },
   methods: {
@@ -59,10 +59,11 @@ export default {
     },
     showModal() {
       this.visible = true;
-      this.value = 'in review';
+      this.value = '';
     },
     handleCancel() {
       this.visible = false;
+      this.value = '';
     },
     handleOk() {
       const _this = this;
@@ -76,12 +77,14 @@ export default {
           _this.$emit('statusUpdated');
 
           _this.visible = false;
+          _this.value = '';
         })
         .catch(function(err) {
           _this.$message.error(err.response.data.msg);
         })
         .finally(function() {
           _this.isLoading = false;
+          _this.value = '';
         });
     }
   }

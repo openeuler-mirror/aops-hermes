@@ -365,6 +365,16 @@ export default {
     dateFormat,
     handleTableChange(pagination, filters, sorter) {
       // 存储翻页状态
+      for (var key in filters) {
+        if (filters[key] !== null) {
+          if (filters[key].length === 0) {
+            filters[key] = undefined
+          }
+        } else {
+          filters[key] = undefined
+        }
+      }
+      console.log(filters);
       this.pagination = pagination;
       this.filters = Object.assign({}, this.filters, filters);
       this.sorter = sorter;
