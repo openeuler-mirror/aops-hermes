@@ -235,6 +235,11 @@ export default {
       ];
     }
   },
+  watch: {
+    '$route' () {
+      this.getTaskList();
+    }
+  },
   methods: {
     checkStatus(data, tasktype) {
       for (const key in data) {

@@ -1,7 +1,10 @@
 <template>
   <div>
-    <input type="file" name="file" @change="getFile" :id="uid" />
-    <span class="error-msg">{{ errorMsg }}</span>
+    <a-button size="small" class="divbtn">选择文件
+      <input type="file" name="file" @change="getFile" :id="uid" class="uploader" />
+    </a-button>
+    <span class="innerText">{{ fileName }}</span>
+    <div class="error-msg">{{ errorMsg }}</div>
   </div>
 </template>
 
@@ -26,7 +29,8 @@ export default {
   },
   data() {
     return {
-      errorMsg: ''
+      errorMsg: '',
+      fileName: ''
     };
   },
   methods: {
@@ -37,10 +41,11 @@ export default {
       return new Promise((resolve, reject) => {
         try {
           const file = document.getElementById(_this.uid).files[0];
-
+          this.fileName = file.name;
           if (file && _this.sizeLimit && _this.sizeLimit < file.size) {
             this.errorMsg = `文件大小超过${_this.sizeLimit / 1024}KB`;
-            throw new Error(`文件大小超过${_this.sizeLimit / 1024}KB`);
+            return false;
+            // throw new Error(`文件大小超过${_this.sizeLimit / 1024}KB`);
           }
           const reader = new FileReader();
           file && reader.readAsText(file);
@@ -71,8 +76,16 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.divbtn{
+  position: relative;
+  margin-right: 10px;
+}
+.uploader{
+  position: absolute; top: 0; left: 0; opacity: 0; cursor: pointer;
+}
 .error-msg {
   position: absolute;
+  color: #f5222d;
   width: 300px;
   top: 34px;
 }

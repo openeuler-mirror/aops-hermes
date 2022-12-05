@@ -32,7 +32,13 @@
           </div>
         </a-form-item>
         <a-form-item label="上传文件" class="upload-row">
-          <uploader toJSON uid="repoUploader" fileType="repo" @change="handleFileUpload" />
+          <uploader
+          ref="upload"
+          toJSON
+          uid="repoUploader"
+          fileType="repo"
+          @closeRepo="closeRepo"
+          @change="handleFileUpload" />
         </a-form-item>
       </a-form>
     </a-modal>
@@ -70,6 +76,9 @@ export default {
     },
     handleCancel() {
       this.visible = false;
+      this.$refs.upload.fileName = '';
+      this.$refs.upload.errorMsg = '';
+      this.repoData = '';
     },
     handleOk() {
       this.form.validateFields((err, values) => {
@@ -88,6 +97,9 @@ export default {
             })
             .finally(function() {
               _this.isLoading = false;
+              _this.$refs.upload.fileName = '';
+              _this.$refs.upload.errorMsg = '';
+              _this.repoData = '';
             });
         }
       });
