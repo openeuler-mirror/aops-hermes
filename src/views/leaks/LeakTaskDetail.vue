@@ -135,7 +135,7 @@
         :columns="taskType === 'cve fix' ? cveColumns : repoColumns"
         :data-source="tableData"
         :pagination="pagination"
-        :row-selection="taskType === 'cve fix' ? rowSelection : undefined"
+        :row-selection="taskType === 'cve fix' ? undefined : undefined"
         @change="handleTableChange"
         :loading="tableIsLoading"
       >

@@ -66,8 +66,9 @@
                       <a-badge :status="statusResultValueMap[cve.result]" slot="extra" />
                     </a-collapse-panel>
                   </a-collapse>
-                  <div v-else>
-                    <span>暂无信息</span>
+                  <div v-else class="cve-item">
+                    <p class="reuslt-item-title" style="margin-top: 12px">Log:</p>
+                    <p class="result-log">{{ resultItem.log }}</p>
                   </div>
                 </div>
                 <div v-if="taskType === 'repo set'">
@@ -169,6 +170,7 @@ export default {
     dateFormat,
     logFormat(str) {
       return str.replace(/\n/g, '<br>');
+      //  正则匹配替换/n换行符
     },
     getCheckResult() {
       const _this = this;
