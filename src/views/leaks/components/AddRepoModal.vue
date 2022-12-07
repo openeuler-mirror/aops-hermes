@@ -22,8 +22,8 @@
         <a-form-item label="REPO内容">
           <div>
             <a-textarea
-              v-decorator="['repoData', {rules: [{ required: true, message: '请输入REPO描述' },
-                                        { max: 512, message: '512个字符以内' }]}]"
+              :style="`${visible ? '' : 'height: 346px;'}`"
+              v-decorator="['repoData', {rules: [{ required: true, message: '请输入REPO描述' }]}]"
               :rows="16"
               :maxLength="512"
               placeholder="请输入REPO内容，512个字符以内"
@@ -37,7 +37,6 @@
           toJSON
           uid="repoUploader"
           fileType="repo"
-          @closeRepo="closeRepo"
           @change="handleFileUpload" />
         </a-form-item>
       </a-form>
@@ -79,6 +78,7 @@ export default {
       this.$refs.upload.fileName = '';
       this.$refs.upload.errorMsg = '';
       this.repoData = '';
+      this.form.resetFields();
     },
     handleOk() {
       this.form.validateFields((err, values) => {

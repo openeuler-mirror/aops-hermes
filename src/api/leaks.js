@@ -425,7 +425,7 @@ export function getHostUnderRepoTask({ tableInfo, ...parameters }) {
     data: {
       task_id: parameters.taskId,
       filter: {
-        host_name: tableInfo.filters.hostName,
+        host_name: tableInfo.filters.host_name,
         status: tableInfo.filters.status
       },
       page: tableInfo.pagination.current,

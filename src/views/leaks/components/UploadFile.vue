@@ -86,8 +86,8 @@ export default {
 
       // 读取文件大小
       var fileSize = file.size;
-      if (fileSize / 1024 / 1024 / 10 > 1) {
-        this.$message.error('文件大于10M!');
+      if (fileSize / 1024 / 1024 / 20 > 1) {
+        this.$message.error('文件大于20M!');
         this.removeFile(file);
         return false;
       }
@@ -101,7 +101,6 @@ export default {
       });
       this.uploading = true;
       const _this = this;
-      console.log(this.value);
       if (this.value === 1) {
         reupload(formData)
         .then(function(res) {
