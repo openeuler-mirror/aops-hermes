@@ -205,11 +205,11 @@ export default {
           filteredValue: filters['task_type'] || undefined,
           filters: [
             {
-              text: '漏铜修复',
+              text: 'cve fix',
               value: 'cve fix'
             },
             {
-              text: 'REPO设置',
+              text: 'repo set',
               value: 'repo set'
             }
           ]
@@ -315,7 +315,7 @@ export default {
         title: '确定删除以下任务?',
         content: _this.selectedRowsAll.map(task => task.task_name).join('、'),
         icon: () => <a-icon type="exclamation-circle" />,
-        okText: '执行',
+        okText: '确定',
         onOk: function() {
           return _this.deleteTask(_this.selectedRowKeys);
         }

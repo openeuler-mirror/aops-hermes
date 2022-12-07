@@ -9,7 +9,16 @@
               <p>{{ `主机组： ${detail.host_group || ''}` }}</p>
             </a-col>
             <a-col span="8">
+              <p>{{ `受影响的CVE数量： ${detail.affected_cve_num}` }}</p>
+            </a-col>
+            <a-col span="8">
+              <p>{{ `CVE REPO： ${detail.repo || ''}` }}</p>
+            </a-col>
+            <a-col span="8">
               <p>{{ `IP： ${detail.host_ip || ''}` }}</p>
+            </a-col>
+            <a-col span="8">
+              <p>{{ `不受影响的CVE数量： ${detail.unaffected_cve_num}` }}</p>
             </a-col>
             <a-col span="8">
               <p>
@@ -17,12 +26,6 @@
                   `上次扫描： ${(detail.last_scan && dateFormat('YYYY-mm-dd HH:MM:SS', detail.last_scan * 1000)) || ''}`
                 }}
               </p>
-            </a-col>
-            <a-col span="8">
-              <p>{{ `CVE REPO： ${detail.repo || ''}` }}</p>
-            </a-col>
-            <a-col span="8">
-              <p>{{ `CVE 数量： ${detail.cve_num}` }}</p>
             </a-col>
             <a-col span="8">
               <a-button type="primary" @click="sacnHost" :loading="scanloading || scanStatus === 'scanning'">

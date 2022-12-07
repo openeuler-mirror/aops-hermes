@@ -27,7 +27,7 @@
               </a-tooltip></p>
             </a-col>
           </a-row>
-          <a-row v-if="detail.latest_execute_time">
+          <a-row>
             <a-col :span="8">
               <p>
                 最新状态
@@ -80,9 +80,14 @@
             <a-col :span="16">
               <p>
                 上次执行时间：{{
-                  detail.latest_execute_time && dateFormat('YYYY-mm-dd HH:MM:SS', detail.latest_execute_time * 1000)
+                  detail.latest_execute_time ?
+                  dateFormat('YYYY-mm-dd HH:MM:SS', detail.latest_execute_time * 1000) :
+                  '未执行'
                 }}
-                <router-link :to="`/leaks/task-report/${taskType}/${taskId}`" target="blank">查看报告</router-link>
+                <router-link
+                  v-if="reportvisible && detail.latest_execute_time"
+                  :to="`/leaks/task-report/${taskType}/${taskId}`"
+                  target="blank">查看报告</router-link>
               </p>
             </a-col>
           </a-row>
@@ -143,8 +148,8 @@
         <div slot="progress" slot-scope="progress, record">
           <a-progress :percent="Math.ceil(((progress || 0) / record.host_num) * 100)" />
         </div>
-        <div slot="status" slot-scope="status, record">
-          <span class="task-status" @click="handleCheckResult(taskType === 'cve fix' ? record.cve_id : record.host_id)">
+        <div slot="status" slot-scope="status">
+          <span class="task-status">
             <a-badge :status="statusValueMap[status]" />
             {{ taskType === 'cve fix' ? cveStatusTextMap[status] : repoStatusTextMap[status] }}
             <a-icon v-if="statusValueMap[status] === 'processing'" type="loading" class="color-running-circle" />
@@ -230,6 +235,8 @@ export default {
   },
   data() {
     return {
+      reportvisible: false,
+      runningCveIds: [],
       timer: '',
       taskId: this.$route.params.taskId,
       taskType: this.$route.params.taskType,
@@ -379,7 +386,6 @@ export default {
           filters[key] = undefined
         }
       }
-      console.log(filters);
       this.pagination = pagination;
       this.filters = Object.assign({}, this.filters, filters);
       this.sorter = sorter;
@@ -497,11 +503,14 @@ export default {
       })
         .then(function(res) {
           _this.addCveProgressToList(res.result);
-          const runningCveIds = _this.getRunningCve(res.result);
-          if (runningCveIds.length > 0) {
+          _this.runningCveIds = _this.getRunningCve(res.result);
+          _this.reportvisible = _this.getReportVisible(res.result);
+          if (_this.runningCveIds.length > 0) {
             setTimeout(function() {
               _this.updateCveProgress(taskId, cveList);
             }, configs.taskProgressUpdateInterval);
+          } else {
+            _this.taskInfoVisible = true;
           }
         })
         .catch(function(err) {
@@ -520,6 +529,14 @@ export default {
         }
       });
       this.tableData = Object.assign([], this.tableData);
+    },
+    getReportVisible(progressMap) {
+      for (const cveId in progressMap) {
+        if (progressMap[cveId].status === 'running') {
+          return false
+        }
+      }
+      return true
     },
     getRunningCve(progressMap) {
       const arr = [];
@@ -612,7 +629,6 @@ export default {
     },
     getInitalData() {
       this.getInfo();
-      console.log(this.taskType + '211');
       switch (this.taskType) {
         case 'cve fix':
           this.getCveList();
@@ -706,7 +722,6 @@ export default {
 }
 
 .task-status {
-  cursor: pointer;
 }
 
 .result-label {

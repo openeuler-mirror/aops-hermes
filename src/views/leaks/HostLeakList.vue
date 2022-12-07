@@ -134,7 +134,7 @@ export default {
       this.repoLoading = true;
       getRepoList()
         .then(function(res) {
-          _this.repoList = res.result || [];
+          _this.repoList = res.result.reverse() || [];
         })
         .catch(function(err) {
           _this.$message.error(err.response.data.msg);

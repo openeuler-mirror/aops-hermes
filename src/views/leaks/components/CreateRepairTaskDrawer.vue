@@ -7,6 +7,7 @@
       :title="`生成任务${taskType === 'repo set' ? ' 设置REPO' : ''}`"
       closable
       @close="handleCancel"
+      :get-container="false"
       :visible="visible"
       :body-style="{paddingBottom: '80px'}"
       width="650"
@@ -327,7 +328,6 @@ export default {
   },
   watch: {},
   created() {
-    // console.log(this.cveListProps)
   },
   methods: {
     jumpToPage() {
