@@ -341,7 +341,7 @@ export function getAlertRecordResult(parameter) {
       per_page: parameter.per_page || 10,
       domain: parameter.domain || [],
       sort: 'time',
-      direction: directionMap[parameter.direction] || 'asc'
+      direction: directionMap[parameter.direction] || 'desc'
     },
 
     /**

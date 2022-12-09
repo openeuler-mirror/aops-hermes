@@ -51,10 +51,8 @@
           </a-col>
         </a-row>
         <a-row class="tab-container">
-          <a-tabs default-active-key="1" @change="callback">
-            <a-tab-pane key="singlecheck" tab="单指标检测"> </a-tab-pane>
-            <a-tab-pane key="multicheck" tab="多指标检测"> </a-tab-pane>
-            <a-tab-pane key="diag" tab="集群故障诊断"> </a-tab-pane>
+          <a-tabs :default-active-key="key" @change="callback">
+            <a-tab-pane v-for="item in detailMap" :key="item" :tab="detailStatusMap[item]"> </a-tab-pane>
           </a-tabs>
         </a-row>
       </a-card>
@@ -178,6 +176,12 @@ export default {
   },
   data() {
     return {
+      detailStatusMap: {
+        diag: '单指标检测',
+        multicheck: '多指标检测',
+        singlecheck: '集群故障诊断'
+      },
+      detailMap: [],
       workflow: {},
       statusMap,
       hostcheckColums,
@@ -187,7 +191,7 @@ export default {
       multicheckColumns,
       pagination: defaultPagination,
       tableIsLoading: false,
-      key: 'singlecheck',
+      key: 'multicheck',
       singlecheckModel: [],
       singlecheck: [],
       multicheck: [],
@@ -257,6 +261,8 @@ export default {
       getWorkflowDatail(this.workflow_id)
         .then(function(res) {
           _this.workflow = res.result;
+          _this.key = Object.keys(res.result.detail)[0];
+          _this.detailMap = Object.keys(res.result.detail);
           const tempArr = [];
           for (const modelId in _this.workflow.model_info) {
             if (modelId === _this.workflow.detail.diag) {
