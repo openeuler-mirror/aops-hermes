@@ -98,7 +98,7 @@ export default {
           align: 'center',
           filters: this.domainFilters,
           filteredValue: filters.domain || null,
-          filterMultiple: false
+          filterMultiple: true
         },
         {
           title: '异常主机数',

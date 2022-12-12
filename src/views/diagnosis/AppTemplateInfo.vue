@@ -40,38 +40,38 @@ import G6 from '@antv/g6';
 import {getWorkflowAppExtraInfo} from '@/api/check';
 import DrawerView from '@/views/utils/DrawerView';
 // g6画图数据，自行编写的
-const NodeData = {
-  nodes: [
-    {
-      id: 'node1',
-      label: '单指标检测',
-      x: 150,
-      y: 200
-    },
-    {
-      id: 'node2',
-      label: '多指标检测',
-      x: 450,
-      y: 200
-    },
-    {
-      id: 'node3',
-      label: '集群故障诊断',
-      x: 750,
-      y: 200
-    }
-  ],
-  edges: [
-    {
-      source: 'node1',
-      target: 'node2'
-    },
-    {
-      source: 'node2',
-      target: 'node3'
-    }
-  ]
-};
+// const NodeData = {
+//   nodes: [
+//     {
+//       id: 'node1',
+//       label: '单指标检测',
+//       x: 150,
+//       y: 200
+//     },
+//     {
+//       id: 'node2',
+//       label: '多指标检测',
+//       x: 450,
+//       y: 200
+//     },
+//     {
+//       id: 'node3',
+//       label: '集群故障诊断',
+//       x: 750,
+//       y: 200
+//     }
+//   ],
+//   edges: [
+//     {
+//       source: 'node1',
+//       target: 'node2'
+//     },
+//     {
+//       source: 'node2',
+//       target: 'node3'
+//     }
+//   ]
+// };
 const singleItemCheckColum = [
   {
     title: '指标名',
@@ -110,18 +110,25 @@ export default {
   },
   data() {
     return {
+      NodeData: {},
+      abb: [],
+      add: [],
       appInfo: '',
       singleItemCheckColum,
       multiItemCheckColum,
       label: '',
-      detail: []
+      detail: [],
+      detailMap: {
+        diag: '单指标检测',
+        multicheck: '多指标检测',
+        singlecheck: '集群故障诊断'
+      }
     };
   },
   created() {
     this.app_id = this.$route.params.appId;
   },
   mounted: function() {
-    this.drawMap();
     this.getAppInformation();
   },
   methods: {
@@ -130,6 +137,18 @@ export default {
       getWorkflowAppExtraInfo(this.app_id)
         .then(function(res) {
           _this.appInfo = res.result;
+          _this.abb = Object.keys(res.result.detail).map((key, index) => ({
+            id: index + '',
+            label: _this.detailMap[key],
+            x: 150 + index * 300,
+            y: 200
+          }))
+          _this.add = Object.keys(res.result.detail).map((key, index) => ({
+            source: index + '',
+            target: index + 1 + ''
+          })).slice(0, -1)
+          _this.NodeData = {nodes: _this.abb, edges: _this.add};
+          _this.drawMap();
         })
         .catch(function(err) {
           _this.$message.error(err.response.data.msg);
@@ -166,7 +185,7 @@ export default {
           }
         }
       });
-      graph.data(NodeData);
+      graph.data(this.NodeData);
       graph.render();
     }
   }
