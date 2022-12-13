@@ -195,6 +195,7 @@ export default {
       this.pagination = pagination;
       this.filters = filters;
       this.sorter = sorter;
+      store.dispatch('updateCount');
       this.getAlertRecordResult();
     },
     getDomainFilters() {
