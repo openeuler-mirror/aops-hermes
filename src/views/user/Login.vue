@@ -45,7 +45,7 @@
           </a-form-item>
         </a-tab-pane>
 
-        <a-tab-pane key="tab2" :tab="$t('user.login.gitee-login-credentials')">
+        <!-- <a-tab-pane key="tab2" :tab="$t('user.login.gitee-login-credentials')">
           <a-alert
             v-if="isLoginError"
             type="error"
@@ -82,7 +82,7 @@
               <a-icon slot="prefix" type="lock" :style="{color: 'rgba(0,0,0,.25)'}" />
             </a-input-password>
           </a-form-item>
-        </a-tab-pane>
+        </a-tab-pane> -->
       </a-tabs>
 
       <a-form-item style="margin-top:24px">

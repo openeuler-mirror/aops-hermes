@@ -500,7 +500,4 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .ant-table-wrapper {
-    overflow: hidden;
-  }
 </style>

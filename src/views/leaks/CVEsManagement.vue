@@ -1,7 +1,7 @@
 <template>
   <page-header-wrapper :breadcrumb="breadcrumb">
     <a-card :bordered="false" class="aops-theme">
-      <div>
+      <div class="cvebox">
         <cves-table standalone />
       </div>
     </a-card>
@@ -51,4 +51,8 @@ export default {
 };
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.cvebox{
+  overflow: auto;
+}
+</style>
