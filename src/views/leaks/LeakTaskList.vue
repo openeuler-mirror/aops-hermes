@@ -422,7 +422,7 @@ export default {
 
 <style lang="less" scoped>
 .leakbox {
-  overflow: hidden;
+  overflow: auto;
 }
 .status-icon {
   margin: 0 2px;

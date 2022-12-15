@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="hostbox">
     <div class="mesinfo">
       <a-row
       v-if="standalone && scanningHostIds.length > 0 && scanStatusloading"
@@ -40,6 +40,7 @@
               :hostList="selectedRowsAll"
               :repoList="repoListProps"
               @createSuccess="handleTaskCreateSuccess"
+              @getAllHost="getAllHost"
             />
           </a-col>
           <a-col v-if="standalone && selectedRowKeys.length === 0">
@@ -50,6 +51,7 @@
               :hostList="hostListAll"
               :repoList="repoListProps"
               @createSuccess="handleTaskCreateSuccess"
+              @getAllHost="getAllHost"
             />
           </a-col>
           <a-col v-if="standalone && selectedRowKeys.length !== 0">
@@ -206,7 +208,7 @@ export default {
         {
           dataIndex: 'cve_num',
           key: 'cve_num',
-          title: 'CVE 个数',
+          title: '受影响CVE个数',
           sorter: true
         },
         {
@@ -311,6 +313,18 @@ export default {
     };
   },
   methods: {
+    getAllHost() {
+      this.getHostList();
+      this.getHostGroup();
+      if (this.standalone) {
+        // 主机列表页面中要自行获取全量主机和扫描状态
+        this.getScanStatusAll([]);
+        this.getHostListAll();
+      } else {
+        // 主机详情页面中要自行获取repo列表
+        this.getRepoList();
+      }
+    },
     handleExport() {
       if (this.selectedRowKeys.length !== 0) {
         console.log(this.selectedRowKeys);
@@ -504,6 +518,9 @@ export default {
       this.selectedRowKeys = [];
       this.selectedRows = [];
       this.getHostList();
+      if (this.standalone) {
+        this.getHostListAll();
+      }
     },
     handleReset() {
       this.pagination = defaultPagination;
@@ -682,7 +699,7 @@ export default {
   font-size: 16px;
   margin: 0 6px;
 }
-.ant-table-wrapper {
-  overflow: hidden;
+.hostbox{
+  overflow: auto;
 }
 </style>

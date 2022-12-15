@@ -357,6 +357,9 @@ export default {
     // 每次展开抽屉时触发，替代mounted
     handleOpen() {
       // inital defualt data
+      if (this.taskType === 'repo set') {
+        this.$emit('getAllHost')
+      }
       this.visible = true;
       this.cveList = this.cveListProps;
       this.isResetChecked = true;

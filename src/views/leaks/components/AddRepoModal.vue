@@ -22,7 +22,7 @@
         <a-form-item label="REPO内容">
           <div>
             <a-textarea
-              :style="`${visible ? '' : 'height: 346px;'}`"
+              style="resize: none;"
               v-decorator="['repoData', {rules: [{ required: true, message: '请输入REPO描述' }]}]"
               :rows="16"
               :maxLength="512"
