@@ -445,6 +445,17 @@ export default {
           _this.progressLoading = false;
         });
     },
+    getVisible(statusMap) {
+      for (const key in statusMap) {
+        if (key === 'running') {
+          if (statusMap[key] === '1') {
+            return true
+          } else {
+            return false
+          }
+        }
+      }
+    },
     prgressFinishedCheck(statusMap) {
       for (const taskId in statusMap) {
         if (statusMap[taskId]['running']) {
@@ -571,6 +582,7 @@ export default {
             pageSize: pagination.pageSize,
             total: res.total_count || (res.total_count === 0 ? 0 : pagination.total)
           };
+          _this.reportvisible = !_this.hostRepostatusCheck(res.result)
           if (_this.hostRepostatusCheck(res.result)) {
             setTimeout(function() {
               _this.getHostList();
