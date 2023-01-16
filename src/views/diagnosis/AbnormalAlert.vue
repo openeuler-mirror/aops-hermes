@@ -67,7 +67,7 @@ import {downloadBlobFile} from '@/views/utils/downloadBlobFile';
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  total: 0,
+  showTotal: total => `总计 ${total} 项`,
   showSizeChanger: true,
   showQuickJumper: true,
   pageSizeOptions: ['10', '15', '20']

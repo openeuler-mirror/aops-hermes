@@ -155,6 +155,7 @@ const diagColumns = [
 const defaultPagination = {
   current: 1,
   pageSize: 10,
+  showTotal: total => `总计 ${total} 项`,
   size: 'small',
   showSizeChanger: true,
   showQuickJumper: true

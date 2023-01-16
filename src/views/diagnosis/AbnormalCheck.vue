@@ -135,7 +135,13 @@ import {getDiagTree} from '@/api/diagnosis';
 import {hostList} from '@/api/assest';
 import {dateFormat} from '@/views/utils/Utils';
 
-const defaultPagination = {current: 1, pageSize: 10, showSizeChanger: true, showQuickJumper: true};
+const defaultPagination = {
+  current: 1,
+  pageSize: 10,
+  showTotal: total => `总计 ${total} 项`,
+  showSizeChanger: true,
+  showQuickJumper: true
+};
 
 export default {
   name: 'AbnormalCheck',
