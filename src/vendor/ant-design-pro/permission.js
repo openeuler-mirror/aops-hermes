@@ -73,7 +73,12 @@ router.beforeEach((to, from, next) => {
       // 在免登录名单，直接进入
       next();
     } else {
-      next({path: loginRoutePath, query: {redirect: to.fullPath}});
+      if (to.path === '/user/account') {
+        // 第三方登陆页面, 无token校验
+        next();
+      } else {
+        next({path: loginRoutePath, query: {redirect: to.fullPath}});
+      }
       NProgress.done(); // if current page is login will not trigger afterEach hook, so manually handle it
     }
   }

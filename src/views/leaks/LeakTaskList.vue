@@ -131,6 +131,7 @@ const repoStatusTextMap = {
 const defaultPagination = {
   current: 1,
   pageSize: 10,
+  showTotal: total => `总计 ${total} 项`,
   showSizeChanger: true,
   showQuickJumper: true
 };

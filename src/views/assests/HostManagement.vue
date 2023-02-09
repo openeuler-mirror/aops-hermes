@@ -33,7 +33,7 @@
               ---------------------->
               <a-col>
                 <router-link :to="{path: `hosts-management/host-create`}">
-                  <a-button type="primary" disabled> <a-icon type="plus" />添加主机 </a-button>
+                  <a-button type="primary"> <a-icon type="plus" />添加主机 </a-button>
                 </router-link>
               </a-col>
               <a-col>
@@ -69,6 +69,9 @@
                 <a-divider type="vertical" /> -->
             <a @click="deleteHost(record)">删除</a>
           </span>
+          <div slot="expandedRowRender" style="margin: 0">
+            <host-terminal />
+          </div>
         </a-table>
       </div>
     </a-card>
@@ -83,13 +86,14 @@ import router from '@/vendor/ant-design-pro/router';
 import MyPageHeaderWrapper from '@/views/utils/MyPageHeaderWrapper';
 import {getSelectedRow} from '@/views/utils/getSelectedRow';
 import HostDetailDrawer from './components/HostDetailDrawer';
+import HostTerminal from '@/views/assests/components/HostTerminal';
 
 import {hostList, deleteHost, hostGroupList} from '@/api/assest';
 
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  total: 10,
+  showTotal: total => `总计 ${total} 项`,
   showSizeChanger: true,
   showQuickJumper: true
 };
@@ -98,7 +102,8 @@ export default {
   name: 'HostManagement',
   components: {
     MyPageHeaderWrapper,
-    HostDetailDrawer
+    HostDetailDrawer,
+    HostTerminal
   },
   data() {
     return {

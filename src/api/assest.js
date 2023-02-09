@@ -103,8 +103,8 @@ export function addHost(parameter) {
           ssh_port: parameter.ssh_port,
           management: parameter.management,
           username: parameter.username,
-          password: parameter.password,
-          sudo_password: parameter.sudo_password
+          password: parameter.password
+          // sudo_password: parameter.sudo_password
         }
       ],
       key: parameter.key

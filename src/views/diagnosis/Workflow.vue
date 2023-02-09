@@ -178,7 +178,7 @@ import {getWorkFlowList, getAppList, executeWorkflow, stopWorkflow, deleteWorkfl
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  total: 0,
+  showTotal: total => `总计 ${total} 项`,
   size: 'small',
   showSizeChanger: true,
   showQuickJumper: true
