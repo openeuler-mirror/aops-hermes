@@ -41,7 +41,7 @@ export default {
         cursorBlink: true,
         cursorStyle: 'block', // 光标样式 'block' | 'underline' | 'bar'
         fontSize: 18,
-        fontFamily: "Monaco, Menlo, Consolas, 'Courier New', monospace",
+        fontFamily: 'Monaco, Menlo, Consolas, "Courier New", monospace',
         theme: {
           background: '#181d28'
         },
@@ -57,7 +57,6 @@ export default {
         // url: 'http://172.168.88.197:8080/info',
         data: data
       }).then((res) => {
-        console.log(res);
         // 前端发起请求更改ssh连接对象后重新连接socket
         this.initSocket();
       });
@@ -83,7 +82,6 @@ export default {
     // resize 相关
     resizeRemoteTerminal() {
       const {cols, rows} = this.term;
-      console.log('列数、行数设置为：', cols, rows);
       // 调整后端终端大小 使后端与前端终端大小一致
       this.isWsOpen() && this.ws.send(packResize(cols, rows));
     },
@@ -109,7 +107,6 @@ export default {
     // 打开连接
     onOpenSocket() {
       this.ws.onopen = () => {
-        console.log('websocket 已连接');
         this.term.reset();
         setTimeout(() => {
           this.resizeRemoteTerminal();
@@ -119,7 +116,6 @@ export default {
     // 关闭连接
     onCloseSocket() {
       this.ws.onclose = () => {
-        console.log('关闭连接');
         this.term.write('未连接， 3秒后重连...\r\n');
         setTimeout(() => {
           this.initSocket();
@@ -137,7 +133,6 @@ export default {
       this.ws.onmessage = (res) => {
         const data = res.data;
         const term = this.term;
-        // console.log("receive: " + data)
         // 第一次连接成功将 initText 清空
         if (this.first) {
           this.first = false;
@@ -150,16 +145,6 @@ export default {
     }
   },
   created() {
-    // this.changeInfo({
-      // host: '211.101.239.42',
-      // port: 22,
-      // username: 'root',
-      // password: '10y2KLYpa1AdmfN'
-    //   host: '172.168.88.197',
-    //   port: 22,
-    //   username: 'root',
-    //   password: 'openeuler@123'
-    // });
   },
   mounted() {
     this.initTerm();

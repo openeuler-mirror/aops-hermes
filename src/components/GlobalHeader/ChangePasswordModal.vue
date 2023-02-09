@@ -5,10 +5,43 @@
     </slot>
     <a-modal title="修改用户密码" :visible="visible" :confirm-loading="isLoading" @ok="handleOk" @cancel="handleCancel">
       <a-form :form="form" :label-col="{span: 5}" :wrapper-col="{span: 16}">
+        <a-form-item label="旧密码">
+          <a-input-password
+            placeholder="请输入旧密码"
+            v-decorator="[
+              'old_password',
+              {
+                rules: [{required: true, message: '请输入旧密码!'}, {validator: validateToNextPassword}],
+                validateTrigger: 'blur'
+              }
+            ]"
+          >
+          </a-input-password>
+        </a-form-item>
         <a-form-item label="新密码">
           <a-input-password
             placeholder="请输入新密码"
-            v-decorator="['password', {rules: [{required: true, message: '请输入新密码'}, {validator: passwordCheck}]}]"
+            v-decorator="[
+              'password',
+              {
+                rules: [{required: true, message: '请输入新密码!'}, {validator: compareToFirstPassword}],
+                validateTrigger: 'blur'
+              }
+            ]"
+            @blur="handleConfirmBlur"
+          >
+          </a-input-password>
+        </a-form-item>
+        <a-form-item label="确认密码">
+          <a-input-password
+            placeholder="再次输入密码以确认"
+            v-decorator="[
+              'repassword',
+              {
+                rules: [{required: true, message: '请输入新密码!'}, {validator: compareToNewPassword}],
+                validateTrigger: 'blur'
+              }
+            ]"
           >
           </a-input-password>
         </a-form-item>
@@ -30,6 +63,7 @@ export default {
   },
   data() {
     return {
+      confirmDirty: false,
       isLoading: false,
       form: this.$form.createForm(this, {name: 'changePW'})
     };
@@ -40,12 +74,18 @@ export default {
     }
   },
   methods: {
+    handleConfirmBlur(e) {
+      const value = e.target.value;
+      this.confirmDirty = this.confirmDirty || !!value;
+    },
     handleCancel() {
       this.$emit('close');
     },
     handleOk() {
       this.form.validateFields((err, values) => {
         if (!err) {
+          const loginParams = {...values};
+          delete loginParams.repassword;
           const _this = this;
           this.isLoading = true;
           changePassword(values)
@@ -63,36 +103,48 @@ export default {
         }
       });
     },
-    passwordCheck(rule, value, cb) {
-      if (/[^0-9a-zA-Z_~`!?,.:;\-'"(){}[\]/<>@#$%^&*+|\\=\s]/.test(value)) {
-        /* eslint-disable */
-        cb('只允许大小写字母、数字、空格和特殊字符');
-        /* eslint-enable */
-        return;
+    validateToNextPassword(rule, value, callback) {
+      const regex = /^[a-zA-Z0-9]{6,20}$/;
+      if (!regex.test(value)) {
+        const text = '6-20位字母或数字组成的密码!';
+        callback(text);
+      } else {
+        const form = this.form;
+        if (value && this.confirmDirty) {
+          form.validateFields(['password'], { force: true });
+        }
+        callback();
       }
-      if (value.length < 8 || value.length > 20) {
-        /* eslint-disable */
-        cb('长度应为8-20字符');
-        /* eslint-enable */
-        return;
+    },
+    compareToFirstPassword(rule, value, callback) {
+      const regex = /^[a-zA-Z0-9]{6,20}$/;
+      const form = this.form;
+      if (!regex.test(value)) {
+        const text = '6-20位字母或数字组成的密码!';
+        callback(text);
+      } else {
+        if (value && value === form.getFieldValue('old_password')) {
+          const retext = '新密码和旧密码不能相同!';
+          callback(retext);
+        } else {
+          callback();
+        }
       }
-      if (!/[_~`!?,.:;\-'"(){}[\]/<>@#$%^&*+|\\=\s]/.test(value)) {
-        /* eslint-disable */
-        cb('至少应包含一个空格和特殊字符');
-        /* eslint-enable */
-        return;
+    },
+    compareToNewPassword(rule, value, callback) {
+      const regex = /^[a-zA-Z0-9]{6,20}$/;
+      const form = this.form;
+      if (!regex.test(value)) {
+        const text = '6-20位字母或数字组成的密码!';
+        callback(text);
+      } else {
+        if (value && value !== form.getFieldValue('password')) {
+          const retext = '两次输入的密码不一致!';
+          callback(retext);
+        } else {
+          callback();
+        }
       }
-      let count = 0;
-      if (/[a-z]/.test(value)) count += 1;
-      if (/[A-Z]/.test(value)) count += 1;
-      if (/[0-9]/.test(value)) count += 1;
-      if (count < 2) {
-        /* eslint-disable */
-        cb('至少包含大写字母、小写字母、数字中的两种');
-        /* eslint-enable */
-        return;
-      }
-      cb();
     }
   }
 };

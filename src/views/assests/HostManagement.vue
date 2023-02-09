@@ -33,7 +33,7 @@
               ---------------------->
               <a-col>
                 <router-link :to="{path: `hosts-management/host-create`}">
-                  <a-button type="primary" disabled> <a-icon type="plus" />添加主机 </a-button>
+                  <a-button type="primary"> <a-icon type="plus" />添加主机 </a-button>
                 </router-link>
               </a-col>
               <a-col>

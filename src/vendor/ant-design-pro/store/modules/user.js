@@ -37,7 +37,7 @@ const user = {
   },
 
   actions: {
-    // 登录
+    // 用本地账号登录
     Login({commit}, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo)
@@ -46,15 +46,15 @@ const user = {
               reject(response.msg);
             }
             const result = response;
-            storage.set(ACCESS_TOKEN, result.access_token, 7 * 24 * 60 * 60 * 1000);
+            storage.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000);
             const in30Minutes = 1 / 48;
-            cookie.set('aops_token', result.access_token, {
+            cookie.set('aops_token', result.token, {
               expires: in30Minutes
             });
             cookie.set('user_name', userInfo.username, {
               expires: in30Minutes
             });
-            commit('SET_TOKEN', result.access_token);
+            commit('SET_TOKEN', result.token);
             commit('SET_NAME', {name: userInfo.username});
             resolve();
           })
@@ -62,6 +62,20 @@ const user = {
             reject(error);
           });
       });
+    },
+
+    // 用gitee账号登陆
+    LoginInGitee({commit}, params) {
+      storage.set(ACCESS_TOKEN, params, 7 * 24 * 60 * 60 * 1000);
+      const in30Minutes = 1 / 48;
+      cookie.set('aops_token', params.token, {
+        expires: in30Minutes
+      });
+      cookie.set('user_name', params.username, {
+        expires: in30Minutes
+      });
+      commit('SET_TOKEN', params.token);
+      commit('SET_NAME', {name: params.username});
     },
 
     // 获取用户信息
