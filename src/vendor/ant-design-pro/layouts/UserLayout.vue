@@ -18,6 +18,9 @@
               </div>
             </div>
             <router-view />
+            <div class="footer">
+              <global-footer />
+            </div>
             <!-- <div class="footer">
               <div class="links">
                 <a href="_self">帮助</a>
@@ -37,10 +40,14 @@
 
 <script>
 import {deviceMixin} from '@/vendor/ant-design-pro/store/device-mixin';
+import GlobalFooter from '@/vendor/ant-design-pro/components/GlobalFooter';
 
 export default {
   name: 'UserLayout',
   mixins: [deviceMixin],
+  components: {
+    GlobalFooter
+  },
   mounted() {
     document.body.classList.add('userLayout');
   },
@@ -154,7 +161,7 @@ export default {
         width: 100%;
         bottom: 0;
         padding: 0 16px;
-        margin: 48px 0 24px;
+        margin: 155px 0 24px;
         text-align: center;
 
         .links {

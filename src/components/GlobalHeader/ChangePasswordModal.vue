@@ -5,13 +5,13 @@
     </slot>
     <a-modal title="修改用户密码" :visible="visible" :confirm-loading="isLoading" @ok="handleOk" @cancel="handleCancel">
       <a-form :form="form" :label-col="{span: 5}" :wrapper-col="{span: 16}">
-        <a-form-item label="旧密码">
+        <a-form-item label="当前密码">
           <a-input-password
-            placeholder="请输入旧密码"
+            placeholder="密码长度6-20位, 包含字母和数字"
             v-decorator="[
               'old_password',
               {
-                rules: [{required: true, message: '请输入旧密码!'}, {validator: validateToNextPassword}],
+                rules: [{required: true, message: '请输入当前密码!'}, {validator: validateToNextPassword}],
                 validateTrigger: 'blur'
               }
             ]"
@@ -20,7 +20,7 @@
         </a-form-item>
         <a-form-item label="新密码">
           <a-input-password
-            placeholder="请输入新密码"
+            placeholder="新密码和当前密码不能相同"
             v-decorator="[
               'password',
               {
@@ -34,7 +34,7 @@
         </a-form-item>
         <a-form-item label="确认密码">
           <a-input-password
-            placeholder="再次输入密码以确认"
+            placeholder="确认密码和新密码保持一致"
             v-decorator="[
               'repassword',
               {
@@ -106,7 +106,7 @@ export default {
     validateToNextPassword(rule, value, callback) {
       const regex = /^[a-zA-Z0-9]{6,20}$/;
       if (!regex.test(value)) {
-        const text = '6-20位字母或数字组成的密码!';
+        const text = '请输入6-20位字母或数字组成的密码!';
         callback(text);
       } else {
         const form = this.form;
@@ -120,11 +120,11 @@ export default {
       const regex = /^[a-zA-Z0-9]{6,20}$/;
       const form = this.form;
       if (!regex.test(value)) {
-        const text = '6-20位字母或数字组成的密码!';
+        const text = '请输入6-20位字母或数字组成的密码!';
         callback(text);
       } else {
         if (value && value === form.getFieldValue('old_password')) {
-          const retext = '新密码和旧密码不能相同!';
+          const retext = '新密码和当前密码不能相同!';
           callback(retext);
         } else {
           callback();
@@ -135,11 +135,11 @@ export default {
       const regex = /^[a-zA-Z0-9]{6,20}$/;
       const form = this.form;
       if (!regex.test(value)) {
-        const text = '6-20位字母或数字组成的密码!';
+        const text = '请输入6-20位字母或数字组成的密码!';
         callback(text);
       } else {
         if (value && value !== form.getFieldValue('password')) {
-          const retext = '两次输入的密码不一致!';
+          const retext = '确认密码和新密码必须保持一致!';
           callback(retext);
         } else {
           callback();
