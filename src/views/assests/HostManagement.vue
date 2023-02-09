@@ -69,9 +69,9 @@
                 <a-divider type="vertical" /> -->
             <a @click="deleteHost(record)">删除</a>
           </span>
-          <div slot="expandedRowRender" style="margin: 0">
+          <!-- <div slot="expandedRowRender" style="margin: 0">
             <host-terminal />
-          </div>
+          </div> -->
         </a-table>
       </div>
     </a-card>
@@ -86,7 +86,7 @@ import router from '@/vendor/ant-design-pro/router';
 import MyPageHeaderWrapper from '@/views/utils/MyPageHeaderWrapper';
 import {getSelectedRow} from '@/views/utils/getSelectedRow';
 import HostDetailDrawer from './components/HostDetailDrawer';
-import HostTerminal from '@/views/assests/components/HostTerminal';
+// import HostTerminal from '@/views/assests/components/HostTerminal';
 
 import {hostList, deleteHost, hostGroupList} from '@/api/assest';
 
@@ -102,8 +102,8 @@ export default {
   name: 'HostManagement',
   components: {
     MyPageHeaderWrapper,
-    HostDetailDrawer,
-    HostTerminal
+    HostDetailDrawer
+    // HostTerminal
   },
   data() {
     return {
