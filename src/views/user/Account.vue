@@ -40,22 +40,23 @@
               'username',
               {
                 rules: [{required: true, message: $t('user.userName.required')}],
-                validateTrigger: 'change'
+                validateTrigger: 'blur'
               }
             ]"
           />
         </a-form-item>
         <a-form-item label="密码">
-          <a-input
+          <a-input-password
             :placeholder="$t('user.login.password.placeholder')"
             v-decorator="[
               'password',
               {
                 rules: [{required: true, message: $t('user.password.required')}],
-                validateTrigger: 'change'
+                validateTrigger: 'blur'
               }
             ]"
-          />
+          >
+          </a-input-password>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -72,7 +73,7 @@ export default {
       auth_account: '',
       loginloading: true,
       confirmLoading: false,
-      bindvisible: true,
+      bindvisible: false,
       // 登陆授权状态
       countDown: 3,
       jumpInterval: null,
@@ -87,10 +88,8 @@ export default {
     ...mapActions(['LoginInGitee']),
     goRegistar() {
       this.bindvisible = false;
-      this.$router.push({
-        name: 'login',
-        params: {key: 'createAccount'}
-      })
+      this.form.resetFields();
+      this.$router.push('/user/register')
     },
     showModal() {
       this.form.resetFields();
@@ -134,14 +133,6 @@ export default {
         .finally(function() {
         });
     },
-    handleUsernameOrEmail(rule, value, callback) {
-      const regex = /^[\w]{6,18}$/;
-      if (!regex.test(value)) {
-        callback(new Error('不符合用户名正确格式!'));
-      } else {
-        callback();
-      }
-    },
     handleOk() {
       this.form.validateFields((err, values) => {
         if (!err) {
@@ -155,7 +146,7 @@ export default {
             .then(function(res) {
               _this.LoginInGitee(res);
               // 绑定成功存储用户登陆信息
-              _this.$message.success(res.msg);
+              _this.$message.success('绑定成功!');
               // 提示用户绑定成功
               _this.bindvisible = false;
               _this.loginloading = false;
@@ -177,10 +168,7 @@ export default {
                 _this.$message.warning('本地账号不存在!请先注册');
                 _this.bindvisible = false;
                 setTimeout(() => {
-                  _this.$router.push({
-                    name: 'login',
-                    params: {key: 'createAccount'}
-                  })
+                  _this.$router.push('/user/register')
                 }, 1000)
               } else if (err.response.data.code === 1605) {
                 // 输入绑定的本地账户已和其他gitee账户绑定
@@ -231,6 +219,7 @@ export default {
 
 <style lang="less" scoped>
 .main {
+  height: 280px;
   display: flex;
   .container {
     margin: 0 auto;
@@ -238,6 +227,7 @@ export default {
       .info {
         font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
         font-size: 17px;
+        text-align: center;
       }
       .spin_top_jump {
         color: #1890ff;

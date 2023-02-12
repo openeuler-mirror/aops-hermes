@@ -73,7 +73,7 @@ router.beforeEach((to, from, next) => {
       // 在免登录名单，直接进入
       next();
     } else {
-      if (to.path === '/user/account') {
+      if (to.path === '/user/account' || to.path === '/user/register') {
         // 第三方登陆页面, 无token校验
         next();
       } else {

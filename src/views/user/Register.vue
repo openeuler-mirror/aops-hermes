@@ -1,16 +1,23 @@
 <!-- eslint-disable max-len -->
 <template>
   <div class="main">
-    <a-form id="formLogin" class="user-layout-login" ref="formLogin" :form="form" @submit="handleSubmit">
+    <a-form id="formRegister" class="user-layout-login" ref="formRegister" :form="form" @submit="handleSubmit">
+      <a-alert
+        v-if="isLoginError"
+        type="error"
+        showIcon
+        style="margin-bottom: 24px;"
+        message="注册失败"
+      />
       <a-form-item>
         <a-input
           size="large"
           type="text"
-          :placeholder="$t('user.login.username.placeholder')"
+          placeholder="用户名5-20位,包含字母和数字"
           v-decorator="[
             'username',
             {
-              rules: [{required: true, message: $t('user.userName.required')}],
+              rules: [{required: true, message: $t('user.userName.required')}, {validator: handleUsernameOrEmail}],
               validateTrigger: 'blur'
             }
           ]"
@@ -22,11 +29,11 @@
       <a-form-item>
         <a-input-password
           size="large"
-          :placeholder="$t('user.login.password.placeholder')"
+          placeholder="密码长度6-20位,包含字母和数字"
           v-decorator="[
             'password',
             {
-              rules: [{required: true, message: $t('user.password.required')}],
+              rules: [{required: true, message: $t('user.password.required')}, {validator: validateToNextPassword}],
               validateTrigger: 'blur'
             }
           ]"
@@ -36,28 +43,35 @@
       </a-form-item>
 
       <a-form-item>
-        <div class="login_gitee" style="text-align:center;">
-          <div @click="jumpInGitee" style="cursor:pointer">
-            <img src="https://gitee.com/static/images/logo-black.svg?t=158106666" alt="">
-            <span class="login_gitee_text">使用gitee账号登录</span>
-          </div>
-        </div>
+        <a-input-password
+          size="large"
+          placeholder="确认新密码和旧密码保持一致"
+          v-decorator="[
+            'confirm',
+            {
+              rules: [{required: true, message: $t('user.password.required')}, {validator: compareToFirstPassword}],
+              validateTrigger: 'blur'
+            }
+          ]"
+          @blur="handleConfirmBlur"
+        >
+          <a-icon slot="prefix" type="lock" :style="{color: 'rgba(0,0,0,.25)'}" />
+        </a-input-password>
       </a-form-item>
       <a-form-item style="margin-top:24px">
         <a-button
           size="large"
-          type="primary"
           htmlType="submit"
           class="login-button"
           :loading="state.loginBtn"
           :disabled="state.loginBtn"
-          >{{ $t('user.login.login') }}</a-button
+          >{{ $t('user.register.register') }}</a-button
         >
       </a-form-item>
       <a-form-item style="margin-top:24px">
-        <div class="jump_registar">
-          <span>没有账号? </span>
-          <span class="spin_top_jump" @click="goRegister">立即注册</span>
+        <div class="jump_login">
+          <span>已有账号? </span>
+          <span class="spin_top_jump" @click="goLogin">返回登录</span>
         </div>
       </a-form-item>
     </a-form>
@@ -66,11 +80,13 @@
 
 <script>
 import {mapActions} from 'vuex';
-import {LoginInGitee} from '@/api/login';
+import {register} from '@/api/login';
 export default {
   data() {
     return {
+      confirmDirty: false,
       loginBtn: false,
+      isLoginError: false,
       form: this.$form.createForm(this),
       state: {
         time: 60,
@@ -83,46 +99,82 @@ export default {
   },
   methods: {
     ...mapActions(['Login', 'Logout']),
-    goRegister() {
-      this.$router.push('/user/register');
+    goLogin() {
+      this.$router.push('/user/login')
     },
-    jumpInGitee() {
-      const _this = this;
-      LoginInGitee()
-        .then(function(res) {
-          if (res.code === 200) {
-            console.log(res)
-            if (res.gitee !== '' && res.gitee !== null && res.gitee !== undefined) {
-              window.location.href = res.gitee
-            }
-          } else {
-            _this.$message.error('请求错误');
-          }
-        })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
-        })
-        .finally(function() {
-        });
+    handleConfirmBlur(e) {
+      const value = e.target.value;
+      this.confirmDirty = this.confirmDirty || !!value;
+    },
+    validateToNextPassword(rule, value, callback) {
+      const regex = /^[a-zA-Z0-9]{6,20}$/;
+      if (!regex.test(value)) {
+        const text = '请输入6-20位字母或数字组成的密码!';
+        callback(text);
+      } else {
+        const form = this.form;
+        if (value && this.confirmDirty) {
+          form.validateFields(['confirm'], { force: true });
+        }
+        callback();
+      }
+    },
+    compareToFirstPassword(rule, value, callback) {
+      const regex = /^[a-zA-Z0-9]{6,20}$/;
+      const form = this.form;
+      if (!regex.test(value)) {
+        const text = '请输入6-20位字母或数字组成的密码!';
+        callback(text);
+      } else {
+        if (value && value !== form.getFieldValue('password')) {
+          const retext = '两次输入的密码不一致';
+          callback(retext);
+        } else {
+          callback();
+        }
+      }
+    },
+    handleUsernameOrEmail(rule, value, callback) {
+      const regex = /^[a-zA-Z0-9]{5,20}$/;
+      if (!regex.test(value)) {
+        const text = '请输入5-20位字母或数字的用户名!';
+        callback(text);
+      } else {
+        callback();
+      }
     },
     handleSubmit(e) {
+      this.isLoginError = false;
       e.preventDefault();
       const {
         form: {validateFields},
         state
       } = this;
-      const login = this.Login;
 
       state.loginBtn = true;
-        // 登录
+        // 注册
         validateFields({force: true}, (err, values) => {
           if (!err) {
             const loginParams = {...values};
+            delete loginParams.username;
             loginParams.username = values.username;
             loginParams.password = values.password;
-            login(loginParams)
-              .then(res => this.loginSuccess(res))
-              .catch(err => this.requestFailed(err))
+            register(loginParams)
+              .then(res => {
+                this.form.resetFields();
+                this.$message.success('注册成功!');
+                setTimeout(() => {
+                  this.$router.push('/user/login');
+                }, 1000)
+              })
+              .catch(err => {
+                if (err.response.data.code === 1102) {
+                  // 绑定重复账号，给予提示
+                  this.$message.error('注册账号已存在!')
+                } else {
+                  this.requestFailed(err);
+                }
+              })
               .finally(() => {
                 state.loginBtn = false;
               });
@@ -133,17 +185,8 @@ export default {
           }
         });
     },
-    loginSuccess(res) {
-      this.$router.push({path: '/'});
-      // 延迟 1 秒显示欢迎信息
-      setTimeout(() => {
-        this.$notification.success({
-          message: '欢迎',
-          description: '欢迎回来'
-        });
-      }, 1000);
-    },
     requestFailed(e) {
+      this.isLoginError = true;
       this.$notification['error']({
         message: '错误',
         description: e.response.data.msg || '请求出现错误，请稍后再试',
@@ -161,7 +204,7 @@ export default {
     font-size: 14px;
   }
 
-  .jump_registar {
+  .jump_login {
     margin-left: 245px;
     margin-top: -20px;
     .spin_top_jump {
@@ -178,18 +221,6 @@ export default {
     background: #0d9e6e;
     border-color: #0d9e6e;
     color: #fff;
-  }
-
-  .login_gitee{
-    img {
-      width: 62px;
-    }
-    .login_gitee_text {
-      color: #323232;
-      font-size: 16px;
-      padding-left: 10px;
-      line-height: 40px;
-    }
   }
 
   .getCaptcha {
@@ -252,5 +283,4 @@ export default {
   }
   }
 }
-
 </style>
