@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/max-attributes-per-line -->
 <template>
   <my-page-header-wrapper extraDesc="工作流上报的异常信息">
     <div class="diagnosis-abnormal-alert">
@@ -15,23 +16,14 @@
               </a-button>
             </div>
           </div>
-          <a-table
-            rowKey="alert_id"
-            :columns="alertRecordColumns"
-            :data-source="alertRecordData"
-            :pagination="pagination"
-            :loading="alertRecordLoading"
-            @change="handleTableChange"
-            class="alert-record-table"
-          >
+          <a-table rowKey="alert_id" :columns="alertRecordColumns" :data-source="alertRecordData"
+            :pagination="pagination" :loading="alertRecordLoading" @change="handleTableChange"
+            class="alert-record-table">
             <span slot="operation" slot-scope="text, record">
-              <a-popconfirm
-                title="确认后,该告警将不再提示"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="confirmAlert(record.alert_id)"
-              >
-                <img slot="icon" src="~@/assets/alertConfirmIcon.png" style="width:16px;position:absolute;top:5px;" />
+              <a-popconfirm title="确认后,该告警将不再提示" ok-text="确定" cancel-text="取消"
+                @confirm="confirmAlert(record.alert_id)">
+                <img slot="icon" src="~@/assets/alertConfirmIcon.png"
+                  style="width:16px;position:absolute;top:5px;" />
                 <a>确认</a>
               </a-popconfirm>
               <a-divider type="vertical" />
@@ -67,7 +59,7 @@ import {downloadBlobFile} from '@/views/utils/downloadBlobFile';
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  showTotal: total => `总计 ${total} 项`,
+  showTotal: (total) => `总计 ${total} 项`,
   showSizeChanger: true,
   showQuickJumper: true,
   pageSizeOptions: ['10', '15', '20']
@@ -153,12 +145,12 @@ export default {
         domain: filters.domain,
         direction: sorter.order
       })
-        .then(res => {
-          that.alertRecordData = res.result;
-          that.pagination.total = res.total_count;
+        .then((res) => {
+          that.alertRecordData = res.data.result;
+          that.pagination.total = res.data.total_count;
         })
-        .catch(err => {
-          this.$message.error(err.error_msg);
+        .catch((err) => {
+          this.$message.error(err.response.message);
         })
         .finally(() => {
           that.alertRecordLoading = false;
@@ -168,26 +160,26 @@ export default {
       confirmTheAlert({
         alert_id: e
       })
-        .then(res => {
-          this.$message.success(res.msg);
+        .then((res) => {
+          this.$message.success(res.message);
           this.getAlertRecordResult();
           // update alert count data in AlertHeaderBoard component
           store.dispatch('updateCount');
           store.dispatch('getAlertInfoResult');
         })
-        .catch(err => {
-          this.$message.error(err.error_msg);
+        .catch((err) => {
+          this.$message.error(err.response.message);
         });
     },
     downloadReport(e) {
       downloadReport({
         alert_id: e
       })
-        .then(res => {
-          downloadBlobFile(res.data, res.fileName);
+        .then((res) => {
+          downloadBlobFile(res.data.data, res.data.fileName);
         })
-        .catch(err => {
-          this.$message.error(err.error_msg);
+        .catch((err) => {
+          this.$message.error(err.response.message);
         });
     },
     handleTableChange(pagination, filters, sorter) {
@@ -207,16 +199,16 @@ export default {
           sorter: {}
         }
       })
-        .then(res => {
-          that.domainFilters = res.host_group_infos.map(item => {
+        .then((res) => {
+          that.domainFilters = res.data.host_group_infos.map((item) => {
             return {
               text: item.host_group_name,
               value: item.host_group_name
             };
           });
         })
-        .catch(err => {
-          that.$message.error(err.response.data.msg);
+        .catch((err) => {
+          that.$message.error(err.response.message);
         });
     }
   },

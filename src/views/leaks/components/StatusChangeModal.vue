@@ -33,7 +33,6 @@
 </template>
 
 <script>
-
 /**
  * 修改cve状态弹窗组件
  */
@@ -69,20 +68,20 @@ export default {
       const _this = this;
       this.isLoading = true;
       setCveStatus({
-        cveList: _this.selectedRowsAll.map(row => row.cve_id),
+        cveList: _this.selectedRowsAll.map((row) => row.cve_id),
         status: _this.value
       })
-        .then(function(res) {
-          _this.$message.success(res.msg);
+        .then(function (res) {
+          _this.$message.success(res.message);
           _this.$emit('statusUpdated');
 
           _this.visible = false;
           _this.value = '';
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.isLoading = false;
           _this.value = '';
         });

@@ -48,13 +48,13 @@ export default {
           this.isLoading = true;
           addDomain(values)
             .then(function(res) {
-              _this.$message.success(res.msg);
+              _this.$message.success(res.message);
               _this.onSuccess && _this.onSuccess();
               _this.visible = false;
               _this.form.resetFields();
             })
             .catch(function(err) {
-              _this.$message.error(err.response.data.message);
+              _this.$message.error(err.response.message);
             })
             .finally(function() {
               _this.isLoading = false;

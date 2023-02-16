@@ -28,13 +28,13 @@
               </p>
             </a-col>
             <a-col span="8">
-              <a-button type="primary" @click="sacnHost" :loading="scanloading || scanStatus === 'scanning'">
-                {{ scanStatus === 'scanning' ? '扫描中' : '漏洞扫描' }}
-              </a-button>
               <a-button
               type="primary"
-              @click="handleExport"
-              style="margin-left: 20px;">
+              @click="sacnHost"
+                :loading="scanloading || scanStatus === 3">
+                {{ scanStatus === 3 ? '扫描中' : '漏洞扫描' }}
+              </a-button>
+              <a-button type="primary" @click="handleExport" style="margin-left: 20px;">
                 导出cve信息
               </a-button>
             </a-col>
@@ -53,14 +53,12 @@
         :paginationTotal="paginationTotal"
         @getCveAll="getCveAllList"
         :cveAllIsLoadingProp="cveAllIsLoading"
-        :cveAllListProp="cveAllList"
-      />
+        :cveAllListProp="cveAllList" />
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-
 /**
  * 主机详情页面
  */
@@ -81,7 +79,7 @@ export default {
   },
   computed: {
     breadcrumb() {
-      const routes = this.$route.meta.diyBreadcrumb.map(route => {
+      const routes = this.$route.meta.diyBreadcrumb.map((route) => {
         return {
           path: route.path,
           breadcrumbName: i18nRender(route.breadcrumbName)
@@ -124,17 +122,15 @@ export default {
   methods: {
     dateFormat,
     handleExport() {
-        const _this = this;
-        getCveExport(
-          [_this.hostId]
-        )
-        .then(function(res) {
-          downloadBlobFile(res.data, res.fileName);
+      const _this = this;
+      getCveExport([_this.hostId])
+        .then(function (res) {
+          downloadBlobFile(res.data.data, res.datafileName);
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.scanStatusloading = false;
         });
     },
@@ -144,13 +140,13 @@ export default {
       getHostInfo({
         host_id: this.hostId
       })
-        .then(function(res) {
-          const resultObj = res.result || {};
+        .then(function (res) {
+          const resultObj = res.data.result || {};
           resultObj.host_id = _this.hostId;
           _this.detail = resultObj;
           // _this.getCVEList(res.info && res.info.cveList)
         })
-        .finally(function() {
+        .finally(function () {
           _this.infoLoading = false;
         });
     },
@@ -165,14 +161,14 @@ export default {
         host_id: hostId,
         affected: this.affected
       })
-        .then(function(res) {
-          _this.cveList = res.result;
-          _this.paginationTotal = res.total_count || (res.total_count === 0 ? 0 : undefined);
+        .then(function (res) {
+          _this.cveList = res.data.result;
+          _this.paginationTotal = res.data.total_count || (res.data.total_count === 0 ? 0 : undefined);
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.cveIsLoading = false;
         });
     },
@@ -183,13 +179,13 @@ export default {
         ...data,
         host_id: this.hostId
       })
-        .then(function(res) {
-          _this.cveAllList = res.result;
+        .then(function (res) {
+          _this.cveAllList = res.data.result;
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.cveAllIsLoading = false;
         });
     },
@@ -203,15 +199,15 @@ export default {
         hostList: [_this.hostId],
         filter: null
       })
-        .then(function(res) {
-          _this.$message.success(res.msg);
-          _this.scanStatus = 'scanning';
+        .then(function (res) {
+          _this.$message.success(res.message);
+          _this.scanStatus = 3;
           _this.getScanStatue();
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.scanloading = false;
         });
     },
@@ -223,23 +219,23 @@ export default {
       getHostScanStatus({
         hostList: [_this.hostId]
       })
-        .then(function(res) {
-          _this.scanStatus = res.result[_this.hostId];
-          if (_this.scanStatus === 'scanning') {
-            _this.getScanStatusTimeout = setTimeout(function() {
+        .then(function (res) {
+          _this.scanStatus = res.data.result[_this.hostId];
+          if (_this.scanStatus === 3) {
+            _this.getScanStatusTimeout = setTimeout(function () {
               _this.getScanStatue();
             }, configs.scanProgressInterval);
           }
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.scanStatusloading = false;
         });
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.getDetail();
     this.getScanStatue();
   }

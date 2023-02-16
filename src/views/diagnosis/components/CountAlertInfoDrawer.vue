@@ -75,11 +75,11 @@ export default {
         direction: direction
       })
         .then(res => {
-          that.alertInfoResult = res.results;
-          that.pagination.total = res.total_count;
+          that.alertInfoResult = res.data.results;
+          that.pagination.total = res.data.total_count;
         })
         .catch(err => {
-          that.$message.error(err.error_msg);
+          that.$message.error(err.response.message);
         })
         .finally(() => {
           that.isLoading = false;

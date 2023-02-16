@@ -3,9 +3,7 @@
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item label="任务名称">
-          <a-input
-            placeholder="请输入任务名称，不超过50个字符"
-            v-decorator="[
+          <a-input placeholder="请输入任务名称，不超过50个字符" v-decorator="[
               'task_name',
               {
                 rules: [
@@ -14,8 +12,7 @@
                   {validator: checkTaskName}
                 ]
               }
-            ]"
-          />
+            ]" />
         </a-form-item>
       </a-col>
     </a-row>
@@ -24,11 +21,7 @@
         <a-form-item label="所用playbook">
           <a-select
             v-decorator="['template_name', {rules: [{required: true, message: '请选择playbook'}]}]"
-            mode="multiple"
-            placeholder="请选择playbook"
-            style="width: 100%"
-            @change="handleChange"
-          >
+            mode="multiple" placeholder="请选择playbook" style="width: 100%" @change="handleChange">
             <a-spin v-if="templateListIsLoading" slot="notFoundContent" size="small" />
             <a-select-option v-for="item in filteredOptions" :key="item" :value="item">
               {{ item }}
@@ -40,14 +33,10 @@
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item label="任务描述">
-          <a-textarea
-            v-decorator="[
+          <a-textarea v-decorator="[
               'description',
               {rules: [{required: true, message: '请输入该配置任务的描述'}, {validator: checkTaskdesc}]}
-            ]"
-            :rows="4"
-            placeholder="请输入该配置任务的描述, 100字以内"
-          />
+            ]" :rows="4" placeholder="请输入该配置任务的描述, 100字以内" />
         </a-form-item>
       </a-col>
     </a-row>
@@ -74,19 +63,19 @@ export default {
       default: null
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.getTemplateList();
     this.setButtons({callBack: this.save, text: '生成', type: 'primary'});
   },
   computed: {
     filteredOptions() {
       const OPTIONS = [];
-      this.templateList.forEach(function(item) {
+      this.templateList.forEach(function (item) {
         if (item.template_name !== '') {
           OPTIONS.push(item.template_name);
         }
       });
-      return OPTIONS.filter(o => !this.selectedItems.includes(o));
+      return OPTIONS.filter((o) => !this.selectedItems.includes(o));
     }
   },
   methods: {
@@ -96,13 +85,13 @@ export default {
       this.templateListIsLoading = true;
 
       getTemplateList({})
-        .then(function(res) {
-          _this.templateList = res.template_infos;
+        .then(function (res) {
+          _this.templateList = res.data.template_infos;
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.templateListIsLoading = false;
         });
     },
@@ -114,15 +103,15 @@ export default {
           generateTask({
             ...values
           })
-            .then(function(res) {
-              _this.$message.success(res.msg);
+            .then(function (res) {
+              _this.$message.success(res.message);
               _this.close();
               _this.saveSuccess();
             })
-            .catch(function(err) {
-              _this.$message.error(err.response.data.msg);
+            .catch(function (err) {
+              _this.$message.error(err.response.message);
             })
-            .finally(function() {
+            .finally(function () {
               _this.closeSpin();
             });
         }

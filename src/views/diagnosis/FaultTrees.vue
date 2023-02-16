@@ -16,12 +16,8 @@
           <a-row type="flex" align="middle">
             <a-col>
               <div class="btn-box">
-                <a-popconfirm
-                  title="您确定要删除该故障树吗?"
-                  ok-text="确认"
-                  cancel-text="取消"
-                  @confirm="deletediagtree(faultTree.tree_name)"
-                >
+                <a-popconfirm title="您确定要删除该故障树吗?" ok-text="确认" cancel-text="取消"
+                  @confirm="deletediagtree(faultTree.tree_name)">
                   <a href="javascript:;">删除</a>
                 </a-popconfirm>
               </div>
@@ -32,7 +28,8 @@
                   <a-button type="primary"> 故障诊断<a-icon type="plus" /> </a-button>
                 </template>
                 <template slot="drawerView">
-                  <add-fault-diagnosis :saveSuccess="addFaultDiagnosisSuccess" :faultTreeList="treeDataAll" />
+                  <add-fault-diagnosis :saveSuccess="addFaultDiagnosisSuccess"
+                    :faultTreeList="treeDataAll" />
                 </template>
               </drawer-view>
             </a-col>
@@ -86,13 +83,13 @@ export default {
     getDiagTree({
       treeList: []
     })
-      .then(function(res) {
-        _this.treeDataAll = [{}].concat(res.trees);
+      .then(function (res) {
+        _this.treeDataAll = [{}].concat(res.data.trees);
       })
-      .catch(function(err) {
-        _this.$message.error(err.response.data.msg);
+      .catch(function (err) {
+        _this.$message.error(err.response.message);
       })
-      .finally(function() {});
+      .finally(function () {});
   },
   methods: {
     getFaultTree() {
@@ -103,16 +100,16 @@ export default {
       getDiagTree({
         treeList
       })
-        .then(function(res) {
-          _this.faultTree = res.trees[0] || {};
+        .then(function (res) {
+          _this.faultTree = res.data.trees[0] || {};
           if (!_this.faultTree.tree_content || !_this.faultTree.tree_content['node name']) {
             _this.$message.error('no data for tree');
           }
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.treeDataLoading = false;
         });
     },
@@ -123,15 +120,15 @@ export default {
       delDiagTree({
         treeList
       })
-        .then(function(res) {
-          _this.$message.success(res.msg);
+        .then(function (res) {
+          _this.$message.success(res.message);
           // 跳转回故障诊断页面
           _this.$router.push('/diagnosis/fault-diagnosis');
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {});
+        .finally(function () {});
     },
     addFaultDiagnosisSuccess() {}
   }

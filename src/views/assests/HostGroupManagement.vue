@@ -11,7 +11,7 @@
                   <div slot="message">
                     <span>{{ `已选择` + selectedRowKeys.length + `项` }}</span>
                     <a
-                      v-if="selectedRowKeys.length > 0"
+                    v-if="selectedRowKeys.length > 0"
                       @click="deleteHostBash(selectedRowKeys, selectedRowsAll)">
                       批量删除
                     </a>
@@ -44,16 +44,15 @@
           </a-col>
         </a-row>
         <a-table
-          :rowKey="rowKey"
-          :columns="columns"
-          :data-source="tableData"
+        :rowKey="rowKey"
+        :columns="columns"
+        :data-source="tableData"
           :pagination="pagination"
           :row-selection="rowSelection"
           @change="handleTableChange"
           :loading="tableIsLoading"
           :expandIconColumnIndex="0"
-          @expend="aleret(1)"
-        >
+          @expend="aleret(1)">
           <span slot="action" slot-scope="record">
             <!------后续增加-----
             <span>编辑</span>
@@ -65,20 +64,18 @@
           </span>
         </a-table>
         <a-drawer
-          title="拥有主机"
-          :width="720"
-          placement="right"
-          :visible="hostListVisible"
+        title="拥有主机"
+        :width="720"
+        placement="right"
+        :visible="hostListVisible"
           :body-style="{paddingBottom: '80px'}"
-          @close="closeHostList"
-        >
+          @close="closeHostList">
           <a-table
-            :rowKey="hostRowKey"
-            :columns="hostListColumns"
+          :rowKey="hostRowKey"
+          :columns="hostListColumns"
             :data-source="this.hostListDataStore[this.hostGroupName] || []"
             :loading="hostListIsLoading ? true : false"
-            :pagination="false"
-          >
+            :pagination="false">
             <span slot="isManagement" slot-scope="isMana">{{ isMana ? '是' : '否' }}</span>
           </a-table>
         </a-drawer>
@@ -97,7 +94,7 @@ import {hostList, hostGroupList, deleteHostGroup} from '@/api/assest';
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  showTotal: total => `总计 ${total} 项`,
+  showTotal: (total) => `总计 ${total} 项`,
   showSizeChanger: true,
   showQuickJumper: true
 };
@@ -109,8 +106,8 @@ const hostListColumns = [
     title: '主机名称'
   },
   {
-    dataIndex: 'public_ip',
-    key: 'public_ip',
+    dataIndex: 'host_ip',
+    key: 'host_ip',
     title: 'IP地址'
   },
   {
@@ -207,7 +204,7 @@ export default {
     }
   },
   watch: {
-    hostListIsLoading: function() {
+    hostListIsLoading: function () {
       // loaidng改变后，检查hostListDataStore[this.hostGroupId]的值，触发vue更新
       if (this.hostGroupId && this.hostListDataStore[this.hostGroupId]) {
         return true;
@@ -250,19 +247,19 @@ export default {
           }
         }
       })
-        .then(function(res) {
-          _this.tableData = res.host_group_infos;
+        .then(function (res) {
+          _this.tableData = res.data.host_group_infos;
           _this.pagination = {
             ..._this.pagination,
             current: pagination.current,
             pageSize: pagination.pageSize,
-            total: res.total_count || (res.total_count === 0 ? 0 : pagination.total)
+            total: res.data.total_count || (res.data.total_count === 0 ? 0 : pagination.total)
           };
         })
-        .catch(function(err) {
+        .catch(function (err) {
           _this.$message.error(err.data.msg);
         })
-        .finally(function() {
+        .finally(function () {
           _this.tableIsLoading = false;
         });
     },
@@ -288,13 +285,13 @@ export default {
           sorter: {}
         }
       })
-        .then(function(res) {
-          _this.hostListDataStore[hostGroupName] = res.host_infos;
+        .then(function (res) {
+          _this.hostListDataStore[hostGroupName] = res.data.host_infos;
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.hostListIsLoading -= 1;
         });
     },
@@ -315,21 +312,21 @@ export default {
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '删除',
-        onOk: function() {
+        onOk: function () {
           return _this.handleDelete([record.host_group_name]);
         },
         onCancel() {}
       });
     },
     deleteHostBash(selectedRowKeys, selectedRowsAll) {
-      const filteredRows = selectedRowsAll.filter(row => row.host_count > 0);
+      const filteredRows = selectedRowsAll.filter((row) => row.host_count > 0);
       if (filteredRows.length > 0) {
         this.$warning({
           title: '主机组内有主机时无法删除',
           content: (
             <div>
               <p>请移除下列组内主机后再尝试</p>
-              {filteredRows.map(row => (
+              {filteredRows.map((row) => (
                 <p>
                   <span>{row.host_group_name}</span>
                 </p>
@@ -349,7 +346,7 @@ export default {
           </div>
         ),
         content: () =>
-          selectedRowsAll.map(row => (
+          selectedRowsAll.map((row) => (
             <p>
               <span>{row.host_group_name}</span>
             </p>
@@ -357,7 +354,7 @@ export default {
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '删除',
-        onOk: function() {
+        onOk: function () {
           return _this.handleDelete(selectedRowKeys, true);
         },
         onCancel() {}
@@ -373,14 +370,14 @@ export default {
         deleteHostGroup({
           hostGroupList
         })
-          .then(res => {
-            _this.$message.success(res.msg);
+          .then((res) => {
+            _this.$message.success(res.message);
             _this.getHostGroupList({});
             if (isBash) _this.selectedRowKeys = [];
             resolve();
           })
-          .catch(err => {
-            _this.$message.error(err.response.data.msg);
+          .catch((err) => {
+            _this.$message.error(err.response.message);
             reject(err);
           });
       });
@@ -397,7 +394,7 @@ export default {
       this.getHostGroupList();
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.getHostGroupList();
   }
 };

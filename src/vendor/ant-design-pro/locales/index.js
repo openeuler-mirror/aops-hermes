@@ -40,7 +40,7 @@ export function loadLanguageAsync(lang = defaultLang) {
       if (!loadedLanguages.includes(lang)) {
         return import(/* webpackChunkName: "lang-[request]" */ `./lang/${lang}`)
           .then(msg => {
-            const locale = msg.default;
+            const locale = msg.data.default;
             i18n.setLocaleMessage(lang, locale);
             loadedLanguages.push(lang);
             moment.updateLocale(locale.momentName, locale.momentLocale);

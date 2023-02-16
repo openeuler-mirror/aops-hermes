@@ -25,13 +25,13 @@ const errorHandler = error => {
     const data = error.response.data;
     // 从 localstorage 获取 token
     const token = cookie.get('aops_token');
-    if (error.response.status === 403) {
+    if (error.response.status === '403') {
       notification.error({
         message: 'Forbidden',
         description: data.message
       });
     }
-    if (error.response.status === 401 && !(data.result && data.result.isLogin)) {
+    if (error.response.status === '401' && !(data.result && data.result.isLogin)) {
       notification.error({
         message: 'Unauthorized',
         description: 'Authorization verification failed'
@@ -80,10 +80,10 @@ request.interceptors.response.use(response => {
   if (!code.toString().match(/^2[0-9]{2,2}$/)) {
     let err = null;
     switch (code) {
-      case 1201:
+      case '1201':
         notification.error({
           message: '用户校验失败',
-          description: response.data.msg
+          description: response.data.message
         });
         store.dispatch('Logout').then(() => {
           setTimeout(() => {
@@ -92,9 +92,9 @@ request.interceptors.response.use(response => {
         });
         break;
       default:
-        err = new Error(response.data.msg);
-        err.data = response.data;
-        err.response = response;
+        err = new Error(response.data.message);
+        err.data = response.data.data;
+        err.response = response.data;
         throw err;
     }
   }

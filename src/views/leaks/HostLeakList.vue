@@ -3,23 +3,29 @@
     <a-card :bordered="false" class="aops-theme">
       <h3 class="card-title">
         主机列表
-        <a-icon :type="expandedStatus[0] ? 'caret-up' : 'caret-down'" @click="setExpandStatus(0, !expandedStatus[0])" />
+        <a-icon
+        :type="expandedStatus[0] ? 'caret-up' : 'caret-down'"
+          @click="setExpandStatus(0, !expandedStatus[0])" />
       </h3>
       <host-table standalone v-show="expandedStatus[0]" :repoListProps="repoList" />
     </a-card>
     <a-card :bordered="false" class="aops-theme" style="margin-top: 20px">
       <h3>
         CVE REPO
-        <a-icon :type="expandedStatus[1] ? 'caret-up' : 'caret-down'" @click="setExpandStatus(1, !expandedStatus[1])" />
+        <a-icon
+        :type="expandedStatus[1] ? 'caret-up' : 'caret-down'"
+          @click="setExpandStatus(1, !expandedStatus[1])" />
       </h3>
       <div class="host-leaks-repo-list" v-show="expandedStatus[1]">
         <a-list
-          :loading="repoLoading"
-          :data-source="repoListData"
-          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}"
-        >
+        :loading="repoLoading"
+        :data-source="repoListData"
+          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}">
           <a-list-item slot="renderItem" slot-scope="repo, index">
-            <a-card :bodyStyle="{padding: 0}" :bordered="false" :class="index !== 0 ? 'aops-theme-incard' : ''">
+            <a-card
+            :bodyStyle="{padding: 0}"
+            :bordered="false"
+              :class="index !== 0 ? 'aops-theme-incard' : ''">
               <div class="aops-card-body">
                 <div class="aops-card-content" @click="checkRepoOpen(repo)">
                   <h3>{{ repo.repo_name }}</h3>
@@ -31,7 +37,8 @@
                       <a @click="handleDeleteRepo(repo)">删除</a>
                       <a-divider type="vertical" />
                       <a-dropdown>
-                        <a class="ant-dropdown-link" @click="e => e.preventDefault()"> 更多 <a-icon type="down" /> </a>
+                        <a class="ant-dropdown-link" @click="e => e.preventDefault()"> 更多 <a-icon
+                            type="down" /> </a>
                         <a-menu slot="overlay">
                           <a-menu-item key="1" disabled>
                             导出
@@ -52,14 +59,16 @@
         <a-row type="flex" justify="center" v-show="showNumber < repoList.length + 1">
           <a-col><a-button @click="showMore">加载更多</a-button></a-col>
         </a-row>
-        <check-repo-modal :visible="checkRepoVisible" :detailProps="checkRepo" @close="checkRepoClose" />
+        <check-repo-modal
+        :visible="checkRepoVisible"
+        :detailProps="checkRepo"
+          @close="checkRepoClose" />
       </div>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-
 /**
  * 主机列表页面
  */
@@ -101,7 +110,7 @@ export default {
       }
     },
     breadcrumb() {
-      const routes = this.$route.meta.diyBreadcrumb.map(route => {
+      const routes = this.$route.meta.diyBreadcrumb.map((route) => {
         return {
           path: route.path,
           breadcrumbName: i18nRender(route.breadcrumbName)
@@ -133,13 +142,13 @@ export default {
       const _this = this;
       this.repoLoading = true;
       getRepoList()
-        .then(function(res) {
-          _this.repoList = res.result.reverse() || [];
+        .then(function (res) {
+          _this.repoList = res.data.result.reverse() || [];
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.repoLoading = false;
         });
     },
@@ -151,16 +160,16 @@ export default {
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '删除',
-        onOk: function() {
+        onOk: function () {
           return deleteRepo({
             repoNameList: [repo.repo_name]
           })
-            .then(function(res) {
-              _this.$message.success(res.msg);
+            .then(function (res) {
+              _this.$message.success(res.message);
               _this.getRepoList();
             })
-            .catch(function(err) {
-              _this.$message.error(err.response.data.msg);
+            .catch(function (err) {
+              _this.$message.error(err.response.message);
             });
         },
         onCancel() {}
@@ -174,7 +183,7 @@ export default {
       this.checkRepoVisible = false;
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.getRepoList();
   }
 };

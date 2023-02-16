@@ -1,13 +1,8 @@
+<!-- eslint-disable vue/max-attributes-per-line -->
 <template>
   <a-drawer title="CVE-主机列表" closable :visible="visible" width="600" @close="handleClose">
-    <a-table
-      rowKey="host_id"
-      :columns="columns"
-      :data-source="tableData"
-      :pagination="false"
-      :loading="tableIsLoading"
-      bordered
-    >
+    <a-table rowKey="host_id" :columns="columns" :data-source="tableData" :pagination="false"
+      :loading="tableIsLoading" bordered>
       <div slot="status" slot-scope="status">
         <span><a-badge :status="statusValueMap[status]" />{{ statusTextMap[status] }}</span>
       </div>
@@ -16,7 +11,6 @@
 </template>
 
 <script>
-
 /**
  * 展示任务中各个主机状态的抽屉组件
  */
@@ -94,18 +88,18 @@ export default {
           taskId: this.taskId,
           cveList: [this.cveId]
         })
-          .then(function(res) {
-            _this.tableData = (res.result && res.result[_this.cveId]) || [];
+          .then(function (res) {
+            _this.tableData = (res.data.result && res.data.result[_this.cveId]) || [];
             _this.tableData = _this.tableData.map((row, idx) => {
               const tempObj = row;
               tempObj.index = idx + 1;
               return tempObj;
             });
           })
-          .catch(function(err) {
-            _this.$message.error(err.response.data.msg);
+          .catch(function (err) {
+            _this.$message.error(err.response.message);
           })
-          .finally(function() {
+          .finally(function () {
             _this.tableIsLoading = false;
           });
       }

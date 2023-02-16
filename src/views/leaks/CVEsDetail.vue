@@ -53,16 +53,18 @@
             </a-col>
             <a-col :span="8">
               关联CVE：
-              <span
-                v-if="detail.related_cve && detail.related_cve.length"
-              >
+              <span v-if="detail.related_cve && detail.related_cve.length">
                 <a @click="relatedCveDrawerOpen">
                   {{ detail.related_cve && detail.related_cve.length }}
                 </a>
                 个
               </span>
               <span v-else>无</span>
-              <a-drawer title="关联CVE" :visible="relatedCveDrawerVisble" @close="relatedCveDrawerClose" width="400">
+              <a-drawer
+              title="关联CVE"
+              :visible="relatedCveDrawerVisble"
+                @close="relatedCveDrawerClose"
+                width="400">
                 <table class="drawer-cve-table">
                   <th>序号</th>
                   <th>cve名称</th>
@@ -84,18 +86,16 @@
     <a-card :bordered="false" class="aops-theme">
       <h1>受影响主机</h1>
       <host-table
-        :cveList="[detail]"
-        :inputList="hostList"
-        :inputLoading="hostIsLoading"
+      :cveList="[detail]"
+      :inputList="hostList"
+      :inputLoading="hostIsLoading"
         @getTableData="getHostData"
-        :paginationTotal="paginationTotal"
-      />
+        :paginationTotal="paginationTotal" />
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-
 /**
  * cve 详情页
  */
@@ -115,7 +115,7 @@ export default {
   },
   computed: {
     breadcrumb() {
-      const routes = this.$route.meta.diyBreadcrumb.map(route => {
+      const routes = this.$route.meta.diyBreadcrumb.map((route) => {
         return {
           path: route.path,
           breadcrumbName: i18nRender(route.breadcrumbName)
@@ -163,10 +163,10 @@ export default {
       getCveInfo({
         cve_id: this.cve_id
       })
-        .then(function(res) {
-          _this.detail = res.result || {};
+        .then(function (res) {
+          _this.detail = res.data.result || {};
         })
-        .finally(function() {
+        .finally(function () {
           _this.infoLoading = false;
         });
     },
@@ -180,14 +180,14 @@ export default {
         ...data,
         cve_id: cveId
       })
-        .then(function(res) {
-          _this.hostList = res.result || [];
-          _this.paginationTotal = res.total_count || (res.total_count === 0 ? 0 : undefined);
+        .then(function (res) {
+          _this.hostList = res.data.result || [];
+          _this.paginationTotal = res.data.total_count || (res.data.total_count === 0 ? 0 : undefined);
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.hostIsLoading = false;
         });
     },
@@ -198,14 +198,14 @@ export default {
         cveList: [this.cve_id],
         status
       })
-        .then(function(res) {
-          _this.$message.success(res.msg);
+        .then(function (res) {
+          _this.$message.success(res.message);
           _this.getDetail();
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.setStatusLoading = false;
         });
     },
@@ -219,12 +219,12 @@ export default {
       const _this = this;
       this.$router.push(cve);
       this.$router.push('/leaks/cves-management');
-      setTimeout(function() {
+      setTimeout(function () {
         _this.$router.go(-1);
       }, 100);
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.getDetail();
   }
 };

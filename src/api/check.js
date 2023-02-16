@@ -79,10 +79,10 @@ export function getResult({timeRange, checkItems, hostList, value, sort, directi
       page: page || 1, // 当前的⻚码
       per_page: perPage || 10 // 每⻚的数量，最⼤为50
     }
-  }).then(function(data) {
-    return hostBasicInfo(data.check_result).then(function(hostMap) {
-      setHostInfo(data.check_result, hostMap);
-      return data;
+  }).then(function(res) {
+    return hostBasicInfo(res.data.check_result).then(function(hostMap) {
+      setHostInfo(res.data.check_result, hostMap);
+      return res;
     });
   });
 }
@@ -148,10 +148,10 @@ export function getResultCount({hostList, sort, direction, page, perPage}) {
       page: page || 1, // 当前的⻚码
       per_page: perPage || 10 // 每⻚的数量，最⼤为50
     }
-  }).then(function(data) {
-    return hostBasicInfo(data.results).then(function(hostMap) {
-      setHostInfo(data.results, hostMap);
-      return data;
+  }).then(function(res) {
+    return hostBasicInfo(res.data.results).then(function(hostMap) {
+      setHostInfo(res.data.results, hostMap);
+      return res;
     });
   });
 }
@@ -167,10 +167,10 @@ export function getResultCountTopTen() {
       page: 1,
       per_page: 10
     }
-  }).then(function(data) {
-    return hostBasicInfo(data.results).then(function(hostMap) {
-      setHostInfo(data.results, hostMap);
-      return data;
+  }).then(function(res) {
+    return hostBasicInfo(res.data.results).then(function(hostMap) {
+      setHostInfo(res.data.results, hostMap);
+      return res;
     });
   });
 }

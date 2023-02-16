@@ -111,7 +111,7 @@ export default {
         host_list: [this.hostId]
       })
         .then(function(res) {
-          _this.hostInfo = (res.host_infos && res.host_infos[0]) || {};
+          _this.hostInfo = (res.data.host_infos && res.data.host_infos[0]) || {};
         })
         .catch(function(err) {
           _this.$message.error(err.response.msg);

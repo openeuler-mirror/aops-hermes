@@ -17,7 +17,11 @@
             <span>共获取到&nbsp;{{ pagination.total }}&nbsp;条工作流信息</span>
           </a-col>
           <a-col>
-            <a-button type="primary" @click="refreshWorkFlow" :loading="tableIsLoading" ref="tableRefresh">
+            <a-button
+            type="primary"
+            @click="refreshWorkFlow"
+            :loading="tableIsLoading"
+              ref="tableRefresh">
               <a-icon type="reload"></a-icon>
               刷新
             </a-button>
@@ -27,25 +31,23 @@
           <a-row class="aops-table-control-row">
             <a-col>
               <a-table
-                class="workflow-table"
-                :columns="columns"
-                :pagination="pagination"
+              class="workflow-table"
+              :columns="columns"
+              :pagination="pagination"
                 :data-source="workFlowList"
                 @change="handleWorkFlowTableChange"
                 :loading="tableIsLoading"
-                :locale="{emptyText: getEmpty}"
-              >
+                :locale="{emptyText: getEmpty}">
                 <span slot="workflow_name" slot-scope="workflow_name, record">
                   <router-link
-                    :title="workflow_name"
-                    :to="{
+                  :title="workflow_name"
+                  :to="{
                       path: `/diagnosis/workflow/${record.workflow_id}`
-                    }"
-                    >{{ workflow_name }}</router-link
-                  >
+                    }">{{ workflow_name }}</router-link>
                 </span>
                 <span slot="description" slot-scope="description">
-                  <CutText class="bgcTooltip" placement="topLeft" :text="description" :length="30"> </CutText>
+                  <CutText class="bgcTooltip" placement="topLeft" :text="description" :length="30">
+                  </CutText>
                 </span>
                 <span slot="status" slot-scope="status" class="status">
                   <a-badge :status="statusColorMap[status]"></a-badge>
@@ -53,27 +55,24 @@
                 </span>
                 <span slot="operation" slot-scope="operation, record">
                   <a
-                    class="operation"
-                    @click="executeWorkFlow(operation, record)"
-                    :disabled="record.status === 'running'"
-                    >执行
+                  class="operation"
+                  @click="executeWorkFlow(operation, record)"
+                    :disabled="record.status === 'running'">执行
                   </a>
                   <a-divider type="vertical" />
                   <a
-                    class="operation"
-                    @click="suspendWorkFlow(operation, record)"
-                    :disabled="record.status === 'hold'"
-                  >
+                  class="operation"
+                  @click="suspendWorkFlow(operation, record)"
+                    :disabled="record.status === 'hold'">
                     暂停
                   </a>
                   <a-divider type="vertical" />
                   <a-popconfirm
-                    title="你确定删除这个工作流吗?"
-                    ok-text="确认"
-                    cancel-text="取消"
+                  title="你确定删除这个工作流吗?"
+                  ok-text="确认"
+                  cancel-text="取消"
                     @confirm="deleteWorkFlow(operation, record)"
-                    :disabled="record.status === 'running'"
-                  >
+                    :disabled="record.status === 'running'">
                     <a class="operation" :disabled="record.status === 'running'">删除</a>
                   </a-popconfirm>
                   <a-divider type="vertical" />
@@ -96,7 +95,11 @@
             <span>共获取到&nbsp;{{ appListPagination.total }}&nbsp;个应用信息</span>
           </a-col>
           <a-col>
-            <a-button type="primary" @click="refreshAppList" :loading="appIsLoading" ref="appRefresh">
+            <a-button
+            type="primary"
+            @click="refreshAppList"
+            :loading="appIsLoading"
+              ref="appRefresh">
               <a-icon type="reload"></a-icon>
               刷新
             </a-button>
@@ -151,8 +154,8 @@
           </a-row>
         </a-spin>
         <a-pagination
-          :current="appListPagination.page"
-          :pageSize="appListPagination.perPage"
+        :current="appListPagination.page"
+        :pageSize="appListPagination.perPage"
           :total="appListPagination.total"
           :pageSizeOptions="['8', '15', '20']"
           size="small"
@@ -160,8 +163,7 @@
           show-quick-jumper
           class="pagination"
           @change="onAppPageChange"
-          @showSizeChange="onAppSizeChange"
-        />
+          @showSizeChange="onAppSizeChange" />
       </a-card>
     </div>
   </my-page-header-wrapper>
@@ -178,7 +180,7 @@ import {getWorkFlowList, getAppList, executeWorkflow, stopWorkflow, deleteWorkfl
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  showTotal: total => `总计 ${total} 项`,
+  showTotal: (total) => `总计 ${total} 项`,
   size: 'small',
   showSizeChanger: true,
   showQuickJumper: true
@@ -248,12 +250,12 @@ export default {
       executeWorkflow({
         workflowId: record.workflow_id
       })
-        .then(res => {
-          this.$message.success(res.msg);
+        .then((res) => {
+          this.$message.success(res.message);
           this.getWorkFlowList();
         })
-        .catch(err => {
-          this.$message.error(err.response.data.msg);
+        .catch((err) => {
+          this.$message.error(err.response.message);
         })
         .finally(() => {
           this.excuteLoading = false;
@@ -265,12 +267,12 @@ export default {
       stopWorkflow({
         workflowId: record.workflow_id
       })
-        .then(res => {
-          this.$message.success(res.msg);
+        .then((res) => {
+          this.$message.success(res.message);
           this.getWorkFlowList();
         })
-        .catch(err => {
-          this.$message.error(err.response.data.msg);
+        .catch((err) => {
+          this.$message.error(err.response.message);
         })
         .finally(() => {
           this.stopLoading = false;
@@ -282,12 +284,12 @@ export default {
       deleteWorkflow({
         workflowId: record.workflow_id
       })
-        .then(res => {
-          this.$message.success(res.msg);
+        .then((res) => {
+          this.$message.success(res.message);
           this.getWorkFlowList();
         })
-        .catch(err => {
-          this.$message.error(err.response.data.msg);
+        .catch((err) => {
+          this.$message.error(err.response.message);
         })
         .finally(() => {
           this.deleteLoading = false;
@@ -312,8 +314,8 @@ export default {
           }
         }
       })
-        .then(res => {
-          this.workFlowList = res.result || [];
+        .then((res) => {
+          this.workFlowList = res.data.result || [];
           this.workFlowList.forEach((item, index) => {
             this.$set(item, 'key', index);
             this.$set(item, 'domain', item.input.domain);
@@ -322,11 +324,11 @@ export default {
             ...this.pagination,
             current: pagination.current,
             pageSize: pagination.pageSize,
-            total: res.total_count || (res.total_count === 0 ? 0 : pagination.total)
+            total: res.data.total_count || (res.data.total_count === 0 ? 0 : pagination.total)
           };
         })
-        .catch(err => {
-          this.$message.error(err.response.data.msg);
+        .catch((err) => {
+          this.$message.error(err.response.message);
         })
         .finally(() => {
           this.tableIsLoading = false;
@@ -339,13 +341,13 @@ export default {
         page: this.appListPagination.page,
         perPage: this.appListPagination.perPage
       })
-        .then(res => {
-          this.appInfo = res || {};
+        .then((res) => {
+          this.appInfo = res.data || {};
           this.appList = this.appInfo.app_list || [];
           this.appListPagination.total = this.appInfo.total_count;
         })
-        .catch(err => {
-          this.$message.error(err.response.data.msg);
+        .catch((err) => {
+          this.$message.error(err.response.message);
         })
         .finally(() => {
           this.appIsLoading = false;
@@ -381,13 +383,13 @@ export default {
           sorter: {}
         }
       })
-        .then(function(res) {
-          _this.groupData = res.host_group_infos;
+        .then(function (res) {
+          _this.groupData = res.data.host_group_infos;
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {});
+        .finally(function () {});
     },
     getEmpty() {
       return (
@@ -440,7 +442,7 @@ export default {
           key: 'domain',
           title: '主机组',
           filteredValue: filters.domain || null,
-          filters: this.groupData.map(group => {
+          filters: this.groupData.map((group) => {
             return {
               text: group.host_group_name,
               value: group.host_group_name
@@ -452,7 +454,7 @@ export default {
           key: 'app_name',
           title: '应用',
           filteredValue: filters.app_name || null,
-          filters: this.appList.map(app => {
+          filters: this.appList.map((app) => {
             return {
               text: app.app_name,
               value: app.app_name

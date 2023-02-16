@@ -2,20 +2,20 @@
   <page-header-wrapper :breadcrumb="breadcrumb">
     <div>
       <a-card :bordered="false" class="aops-theme">
-        <a-form @submit="handleAddHost" :form="form" :label-col="{span: 5}" :wrapper-col="{span: 10}">
+        <a-form
+        @submit="handleAddHost"
+        :form="form"
+        :label-col="{span: 5}"
+          :wrapper-col="{span: 10}">
           <a-form-item label="主机名称">
             <a-input
-              :maxLength="50"
-              v-decorator="[
+            :maxLength="50"
+             v-decorator="[
                 'host_name',
                 {rules: [{required: true, message: '请输入主机名称'}, {validator: checkNameInput}]}
               ]"
-              placeholder="请输入主机名称,50个字符以内"
-            >
-              <a-tooltip
-                slot="suffix"
-                title="最大长度50个字符，由数字、小写字母、英文下划线_组成。以小写字母开头，且结尾不能是英文下划线_"
-              >
+              placeholder="请输入主机名称,50个字符以内">
+              <a-tooltip slot="suffix" title="最大长度50个字符，由数字、小写字母、英文下划线_组成。以小写字母开头，且结尾不能是英文下划线_">
                 <a-icon type="info-circle" style="color: rgba(0,0,0,.45)" />
               </a-tooltip>
             </a-input>
@@ -26,14 +26,12 @@
                 <a-select
                   v-decorator="['host_group_name', {rules: [{required: true, message: '请选择所属主机组'}]}]"
                   placeholder="请选择"
-                  :not-found-content="hostGroupIsLoading ? undefined : null"
-                >
+                  :not-found-content="hostGroupIsLoading ? undefined : null">
                   <a-spin v-if="hostGroupIsLoading" slot="notFoundContent" size="small" />
                   <a-select-option
-                    v-for="hostGroup in hostGroupList"
+                  v-for="hostGroup in hostGroupList"
                     :key="hostGroup.host_group_name"
-                    :value="hostGroup.host_group_name"
-                  >
+                    :value="hostGroup.host_group_name">
                     {{ hostGroup.host_group_name }}
                   </a-select-option>
                 </a-select>
@@ -47,8 +45,8 @@
           </a-form-item>
           <a-form-item label="IP地址">
             <a-input
-              v-decorator="[
-                'public_ip',
+            v-decorator="[
+                'host_ip',
                 {
                   rules: [
                     {
@@ -59,35 +57,33 @@
                   ]
                 }
               ]"
-              placeholder="请输入有效ip地址，e.g. 192.168.0.1"
-            />
+              placeholder="请输入有效ip地址，e.g. 192.168.0.1" />
           </a-form-item>
           <a-form-item label="SSH登录端口">
             <a-input-number
-              :min="0"
-              :max="65535"
-              v-decorator="[
+            :min="0"
+            :max="65535"
+            v-decorator="[
                 'ssh_port',
                 {initialValue: 22, rules: [{required: true, message: '请输入 0~65535 内正整数'}]}
               ]"
-              placeholder="请输入"
-            />
+              placeholder="请输入" />
           </a-form-item>
           <a-form-item label="管理/监控节点">
-            <a-radio-group name="managementGroup" v-decorator="['management', {initialValue: true}]">
-              <a-radio :value="true">管理节点</a-radio>
-              <a-radio :value="false">监控节点</a-radio>
+            <a-radio-group
+            name="managementGroup"
+              v-decorator="['management', {initialValue: true}]">
+              <a-radio :value="false">管理节点</a-radio>
+              <a-radio :value="true">监控节点</a-radio>
             </a-radio-group>
           </a-form-item>
           <a-form-item label="主机用户名">
             <a-input
-              v-decorator="[
-                'username',
-                {rules: [{required: true, message: '请输入主机用户名'}, {validator: checkHostUserName}]}
+            v-decorator="[
+                'ssh_user',
+                {rules: [{required: true, message: '请输入主机用户名'}]}
               ]"
-              placeholder="请输入主机用户名，16个字符以内"
-              :maxLength="16"
-            >
+              placeholder="请输入主机用户名">
               <a-tooltip slot="suffix" title="登录主机时使用的用户名">
                 <a-icon type="info-circle" style="color: rgba(0,0,0,.45)" />
               </a-tooltip>
@@ -95,14 +91,13 @@
           </a-form-item>
           <a-form-item label="主机登录密码">
             <a-input-password
-              v-decorator="[
+            v-decorator="[
                 'password',
-                {rules: [{required: true, message: '请输入主机登录密码'}, {validator: passwordCheck}]}
+                {rules: [{required: true, message: '请输入主机登录密码'}]}
               ]"
-              placeholder="请设置登录密码，长度8-20个字符"
-            ></a-input-password>
+              placeholder="请设置登录密码"></a-input-password>
           </a-form-item>
-          <a-form-item label="主机sudo密码">
+          <!-- <a-form-item label="主机sudo密码">
             <a-input-password
               v-decorator="[
                 'sudo_password',
@@ -110,31 +105,27 @@
               ]"
               placeholder="请设置sudo密码，长度8-20个字符"
             />
-          </a-form-item>
-          <a-form-item label="加密密钥">
+          </a-form-item> -->
+          <!-- <a-form-item label="加密密钥">
             <a-input-password
               v-decorator="['key', {rules: [{required: true, message: '请输入加密密钥'}, {validator: passwordCheck}]}]"
               placeholder="请设置用于给主机私密信息加密的密钥，长度8-20个字符"
             />
-          </a-form-item>
+          </a-form-item> -->
           <a-form-item :wrapper-col="{span: 10, offset: 5}">
             <a-button @click="handleCancel">取消</a-button>
             <a-button
-              v-if="pageType === 'create'"
-              htmlType="submit"
-              type="primary"
+            v-if="pageType === 'create'"
+            htmlType="submit"
+            type="primary"
               :loading="submitLoading"
-              style="margin-left: 8px"
-              >添加</a-button
-            >
+              style="margin-left: 8px">添加</a-button>
             <a-button
-              v-if="pageType === 'edit'"
-              htmlType="submit"
-              type="primary"
+            v-if="pageType === 'edit'"
+            htmlType="submit"
+            type="primary"
               :loading="submitLoading"
-              style="margin-left: 8px"
-              >修改</a-button
-            >
+              style="margin-left: 8px">修改</a-button>
           </a-form-item>
         </a-form>
       </a-card>
@@ -172,7 +163,7 @@ export default {
   computed: {
     // 自定义面包屑内容
     breadcrumb() {
-      const routes = this.$route.meta.diyBreadcrumb.map(route => {
+      const routes = this.$route.meta.diyBreadcrumb.map((route) => {
         return {
           path: route.path,
           breadcrumbName: i18nRender(route.breadcrumbName)
@@ -192,7 +183,7 @@ export default {
       };
     },
     ...mapState({
-      hostInfo: state => state.host.hostInfo
+      hostInfo: (state) => state.host.hostInfo
     })
   },
   created() {
@@ -219,13 +210,13 @@ export default {
           sorter: {}
         }
       })
-        .then(function(res) {
-          _this.hostGroupList = res.host_group_infos;
+        .then(function (res) {
+          _this.hostGroupList = res.data.host_group_infos;
         })
-        .catch(function(err) {
+        .catch(function (err) {
           _this.$message.error(err.response.msg);
         })
-        .finally(function() {
+        .finally(function () {
           _this.hostGroupIsLoading = false;
         });
     },
@@ -240,15 +231,15 @@ export default {
             values.host_id = this.hostInfo.host_id;
           }
           addHost(values)
-            .then(function(res) {
-              _this.$message.success(res.msg);
+            .then(function (res) {
+              _this.$message.success(res.message);
               store.dispatch('resetHostInfo');
               router.push('/assests/hosts-management');
             })
-            .catch(function(err) {
-              _this.$message.error(err.response.data.msg);
+            .catch(function (err) {
+              _this.$message.error(err.response.message);
             })
-            .finally(function() {
+            .finally(function () {
               _this.submitLoading = false;
             });
         }
@@ -330,13 +321,13 @@ export default {
       cb();
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.getHostGroupList();
     if (this.pageType === 'edit') {
       this.form.setFieldsValue({
         host_name: this.hostInfo.host_name,
         host_group_id: this.hostInfo.host_group_id,
-        public_ip: this.hostInfo.public_ip,
+        host_ip: this.hostInfo.host_ip,
         ssh_port: this.hostInfo.ssh_port,
         management: (this.hostInfo.management || '').toLowerCase() === 'true' || false
       });

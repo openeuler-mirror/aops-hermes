@@ -138,14 +138,14 @@ export default {
         alert_id: this.alertId
       })
         .then(res => {
-          for (const key in res.result) {
-            const tempObj = res.result[key];
+          for (const key in res.data.result) {
+            const tempObj = res.data.result[key];
             tempObj.key = key;
             that.data.push(tempObj);
           }
         })
         .catch(err => {
-          that.$message.error(err.error_msg);
+          that.$message.error(err.response.data);
         })
         .finally(() => {
           that.isLoading = false;

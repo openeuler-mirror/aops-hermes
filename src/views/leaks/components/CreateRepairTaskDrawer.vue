@@ -4,38 +4,35 @@
       {{ taskType === 'cve fix' ? `${text}` : '设置REPO' }}
     </a-button>
     <a-drawer
-      :title="`生成任务${taskType === 'repo set' ? ' 设置REPO' : ''}`"
-      closable
+    :title="`生成任务${taskType === 'repo set' ? ' 设置REPO' : ''}`"
+    closable
       @close="handleCancel"
       :get-container="false"
       :visible="visible"
       :body-style="{paddingBottom: '80px'}"
       width="650"
-      destroyOnClose
-    >
+      destroyOnClose>
       <div class="create-task-contenxt">
         <a-form :form="form" :label-col="{span: 5}" :wrapper-col="{span: 16}">
           <a-form-item label="任务类型">{{ taskTypsEnum[taskType] }}</a-form-item>
           <a-form-item label="任务名称">
             <a-input
-              :maxLength="20"
-              v-decorator="[
+            :maxLength="20"
+            v-decorator="[
                 'task_name',
                 {rules: [{required: true, message: '请输入任务名称'}], initialValue: taskNameDefault}
               ]"
-              placeholder="请输入任务名称，20个字符以内"
-            />
+              placeholder="请输入任务名称，20个字符以内" />
           </a-form-item>
           <a-form-item label="任务描述">
             <a-textarea
-              :maxLength="50"
-              v-decorator="[
+            :maxLength="50"
+            v-decorator="[
                 'task_desc',
                 {rules: [{required: true, message: '请输入任务描述'}], initialValue: taskDescDefault}
               ]"
               :rows="4"
-              placeholder="请输入任务描述，50个字符以内"
-            />
+              placeholder="请输入任务描述，50个字符以内" />
           </a-form-item>
           <a-form-item label="自动重启" v-if="taskType === 'cve fix'">
             <a-switch :checked="isResetChecked" @click="handleResetChanage">
@@ -45,9 +42,8 @@
           </a-form-item>
           <a-form-item label="选择REPO" v-if="taskType === 'repo set'">
             <a-select
-              v-decorator="['repo', {rules: [{required: true, message: '请选择REPO'}]}]"
-              placeholder="请选择REPO"
-            >
+            v-decorator="['repo', {rules: [{required: true, message: '请选择REPO'}]}]"
+              placeholder="请选择REPO">
               <a-select-option v-for="repo in repoList" :value="repo.repo_name" :key="repo.repo_id">
                 {{ repo.repo_name }}
               </a-select-option>
@@ -55,7 +51,11 @@
           </a-form-item>
         </a-form>
         <div v-if="taskType === 'cve fix'">
-          <a-table rowKey="cve_id" :columns="tableColumns" :data-source="cveList" :pagination="false">
+          <a-table
+          rowKey="cve_id"
+          :columns="tableColumns"
+          :data-source="cveList"
+            :pagination="false">
             <div slot="hostsList" slot-scope="hostsList">
               <a-spin v-if="hostUnderCveLoading" />
               <span v-else>
@@ -69,9 +69,9 @@
               </span>
             </div>
             <a-table
-              rowKey="host_id"
-              slot="expandedRowRender"
-              slot-scope="record"
+            rowKey="host_id"
+            slot="expandedRowRender"
+            slot-scope="record"
               :columns="innerColumns"
               :rowSelection="{
                 selectedRowKeys: selectedRowKeyMaps[record.cve_id] || [],
@@ -80,8 +80,7 @@
                 }
               }"
               :data-source="record.hostsList || []"
-              :pagination="false"
-            >
+              :pagination="false">
             </a-table>
           </a-table>
         </div>
@@ -90,15 +89,14 @@
         </div>
         <div v-if="taskType === 'repo set'">
           <a-table
-            rowKey="host_id"
-            :columns="tableColumnsRepo"
-            :data-source="hostList"
+          rowKey="host_id"
+          :columns="tableColumnsRepo"
+          :data-source="hostList"
             :rowSelection="repoRowSelection"
-            :pagination="false"
-          />
+            :pagination="false" />
         </div>
         <div
-          :style="{
+        :style="{
             position: 'absolute',
             right: 0,
             bottom: 0,
@@ -108,26 +106,23 @@
             background: '#fff',
             textAlign: 'right',
             zIndex: 1
-          }"
-        >
+          }">
           <a-button :style="{marginRight: '8px'}" @click="handleCancel">
             取消
           </a-button>
           <a-button
-            :style="{marginRight: '8px'}"
-            type="primary"
-            @click="handleSubmit(false)"
+          :style="{marginRight: '8px'}"
+          type="primary"
+          @click="handleSubmit(false)"
             :disabled="submitAndExecuteLoading || hostUnderCveLoading || actionsIsLoading"
-            :loading="submitLoading"
-          >
+            :loading="submitLoading">
             创建
           </a-button>
           <a-button
-            type="primary"
-            @click="handleSubmit(true)"
+          type="primary"
+          @click="handleSubmit(true)"
             :disabled="submitLoading || hostUnderCveLoading || actionsIsLoading"
-            :loading="submitAndExecuteLoading"
-          >
+            :loading="submitAndExecuteLoading">
             立即执行
           </a-button>
         </div>
@@ -158,7 +153,6 @@
 </template>
 
 <script>
-
 /**
  * 新建修复任务/repo设置任务弹窗
  */
@@ -287,7 +281,7 @@ export default {
           key: 'reboot',
           width: 120,
           title: <span>重启后生效</span>,
-          customRender: reboot => restartTypesEnum[reboot]
+          customRender: (reboot) => restartTypesEnum[reboot]
         }
       ];
     },
@@ -327,8 +321,7 @@ export default {
     }
   },
   watch: {},
-  created() {
-  },
+  created() {},
   methods: {
     jumpToPage() {
       clearTimeout(this.jumpModalInterval);
@@ -346,19 +339,19 @@ export default {
     // 判断cve修复任务时是否有选择cve
     cveLiIsEmpty() {
       if (this.cveList.length !== 0) {
-        return false
+        return false;
       }
       this.visible = false;
       this.$message.info('至少需要选择一个CVE才能进行修复!');
       this.hostUnderCveLoading = false;
-      return true
+      return true;
     },
 
     // 每次展开抽屉时触发，替代mounted
     handleOpen() {
       // inital defualt data
       if (this.taskType === 'repo set') {
-        this.$emit('getAllHost')
+        this.$emit('getAllHost');
       }
       this.visible = true;
       this.cveList = this.cveListProps;
@@ -368,7 +361,7 @@ export default {
       this.setDefaultInfo();
       // 设置repo任务时，直接使用传入的host数据
       if (this.taskType === 'repo set') {
-        this.selectedRepoKeys = this.hostList.map(host => host.host_id);
+        this.selectedRepoKeys = this.hostList.map((host) => host.host_id);
         this.selectedRepoRows = this.hostList;
         return;
       }
@@ -376,16 +369,16 @@ export default {
       const _this = this;
       this.actionsIsLoading = true;
       getActionUnderMultipleCVE({
-        cveList: this.cveList.map(cve => cve.cve_id)
+        cveList: this.cveList.map((cve) => cve.cve_id)
       })
-        .then(function(res) {
-          const cveMap = res.result || {};
+        .then(function (res) {
+          const cveMap = res.data.result || {};
           _this.addActionsToCVEData(cveMap);
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.actionsIsLoading = false;
         });
       // 根据主机数据获取类型，自行或cve下的主机数据或者使用外部输入的主机数据更行talbe数据
@@ -393,31 +386,31 @@ export default {
         case hostListTypes[0]:
           _this.hostUnderCveLoading = true;
           if (this.cveLiIsEmpty()) {
-            return
+            return;
           }
           getHostUnderMultipleCVE({
-            cveList: this.cveList.map(cve => cve.cve_id)
+            cveList: this.cveList.map((cve) => cve.cve_id)
           })
-            .then(function(res) {
+            .then(function (res) {
               // hostlists are contained in cveMap
-              const cveMap = res.result || {};
+              const cveMap = res.data.result || {};
               _this.addHostListToCVEData(cveMap);
             })
-            .catch(function(err) {
-              _this.$message.error(err.response.data.msg);
+            .catch(function (err) {
+              _this.$message.error(err.response.message);
             })
-            .finally(function() {
+            .finally(function () {
               _this.hostUnderCveLoading = false;
             });
           break;
         case hostListTypes[1]:
         case hostListTypes[2]:
           if (this.cveLiIsEmpty()) {
-              return
-            }
+            return;
+          }
           const tempObj2 = {};
-          this.cveList.forEach(cve => {
-            tempObj2[cve.cve_id] = this.hostList.map(host => {
+          this.cveList.forEach((cve) => {
+            tempObj2[cve.cve_id] = this.hostList.map((host) => {
               return {
                 host_id: host.host_id,
                 host_name: host.host_name,
@@ -446,30 +439,30 @@ export default {
                 ...values,
                 auto_reboot: this.isResetChecked,
                 info: this.cveList
-                  .map(cveInfo => {
+                  .map((cveInfo) => {
                     return {
                       cve_id: cveInfo.cve_id,
                       host_info: this.selectedRowsAllMaps[cveInfo.cve_id],
                       reboot: cveInfo.reboot
                     };
                   })
-                  .filter(item => item.host_info && item.host_info.length > 0)
+                  .filter((item) => item.host_info && item.host_info.length > 0)
               };
               // make request
               generateTask(params)
-                .then(function(res) {
-                  _this.$message.success(res.msg);
+                .then(function (res) {
+                  _this.$message.success(res.message);
                   if (excuteASAP) {
-                    _this.handleExcuteASAP(res.task_id, res);
+                    _this.handleExcuteASAP(res.data.task_id, res.data);
                   } else {
                     _this.visible = false;
-                    _this.handleGenerateSuccess(res, 'CVE修复', 'normal');
+                    _this.handleGenerateSuccess(res.data, 'CVE修复', 'normal');
                   }
                 })
-                .catch(function(err) {
-                  _this.$message.error(err.response.data.msg);
+                .catch(function (err) {
+                  _this.$message.error(err.response.message);
                 })
-                .finally(function() {
+                .finally(function () {
                   if (!excuteASAP) {
                     _this.submitLoading = false;
                   }
@@ -478,44 +471,44 @@ export default {
             case 'repo set':
               // prepare data
               if (this.selectedRepoRows.length !== 0) {
-                 const repoParams = {
-                   ...values,
-                   info: this.selectedRepoRows.map(host => {
-                     return {
-                       host_id: host.host_id,
-                       host_name: host.host_name,
-                       host_ip: host.host_ip
-                     };
-                   })
-                 };
-                 // make request
+                const repoParams = {
+                  ...values,
+                  info: this.selectedRepoRows.map((host) => {
+                    return {
+                      host_id: host.host_id,
+                      host_name: host.host_name,
+                      host_ip: host.host_ip
+                    };
+                  })
+                };
+                // make request
                 generateRepoTask(repoParams)
-                  .then(function(res) {
-                    _this.$message.success(res.msg);
+                  .then(function (res) {
+                    _this.$message.success(res.message);
                     console.log(excuteASAP);
                     if (excuteASAP) {
                       console.log(_this.hostList);
-                      _this.handleExcuteASAP(res.task_id, res);
+                      _this.handleExcuteASAP(res.data.task_id, res.data);
                     } else {
                       _this.visible = false;
-                      _this.handleGenerateSuccess(res, 'REPO设置', 'normal');
+                      _this.handleGenerateSuccess(res.data, 'REPO设置', 'normal');
                     }
                   })
-                  .catch(function(err) {
-                    _this.$message.error(err.response.data.msg);
+                  .catch(function (err) {
+                    _this.$message.error(err.response.message);
                     _this.submitAndExecuteLoading = false;
                   })
-                  .finally(function() {
+                  .finally(function () {
                     if (!excuteASAP) {
                       _this.submitLoading = false;
                     }
                   });
                 break;
               } else {
-                 this.$message.info('至少需要选择一个主机才能设置repo任务!');
-                 this.submitLoading = false;
-                 this.submitAndExecuteLoading = false;
-                 break;
+                this.$message.info('至少需要选择一个主机才能设置repo任务!');
+                this.submitLoading = false;
+                this.submitAndExecuteLoading = false;
+                break;
               }
           }
         }
@@ -525,7 +518,7 @@ export default {
     handleExcuteASAP(taskId, data) {
       const _this = this;
       executeTask(taskId)
-        .then(function(res) {
+        .then(function (res) {
           let text = '';
           switch (data.type) {
             case 'cve fix':
@@ -539,10 +532,10 @@ export default {
           _this.visible = false;
           _this.handleGenerateSuccess(data, text, 'asap');
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.submitAndExecuteLoading = false;
         });
     },
@@ -557,12 +550,12 @@ export default {
     },
     // 工具方法，将主机信息更新进cve数据中
     addHostListToCVEData(cveMap) {
-      this.cveList.forEach(cveInfo => {
+      this.cveList.forEach((cveInfo) => {
         const hostListUnderCve = cveMap[cveInfo.cve_id];
         cveInfo.hostsList = hostListUnderCve || [];
 
         if (hostListUnderCve && hostListUnderCve.length > 0) {
-          this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve.map(host => host.host_id);
+          this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve.map((host) => host.host_id);
           this.selectedRowsAllMaps[cveInfo.cve_id] = hostListUnderCve;
         } else {
           this.selectedRowKeyMaps[cveInfo.cve_id] = [];
@@ -573,7 +566,7 @@ export default {
       this.cveList = Object.assign([], this.cveList);
     },
     addActionsToCVEData(cveMap) {
-      const tempArr = this.cveList.map(cveInfo => {
+      const tempArr = this.cveList.map((cveInfo) => {
         const actionsUnderCve = cveMap[cveInfo.cve_id] || {};
         const infoTemp = {
           ...cveInfo,
@@ -604,7 +597,7 @@ export default {
       }
       this.jumpModalTitle = text;
       this.countDown = 5;
-      this.jumpModalInterval = setInterval(function() {
+      this.jumpModalInterval = setInterval(function () {
         _this.countDown = _this.countDown - 1;
         if (_this.countDown === 0) {
           clearTimeout(_this.jumpModalInterval);
@@ -623,12 +616,12 @@ export default {
       switch (this.taskType) {
         case 'cve fix':
           this.taskDescDefault = `修复以下${this.cveListProps.length}个CVE：${this.cveListProps
-            .map(cve => cve.cve_id)
+            .map((cve) => cve.cve_id)
             .join('、')}`;
           break;
         case 'repo set':
           this.taskDescDefault = `为以下${this.hostList.length}个主机设置Repo：${this.hostList
-            .map(host => host.host_name)
+            .map((host) => host.host_name)
             .join('、')}`;
           break;
       }

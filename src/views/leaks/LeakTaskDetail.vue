@@ -12,10 +12,10 @@
           <a-row type="flex">
             <a-col :span="8">
               <p>主机个数：{{ detail.host_num }}</p>
-              </a-col>
+            </a-col>
             <a-col :span="8">
               <p>{{ detail.need_reboot }}台主机需要重启</p>
-              </a-col>
+            </a-col>
           </a-row>
           <a-row type="flex">
             <a-col :span="8">
@@ -24,7 +24,7 @@
                     <span>是否开启自动重启，开启后若cve修复后需要重启则会进行重启， 否则不会重启</span>
                   </template>
                   <span><a-icon type="question-circle" /></span>
-              </a-tooltip></p>
+                </a-tooltip></p>
             </a-col>
           </a-row>
           <a-row>
@@ -35,45 +35,38 @@
                   <template slot="title">
                     <span>{{ taskType === 'cve fix' ? `修复成功` : `已设置` }}</span>
                   </template>
-                  <span
-                  ><a-icon type="check-circle" class="color-check-circle" />{{
+                  <span><a-icon type="check-circle" class="color-check-circle" />{{
                     detail.statuses && detail.statuses['succeed']
-                  }}</span
-                  >
+                  }}</span>
                 </a-tooltip>
                 <a-tooltip placement="top">
                   <template slot="title">
                     <span>{{ taskType === 'cve fix' ? `待修复` : `未设置` }}</span>
                   </template>
-                  <span
-                  ><a-icon type="close-circle" class="color-close-circle" />{{
+                  <span><a-icon type="close-circle" class="color-close-circle" />{{
                     detail.statuses && detail.statuses['fail']
-                  }}</span
-                >
+                  }}</span>
                 </a-tooltip>
                 <a-tooltip placement="top">
                   <template slot="title">
                     <span>运行中</span>
                   </template>
                   <span>
-                  <a-icon
-                    v-if="detail.statuses && detail.statuses['running']"
-                    type="loading"
-                    class="color-running-circle"
-                  />
-                  <a-icon v-else type="loading-3-quarters" />
-                  {{ detail.statuses && detail.statuses['running'] }}
-                </span>
+                    <a-icon
+                      v-if="detail.statuses && detail.statuses['running']"
+                      type="loading"
+                      class="color-running-circle" />
+                    <a-icon v-else type="loading-3-quarters" />
+                    {{ detail.statuses && detail.statuses['running'] }}
+                  </span>
                 </a-tooltip>
                 <a-tooltip placement="top">
                   <template slot="title">
                     <span>未知</span>
                   </template>
-                  <span
-                  ><a-icon type="question-circle" class="color-standby-circle" />{{
+                  <span><a-icon type="question-circle" class="color-standby-circle" />{{
                     detail.statuses && detail.statuses['unknown']
-                  }}</span
-                >
+                  }}</span>
                 </a-tooltip>
               </p>
             </a-col>
@@ -117,10 +110,9 @@
           <a-row type="flex" :gutter="6">
             <a-col>
               <a-input-search
-                :placeholder="taskType === 'cve fix' ? `按CVE ID搜索` : `按主机名搜索`"
+              :placeholder="taskType === 'cve fix' ? `按CVE ID搜索` : `按主机名搜索`"
                 style="width: 200px"
-                @search="onSearch"
-              />
+                @search="onSearch" />
             </a-col>
             <a-col>
               <!-- <a-button
@@ -142,9 +134,11 @@
         :pagination="pagination"
         :row-selection="taskType === 'cve fix' ? undefined : undefined"
         @change="handleTableChange"
-        :loading="tableIsLoading"
-      >
-        <a slot="hosts" slot-scope="hosts, record" @click="showHostListUnderCve(record.cve_id)">{{ hosts }}</a>
+        :loading="tableIsLoading">
+        <a
+        slot="hosts"
+        slot-scope="hosts, record"
+          @click="showHostListUnderCve(record.cve_id)">{{ hosts }}</a>
         <div slot="progress" slot-scope="progress, record">
           <a-progress :percent="Math.ceil(((progress || 0) / record.host_num) * 100)" />
         </div>
@@ -152,22 +146,23 @@
           <span class="task-status">
             <a-badge :status="statusValueMap[status]" />
             {{ taskType === 'cve fix' ? cveStatusTextMap[status] : repoStatusTextMap[status] }}
-            <a-icon v-if="statusValueMap[status] === 'processing'" type="loading" class="color-running-circle" />
+            <a-icon
+            v-if="statusValueMap[status] === 'processing'"
+            type="loading"
+              class="color-running-circle" />
           </span>
         </div>
       </a-table>
     </a-card>
     <host-status-in-task-drawer
-      :visible="hostListUnderCveVisible"
-      @close="closeHostListUnderCve"
+    :visible="hostListUnderCveVisible"
+    @close="closeHostListUnderCve"
       :taskId="taskId"
-      :cveId="hostListOfCveId"
-    />
+      :cveId="hostListOfCveId" />
   </page-header-wrapper>
 </template>
 
 <script>
-
 /**
  * 任务详情页面
  */
@@ -223,7 +218,7 @@ const statusValueMap = {
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  showTotal: total => `总计 ${total} 项`,
+  showTotal: (total) => `总计 ${total} 项`,
   showSizeChanger: true,
   showQuickJumper: true
 };
@@ -264,7 +259,7 @@ export default {
   },
   computed: {
     breadcrumb() {
-      const routes = this.$route.meta.diyBreadcrumb.map(route => {
+      const routes = this.$route.meta.diyBreadcrumb.map((route) => {
         return {
           path: route.path,
           breadcrumbName: i18nRender(route.breadcrumbName)
@@ -313,7 +308,7 @@ export default {
         {
           dataIndex: 'reboot',
           title: '重启后生效',
-          customRender: reboot => (reboot ? '是' : '否'),
+          customRender: (reboot) => (reboot ? '是' : '否'),
           filteredValue: filters.reboot || null,
           filterMultiple: false,
           filters: [
@@ -381,10 +376,10 @@ export default {
       for (var key in filters) {
         if (filters[key] !== null) {
           if (filters[key].length === 0) {
-            filters[key] = undefined
+            filters[key] = undefined;
           }
         } else {
-          filters[key] = undefined
+          filters[key] = undefined;
         }
       }
       this.pagination = pagination;
@@ -412,16 +407,16 @@ export default {
       getTaskInfo({
         taskId: this.taskId
       })
-        .then(function(res) {
-          _this.detail = res.result || {};
+        .then(function (res) {
+          _this.detail = res.data.result || {};
           _this.detail.statuses = {};
           // update progress
           _this.updateProgress([_this.taskId]);
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.infoLoading = false;
         });
     },
@@ -430,19 +425,19 @@ export default {
       const _this = this;
       this.progressLoading = true;
       getTaskProgress({taskList})
-        .then(function(res) {
-          _this.detail.statuses = res.result && res.result[_this.taskId];
+        .then(function (res) {
+          _this.detail.statuses = res.data.result && res.data.result[_this.taskId];
           _this.detail = Object.assign({}, _this.detail);
-          if (!_this.prgressFinishedCheck(res.result)) {
-            _this.progressUpdateCaller = setTimeout(function() {
+          if (!_this.prgressFinishedCheck(res.data.result)) {
+            _this.progressUpdateCaller = setTimeout(function () {
               _this.updateProgress(taskList);
             }, configs.taskProgressUpdateInterval);
           }
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.progressLoading = false;
         });
     },
@@ -450,9 +445,9 @@ export default {
       for (const key in statusMap) {
         if (key === 'running') {
           if (statusMap[key] === '1') {
-            return true
+            return true;
           } else {
-            return false
+            return false;
           }
         }
       }
@@ -486,23 +481,23 @@ export default {
           }
         }
       })
-        .then(function(res) {
-          _this.tableData = res.result || [];
+        .then(function (res) {
+          _this.tableData = res.data.result || [];
           _this.pagination = {
             ..._this.pagination,
             current: pagination.current,
             pageSize: pagination.pageSize,
-            total: res.total_count || (res.total_count === 0 ? 0 : pagination.total)
+            total: res.data.total_count || (res.data.total_count === 0 ? 0 : pagination.total)
           };
           _this.updateCveProgress(
             _this.taskId,
-            res.result.map(cve => cve.cve_id)
+            res.data.result.map((cve) => cve.cve_id)
           );
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.tableIsLoading = false;
         });
     },
@@ -513,28 +508,28 @@ export default {
         taskId,
         cveList
       })
-        .then(function(res) {
-          _this.addCveProgressToList(res.result);
-          _this.runningCveIds = _this.getRunningCve(res.result);
-          _this.reportvisible = _this.getReportVisible(res.result);
+        .then(function (res) {
+          _this.addCveProgressToList(res.data.result);
+          _this.runningCveIds = _this.getRunningCve(res.data.result);
+          _this.reportvisible = _this.getReportVisible(res.data.result);
           if (_this.runningCveIds.length > 0) {
-            setTimeout(function() {
+            setTimeout(function () {
               _this.updateCveProgress(taskId, cveList);
             }, configs.taskProgressUpdateInterval);
           } else {
             _this.taskInfoVisible = true;
           }
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.cveProgressIsLoading = false;
         });
     },
     // 将查询到的cve进度更新到表格数据中，用于数据展示
     addCveProgressToList(progressMap) {
-      this.tableData.forEach(cveinfo => {
+      this.tableData.forEach((cveinfo) => {
         if (progressMap[cveinfo.cve_id]) {
           cveinfo.progress = progressMap[cveinfo.cve_id] && progressMap[cveinfo.cve_id].progress;
           cveinfo.status = progressMap[cveinfo.cve_id] && progressMap[cveinfo.cve_id].status;
@@ -545,10 +540,10 @@ export default {
     getReportVisible(progressMap) {
       for (const cveId in progressMap) {
         if (progressMap[cveId].status === 'running') {
-          return false
+          return false;
         }
       }
-      return true
+      return true;
     },
     getRunningCve(progressMap) {
       const arr = [];
@@ -575,30 +570,30 @@ export default {
           filters: filters
         }
       })
-        .then(function(res) {
-          _this.tableData = res.result || [];
+        .then(function (res) {
+          _this.tableData = res.data.result || [];
           _this.pagination = {
             ..._this.pagination,
             current: pagination.current,
             pageSize: pagination.pageSize,
-            total: res.total_count || (res.total_count === 0 ? 0 : pagination.total)
+            total: res.data.total_count || (res.data.total_count === 0 ? 0 : pagination.total)
           };
-          _this.reportvisible = !_this.hostRepostatusCheck(res.result)
-          if (_this.hostRepostatusCheck(res.result)) {
-            setTimeout(function() {
+          _this.reportvisible = !_this.hostRepostatusCheck(res.data.result);
+          if (_this.hostRepostatusCheck(res.data.result)) {
+            setTimeout(function () {
               _this.getHostList();
             }, configs.taskProgressUpdateInterval);
           }
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.tableIsLoading = false;
         });
     },
     hostRepostatusCheck(dataList) {
-      const runningHost = dataList.filter(host => host.status === 'running')[0];
+      const runningHost = dataList.filter((host) => host.status === 'running')[0];
       if (runningHost) {
         return true;
       } else {
@@ -617,18 +612,18 @@ export default {
         title: `确定执行任务${this.detail.task_name}?`,
         icon: () => <a-icon type="exclamation-circle" />,
         okText: '执行',
-        onOk: function() {
+        onOk: function () {
           return executeTask(_this.taskId)
-            .then(function(res) {
-              _this.$message.success(res.msg);
+            .then(function (res) {
+              _this.$message.success(res.message);
               // 执行任务成功后刷新
-              setTimeout(function() {
+              setTimeout(function () {
                 _this.getInitalData();
               }, 3000);
               // _this.getInitalData()
             })
-            .catch(function(err) {
-              _this.$message.error(err.response.data.msg);
+            .catch(function (err) {
+              _this.$message.error(err.response.message);
             });
         }
       });
@@ -667,23 +662,23 @@ export default {
             请确认回滚CVE修复任务：
           </p>
         ),
-        content: _this.selectedRowKeys.map(cveId => <p>{cveId}</p>),
+        content: _this.selectedRowKeys.map((cveId) => <p>{cveId}</p>),
         icon: () => <a-icon type="exclamation-circle" />,
         okText: '回滚',
         okType: 'danger',
-        onOk: function() {
+        onOk: function () {
           return rollbackCveTask({
             taskId: _this.taskId,
             cveList: _this.selectedRowKeys
           })
-            .then(function(res) {
-              _this.$message.success(res.msg);
+            .then(function (res) {
+              _this.$message.success(res.message);
               _this.getInitalData();
             })
-            .catch(function(err) {
-              _this.$message.error(err.response.data.msg);
+            .catch(function (err) {
+              _this.$message.error(err.response.message);
             })
-            .finally(function() {
+            .finally(function () {
               _this.selectedRowKeys = [];
               _this.selectedRowsAll = [];
             });
@@ -712,7 +707,7 @@ export default {
       }
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.getInitalData();
   }
 };

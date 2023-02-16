@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/max-attributes-per-line -->
 <template>
   <div class="footor-wrapper">
     <div class="scene-identify">
@@ -23,24 +24,23 @@
     <div class="plugin-set">
       <span>插件运行信息</span>
       <a-space :size="8">
-        <a-button @click="clearModal()" :disabled="changedPlugin.length === 0 && changedProbe.length === 0">
+        <a-button @click="clearModal()"
+          :disabled="changedPlugin.length === 0 && changedProbe.length === 0">
           取消
         </a-button>
-        <a-button
-          @click="saveModal()"
-          type="primary"
+        <a-button @click="saveModal()" type="primary"
           :disabled="changedPlugin.length === 0 && changedProbe.length === 0"
-          :loading="saveLoading"
-          >保存</a-button
-        >
+          :loading="saveLoading">保存</a-button>
       </a-space>
     </div>
-    <a-table :columns="columns" :data-source="tableData" :scroll="{y: 400}" :loading="tableLoading" :pagination="false">
+    <a-table :columns="columns" :data-source="tableData" :scroll="{y: 400}" :loading="tableLoading"
+      :pagination="false">
       <span slot="plugin_name" slot-scope="plugin_name">
         <CutText :text="plugin_name"></CutText>
       </span>
       <span v-if="record.info.is_installed" slot="status" slot-scope="status, record">
-        <a-switch checked-children="on" un-checked-children="off" :checked="status" @change="PluginStatuChange(record)">
+        <a-switch checked-children="on" un-checked-children="off" :checked="status"
+          @change="PluginStatuChange(record)">
         </a-switch>
       </span>
       <span slot="resourceTitle">
@@ -52,31 +52,22 @@
           <a-icon type="question-circle" />
         </a-tooltip>
       </span>
-      <span v-if="record.info.status && record.info.is_installed" slot="resource" slot-scope="resource, record">
+      <span v-if="record.info.status && record.info.is_installed" slot="resource"
+        slot-scope="resource, record">
         <div v-for="(item, index) in resource" :key="index">
-          <span>{{ `${item.name}：` }}</span
-          ><br />
+          <span>{{ `${item.name}：` }}</span><br />
           <span>{{ `${item.current_value} / ${item.limit_value}` }}</span>
         </div>
       </span>
-      <span
-        v-if="record.info.status && record.info.is_installed"
-        slot="collect_items"
-        slot-scope="collect_items, record"
-        class="probe"
-      >
+      <span v-if="record.info.status && record.info.is_installed" slot="collect_items"
+        slot-scope="collect_items, record" class="probe">
         <div v-for="(item, index) in collect_items" :key="index" class="probe-item">
           <span>
             <CutText :text="item.probe_name"></CutText>
             :
           </span>
-          <a-radio-group
-            class="probe-radio"
-            size="small"
-            v-model="item.probe_status"
-            @change="ProbeStatuChange(record, index)"
-            button-style="solid"
-          >
+          <a-radio-group class="probe-radio" size="small" v-model="item.probe_status"
+            @change="ProbeStatuChange(record, index)" button-style="solid">
             <a-radio-button value="on"> on </a-radio-button>
             <a-radio-button value="off"> off </a-radio-button>
             <a-radio-button v-if="item.support_auto" value="auto"> auto </a-radio-button>
@@ -170,7 +161,7 @@ export default {
       })
         .then((res) => {
           const pluginData = []; // 创建数组处理获取到的数据，再赋值给tableData，防止再次请求时导致的tableData重复数据
-          res.info.forEach((element, index) => {
+          res.data.info.forEach((element, index) => {
             if (element.status === 'active') {
               element.status = true;
             } else {
@@ -185,7 +176,7 @@ export default {
           _this.originData = JSON.parse(JSON.stringify(pluginData)); // 保存原始数据
         })
         .catch((err) => {
-          _this.$message.error(err.response.data.message, 5);
+          _this.$message.error(err.response.message, 5);
         })
         .finally(() => {
           _this.tableLoading = false;
@@ -240,7 +231,7 @@ export default {
         hostId: _this.hostId
       })
         .then(function (res) {
-          _this.$set(_this.sceneData, 'collect_items', res.collect_items);
+          _this.$set(_this.sceneData, 'collect_items', res.data.collect_items);
           // 创建数组scenePropertys存储sceneData.collect_items的属性，即推荐开启的插件列表
           _this.scenePropertys = Object.keys(_this.sceneData.collect_items);
           if (_this.scenePropertys.length === 0) {
@@ -256,7 +247,7 @@ export default {
           }
         })
         .catch(function (err) {
-          _this.$message.error(err.response.data.msg, 5);
+          _this.$message.error(err.response.message, 5);
         })
         .finally(function () {
           _this.sceneLoading = false;
@@ -339,23 +330,23 @@ export default {
       })
         .then(function (e) {
           _this.notifyType = 'success';
-          if (e.failed_list.length === 0) {
+          if (e.data.failed_list.length === 0) {
             _this.pluginChangeResult = _this.resultEnum.success;
           } else {
-            if (e.succeed_list.length === 0) {
+            if (e.data.succeed_list.length === 0) {
               _this.pluginChangeResult = _this.resultEnum.failure;
               _this.notifyType = 'error';
             } else {
               _this.pluginChangeResult = _this.resultEnum.successList;
               _this.notifyType = 'warning';
             }
-            _this.notifyMsg = '失败插件：' + e.failed_list.toString();
+            _this.notifyMsg = '失败插件：' + e.data.failed_list.toString();
           }
         })
         .catch(function (err) {
           _this.pluginChangeResult = _this.resultEnum.err;
           _this.notifyType = 'error';
-          _this.notifyMsg = '插件修改失败：' + err.response.data.msg;
+          _this.notifyMsg = '插件修改失败：' + err.response.message;
         })
         .finally(function () {
           if (_this.changedProbe.length === 0) {
@@ -392,8 +383,8 @@ export default {
       })
         .then(function (e) {
           const failedProbes = [];
-          for (var key in e.resp) {
-            failedProbes.push(...e.resp[key].failure);
+          for (var key in e.data.resp) {
+            failedProbes.push(...e.data.resp[key].failure);
           }
           if (failedProbes.length === 0) {
             if (_this.pluginChangeResult <= 1) {
@@ -415,7 +406,7 @@ export default {
           }
         })
         .catch(function (err) {
-          _this.notifyMsg = _this.notifyMsg + '\n探针修改失败：' + err.response.data.msg;
+          _this.notifyMsg = _this.notifyMsg + '\n探针修改失败：' + err.response.message;
           _this.notifyType =
             _this.pluginChangeResult === _this.resultEnum.success ||
             _this.pluginChangeResult === _this.resultEnum.successList

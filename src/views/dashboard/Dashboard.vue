@@ -211,22 +211,22 @@ export default {
     getHostCount() {
       var that = this;
       hostCount()
-        .then(function(data) {
-          that.hostCount = data.host_count;
+        .then(function(res) {
+          that.hostCount = res.data.host_count;
         })
         .catch(function(err) {
-          that.$message.error(err.response.data.msg);
+          that.$message.error(err.response.message);
         });
     },
     getResultCountTopTen() {
       var that = this;
       this.countTopLoading = true;
       getResultCountTopTen()
-        .then(function(data) {
-          that.resultCountList = data.results;
+        .then(function(res) {
+          that.resultCountList = res.data.results;
         })
         .catch(function(err) {
-          that.$message.error(err.response.data.msg);
+          that.$message.error(err.response.message);
         })
         .finally(() => {
           that.countTopLoading = false;
@@ -235,9 +235,9 @@ export default {
     getResultList() {
       var that = this;
       getResult({perPage: 5})
-        .then(function(data) {
-          that.resultList = data.check_result
-            ? data.check_result.map(result => {
+        .then(function(res) {
+          that.resultList = res.data.check_result
+            ? res.data.check_result.map(result => {
               return {
                 ...result,
                 key: `${result.host_id}+${result.check_item}+${result.start}+${result.end}`
@@ -246,7 +246,7 @@ export default {
             : [];
         })
         .catch(function(err) {
-          that.$message.error(err.response.data.msg);
+          that.$message.error(err.response.message);
         });
     },
     getCveOverview() {
@@ -258,14 +258,14 @@ export default {
           cveTypeList.forEach(type => {
             arr.push({
               item: type.typeName,
-              count: res.result[type.typeValue] || 0,
+              count: res.data.result[type.typeValue] || 0,
               color: '#FF0000'
             });
           });
           _this.drawPie(arr);
         })
         .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+          _this.$message.error(err.response.message);
         })
         .finally(function() {
           _this.cveOverviewLoading = false;

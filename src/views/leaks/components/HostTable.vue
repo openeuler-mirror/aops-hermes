@@ -4,12 +4,11 @@
       <a-row
       v-if="standalone && scanningHostIds.length > 0 && scanStatusloading"
       type="flex"
-      justify="end"
-      align="middle"
-    >
-      <a-icon type="loading" />
-      <p class="scan-result-message">{{ `目前有${scanningHostIds.length}台机器正在扫描` }}</p>
-    </a-row>
+        justify="end"
+        align="middle">
+        <a-icon type="loading" />
+        <p class="scan-result-message">{{ `目前有${scanningHostIds.length}台机器正在扫描` }}</p>
+      </a-row>
     </div>
     <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
       <a-col>
@@ -34,25 +33,23 @@
           </a-col> -->
           <a-col v-if="standalone && selectedRowKeys.length > 0">
             <create-repair-task-drawer
-              taskType="repo set"
-              dataType="selected"
+            taskType="repo set"
+            dataType="selected"
               hostListType="bySelection"
               :hostList="selectedRowsAll"
               :repoList="repoListProps"
               @createSuccess="handleTaskCreateSuccess"
-              @getAllHost="getAllHost"
-            />
+              @getAllHost="getAllHost" />
           </a-col>
           <a-col v-if="standalone && selectedRowKeys.length === 0">
             <create-repair-task-drawer
-              taskType="repo set"
-              dataType="all"
-              hostListType="bySelection"
+            taskType="repo set"
+            dataType="all"
+            hostListType="bySelection"
               :hostList="hostListAll"
               :repoList="repoListProps"
               @createSuccess="handleTaskCreateSuccess"
-              @getAllHost="getAllHost"
-            />
+              @getAllHost="getAllHost" />
           </a-col>
           <a-col v-if="standalone && selectedRowKeys.length !== 0">
             <a-button @click="handleScan" type="primary" :loading="scanloading">
@@ -67,21 +64,19 @@
           </a-col>
           <a-col v-if="!standalone && selectedRowKeys.length === 0">
             <create-repair-task-drawer
-              text="生成修复任务"
-              taskType="cve fix"
-              :cveListProps="cveList"
+            text="生成修复任务"
+            taskType="cve fix"
+            :cveListProps="cveList"
               hostListType="byLoading"
-              @createSuccess="handleTaskCreateSuccess"
-            />
+              @createSuccess="handleTaskCreateSuccess" />
           </a-col>
           <a-col v-if="!standalone && selectedRowKeys.length !== 0">
             <create-repair-task-drawer
-              taskType="cve fix"
-              :cveListProps="cveList"
+            taskType="cve fix"
+            :cveListProps="cveList"
               hostListType="bySelection"
               :hostList="selectedRowsAll"
-              @createSuccess="handleTaskCreateSuccess"
-            />
+              @createSuccess="handleTaskCreateSuccess" />
           </a-col>
           <a-col></a-col>
           <a-col v-if="standalone">
@@ -102,21 +97,18 @@
       :loading="standalone ? hostTableIsLoading : inputLoading"
     >
       <router-link
-        :to="{path: `/leaks/host-leak-list/${record.host_id}`}"
-        slot="host_name"
-        slot-scope="host_name, record"
-        >{{ host_name }}</router-link
-      >
+      :to="{path: `/leaks/host-leak-list/${record.host_id}`}"
+      slot="host_name"
+      slot-scope="host_name, record">{{ host_name }}</router-link>
       <div slot="last_scan" slot-scope="last_scan">
-          {{ last_scan }}
-            <!-- {{ record.last_scan === null ? '未扫描' : record.last_scan }} -->
+        {{ last_scan }}
+        <!-- {{ record.last_scan === null ? '未扫描' : record.last_scan }} -->
       </div>
     </a-table>
   </div>
 </template>
 
 <script>
-
 /**
  * host表格组件
  * hostlist 表格的业务逻辑公共组件。根据props中standalone属性确定是自动获取列表信息，还是通过外部获取列表信息。
@@ -134,7 +126,7 @@ import configs from '@/config/defaultSettings';
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  showTotal: total => `总计 ${total} 项`,
+  showTotal: (total) => `总计 ${total} 项`,
   showSizeChanger: true,
   showQuickJumper: true
 };
@@ -216,7 +208,7 @@ export default {
           key: 'last_scan',
           title: '上次扫描',
           sorter: true,
-          customRender: time => dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)
+          customRender: (time) => dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)
         }
       ];
     },
@@ -254,7 +246,7 @@ export default {
           key: 'last_scan',
           title: '上次扫描',
           sorter: true,
-          customRender: time => dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)
+          customRender: (time) => dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)
         }
       ];
     },
@@ -266,7 +258,7 @@ export default {
     },
     // 通过repo筛选时的数据转换
     repoList() {
-      const arr = this.repoListProps.map(repo => {
+      const arr = this.repoListProps.map((repo) => {
         return {
           text: repo.repo_name,
           value: repo.repo_name
@@ -280,7 +272,7 @@ export default {
     }
   },
   watch: {
-    '$route' () {
+    $route() {
       this.getHostList();
       this.getHostGroup();
     },
@@ -329,20 +321,17 @@ export default {
       if (this.selectedRowKeys.length !== 0) {
         console.log(this.selectedRowKeys);
         const _this = this;
-        getCveExport(
-          _this.selectedRowKeys
-        )
-        .then(function(res) {
-          console.log(res);
-          downloadBlobFile(res.data, res.fileName);
-          // _this.scanStatusData = res.result || {};
-        })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
-        })
-        .finally(function() {
-          _this.scanStatusloading = false;
-        });
+        getCveExport(_this.selectedRowKeys)
+          .then(function (res) {
+            downloadBlobFile(res.data, res.fileName);
+            // _this.scanStatusData = res.result || {};
+          })
+          .catch(function (err) {
+            _this.$message.error(err.response.message);
+          })
+          .finally(function () {
+            _this.scanStatusloading = false;
+          });
       } else {
         this.$message.info('请至少选择一组主机!');
       }
@@ -374,44 +363,44 @@ export default {
       getHostScanStatus({
         hostList: this.selectedRowKeys
       })
-        .then(function(res) {
-          const scanningHost = _this.getScanningHost(res.result, _this.selectedRowsAll);
+        .then(function (res) {
+          const scanningHost = _this.getScanningHost(res.data.result, _this.selectedRowsAll);
           if (scanningHost.length > 0) {
             _this.$warning({
               title: '以下主机正在进行扫描，不能批量执行：',
-              content: scanningHost.map(host => host.host_name).join('、')
+              content: scanningHost.map((host) => host.host_name).join('、')
             });
           } else {
             _this.$confirm({
               title: '确定扫描以下主机?',
-              content: _this.selectedRowsAll.map(host => host.host_name).join('、'),
+              content: _this.selectedRowsAll.map((host) => host.host_name).join('、'),
               icon: () => <a-icon type="exclamation-circle" />,
-              onOk: function() {
+              onOk: function () {
                 _this.scanloading = true;
                 const requestIds = _this.selectedRowKeys;
                 return scanHost({
                   hostList: requestIds,
                   filter: null
                 })
-                  .then(function(res) {
-                    _this.$message.success(res.msg);
+                  .then(function (res) {
+                    _this.$message.success(res.message);
                     _this.handleRefresh();
                     _this.getScanStatusAll([]);
                   })
-                  .catch(function(err) {
-                    _this.$message.error(err.response.data.msg);
+                  .catch(function (err) {
+                    _this.$message.error(err.response.message);
                   })
-                  .finally(function() {
+                  .finally(function () {
                     _this.scanloading = false;
                   });
               }
             });
           }
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.scanloading = false;
         });
     },
@@ -421,42 +410,42 @@ export default {
       getHostScanStatus({
         hostList: this.selectedRowKeys
       })
-        .then(function(res) {
-          if (_this.hasScanningHost(res.result)) {
+        .then(function (res) {
+          if (_this.hasScanningHost(res.data.result)) {
             _this.$warning({
               title: '有主机正在进行扫描，不能扫描全部主机！'
             });
           } else {
-            console.log(_this.filters)
+            console.log(_this.filters);
             const hasFilter = _this.checkHasFilter(_this.filters);
             _this.$confirm({
               title: hasFilter ? '按当前筛选条件扫描主机？' : '确定扫描全部主机?',
               icon: () => <a-icon type="exclamation-circle" />,
-              onOk: function() {
+              onOk: function () {
                 _this.scanloading = true;
                 return scanHost({
                   hostList: [],
                   filter: _this.filters
                 })
-                  .then(function(res) {
-                    _this.$message.success(res.msg);
+                  .then(function (res) {
+                    _this.$message.success(res.message);
                     _this.handleRefresh();
                     _this.getScanStatusAll([]);
                   })
-                  .catch(function(err) {
-                    _this.$message.error(err.response.data.msg);
+                  .catch(function (err) {
+                    _this.$message.error(err.response.message);
                   })
-                  .finally(function() {
+                  .finally(function () {
                     _this.scanloading = false;
                   });
               }
             });
           }
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.scanloading = false;
         });
     },
@@ -468,29 +457,29 @@ export default {
       getHostScanStatus({
         hostList
       })
-        .then(function(res) {
-          _this.scanStatusData = res.result || {};
+        .then(function (res) {
+          _this.scanStatusData = res.data.result || {};
           if (_this.standalone) {
-            _this.scanningHostIds = _this.getScanningHostAll(res.result);
+            _this.scanningHostIds = _this.getScanningHostAll(res.data.result);
             // if (_this.scanningHostIds.length > 0) {
-            _this.scanStatueAllTimeout = setTimeout(function() {
+            _this.scanStatueAllTimeout = setTimeout(function () {
               _this.getScanStatusAll(_this.scanningHostIds);
             }, configs.scanProgressInterval);
             // }
           }
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.scanStatusloading = false;
         });
     },
     // 返回扫描状态的主机
     getScanningHost(scanMap, hostList) {
       const arr = [];
-      hostList.forEach(host => {
-        if (scanMap[host.host_id] === 'scanning') {
+      hostList.forEach((host) => {
+        if (scanMap[host.host_id] === 3) {
           arr.push(host);
         }
       });
@@ -499,7 +488,7 @@ export default {
     getScanningHostAll(scanMap) {
       const arr = [];
       for (const hostId in scanMap) {
-        if (scanMap[hostId] === 'scanning') {
+        if (scanMap[hostId] === 3) {
           arr.push(hostId);
         }
       }
@@ -508,7 +497,7 @@ export default {
     // 检查是否有扫描状态的主机
     hasScanningHost(scanMap) {
       for (const hostId in scanMap) {
-        if (scanMap[hostId] === 'scanning') {
+        if (scanMap[hostId] === 3) {
           return true;
         }
       }
@@ -569,19 +558,22 @@ export default {
             order: sorter.order
           }
         }
-      }).then(function(res) {
-        _this.hostTableData = res.result || [];
-        _this.pagination = {
-          ..._this.pagination,
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-          total: res.total_count || (res.total_count === 0 ? 0 : pagination.total)
-        };
-      }).catch(function(err) {
-        _this.$message.error(err.response.data.msg);
-      }).finally(function() {
-        _this.hostTableIsLoading = false;
-      });
+      })
+        .then(function (res) {
+          _this.hostTableData = res.data.result || [];
+          _this.pagination = {
+            ..._this.pagination,
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+            total: res.data.total_count || (res.data.total_count === 0 ? 0 : pagination.total)
+          };
+        })
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
+        })
+        .finally(function () {
+          _this.hostTableIsLoading = false;
+        });
     },
     getHostListAll() {
       // only excute when it's standalone
@@ -596,13 +588,13 @@ export default {
           sorter: {}
         }
       })
-        .then(function(res) {
-          _this.hostListAll = res.result || [];
+        .then(function (res) {
+          _this.hostListAll = res.data.result || [];
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.hostListAllIsLoading = false;
         });
     },
@@ -630,23 +622,23 @@ export default {
       hostGroupList({
         tableInfo: {sorter: {}, pagination: {}}
       })
-        .then(function(res) {
-          _this.hostGroupList = res.host_group_infos.map(hg => {
+        .then(function (res) {
+          _this.hostGroupList = res.data.host_group_infos.map((hg) => {
             return {
               text: hg.host_group_name,
               value: hg.host_group_name
             };
           });
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         });
     },
     getRepoList() {
       const _this = this;
       getRepoList()
-        .then(function(res) {
-          const arr = (res.result || []).map(repo => {
+        .then(function (res) {
+          const arr = (res.data.result || []).map((repo) => {
             return {
               text: repo.repo_name,
               value: repo.repo_name
@@ -658,8 +650,8 @@ export default {
           });
           _this.repoFilterList = arr;
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         });
     },
     // 检查是否有筛选条件
@@ -699,7 +691,7 @@ export default {
   font-size: 16px;
   margin: 0 6px;
 }
-.hostbox{
+.hostbox {
   overflow: auto;
 }
 </style>
