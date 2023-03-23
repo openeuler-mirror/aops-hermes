@@ -4,7 +4,7 @@
       <div class="leakbox">
         <a-row type="flex" class="aops-app-table-control-row" :gutter="6" justify="space-between">
           <a-col>
-              <a-input-search placeholder="按任务名称搜索" style="width: 200px" @search="onSearch" />
+            <a-input-search placeholder="按任务名称搜索" style="width: 200px" @search="onSearch" />
           </a-col>
           <a-col>
             <a-row type="flex" :gutter="6">
@@ -21,8 +21,8 @@
           <a-row type="flex" :gutter="6">
             <a-col>
               <a-button
-                type="primary"
-                :disabled="selectedRowKeys.length < 1"
+              type="primary"
+              :disabled="selectedRowKeys.length < 1"
                 @click="deleteHostBash">
                 批量删除
               </a-button>
@@ -30,20 +30,17 @@
           </a-row>
         </a-row>
         <a-table
-          rowKey="task_id"
-          :columns="columns"
-          :data-source="tableData"
+        rowKey="task_id"
+        :columns="columns"
+        :data-source="tableData"
           :pagination="pagination"
           :row-selection="rowSelection"
           @change="handleTableChange"
-          :loading="tableIsLoading"
-        >
+          :loading="tableIsLoading">
           <router-link
-            :to="{path: `task/${record.task_type}/${record.task_id}`}"
-            slot="taskName"
-            slot-scope="taskName, record"
-            >{{ taskName }}</router-link
-          >
+          :to="{path: `task/${record.task_type}/${record.task_id}`}"
+          slot="taskName"
+            slot-scope="taskName, record">{{ taskName }}</router-link>
           <span slot="desc" slot-scope="text">
             <cut-text :text="text" :length="20" />
           </span>
@@ -57,16 +54,14 @@
                   }}
             </span>
             <span>
-                  <a-icon
-                    v-if="statuses && statuses['running']"
-                    type="loading"
-                    class="color-running-circle"
-                  />
-                  <a-icon v-else type="loading-3-quarters" />
-                  {{ statuses && statuses['running'] }}
+              <a-icon
+              v-if="statuses && statuses['running']"
+              type="loading"
+                class="color-running-circle" />
+              <a-icon v-else type="loading-3-quarters" />
+              {{ statuses && statuses['running'] }}
             </span>
-            <span
-                  ><a-icon type="question-circle" class="color-standby-circle" />{{
+            <span><a-icon type="question-circle" class="color-standby-circle" />{{
                     statuses && statuses['unknown']
                   }}
             </span>
@@ -74,21 +69,19 @@
           <span slot="action" slot-scope="action, record">
             <a-divider type="vertical" />
             <a-popconfirm
-              title="你确定执行这个任务吗?"
-              ok-text="确认"
-              cancel-text="取消"
-              @confirm="executeTask(record.task_id)"
-            >
+            title="你确定执行这个任务吗?"
+            ok-text="确认"
+            cancel-text="取消"
+              @confirm="executeTask(record.task_id)">
               <a-icon slot="icon" type="play-circle" style="color: #002fa7" />
               <a>执行</a>
             </a-popconfirm>
             <a-divider type="vertical" />
             <a-popconfirm
-              title="你确定删除这个任务吗?"
-              ok-text="确定"
-              cancel-text="取消"
-              @confirm="deleteTask([record.task_id])"
-            >
+            title="你确定删除这个任务吗?"
+            ok-text="确定"
+            cancel-text="取消"
+              @confirm="deleteTask([record.task_id])">
               <a-icon slot="icon" type="close-circle" style="color: red" />
               <a>删除</a>
             </a-popconfirm>
@@ -100,7 +93,6 @@
 </template>
 
 <script>
-
 /**
  * 任务列表页面
  */
@@ -131,7 +123,7 @@ const repoStatusTextMap = {
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  showTotal: total => `总计 ${total} 项`,
+  showTotal: (total) => `总计 ${total} 项`,
   showSizeChanger: true,
   showQuickJumper: true
 };
@@ -157,7 +149,7 @@ export default {
   },
   computed: {
     breadcrumb() {
-      const routes = this.$route.meta.diyBreadcrumb.map(route => {
+      const routes = this.$route.meta.diyBreadcrumb.map((route) => {
         return {
           path: route.path,
           breadcrumbName: i18nRender(route.breadcrumbName)
@@ -226,7 +218,7 @@ export default {
           title: '任务生成时间',
           width: 140,
           sorter: true,
-          customRender: time => time && dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)
+          customRender: (time) => time && dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)
         },
         {
           dataIndex: 'operation',
@@ -237,7 +229,7 @@ export default {
     }
   },
   watch: {
-    '$route' () {
+    $route() {
       this.getTaskList();
     }
   },
@@ -246,9 +238,9 @@ export default {
       for (const key in data) {
         if (data[key] >= 1) {
           if (tasktype === 'cve fix') {
-            return cveStatusTextMap[key]
+            return cveStatusTextMap[key];
           } else {
-            return repoStatusTextMap[key]
+            return repoStatusTextMap[key];
           }
         }
       }
@@ -268,25 +260,27 @@ export default {
     executeTask(taskId) {
       const _this = this;
       executeTask(taskId)
-        .then(function(res) {
-          _this.$message.success(res.msg);
+        .then(function (res) {
+          _this.$message.success(res.message);
           _this.selectedRowsAll = [];
           _this.selectedRowKeys = [];
           _this.getTaskList();
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         });
     },
     // 部分删除错误的提示信息
     deletePartialFailMessage(taskId) {
-      var runningTaskName = this.tableData.filter(task => {
-        if (taskId.indexOf(task.task_id) !== -1) {
+      var runningTaskName = this.tableData
+        .filter((task) => {
+          if (taskId.indexOf(task.task_id) !== -1) {
+            return task.task_name;
+          }
+        })
+        .map((task) => {
           return task.task_name;
-        }
-      }).map(task => {
-        return task.task_name;
-      });
+        });
       this.$message.warning('部分任务正在运行中请稍后重试!');
       console.log(runningTaskName);
     },
@@ -296,17 +290,17 @@ export default {
         taskList: taskList
       })
         .then(function (res) {
-          if (res.running_task && res.running_task.length !== 0) {
-            _this.deletePartialFailMessage(res.running_task);
+          if (res.data.running_task && res.data.running_task.length !== 0) {
+            _this.deletePartialFailMessage(res.data.running_task);
           } else {
-            _this.$message.success(res.msg);
+            _this.$message.success(res.message);
           }
           _this.selectedRowsAll = [];
           _this.selectedRowKeys = [];
           _this.getTaskList();
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         });
     },
     // 批量删除
@@ -314,10 +308,10 @@ export default {
       const _this = this;
       this.$confirm({
         title: '确定删除以下任务?',
-        content: _this.selectedRowsAll.map(task => task.task_name).join('、'),
+        content: _this.selectedRowsAll.map((task) => task.task_name).join('、'),
         icon: () => <a-icon type="exclamation-circle" />,
         okText: '确定',
-        onOk: function() {
+        onOk: function () {
           return _this.deleteTask(_this.selectedRowKeys);
         }
       });
@@ -344,20 +338,20 @@ export default {
           }
         }
       })
-        .then(function(res) {
-          _this.tableData = res.result || [];
+        .then(function (res) {
+          _this.tableData = res.data.result || [];
           _this.pagination = {
             ..._this.pagination,
             current: pagination.current,
             pageSize: pagination.pageSize,
-            total: res.total_count || (res.total_count === 0 ? 0 : pagination.total)
+            total: res.data.total_count || (res.data.total_count === 0 ? 0 : pagination.total)
           };
-          _this.updateProgress(_this.tableData.map(task => task.task_id));
+          _this.updateProgress(_this.tableData.map((task) => task.task_id));
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.tableIsLoading = false;
         });
     },
@@ -378,25 +372,25 @@ export default {
       const _this = this;
       this.progressLoading = true;
       getTaskProgress({taskList})
-        .then(function(res) {
-          _this.addStatusToData(res.result);
+        .then(function (res) {
+          _this.addStatusToData(res.data.result);
 
-          if (!_this.prgressFinishedCheck(res.result)) {
-            _this.progressUpdateCaller = setTimeout(function() {
+          if (!_this.prgressFinishedCheck(res.data.result)) {
+            _this.progressUpdateCaller = setTimeout(function () {
               _this.updateProgress(taskList);
             }, configs.taskProgressUpdateInterval);
           }
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.progressLoading = false;
         });
     },
     // 将返回的任务状态更新到表格数据中，用于数据展示
     addStatusToData(statusMap) {
-      this.tableData.forEach(task => {
+      this.tableData.forEach((task) => {
         task.statuses = statusMap[task.task_id];
         // task.statuses = task.task_type === 'cve fix' ? cveStatusTextMap[statusMap] : repoStatusTextMap[statusMap];
       });
@@ -415,7 +409,7 @@ export default {
       this.selectedRowsAll = [];
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.getTaskList();
   }
 };

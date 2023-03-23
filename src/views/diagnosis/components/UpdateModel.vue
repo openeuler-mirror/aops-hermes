@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/max-attributes-per-line -->
 <template>
   <a-modal :visible="visible" title="修改模型" on-ok="handleOk" @cancel="handleCancel" :width="800">
     <template slot="footer">
@@ -20,23 +21,12 @@
         标签
       </a-select-option>
     </a-select>
-    <a-input-search
-      placeholder="按关键字进行搜索"
-      style="width: 200px; margin: 10px 0;"
-      @search="onSearch"
-      :value="keyword"
-      @change="onSearchChange"
-    />
-    <a-table
-      :columns="moduleListColumns"
-      :data-source="moduleListInfo"
-      rowKey="model_id"
+    <a-input-search placeholder="按关键字进行搜索" style="width: 200px; margin: 10px 0;" @search="onSearch"
+      :value="keyword" @change="onSearchChange" />
+    <a-table :columns="moduleListColumns" :data-source="moduleListInfo" rowKey="model_id"
       :pagination="pagination"
       :row-selection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange, type: 'radio'}"
-      :loading="tableIsLoading"
-      @change="handleTableChange"
-      :scroll="{y: 280}"
-    >
+      :loading="tableIsLoading" @change="handleTableChange" :scroll="{y: 280}">
     </a-table>
   </a-modal>
 </template>
@@ -46,7 +36,7 @@ import {dateFormat} from '@/views/utils/Utils';
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  showTotal: total => `总计 ${total} 项`,
+  showTotal: (total) => `总计 ${total} 项`,
   size: 'small',
   showSizeChanger: true,
   showQuickJumper: true
@@ -127,7 +117,7 @@ export default {
           width: 200,
           dataIndex: 'create_time',
           key: 'create_time',
-          customRender: time => time && dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)
+          customRender: (time) => time && dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)
         }
       ];
     }
@@ -161,16 +151,16 @@ export default {
           }
         }
       })
-        .then(function(res) {
-          _this.moduleListInfo = res.result;
-          if (res.total_count !== 0) {
-            _this.pagination.total = res.total_count;
+        .then(function (res) {
+          _this.moduleListInfo = res.data.result;
+          if (res.data.total_count !== 0) {
+            _this.pagination.total = res.data.total_count;
           }
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.tableIsLoading = false;
         });
     },
@@ -219,17 +209,17 @@ export default {
           break;
       }
       updateWorkflow(this.workflow.detail, this.workflowId)
-        .then(function(res) {
+        .then(function (res) {
           _this.$options.methods.notifyResult(_this, 'success', '应用成功');
           // 重新获取检测表格数据
           _this.$emit('getWorkflowDatails');
           // 关闭对话框
           _this.$emit('changeVisible');
         })
-        .catch(function() {
+        .catch(function () {
           _this.$options.methods.notifyResult(_this, 'error', '应用失败');
         })
-        .finally(function() {
+        .finally(function () {
           _this.updateIsLoading = false;
         });
     },

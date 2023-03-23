@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/max-attributes-per-line -->
 <template>
   <my-page-header-wrapper>
     <a-card :bordered="false" class="aops-theme">
@@ -5,10 +6,8 @@
         <div>
           <h3 class="card-title">
             部署任务列表
-            <a-icon
-              :type="expandedStatus[0] ? 'caret-up' : 'caret-down'"
-              @click="setExpandStatus(0, !expandedStatus[0])"
-            />
+            <a-icon :type="expandedStatus[0] ? 'caret-up' : 'caret-down'"
+              @click="setExpandStatus(0, !expandedStatus[0])" />
           </h3>
         </div>
         <div v-show="expandedStatus[0]">
@@ -24,18 +23,12 @@
                   </a-alert>
                 </a-col>
                 <a-col>
-                  <a-button
-                    :disabled="selectedRowKeys.length <= 0"
-                    @click="deleteTaskBash(selectedRowKeys, selectedRowsAll)"
-                    >批量删除</a-button
-                  >
+                  <a-button :disabled="selectedRowKeys.length <= 0"
+                    @click="deleteTaskBash(selectedRowKeys, selectedRowsAll)">批量删除</a-button>
                 </a-col>
                 <a-col>
-                  <a-button
-                    :disabled="selectedRowKeys.length <= 0"
-                    @click="executeTaskBash(selectedRowKeys, selectedRowsAll)"
-                    >批量执行</a-button
-                  >
+                  <a-button :disabled="selectedRowKeys.length <= 0"
+                    @click="executeTaskBash(selectedRowKeys, selectedRowsAll)">批量执行</a-button>
                 </a-col>
               </a-row>
             </a-col>
@@ -54,15 +47,9 @@
               </a-row>
             </a-col>
           </a-row>
-          <a-table
-            :rowKey="rowKey"
-            :columns="columns"
-            :data-source="tableData"
-            :pagination="pagination"
-            :row-selection="rowSelection"
-            @change="handleTableChange"
-            :loading="tableIsLoading"
-          >
+          <a-table :rowKey="rowKey" :columns="columns" :data-source="tableData"
+            :pagination="pagination" :row-selection="rowSelection" @change="handleTableChange"
+            :loading="tableIsLoading">
             <span slot="name" slot-scope="text">
               <cut-text :text="text" :length="20" />
             </span>
@@ -72,12 +59,8 @@
             <span slot="action" slot-scope="record">
               <a @click="executeTask(record)">执行</a>
               <a-divider type="vertical" />
-              <a-popconfirm
-                title="你确定删除这个任务吗?"
-                ok-text="确认"
-                cancel-text="取消"
-                @confirm="deleteTask(record)"
-              >
+              <a-popconfirm title="你确定删除这个任务吗?" ok-text="确认" cancel-text="取消"
+                @confirm="deleteTask(record)">
                 <a-icon slot="icon" type="close-circle" style="color: red" />
                 <a>删除</a>
               </a-popconfirm>
@@ -89,19 +72,18 @@
     <a-card :bordered="false" class="aops-theme" style="margin-top: 20px">
       <h3>
         Playbook模板
-        <a-icon :type="expandedStatus[1] ? 'caret-up' : 'caret-down'" @click="setExpandStatus(1, !expandedStatus[1])" />
+        <a-icon :type="expandedStatus[1] ? 'caret-up' : 'caret-down'"
+          @click="setExpandStatus(1, !expandedStatus[1])" />
       </h3>
       <div class="ant-pro-pages-list-applications-filterCardList" v-show="expandedStatus[1]">
-        <a-list
-          :loading="templateIsLoading"
-          :data-source="templateData.slice(0, showIndex)"
-          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}"
-        >
+        <a-list :loading="templateIsLoading" :data-source="templateData.slice(0, showIndex)"
+          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}">
           <a-list-item slot="renderItem" slot-scope="item">
             <template v-if="!item.template_name">
               <drawer-view title="新增playbook模板">
                 <template slot="click">
-                  <a-button class="new-btn" type="dashed"> <a-icon type="plus" />新增playbook模板 </a-button>
+                  <a-button class="new-btn" type="dashed"> <a-icon type="plus" />新增playbook模板
+                  </a-button>
                 </template>
                 <template slot="drawerView">
                   <add-template :saveSuccess="addTemplateSuccess"></add-template>
@@ -109,11 +91,8 @@
               </drawer-view>
             </template>
             <template v-else>
-              <subject-card
-                :itemLabel="item.template_name"
-                :itemContent="item.description"
-                :tagList="['安装', '用户管理', '加密']"
-              >
+              <subject-card :itemLabel="item.template_name" :itemContent="item.description"
+                :tagList="['安装', '用户管理', '加密']">
                 <template #logoImg>
                   <img class="avatar-img" src="~@/assets/playbook-icon.png" />
                 </template>
@@ -123,12 +102,8 @@
                   </template>
                   <a-icon type="edit" />
                 </a-tooltip>
-                <a-popconfirm
-                  title="您确定要删除该模板吗?"
-                  ok-text="确认"
-                  cancel-text="取消"
-                  @confirm="deleteTemplate(item.template_name)"
-                >
+                <a-popconfirm title="您确定要删除该模板吗?" ok-text="确认" cancel-text="取消"
+                  @confirm="deleteTemplate(item.template_name)">
                   <a-tooltip placement="bottom">
                     <template slot="title">
                       删除
@@ -163,7 +138,7 @@ import {getTaskList, deleteTask, executeTask, getTemplateList, deleteTemplate} f
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  showTotal: total => `总计 ${total} 项`,
+  showTotal: (total) => `总计 ${total} 项`,
   showSizeChanger: true,
   showQuickJumper: true
 };
@@ -241,7 +216,7 @@ export default {
       };
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.getTaskList();
     this.getTemplateList();
   },
@@ -287,19 +262,19 @@ export default {
           }
         }
       })
-        .then(function(res) {
-          _this.tableData = res.task_infos || [];
+        .then(function (res) {
+          _this.tableData = res.data.task_infos || [];
           _this.pagination = {
             ..._this.pagination,
             current: pagination.current,
             pageSize: pagination.pageSize,
-            total: res.total_count || (res.total_count === 0 ? 0 : pagination.total)
+            total: res.data.total_count || (res.data.total_count === 0 ? 0 : pagination.total)
           };
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.tableIsLoading = false;
         });
     },
@@ -311,7 +286,7 @@ export default {
       this.filters = null;
       this.selectedRowKeys = [];
       this.tableIsLoading = true;
-      setTimeout(function() {
+      setTimeout(function () {
         _this.getTaskList();
       }, 1500);
     },
@@ -336,7 +311,7 @@ export default {
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '删除',
-        onOk: function() {
+        onOk: function () {
           return _this.handleDeleteTask(rowKeys, true);
         },
         onCancel() {}
@@ -349,21 +324,21 @@ export default {
         deleteTask({
           taskList
         })
-          .then(res => {
-            _this.$message.success(res.msg);
+          .then((res) => {
+            _this.$message.success(res.message);
             _this.handleRefresh();
             if (isBash) _this.selectedRowKeys = [];
             resolve();
           })
-          .catch(err => {
-            _this.$message.error(err.response.data.msg);
+          .catch((err) => {
+            _this.$message.error(err.response.message);
             reject(err);
           });
       });
     },
     // 执行配置任务
     executeTask(record) {
-      const hostNameList = record.host_list && record.host_list.map(host => host.host_name);
+      const hostNameList = record.host_list && record.host_list.map((host) => host.host_name);
       const _this = this;
       this.$confirm({
         title: (
@@ -380,7 +355,7 @@ export default {
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '执行',
-        onOk: function() {
+        onOk: function () {
           return _this.handleExecuteTask([record.task_id]);
         },
         onCancel() {}
@@ -400,7 +375,7 @@ export default {
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '执行',
-        onOk: function() {
+        onOk: function () {
           return _this.handleExecuteTask(rowKeys, true);
         },
         onCancel() {}
@@ -413,38 +388,38 @@ export default {
         executeTask({
           taskList
         })
-          .then(res => {
+          .then((res) => {
             _this.$message.success('excute successed');
             _this.handleRefresh();
             if (isBash) _this.selectedRowKeys = [];
             resolve();
           })
-          .catch(err => {
-            _this.$message.error(err.response.data.msg);
+          .catch((err) => {
+            _this.$message.error(err.response.message);
             reject(err);
           });
       });
     },
     // 获取playbook模板列表
-    getTemplateList: function() {
+    getTemplateList: function () {
       const _this = this;
       this.templateIsLoading = true;
       getTemplateList({})
-        .then(function(res) {
+        .then(function (res) {
           _this.templateData = [{}];
-          _this.templateData.push(...res.template_infos);
+          _this.templateData.push(...res.data.template_infos);
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.templateIsLoading = false;
         });
     },
     refreshTemplateList() {
       const _this = this;
       this.templateIsLoading = true;
-      setTimeout(function() {
+      setTimeout(function () {
         _this.getTemplateList();
       }, 1500);
     },
@@ -456,14 +431,14 @@ export default {
       deleteTemplate({
         templateList
       })
-        .then(function(res) {
-          _this.$message.success(res.msg);
+        .then(function (res) {
+          _this.$message.success(res.message);
           _this.refreshTemplateList();
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {});
+        .finally(function () {});
     },
     // 控制面板展开
     setExpandStatus(idx, isExpaned) {

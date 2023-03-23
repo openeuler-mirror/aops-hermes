@@ -1,12 +1,10 @@
+<!-- eslint-disable vue/max-attributes-per-line -->
 <template>
   <div @click="showModal">
     <a-button type="primary">上传安全公告</a-button>
     <a-modal title="上传文件" :visible="visible" :footer="null" @cancel="closeModal">
       <div>
-        <a-upload
-        :file-list="fileDataList"
-        :remove="removeFile"
-        :before-upload="preUpload">
+        <a-upload :file-list="fileDataList" :remove="removeFile" :before-upload="preUpload">
           <div style="display:flex;">
             <div style="flex">
               <a-button> <a-icon type="upload" /> 选择文件 </a-button>
@@ -28,13 +26,8 @@
           </a-radio>
         </a-radio-group>
       </div>
-      <a-button
-        type="primary"
-        :disabled="fileDataList.length === 0"
-        :loading="uploading"
-        style="margin-top: 16px;width: 111px;"
-        @click="goUpload"
-      >
+      <a-button type="primary" :disabled="fileDataList.length === 0" :loading="uploading"
+        style="margin-top: 16px;width: 111px;" @click="goUpload">
         {{ uploading ? '上传中' : '开始上传' }}
       </a-button>
     </a-modal>
@@ -96,49 +89,49 @@ export default {
     goUpload() {
       const {fileDataList} = this;
       const formData = new FormData();
-      fileDataList.forEach(file => {
+      fileDataList.forEach((file) => {
         formData.append('file', file);
       });
       this.uploading = true;
       const _this = this;
       if (this.value === 1) {
         reupload(formData)
-        .then(function(res) {
-          _this.$message.success(res.msg);
-          _this.$emit('addSuccess');
-          _this.fileDataList = [];
-          _this.uploading = false;
-          _this.value = 1;
-        })
-        .catch(function(err) {
-          _this.uploading = false;
-          _this.$message.error(err.response.data.msg || err.response.data.detail);
-          _this.value = 1;
-        })
-        .finally(function() {
-          _this.visible = false;
-          _this.fileDataList = [];
-          _this.value = 1;
-        });
+          .then(function (res) {
+            _this.$message.success(res.message);
+            _this.$emit('addSuccess');
+            _this.fileDataList = [];
+            _this.uploading = false;
+            _this.value = 1;
+          })
+          .catch(function (err) {
+            _this.uploading = false;
+            _this.$message.error(err.response.message || err.response.data.detail);
+            _this.value = 1;
+          })
+          .finally(function () {
+            _this.visible = false;
+            _this.fileDataList = [];
+            _this.value = 1;
+          });
       } else {
         upload(formData)
-        .then(function(res) {
-          _this.$message.success(res.msg);
-          _this.$emit('addSuccess');
-          _this.fileDataList = [];
-          _this.uploading = false;
-          _this.value = 1;
-        })
-        .catch(function(err) {
-          _this.uploading = false;
-          _this.$message.error(err.response.data.msg || err.response.data.detail);
-          _this.value = 1;
-        })
-        .finally(function() {
-          _this.visible = false;
-          _this.fileDataList = [];
-          _this.value = 1;
-        });
+          .then(function (res) {
+            _this.$message.success(res.message);
+            _this.$emit('addSuccess');
+            _this.fileDataList = [];
+            _this.uploading = false;
+            _this.value = 1;
+          })
+          .catch(function (err) {
+            _this.uploading = false;
+            _this.$message.error(err.response.message || err.response.data.detail);
+            _this.value = 1;
+          })
+          .finally(function () {
+            _this.visible = false;
+            _this.fileDataList = [];
+            _this.value = 1;
+          });
       }
     }
   }
@@ -163,7 +156,7 @@ export default {
   left: -80px;
 }
 
-.influnceIcon{
+.influnceIcon {
   margin-right: 10px;
 }
 </style>

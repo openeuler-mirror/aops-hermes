@@ -32,30 +32,30 @@
             <a-input-search placeholder="按CVE ID搜索" style="width: 200px" @search="onSearch" />
           </a-col> -->
           <a-col>
-            <status-change-modal :selectedRowsAll="selectedRowsAll" @statusUpdated="handleStatusUpdated" />
+            <status-change-modal
+            :selectedRowsAll="selectedRowsAll"
+              @statusUpdated="handleStatusUpdated" />
           </a-col>
           <a-col>
             <upload-file v-if="standalone ? true : false" @addSuccess="handleUploadSuccess" />
           </a-col>
           <a-col v-if="selectedRowKeys.length === 0">
             <create-repair-task-drawer
-              text="生成修复任务"
-              taskType="cve fix"
+            text="生成修复任务"
+            taskType="cve fix"
               :cveListProps="standalone ? cveAllList : cveAllListProp"
               :loading="standalone ? cveAllIsLoading : cveAllIsLoadingProp"
               :hostListType="standalone ? 'byLoading' : 'byOneHost'"
               :hostList="hostList"
-              @createSuccess="handleTaskCreateSuccess"
-            />
+              @createSuccess="handleTaskCreateSuccess" />
           </a-col>
           <a-col v-else>
             <create-repair-task-drawer
-              taskType="cve fix"
-              :cveListProps="selectedRowsAll"
+            taskType="cve fix"
+            :cveListProps="selectedRowsAll"
               :hostListType="standalone ? 'byLoading' : 'byOneHost'"
               :hostList="hostList"
-              @createSuccess="handleTaskCreateSuccess"
-            />
+              @createSuccess="handleTaskCreateSuccess" />
           </a-col>
           <a-col>
             <a-button @click="handleRefresh">
@@ -65,28 +65,29 @@
         </a-row>
       </a-col>
     </a-row>
-      <a-table
-      rowKey="cve_id"
-      :columns="standalone ? tableColumnsStandalone : tableColumns"
+    <a-table
+    rowKey="cve_id"
+    :columns="standalone ? tableColumnsStandalone : tableColumns"
       :data-source="standalone ? tableData : inputList"
       :pagination="pagination"
       :rowSelection="rowSelection"
       :expandIconAsCell="false"
       :expandIconColumnIndex="1"
       @change="handleTableChange"
-      :loading="standalone ? tableIsLoading : inputLoading"
-    >
-      <router-link :to="{path: `/leaks/cves-management/${id}`}" slot="cve_id" slot-scope="id">{{ id }}</router-link>
+      :loading="standalone ? tableIsLoading : inputLoading">
+      <router-link
+      :to="{path: `/leaks/cves-management/${id}`}"
+      slot="cve_id"
+        slot-scope="id">{{ id }}</router-link>
       <div slot="expandedRowRender" slot-scope="record" style="margin: 0">
         <p>Description:</p>
         <p>{{ record.description }}</p>
       </div>
-      </a-table>
+    </a-table>
   </div>
 </template>
 
 <script>
-
 /**
  * cve表格组件
  * cve 表格的业务逻辑公共组件。根据props中standalone属性确定是自动获取列表信息，还是通过外部获取列表信息。
@@ -103,7 +104,7 @@ import UploadFile from './UploadFile.vue';
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  showTotal: total => `总计 ${total} 项`,
+  showTotal: (total) => `总计 ${total} 项`,
   showSizeChanger: true,
   showQuickJumper: true
 };
@@ -177,7 +178,7 @@ export default {
           dataIndex: 'severity',
           key: 'severity',
           title: '严重性',
-          customRender: severity => severityMap[severity],
+          customRender: (severity) => severityMap[severity],
           filteredValue: filters.severity || null,
           filters: [
             {
@@ -220,7 +221,7 @@ export default {
           title: '状态',
           filteredValue: filters.status || null,
           filters: statusList,
-          customRender: status => statusMap[status]
+          customRender: (status) => statusMap[status]
         }
       ];
     },
@@ -245,7 +246,7 @@ export default {
           dataIndex: 'severity',
           key: 'severity',
           title: '严重性',
-          customRender: severity => severityMap[severity],
+          customRender: (severity) => severityMap[severity],
           filteredValue: filters.severity || null,
           filters: [
             {
@@ -282,7 +283,7 @@ export default {
           title: '状态',
           filteredValue: filters.status || null,
           filters: statusList,
-          customRender: status => statusMap[status]
+          customRender: (status) => statusMap[status]
         }
       ];
     },
@@ -294,7 +295,7 @@ export default {
     }
   },
   watch: {
-    '$route' () {
+    $route() {
       this.getCves();
       this.getCvesAll();
     },
@@ -401,19 +402,22 @@ export default {
             order: sorter.order
           }
         }
-      }).then(function(res) {
-        _this.tableData = res.result || [];
-        _this.pagination = {
-          ..._this.pagination,
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-          total: res.total_count || (res.total_count === 0 ? 0 : pagination.total)
-        };
-      }).catch(function(err) {
-        _this.$message.error(err.response.data.msg);
-      }).finally(function() {
-        _this.tableIsLoading = false;
-      });
+      })
+        .then(function (res) {
+          _this.tableData = res.data.result || [];
+          _this.pagination = {
+            ..._this.pagination,
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+            total: res.data.total_count || (res.data.total_count === 0 ? 0 : pagination.total)
+          };
+        })
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
+        })
+        .finally(function () {
+          _this.tableIsLoading = false;
+        });
     },
     // 获取全部cve数据，用于生成修复任务时选择全部cve
     getCvesAll() {
@@ -437,13 +441,13 @@ export default {
           sorter: {}
         }
       })
-        .then(function(res) {
-          _this.cveAllList = res.result || [];
+        .then(function (res) {
+          _this.cveAllList = res.data.result || [];
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.cveAllIsLoading = false;
         });
     },
@@ -462,9 +466,7 @@ export default {
     handleTaskCreateSuccess() {
       this.handleRefresh();
     },
-    handleScanAll() {
-
-    },
+    handleScanAll() {},
     handleStatusUpdated() {
       this.selectedRowKeys = [];
       this.selectedRowsAll = [];
@@ -490,7 +492,10 @@ export default {
       }
     },
     uploadfile() {},
-    handleUploadSuccess() {}
+    handleUploadSuccess() {
+      this.getCves();
+      this.getCvesAll();
+    }
   },
   mounted() {
     this.getCves();

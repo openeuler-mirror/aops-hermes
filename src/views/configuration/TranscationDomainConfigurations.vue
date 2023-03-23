@@ -12,10 +12,9 @@
               <div slot="message">
                 <span>{{ `已选择` + selectedRowKeys.length + `项` }}</span>
                 <a
-                  v-if="selectedRowKeys.length > 0"
-                  @click="deleteConfigBash(selectedRowKeys, selectedRows)"
-                >
-                批量删除
+                v-if="selectedRowKeys.length > 0"
+                  @click="deleteConfigBash(selectedRowKeys, selectedRows)">
+                  批量删除
                 </a>
               </div>
             </a-alert>
@@ -34,14 +33,13 @@
           </a-col>
         </a-row>
         <a-table
-          rowKey="filePath"
-          :columns="columns"
-          :data-source="tableData"
+        rowKey="filePath"
+        :columns="columns"
+        :data-source="tableData"
           :pagination="pagination"
           :row-selection="rowSelection"
           @change="handleTableChange"
-          :loading="tableIsLoading"
-        >
+          :loading="tableIsLoading">
           <span slot="contents" slot-scope="record">
             <div class="oneRow">{{ record.contents }}</div>
           </span>
@@ -53,24 +51,22 @@
             <a @click="showEditDrawer(record)">编辑配置&emsp;&emsp;</a>
             <a-divider type="vertical" />
             <a-popconfirm
-              title="你确定删除这行配置吗?"
-              ok-text="确认"
-              cancel-text="取消"
-              @confirm="deleteConfig(record)"
-            >
+            title="你确定删除这行配置吗?"
+            ok-text="确认"
+            cancel-text="取消"
+              @confirm="deleteConfig(record)">
               <a-icon slot="icon" type="close-circle" style="color: red" />
               <a>删除</a>
             </a-popconfirm>
           </span>
         </a-table>
         <a-drawer
-          title="配置文件内容"
-          :width="720"
-          placement="right"
-          :visible="configContentVisible"
+        title="配置文件内容"
+        :width="720"
+        placement="right"
+        :visible="configContentVisible"
           :body-style="{paddingBottom: '80px'}"
-          @close="closeConfigContent"
-        >
+          @close="closeConfigContent">
           <a-descriptions :column="1" layout="horizontal">
             <a-descriptions-item label="配置文件">
               {{ configContent.filePath }}
@@ -85,13 +81,12 @@
           </a-descriptions>
         </a-drawer>
         <a-drawer
-          title="配置日志"
-          :width="1080"
-          placement="right"
-          :visible="configChangeVisible"
+        title="配置日志"
+        :width="1080"
+        placement="right"
+        :visible="configChangeVisible"
           :body-style="{paddingBottom: '80px'}"
-          @close="closeConfigChange"
-        >
+          @close="closeConfigChange">
           <a-spin :spinning="logIsLoading">
             <a-descriptions :column="1" layout="horizontal">
               <a-descriptions-item label="所属业务域">
@@ -108,15 +103,14 @@
                 </div>
                 <p class="pLog">变更历史：</p>
                 <a-table
-                  rowKey="changeId"
-                  :columns="confChangeColumns"
+                rowKey="changeId"
+                :columns="confChangeColumns"
                   :data-source="manageConfChange[0].changeLog"
                   :expandIconAsCell="false"
                   :expandIconColumnIndex="4"
                   :expandIcon="props => this.customExpandIcon(props)"
                   :pagination="false"
-                  bordered
-                >
+                  bordered>
                   <div slot="expandedRowRender" slot-scope="record" style="margin: 0">
                     <p>preValue:</p>
                     {{ record.preValue }}
@@ -130,15 +124,16 @@
         </a-drawer>
       </div>
     </a-card>
-    <domain-selection-modal :showDomainSelection="choiceDomainNameModalVisible" @cancel="handleDomainSelectCancel" />
+    <domain-selection-modal
+    :showDomainSelection="choiceDomainNameModalVisible"
+      @cancel="handleDomainSelectCancel" />
     <add-configuration-drawer
-      :isEdit="true"
-      :visibleControl="editConfVisible"
+    :isEdit="true"
+    :visibleControl="editConfVisible"
       :domainName="domainName"
       :editFilePath="editFilePath"
       @ok="onEditConfsOk"
-      @cancel="onEditConfsCancel"
-    />
+      @cancel="onEditConfsCancel" />
   </page-header-wrapper>
 </template>
 
@@ -155,7 +150,7 @@ import {dateFormat} from '@/views/utils/Utils';
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  showTotal: total => `总计 ${total} 项`,
+  showTotal: (total) => `总计 ${total} 项`,
   showSizeChanger: true,
   showQuickJumper: true
 };
@@ -203,7 +198,7 @@ export default {
   },
   computed: {
     breadcrumb() {
-      const routes = this.$route.meta.diyBreadcrumb.map(route => {
+      const routes = this.$route.meta.diyBreadcrumb.map((route) => {
         return {
           path: route.path,
           breadcrumbName: i18nRender(route.breadcrumbName)
@@ -306,13 +301,13 @@ export default {
       getManagementConf({
         domainName: _this.domainName
       })
-        .then(function(data) {
-          _this.tableData = data.confFiles;
+        .then(function (res) {
+          _this.tableData = res.data.confFiles;
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.message);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.tableIsLoading = false;
         });
     },
@@ -329,7 +324,7 @@ export default {
           </div>
         ),
         content: () =>
-          selectedRows.map(row => (
+          selectedRows.map((row) => (
             <p>
               <span>{row.name}</span>
             </p>
@@ -337,7 +332,7 @@ export default {
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '删除',
-        onOk: function() {
+        onOk: function () {
           return _this.handleDelete(selectedRowKeys, true);
         },
         onCancel() {}
@@ -348,18 +343,18 @@ export default {
       return new Promise((resolve, reject) => {
         deleteManagementConf({
           domainName: _this.domainName,
-          confFiles: managementConfList.map(filePath => {
+          confFiles: managementConfList.map((filePath) => {
             return {filePath: filePath.replace(/openEuler:/, '')};
           })
         })
-          .then(res => {
-            _this.$message.success(res.msg);
+          .then((res) => {
+            _this.$message.success(res.message);
             _this.getTranscationDomainConfig();
             if (isBash) _this.selectedRowKeys = [];
             resolve();
           })
-          .catch(err => {
-            _this.$message.error(err.response.data.msg);
+          .catch((err) => {
+            _this.$message.error(err.response.message);
             reject(err);
           });
       });
@@ -396,7 +391,7 @@ export default {
         return (
           <a
             style={{color: 'balck', marginRight: 8}}
-            onClick={e => {
+            onClick={(e) => {
               props.onExpand(props.record, e);
             }}
           >
@@ -408,7 +403,7 @@ export default {
         return (
           <a
             style={{color: 'balck', marginRight: 8}}
-            onClick={e => {
+            onClick={(e) => {
               props.onExpand(props.record, e);
             }}
           >
@@ -425,13 +420,13 @@ export default {
         domainName: _this.domainName,
         confFiles: [{filePath: record.filePath.replace('openEuler:', '')}]
       })
-        .then(function(data) {
-          _this.manageConfChange = data.confBaseInfos;
+        .then(function (res) {
+          _this.manageConfChange = res.data.confBaseInfos;
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.message);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.logIsLoading = false;
         });
     },

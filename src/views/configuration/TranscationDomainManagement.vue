@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/max-attributes-per-line -->
 <template>
   <page-header-wrapper :breadcrumb="breadcrumb">
     <a-card :bordered="false" class="aops-theme">
@@ -6,13 +7,11 @@
         <span>共有业务域{{ domainData.length }}个</span>
       </div>
       <div>
-        <a-list
-          :loading="domainLoading"
-          :data-source="cardListData"
-          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}"
-        >
+        <a-list :loading="domainLoading" :data-source="cardListData"
+          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}">
           <a-list-item slot="renderItem" slot-scope="domain, index">
-            <a-card :bodyStyle="{padding: 0}" :bordered="false" :class="index !== 0 ? 'aops-theme-incard' : ''">
+            <a-card :bodyStyle="{padding: 0}" :bordered="false"
+              :class="index !== 0 ? 'aops-theme-incard' : ''">
               <div class="aops-card-body">
                 <router-link :to="`${domain.domainName || ''}`">
                   <div class="aops-card-content">
@@ -26,13 +25,15 @@
                       <router-link
                         :to="`/configuration/transcation-domain-configurations/${domain.domainName}`">
                         查看域内配置
-                        </router-link>
+                      </router-link>
                       <a-divider type="vertical" />
                       <a-dropdown>
-                        <a class="ant-dropdown-link" @click="e => e.preventDefault()"> 更多 <a-icon type="down" /> </a>
+                        <a class="ant-dropdown-link" @click="e => e.preventDefault()"> 更多 <a-icon
+                            type="down" /> </a>
                         <a-menu slot="overlay">
                           <a-menu-item>
-                            <a href="javascript:;" @click="showAddHostDrawer(domain.domainName)">添加主机</a>
+                            <a href="javascript:;"
+                              @click="showAddHostDrawer(domain.domainName)">添加主机</a>
                           </a-menu-item>
                           <a-menu-item>
                             <a href="javascript:;" @click="delDomain(domain.domainName)">删除</a>
@@ -89,7 +90,7 @@ export default {
   computed: {
     // 自定义面包屑内容
     breadcrumb() {
-      const routes = this.$route.meta.diyBreadcrumb.map(route => {
+      const routes = this.$route.meta.diyBreadcrumb.map((route) => {
         return {
           path: route.path,
           breadcrumbName: i18nRender(route.breadcrumbName)
@@ -121,15 +122,15 @@ export default {
       const _this = this;
       this.domainLoading = true;
       domainList()
-        .then(function(res) {
+        .then(function (res) {
           // 特殊处理
-          _this.domainData = res || [];
+          _this.domainData = res.data || [];
         })
-        .catch(function(err) {
-          if (err.response.data.code === 400) return;
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          if (err.response.code === '400') return;
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.domainLoading = false;
         });
     },
@@ -155,7 +156,7 @@ export default {
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '删除',
-        onOk: function() {
+        onOk: function () {
           return _this.handleDelDomain(domainName);
         },
         onCancel() {}
@@ -169,19 +170,19 @@ export default {
         deleteDomain({
           domainNameArray
         })
-          .then(res => {
-            _this.$message.success(res.msg);
+          .then((res) => {
+            _this.$message.success(res.message);
             _this.getDomainList();
             resolve();
           })
-          .catch(err => {
-            _this.$message.error(err.response.data.msg);
+          .catch((err) => {
+            _this.$message.error(err.response.message);
             reject(err);
           });
       });
     }
   },
-  created: function() {
+  created: function () {
     this.getDomainList();
   }
 };

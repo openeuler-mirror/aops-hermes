@@ -1,10 +1,12 @@
 import request from '@/vendor/ant-design-pro/utils/request';
 
 const api = {
+  downLoadtemplate: '/manage/host/file/template', // 批量上传主机模版下载
   hostList: '/manage/host/get', // 全量接口待确认
   hostCount: '/manage/host/count', // 全量接口待确认
   hostInfo: '/manage/host/info/query',
   addHost: '/manage/host/add',
+  addMoreHost: '/manage/host/add/batch', // 批量添加主机
   editHost: '/manage/host/edit_host', // 未提供
   deleteHost: '/manage/host/delete',
   hostGroupList: '/manage/host/group/get',
@@ -49,12 +51,33 @@ export function hostList({tableInfo, ...parameter}) {
     }
   });
 }
+
+// 上传主机模版下载
+export function downLoadtemplate() {
+  return request({
+    url: api.downLoadtemplate,
+    method: 'get',
+    params: {
+    }
+  });
+}
+
 // 主机统计
 export function hostCount() {
   return request({
     url: api.hostCount,
     method: 'post',
     data: {}
+  });
+}
+
+// 批量添加主机
+export function addMoreHost(params) {
+  return request({
+    url: api.addMoreHost,
+    method: 'post',
+    data: { host_list: params }
+    // headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   });
 }
 
@@ -81,9 +104,9 @@ export function hostBasicInfo(list, key) {
       host_list: hostList,
       basic: true
     }
-  }).then(function(data) {
+  }).then(function(res) {
     var map = {};
-    data.host_infos.forEach(function(host) {
+    res.data.host_infos.forEach(function(host) {
       map[host.host_id] = host;
     });
     return map;
@@ -95,20 +118,15 @@ export function addHost(parameter) {
     url: api.addHost,
     method: 'post',
     data: {
-      host_list: [
-        {
           host_name: parameter.host_name,
           host_group_name: parameter.host_group_name,
-          public_ip: parameter.public_ip,
+          host_ip: parameter.host_ip,
           ssh_port: parameter.ssh_port,
           management: parameter.management,
-          username: parameter.username,
+          ssh_user: parameter.ssh_user,
           password: parameter.password
           // sudo_password: parameter.sudo_password
         }
-      ],
-      key: parameter.key
-    }
   });
 }
 

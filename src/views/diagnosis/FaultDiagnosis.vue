@@ -6,10 +6,8 @@
           <a-col>
             <h3>
               诊断任务
-              <a-icon
-                :type="expandedStatus[0] ? 'caret-up' : 'caret-down'"
-                @click="setExpandStatus(0, !expandedStatus[0])"
-              />
+              <a-icon :type="expandedStatus[0] ? 'caret-up' : 'caret-down'"
+                @click="setExpandStatus(0, !expandedStatus[0])" />
             </h3>
           </a-col>
           <a-col>
@@ -20,10 +18,8 @@
                     <a-button type="primary"> 故障诊断<a-icon type="plus" /> </a-button>
                   </template>
                   <template slot="drawerView">
-                    <add-fault-diagnosis
-                      :saveSuccess="addFaultDiagnosisSuccess"
-                      :faultTreeList="treeData"
-                    ></add-fault-diagnosis>
+                    <add-fault-diagnosis :saveSuccess="addFaultDiagnosisSuccess"
+                      :faultTreeList="treeData"></add-fault-diagnosis>
                   </template>
                 </drawer-view>
               </a-col>
@@ -31,14 +27,8 @@
           </a-col>
         </a-row>
         <div v-show="expandedStatus[0]">
-          <a-table
-            :rowKey="rowKey"
-            :columns="columns"
-            :data-source="taskList"
-            :pagination="pagination"
-            @change="handleTableChange"
-            :loading="tableIsLoading"
-          >
+          <a-table :rowKey="rowKey" :columns="columns" :data-source="taskList"
+            :pagination="pagination" @change="handleTableChange" :loading="tableIsLoading">
             <span slot="action" slot-scope="record">
               <a @click="handleReportListOpen(record)">查看报告</a>
             </span>
@@ -49,14 +39,12 @@
     <a-card :bordered="false" class="aops-theme" style="margin-top: 20px">
       <h3>
         故障树
-        <a-icon :type="expandedStatus[1] ? 'caret-up' : 'caret-down'" @click="setExpandStatus(1, !expandedStatus[1])" />
+        <a-icon :type="expandedStatus[1] ? 'caret-up' : 'caret-down'"
+          @click="setExpandStatus(1, !expandedStatus[1])" />
       </h3>
       <div class="ant-pro-pages-list-applications-filterCardList" v-show="expandedStatus[1]">
-        <a-list
-          :loading="loading"
-          :data-source="treeData.slice(0, showIndex)"
-          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}"
-        >
+        <a-list :loading="loading" :data-source="treeData.slice(0, showIndex)"
+          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}">
           <a-list-item slot="renderItem" slot-scope="item">
             <template v-if="!item.tree_name">
               <drawer-view title="新增故障树">
@@ -69,12 +57,9 @@
               </drawer-view>
             </template>
             <template v-else>
-              <subject-card
-                :linkTo="'/diagnosis/fault-trees/' + item.tree_name"
-                :itemLabel="item.tree_name"
-                :itemContent="item.description"
-                :tagList="['3C', '故障重启', '硬件']"
-              >
+              <subject-card :linkTo="'/diagnosis/fault-trees/' + item.tree_name"
+                :itemLabel="item.tree_name" :itemContent="item.description"
+                :tagList="['3C', '故障重启', '硬件']">
                 <template #logoImg>
                   <img src="~@/assets/dtree-icon.png" />
                 </template>
@@ -90,12 +75,8 @@
                   </template>
                   <a-icon type="download" />
                 </a-tooltip>
-                <a-popconfirm
-                  title="您确定要删除该故障树吗?"
-                  ok-text="确认"
-                  cancel-text="取消"
-                  @confirm="deletediagtree(item.tree_name)"
-                >
+                <a-popconfirm title="您确定要删除该故障树吗?" ok-text="确认" cancel-text="取消"
+                  @confirm="deletediagtree(item.tree_name)">
                   <a-tooltip placement="bottom">
                     <template slot="title">
                       删除
@@ -112,20 +93,16 @@
         <a @click="showIndex = showIndex + 6">加载更多</a>
       </div>
     </a-card>
-    <a-drawer title="诊断报告列表" :width="800" :visible="reportListVisible" @close="handleReportListClose">
+    <a-drawer title="诊断报告列表" :width="800" :visible="reportListVisible"
+      @close="handleReportListClose">
       <div>
         {{ `已生成/总报告数：${taskProgressStatus.finished} / ${taskProgressStatus.total}` }}
       </div>
-      <a-table
-        rowKey="report_id"
-        :dataSource="reportList"
-        :loading="reportListLoading"
-        :columns="reportListColumns"
-        :pagination="reportListPagination"
-        @change="reportListChange"
-      >
+      <a-table rowKey="report_id" :dataSource="reportList" :loading="reportListLoading"
+        :columns="reportListColumns" :pagination="reportListPagination" @change="reportListChange">
         <span slot="check" slot-scope="report">
-          <router-link :to="{path: '/diagnosis/diag-report/' + report.report_id}" target="_blank">查看</router-link>
+          <router-link :to="{path: '/diagnosis/diag-report/' + report.report_id}"
+            target="_blank">查看</router-link>
           <a-divider type="vertical" />
           <a href="#" @click="diagnosisDelete(report)">删除</a>
         </span>
@@ -164,7 +141,7 @@ const columns = [
   {
     title: '诊断时间段',
     customRender: (text, item) =>
-      item.time_range.map(time => dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)).join(' 至 ')
+      item.time_range.map((time) => dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)).join(' 至 ')
   },
   {
     key: 'progress',
@@ -206,7 +183,7 @@ const reportListColumns = [
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  showTotal: total => `总计 ${total} 项`,
+  showTotal: (total) => `总计 ${total} 项`,
   showSizeChanger: true,
   showQuickJumper: true
 };
@@ -265,17 +242,17 @@ export default {
       };
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.refreshFaultDiagnosisList();
     this.getDiagTree();
     const _this = this;
-    this.loadProgressInterval = setInterval(function() {
+    this.loadProgressInterval = setInterval(function () {
       if (_this.taskList.length > 0) {
         _this.loadDiagProgress(_this.taskList);
       }
     }, defaultSettings.faultDiagnosisPropressInterval);
   },
-  destroyed: function() {
+  destroyed: function () {
     clearInterval(this.loadProgressInterval);
   },
   methods: {
@@ -285,7 +262,7 @@ export default {
     refreshgDiagTree() {
       const _this = this;
       this.loading = true;
-      setTimeout(function() {
+      setTimeout(function () {
         _this.getDiagTree();
       }, 1500);
     },
@@ -308,7 +285,7 @@ export default {
     refreshFaultDiagnosisList() {
       const that = this;
       that.tableIsLoading = true;
-      setTimeout(function() {
+      setTimeout(function () {
         that.getTaskList({
           pagination: that.tablePagination,
           sorter: that.tableSorter
@@ -323,11 +300,11 @@ export default {
       tableInfo.sort = 'time';
       tableInfo.direction = 'desc';
       getTaskList(tableInfo)
-        .then(function(data) {
-          that.taskList = data.task_infos;
+        .then(function (res) {
+          that.taskList = res.data.task_infos;
           var taskMap = {};
           var taskIdArray = [];
-          that.taskList.forEach(function(task) {
+          that.taskList.forEach(function (task) {
             taskMap[task.task_id] = task;
             taskIdArray.push(task.task_id);
           });
@@ -335,36 +312,36 @@ export default {
             ...that.pagination,
             current: pagination.current,
             pageSize: pagination.pageSize,
-            total: data.total_count || (data.total_count === 0 ? 0 : pagination.total)
+            total: res.data.total_count || (res.data.total_count === 0 ? 0 : pagination.total)
           };
 
           if (taskIdArray.length > 0) {
             that.updateProgress(taskIdArray);
           }
         })
-        .catch(function(err) {
-          that.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          that.$message.error(err.response.message);
         })
         .finally(() => {
           that.tableIsLoading = false;
         });
     },
     // 获取故障树列表
-    getDiagTree: function() {
+    getDiagTree: function () {
       const _this = this;
       this.loading = true;
       const treeList = [];
       getDiagTree({
         treeList
       })
-        .then(function(res) {
+        .then(function (res) {
           _this.treeData = [{}];
-          _this.treeData.push(...res.trees);
+          _this.treeData.push(...res.data.trees);
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.loading = false;
         });
     },
@@ -383,7 +360,7 @@ export default {
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '删除',
-        onOk: function() {
+        onOk: function () {
           return _this.handleDeleteDiagnosis(reportList, true);
         },
         onCancel() {}
@@ -394,15 +371,15 @@ export default {
       const _this = this;
       return new Promise((resolve, reject) => {
         delDiagReport(reportList)
-          .then(res => {
-            _this.$message.success(res.msg);
+          .then((res) => {
+            _this.$message.success(res.message);
             _this.refreshFaultDiagnosisList();
             _this.refreshReportList();
             if (isBash) _this.selectedRowKeys = [];
             resolve();
           })
-          .catch(err => {
-            _this.$message.error(err.response.data.msg);
+          .catch((err) => {
+            _this.$message.error(err.response.message);
             reject(err);
           });
       });
@@ -410,10 +387,10 @@ export default {
     updateProgress(taskIdList) {
       const _this = this;
       getProgress(taskIdList)
-        .then(function(res) {
+        .then(function (res) {
           const newTableData = [];
-          _this.taskList.forEach(function(item) {
-            res.result.forEach(function(progressItem) {
+          _this.taskList.forEach(function (item) {
+            res.data.result.forEach(function (progressItem) {
               if (item.task_id === progressItem.task_id) {
                 item.progress = progressItem.progress;
                 if (progressItem.progress === 0 && item.expected_report_num === 0) {
@@ -427,15 +404,15 @@ export default {
           });
           _this.taskList = newTableData;
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {});
+        .finally(function () {});
     },
     // 获取故障诊断进度
     loadDiagProgress(taskData) {
       const taskList = [];
-      taskData.forEach(function(item) {
+      taskData.forEach(function (item) {
         taskList.push(item.task_id);
       });
       this.updateProgress(taskList);
@@ -450,14 +427,14 @@ export default {
       delDiagTree({
         treeList
       })
-        .then(function(res) {
-          _this.$message.success(res.msg);
+        .then(function (res) {
+          _this.$message.success(res.message);
           _this.refreshgDiagTree();
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {});
+        .finally(function () {});
     },
     handleReportListOpen(task) {
       this.taskOfReportList = task.task_id;
@@ -482,7 +459,7 @@ export default {
     refreshReportList() {
       const _this = this;
       this.reportListLoading = true;
-      setTimeout(function() {
+      setTimeout(function () {
         _this.handleGetReportList(_this.taskOfReportList);
       }, 1500);
     },
@@ -494,46 +471,53 @@ export default {
       getReportList({
         taskId,
         pagination: reportListPagination
-      }).then(function(res) {
-        _this.reportList = res.result || [];
-        _this.reportListPagination = {
-          ..._this.reportListPagination,
-          current: reportListPagination.current,
-          pageSize: reportListPagination.pageSize,
-          total: res.total_count || (res.total_count === 0 ? 0 : reportListPagination.total)
-        };
-        // 获取列表时，根据列表数量更新
-        _this.taskProgressStatus = Object.assign({},
-          {
-            ..._this.taskProgressStatus,
-            finished: res.total_count
+      })
+        .then(function (res) {
+          _this.reportList = res.data.result || [];
+          _this.reportListPagination = {
+            ..._this.reportListPagination,
+            current: reportListPagination.current,
+            pageSize: reportListPagination.pageSize,
+            total: res.data.total_count || (res.data.total_count === 0 ? 0 : reportListPagination.total)
+          };
+          // 获取列表时，根据列表数量更新
+          _this.taskProgressStatus = Object.assign(
+            {},
+            {
+              ..._this.taskProgressStatus,
+              finished: res.data.total_count
+            }
+          );
+          if (res.data.result.length > 0) {
+            _this.hostInfoLoading = true;
+            hostInfo({
+              basic: true,
+              host_list: res.data.result.map((report) => report.host_id)
+            })
+              .then(function (res) {
+                _this.reportList = _this.reportList.map((report) => {
+                  const temp = Object.assign({}, report);
+                  const matchedItem = res.data.host_infos.filter((host) => host.host_id === report.host_id)[0];
+                  if (matchedItem) {
+                    temp.host_name = matchedItem.host_name;
+                  }
+                  return temp;
+                });
+              })
+              .catch(function (err) {
+                _this.$message.error(err.response.message);
+              })
+              .finally(() => {
+                _this.hostInfoLoading = false;
+              });
           }
-        );
-        if (res.result.length > 0) {
-          _this.hostInfoLoading = true;
-          hostInfo({
-            basic: true,
-            host_list: res.result.map(report => report.host_id)
-          }).then(function(res) {
-            _this.reportList = _this.reportList.map(report => {
-              const temp = Object.assign({}, report);
-              const matchedItem = res.host_infos.filter(host => host.host_id === report.host_id)[0];
-              if (matchedItem) {
-                temp.host_name = matchedItem.host_name;
-              }
-              return temp;
-            });
-          }).catch(function(err) {
-            _this.$message.error(err.response.data.msg);
-          }).finally(() => {
-            _this.hostInfoLoading = false;
-          });
-        }
-      }).catch(function(err) {
-        _this.$message.error(err.response.data.msg);
-      }).finally(function() {
-        _this.reportListLoading = false;
-      });
+        })
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
+        })
+        .finally(function () {
+          _this.reportListLoading = false;
+        });
     },
     // 控制面板展开
     setExpandStatus(idx, isExpaned) {

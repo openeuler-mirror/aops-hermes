@@ -1,43 +1,26 @@
+<!-- eslint-disable vue/max-attributes-per-line -->
 <template>
-  <a-form
-    :form="form"
-    :label-col="{span: 5}"
-    :wrapper-col="{span: 12}"
-    :confirm-loading="isLoading"
-    @submit="handleSubmit"
-  >
+  <a-form :form="form" :label-col="{span: 5}" :wrapper-col="{span: 12}" :confirm-loading="isLoading"
+    @submit="handleSubmit">
     <a-form-item label="归属业务域">
-      <a-input
-        :disabled="true"
-        v-decorator="['domainName', {rules: [{required: true, message: '请填写归属业务域!'}]}]"
-      />
+      <a-input :disabled="true"
+        v-decorator="['domainName', {rules: [{required: true, message: '请填写归属业务域!'}]}]" />
     </a-form-item>
     <a-form-item label="选择要添加的主机"> </a-form-item>
     <div>
-      <a-transfer
-        :rowKey="host => host.host_id"
-        :data-source="hostListTransfer"
-        :target-keys="targetKeys"
-        :show-search="showSearch"
+      <a-transfer :rowKey="host => host.host_id" :data-source="hostListTransfer"
+        :target-keys="targetKeys" :show-search="showSearch"
         :filter-option="(inputValue, item) => item.host_name.indexOf(inputValue) !== -1"
-        :show-select-all="false"
-        @change="onChange"
-      >
-        <template
-          slot="children"
-          slot-scope="{
+        :show-select-all="false" @change="onChange">
+        <template slot="children" slot-scope="{
             props: {direction, filteredItems, selectedKeys, disabled: listDisabled},
             on: {itemSelectAll, itemSelect}
-          }"
-        >
-          <a-table
-            :row-key="rowKey"
+          }">
+          <a-table :row-key="rowKey"
             :row-selection="getRowSelection({disabled: listDisabled, selectedKeys, itemSelectAll, itemSelect})"
             :columns="direction === 'left' ? leftColumns : rightColumns"
-            :data-source="filteredItems"
-            size="small"
-            :style="{pointerEvents: listDisabled ? 'none' : null}"
-            :custom-row="
+            :data-source="filteredItems" size="small"
+            :style="{pointerEvents: listDisabled ? 'none' : null}" :custom-row="
               ({key, disabled: itemDisabled}) => ({
                 on: {
                   click: () => {
@@ -46,8 +29,7 @@
                   }
                 }
               })
-            "
-          />
+            " />
         </template>
       </a-transfer>
     </div>
@@ -99,7 +81,7 @@ export default {
   },
   computed: {
     hostListTransfer() {
-      return this.hostListAll.map(host => {
+      return this.hostListAll.map((host) => {
         const hostT = host;
         if (this.oldTargetKeys.indexOf(host.host_id) !== -1) {
           hostT.disabled = true;
@@ -118,36 +100,36 @@ export default {
           sorter: {}
         }
       })
-        .then(function(res) {
+        .then(function (res) {
           _this.hostListAll =
-            res.host_infos.map(host => {
+            res.data.host_infos.map((host) => {
               return {
                 ...host,
                 key: host.host_id
               };
             }) || [];
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.tableIsLoading = false;
         });
     },
     getHostInDomainList(domainName) {
       const _this = this;
       domainHostList(domainName)
-        .then(function(res) {
-          _this.targetKeys = res.map(host => host.hostId);
-          _this.oldTargetKeys = res.map(host => host.hostId);
+        .then(function (res) {
+          _this.targetKeys = res.data.map((host) => host.hostId);
+          _this.oldTargetKeys = res.data.map((host) => host.hostId);
         })
-        .catch(function(err) {
+        .catch(function (err) {
           // code == 400时，为域内未添加主机，不报错
-          if (err.response.data.code !== 400) {
-            _this.$message.error(err.response.data.msg || err.response.data.detail);
+          if (err.response.code !== '400') {
+            _this.$message.error(err.response.message || err.response.data.detail);
           }
         })
-        .finally(function() {
+        .finally(function () {
           _this.tableIsLoading = false;
         });
     },
@@ -158,7 +140,7 @@ export default {
         if (!err) {
           this.isLoading = true;
           const hostInfos = [];
-          const newTargetKeys = _this.targetKeys.filter(targetKey => _this.oldTargetKeys.indexOf(targetKey) === -1);
+          const newTargetKeys = _this.targetKeys.filter((targetKey) => _this.oldTargetKeys.indexOf(targetKey) === -1);
           if (newTargetKeys.length < 1) {
             _this.$notification.info({
               message: '没有添加新的主机',
@@ -166,8 +148,8 @@ export default {
             });
             return;
           }
-          newTargetKeys.forEach(function(hostId) {
-            const matchedHost = _this.hostListAll.filter(host => host.host_id === hostId)[0] || {};
+          newTargetKeys.forEach(function (hostId) {
+            const matchedHost = _this.hostListAll.filter((host) => host.host_id === hostId)[0] || {};
             hostInfos.push({
               // 只传hostId
               hostId: hostId,
@@ -176,16 +158,16 @@ export default {
             });
           });
           addHost(values.domainName, hostInfos)
-            .then(function(res) {
-              _this.$message.success(res.msg);
+            .then(function (res) {
+              _this.$message.success(res.message);
               _this.form.resetFields();
               _this.close();
               _this.$emit('addHostSuccess');
             })
-            .catch(function(err) {
-              _this.$message.error(err.response.data.message);
+            .catch(function (err) {
+              _this.$message.error(err.response.message);
             })
-            .finally(function() {
+            .finally(function () {
               _this.isLoading = false;
             });
         }
@@ -196,9 +178,9 @@ export default {
     },
     getRowSelection({disabled, selectedKeys, itemSelectAll, itemSelect}) {
       return {
-        getCheckboxProps: item => ({props: {disabled: disabled || item.disabled}}),
+        getCheckboxProps: (item) => ({props: {disabled: disabled || item.disabled}}),
         onSelectAll(selected, selectedRows) {
-          const treeSelectedKeys = selectedRows.filter(item => !item.disabled).map(row => row.host_id);
+          const treeSelectedKeys = selectedRows.filter((item) => !item.disabled).map((row) => row.host_id);
           const diffKeys = selected
             ? difference(treeSelectedKeys, selectedKeys)
             : difference(selectedKeys, treeSelectedKeys);
@@ -211,9 +193,9 @@ export default {
       };
     }
   },
-  mounted: function() {
+  mounted: function () {
     const that = this;
-    this.onload(function(params) {
+    this.onload(function (params) {
       // 抽屉展开，进行初始化
       that.domainName = params;
       that.targetKeys = [];

@@ -37,24 +37,24 @@ const user = {
   },
 
   actions: {
-    // 用本地账号登录
+    // 用本地账号登
     Login({commit}, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo)
           .then(response => {
-            if (response.code !== 200) {
-              reject(response.msg);
+            if (response.code !== '200') {
+              reject(response.message);
             }
             const result = response;
-            storage.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000);
+            storage.set(ACCESS_TOKEN, result.data.token, 7 * 24 * 60 * 60 * 1000);
             const in30Minutes = 1 / 48;
-            cookie.set('aops_token', result.token, {
+            cookie.set('aops_token', result.data.token, {
               expires: in30Minutes
             });
             cookie.set('user_name', userInfo.username, {
               expires: in30Minutes
             });
-            commit('SET_TOKEN', result.token);
+            commit('SET_TOKEN', result.data.token);
             commit('SET_NAME', {name: userInfo.username});
             resolve();
           })
@@ -66,16 +66,16 @@ const user = {
 
     // 用gitee账号登陆
     LoginInGitee({commit}, params) {
-      storage.set(ACCESS_TOKEN, params, 7 * 24 * 60 * 60 * 1000);
+      storage.set(ACCESS_TOKEN, params.data.token, 7 * 24 * 60 * 60 * 1000);
       const in30Minutes = 1 / 48;
-      cookie.set('aops_token', params.token, {
+      cookie.set('aops_token', params.data.token, {
         expires: in30Minutes
       });
-      cookie.set('user_name', params.username, {
+      cookie.set('user_name', params.data.username, {
         expires: in30Minutes
       });
-      commit('SET_TOKEN', params.token);
-      commit('SET_NAME', {name: params.username});
+      commit('SET_TOKEN', params.data.token);
+      commit('SET_NAME', {name: params.data.username});
     },
 
     // 获取用户信息

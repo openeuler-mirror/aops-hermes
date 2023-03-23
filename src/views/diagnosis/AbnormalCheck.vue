@@ -13,7 +13,8 @@
               <p class="theme-title">异常检测规则数量</p>
               <p class="theme-number">
                 <a-spin v-if="countIsLoading" />
-                <span v-else>{{ ruleCount.toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,') }}</span>
+                <span
+                  v-else>{{ ruleCount.toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,') }}</span>
               </p>
             </a-col>
           </a-row>
@@ -24,7 +25,8 @@
                   <div class="theme-button make-space">新建规则</div>
                 </template>
                 <template slot="drawerView">
-                  <add-abnormal-check-rule-drawer :addSuccess="handleAddRuleSuccess"></add-abnormal-check-rule-drawer>
+                  <add-abnormal-check-rule-drawer
+                    :addSuccess="handleAddRuleSuccess"></add-abnormal-check-rule-drawer>
                 </template>
               </drawer-view>
             </a-col>
@@ -41,15 +43,9 @@
           <h3>异常检测结果统计</h3>
           <div>
             <a-row type="flex" :gutter="12">
-              <a-table
-                class="check-result-table"
-                row-key="hostName"
-                :columns="columnsReulst"
-                :data-source="resultCountList.slice(0, 5)"
-                :bordered="false"
-                :pagination="false"
-                :loading="countTopLoading"
-              />
+              <a-table class="check-result-table" row-key="hostName" :columns="columnsReulst"
+                :data-source="resultCountList.slice(0, 5)" :bordered="false" :pagination="false"
+                :loading="countTopLoading" />
             </a-row>
           </div>
           <drawer-view title="异常检测结果统计">
@@ -69,45 +65,34 @@
         <a-col>
           <a-row type="flex" :gutter="10">
             <a-col>
-              <aops-range-picker
-                :show-time="{format: 'HH:mm:ss'}"
-                format="YYYY-MM-DD HH:mm:ss"
-                :placeholder="['开始时间', '结束时间']"
-                @ok="timeRangeOk"
-                @clear="timeRangeClear"
-                style="width: 380px"
-              />
+              <aops-range-picker :show-time="{format: 'HH:mm:ss'}" format="YYYY-MM-DD HH:mm:ss"
+                :placeholder="['开始时间', '结束时间']" @ok="timeRangeOk" @clear="timeRangeClear"
+                style="width: 380px" />
             </a-col>
           </a-row>
         </a-col>
         <a-col>
           <drawer-view title="新建故障诊断" :bodyStyle="{paddingBottom: '80px'}">
             <template slot="click">
-              <a-button type="primary" @click="setDiagnosisParams"> 故障诊断<a-icon type="plus" /> </a-button>
+              <a-button type="primary" @click="setDiagnosisParams"> 故障诊断<a-icon type="plus" />
+              </a-button>
             </template>
             <template slot="drawerView">
-              <add-fault-diagnosis
-                :saveSuccess="addFaultDiagnosisSuccess"
+              <add-fault-diagnosis :saveSuccess="addFaultDiagnosisSuccess"
                 :faultTreeList="treeDataAll"
-                :diagnosisParams="diagnosisParams"
-              ></add-fault-diagnosis>
+                :diagnosisParams="diagnosisParams"></add-fault-diagnosis>
             </template>
           </drawer-view>
         </a-col>
       </a-row>
-      <a-table
-        :columns="columns"
-        :data-source="resultList"
-        :pagination="pagination"
-        @change="handleTableChange"
-        :loading="tableIsLoading"
-        :expandIconAsCell="false"
-        :expandIconColumnIndex="4"
-      >
+      <a-table :columns="columns" :data-source="resultList" :pagination="pagination"
+        @change="handleTableChange" :loading="tableIsLoading" :expandIconAsCell="false"
+        :expandIconColumnIndex="4">
         <span slot="index" slot-scope="text, record, index">
           {{ index + firstIndex }}
         </span>
-        <div slot="expandedRowRender" slot-scope="result" style="width: 100%;margin: 1px;padding-left: 50px;">
+        <div slot="expandedRowRender" slot-scope="result"
+          style="width: 100%;margin: 1px;padding-left: 50px;">
           <check-result-expanded :dataSource="result.data_list"></check-result-expanded>
         </div>
         <span slot="desc" slot-scope="text">
@@ -138,7 +123,7 @@ import {dateFormat} from '@/views/utils/Utils';
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  showTotal: total => `总计 ${total} 项`,
+  showTotal: (total) => `总计 ${total} 项`,
   showSizeChanger: true,
   showQuickJumper: true
 };
@@ -155,7 +140,7 @@ export default {
     CutText,
     AopsRangePicker
   },
-  mounted: function() {
+  mounted: function () {
     this.getRuleCount();
     this.getResultCountTopTen();
     this.getResultList({});
@@ -180,7 +165,7 @@ export default {
           dataIndex: 'hostName',
           title: '主机名称',
           filteredValue: filters.hostName || null,
-          filters: this.hostAllList.map(host => {
+          filters: this.hostAllList.map((host) => {
             return {
               text: host.host_name,
               value: host.host_id
@@ -195,7 +180,7 @@ export default {
           dataIndex: 'check_item',
           title: '检测项',
           filteredValue: filters.check_item || null,
-          filters: this.ruleAllList.map(rule => {
+          filters: this.ruleAllList.map((rule) => {
             return {
               text: rule.check_item,
               value: rule.check_item
@@ -250,7 +235,7 @@ export default {
         {
           dataIndex: 'count',
           title: '异常数',
-          customRender: count => <span class="result-count">{count}</span>
+          customRender: (count) => <span class="result-count">{count}</span>
         }
       ];
     },
@@ -288,13 +273,13 @@ export default {
       getDiagTree({
         treeList: []
       })
-        .then(function(res) {
-          _this.treeDataAll = [{}].concat(res.trees);
+        .then(function (res) {
+          _this.treeDataAll = [{}].concat(res.data.trees);
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {});
+        .finally(function () {});
     },
     filterByTime() {
       this.pagination = defaultPagination;
@@ -318,8 +303,8 @@ export default {
     },
     getFilterListData() {
       const _this = this;
-      getRuleAll().then(function(res) {
-        _this.ruleAllList = res.check_items.map(function(item) {
+      getRuleAll().then(function (res) {
+        _this.ruleAllList = res.data.check_items.map(function (item) {
           return {
             check_item: item.check_item
           };
@@ -331,8 +316,8 @@ export default {
           filters: {},
           sorter: {}
         }
-      }).then(function(res) {
-        _this.hostAllList = res.host_infos.map(function(host) {
+      }).then(function (res) {
+        _this.hostAllList = res.data.host_infos.map(function (host) {
           return {
             host_name: host.host_name,
             host_id: host.host_id
@@ -344,11 +329,11 @@ export default {
       var that = this;
       this.countIsLoading = true;
       getRuleCount()
-        .then(function(data) {
-          that.ruleCount = data.rule_count;
+        .then(function (res) {
+          that.ruleCount = res.data.rule_count;
         })
-        .catch(function(err) {
-          that.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          that.$message.error(err.response.message);
         })
         .finally(() => {
           that.countIsLoading = false;
@@ -358,11 +343,11 @@ export default {
       const that = this;
       this.countTopLoading = true;
       getResultCountTopTen()
-        .then(function(data) {
-          that.resultCountList = data.results;
+        .then(function (res) {
+          that.resultCountList = res.data.results;
         })
-        .catch(function(err) {
-          that.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          that.$message.error(err.response.message);
         })
         .finally(() => {
           that.countTopLoading = false;
@@ -397,24 +382,24 @@ export default {
         checkItems: filters.check_item || [],
         timeRange:
           filters.timeRange &&
-          filters.timeRange.map(momentTime =>
+          filters.timeRange.map((momentTime) =>
             momentTime ? that.getUnixTime(momentTime.format('YYYY-MM-DD HH:mm:ss')) : undefined
           )
       })
-        .then(function(data) {
-          that.resultList = data.check_result
-            ? data.check_result.map(result => {
-              return {
-                ...result,
-                key: `${result.host_id}+${result.check_item}+${result.start}+${result.end}`
-              };
-            })
+        .then(function (res) {
+          that.resultList = res.data.check_result
+            ? res.data.check_result.map((result) => {
+                return {
+                  ...result,
+                  key: `${result.host_id}+${result.check_item}+${result.start}+${result.end}`
+                };
+              })
             : [];
           that.pagination = {...that.pagination};
-          that.pagination.total = data.total_count;
+          that.pagination.total = res.data.total_count;
         })
-        .catch(function(err) {
-          that.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          that.$message.error(err.response.message);
         })
         .finally(() => {
           this.tableIsLoading = false;
@@ -439,7 +424,7 @@ export default {
       let startTime = this.selectedRowsAll[0].start;
       let endTime = this.selectedRowsAll[0].end;
       const hostList = [this.selectedRowsAll[0].host_id];
-      this.selectedRowsAll.forEach(rows => {
+      this.selectedRowsAll.forEach((rows) => {
         if (rows.start < startTime) {
           startTime = rows.start;
         }

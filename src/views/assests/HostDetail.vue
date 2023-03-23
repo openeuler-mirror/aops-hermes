@@ -5,10 +5,9 @@
         <a-tab-pane key="1" tab="概览">
           <a-card class="aops-theme">
             <HostBasicInfo
-              :basicHostInfo="basicHostInfo"
-              :basicInfo="basicInfo"
-              :isLoading="basicHostInfoIsLoading || basicInfoIsLoading"
-            >
+            :basicHostInfo="basicHostInfo"
+            :basicInfo="basicInfo"
+              :isLoading="basicHostInfoIsLoading || basicInfoIsLoading">
             </HostBasicInfo>
           </a-card>
         </a-tab-pane>
@@ -19,14 +18,14 @@
         </a-tab-pane>
       </a-tabs>
     </a-card>
-    <HostChartInfo :queryIp="basicHostInfo.public_ip" v-if="basicHostInfo.public_ip"/>
+    <HostChartInfo :queryIp="basicHostInfo.host_ip" v-if="basicHostInfo.host_ip" />
   </page-header-wrapper>
 </template>
 
 <script>
 import {PageHeaderWrapper} from '@ant-design-vue/pro-layout';
 import HostPluginInfo from './components/HostPluginInfo.vue';
-import HostChartInfo from './components/HostChartInfo'
+import HostChartInfo from './components/HostChartInfo';
 import HostBasicInfo from '@/views/assests/components/HostBasicInfo.vue';
 import {getHostDetail} from '@/api/assest';
 
@@ -53,23 +52,25 @@ export default {
       const _this = This;
       This.basicHostInfoIsLoading = true;
       getHostDetail(This.hostId, true)
-        .then(res => {
-          _this.basicHostInfo = res.host_infos[0];
+        .then(function (res) {
+          _this.basicHostInfo = res.data.host_infos[0];
+          console.log(_this.basicHostInfo)
           _this.scene = This.basicHostInfo.scene;
         })
-        .catch(err => {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
         .finally(() => {
           _this.basicHostInfoIsLoading = false;
         });
       This.basicInfoIsLoading = true;
       getHostDetail(This.hostId, false)
-        .then(res => {
-          _this.basicInfo = res.host_infos[0];
+        .then(function (res) {
+          _this.basicInfo = res.data.host_infos[0];
         })
-        .catch(err => {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          console.log(err.response)
+          _this.$message.error(err.response.message);
         })
         .finally(() => {
           _this.basicInfoIsLoading = false;
@@ -79,7 +80,7 @@ export default {
       this.$options.methods.fetchHostInfo(this);
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.$options.methods.fetchHostInfo(this);
   }
 };

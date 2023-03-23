@@ -11,14 +11,17 @@
             <a-alert type="info" show-icon>
               <div slot="message">
                 <span>{{ `已选择` + selectedRowKeys.length + `项` }}</span>
-                <a v-if="selectedRowKeys.length > 0" @click="deleteHostBash(selectedRowKeys, selectedRows)">批量删除</a>
+                <a
+                v-if="selectedRowKeys.length > 0"
+                  @click="deleteHostBash(selectedRowKeys, selectedRows)">批量删除</a>
               </div>
             </a-alert>
           </a-col>
           <a-col>
             <a-row type="flex" :gutter="16">
               <a-col>
-                <a-button type="primary" @click="showAddHostDrawer"> <a-icon type="plus" />添加主机 </a-button>
+                <a-button type="primary" @click="showAddHostDrawer"> <a-icon type="plus" />添加主机
+                </a-button>
               </a-col>
               <a-col>
                 <a-button @click="syncConf(selectedRowKeys, selectedRows)" disabled>
@@ -51,13 +54,12 @@
           </a-col>
         </a-row>
         <a-table
-          :rowKey="rowKey"
-          :columns="columns"
-          :data-source="tableData"
+        :rowKey="rowKey"
+        :columns="columns"
+        :data-source="tableData"
           :row-selection="rowSelection"
           :loading="tableIsLoading"
-          :pagination="false"
-        >
+          :pagination="false">
           <!------------暂不做同步---------------
           <span slot="filterIcon">
             同步状态
@@ -70,25 +72,23 @@
             </div>
             <div v-else>
               <a-icon
-                v-if="statusInfo.syncStatus === statusEnum.sync"
-                type="check-circle"
+              v-if="statusInfo.syncStatus === statusEnum.sync"
+              type="check-circle"
                 theme="twoTone"
-                two-tone-color="#52c41a"
-              />
+                two-tone-color="#52c41a" />
               <a-icon
-                v-if="statusInfo.syncStatus === statusEnum.notSync"
-                type="close-circle"
+              v-if="statusInfo.syncStatus === statusEnum.notSync"
+              type="close-circle"
                 theme="twoTone"
-                two-tone-color="#f00"
-              />
+                two-tone-color="#f00" />
               <a-icon
-                v-if="statusInfo.syncStatus === statusEnum.notFound"
-                type="question-circle"
+              v-if="statusInfo.syncStatus === statusEnum.notFound"
+              type="question-circle"
                 theme="twoTone"
-                two-tone-color="#ccc"
-              />
+                two-tone-color="#ccc" />
               {{ statusTitleEnum[statusInfo.syncStatus] }}
-              <span v-if="statusInfo.syncStatus === statusEnum.notSync">{{ `${statusInfo.count}条` }}</span>
+              <span
+                v-if="statusInfo.syncStatus === statusEnum.notSync">{{ `${statusInfo.count}条` }}</span>
             </div>
           </template>
           <span slot="action" slot-scope="record">
@@ -112,11 +112,10 @@
             <a-divider type="vertical" />
             ------------------------------------->
             <a-popconfirm
-              title="你确定要从当前业务域中删除这台主机吗?"
-              ok-text="确认"
-              cancel-text="取消"
-              @confirm="deleteDomainHost(record)"
-            >
+            title="你确定要从当前业务域中删除这台主机吗?"
+            ok-text="确认"
+            cancel-text="取消"
+              @confirm="deleteDomainHost(record)">
               <a>删除</a>
             </a-popconfirm>
           </span>
@@ -132,18 +131,21 @@
     <!--主机当前配置抽屉-->
     <drawer-view ref="queryRealConfsDrawer" :bodyStyle="{paddingBottom: '80px'}">
       <template slot="drawerView">
-        <query-real-confs-drawer :confsOfDomain="confsOfDomain" :confsOfDomainLoading="confsOfDomainLoading" />
+        <query-real-confs-drawer
+        :confsOfDomain="confsOfDomain"
+          :confsOfDomainLoading="confsOfDomainLoading" />
       </template>
     </drawer-view>
     <!--状态详情抽屉-->
     <drawer-view
-      title="状态详情"
-      ref="domainStatusDrawer"
-      :hasButtonOnBottom="false"
-      :bodyStyle="{paddingBottom: '80px'}"
-    >
+    title="状态详情"
+    ref="domainStatusDrawer"
+    :hasButtonOnBottom="false"
+      :bodyStyle="{paddingBottom: '80px'}">
       <template slot="drawerView">
-        <get-domain-status-drawer :tableData="tableData" :domainStatusIsLoading="domainStatusIsLoading" />
+        <get-domain-status-drawer
+        :tableData="tableData"
+          :domainStatusIsLoading="domainStatusIsLoading" />
       </template>
     </drawer-view>
   </my-page-header-wrapper>
@@ -234,9 +236,9 @@ export default {
       };
     },
     tableData() {
-      return this.hostList.map(host => {
+      return this.hostList.map((host) => {
         const hostTemp = host;
-        const matchedStatusHost = this.statusData.filter(item => item.hostId === hostTemp.hostId)[0] || {};
+        const matchedStatusHost = this.statusData.filter((item) => item.hostId === hostTemp.hostId)[0] || {};
         hostTemp.syncStatusList = matchedStatusHost.syncStatus || [];
         hostTemp.syncStatusInfo = getStatusInfoFromAllConfs(hostTemp.syncStatusList);
         return hostTemp;
@@ -251,22 +253,22 @@ export default {
     // 获取业务域列表数据
     getHostList(domainName) {
       const _this = this;
-      return new Promise(function(resolve, reject) {
+      return new Promise(function (resolve, reject) {
         _this.tableIsLoading = true;
         domainHostList(domainName)
-          .then(function(res) {
-            _this.hostList = res;
+          .then(function (res) {
+            _this.hostList = res.data;
             resolve(res);
           })
-          .catch(function(err) {
+          .catch(function (err) {
             if (err.response.data.code !== 400) {
-              _this.$message.error(err.response.data.msg || err.response.data.detail);
+              _this.$message.error(err.response.message || err.response.data.detail);
             } else {
               _this.hostList = [];
             }
             reject(err);
           })
-          .finally(function() {
+          .finally(function () {
             _this.tableIsLoading = false;
           });
       });
@@ -278,15 +280,15 @@ export default {
       domainStatus({
         domainName: _this.domainName
       })
-        .then(function(res) {
-          _this.statusData = res.hostStatus || [];
+        .then(function (res) {
+          _this.statusData = res.data.hostStatus || [];
         })
-        .catch(function(err) {
-          if (err.response.data.code !== 404) {
-            _this.$message.error(err.response.data.msg || err.response.data.detail);
+        .catch(function (err) {
+          if (err.response.code !== '404') {
+            _this.$message.error(err.response.message || err.response.data.detail);
           }
         })
-        .finally(function() {
+        .finally(function () {
           _this.domainStatusIsLoading = false;
         });
     },
@@ -307,7 +309,7 @@ export default {
           </div>
         ),
         content: () =>
-          selectedRows.map(row => (
+          selectedRows.map((row) => (
             <p>
               <span>{row.ip}</span>
             </p>
@@ -315,7 +317,7 @@ export default {
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '删除',
-        onOk: function() {
+        onOk: function () {
           return _this.handleDelete(selectedRows, true);
         },
         onCancel() {}
@@ -328,8 +330,8 @@ export default {
           domainName: _this.domainName,
           hostInfos: hostInfos
         })
-          .then(res => {
-            _this.$message.success(res.msg);
+          .then((res) => {
+            _this.$message.success(res.message);
             _this.getHostAndStatus();
             if (isBash) {
               _this.selectedRowKeys = [];
@@ -337,8 +339,8 @@ export default {
             }
             resolve();
           })
-          .catch(err => {
-            _this.$message.error(err.response.data.nsg);
+          .catch((err) => {
+            _this.$message.error(err.response.nsg);
             reject(err);
           });
       });
@@ -355,7 +357,7 @@ export default {
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '继续同步',
-        onOk: function() {
+        onOk: function () {
           return _this.handleSyncConf(selectedRows, true);
         },
         onCancel() {}
@@ -368,7 +370,7 @@ export default {
     },
     handleSyncConf(selectedRows, isBash) {
       const hostIds = [];
-      selectedRows.forEach(function(item) {
+      selectedRows.forEach(function (item) {
         hostIds.push({hostId: item.hostId});
       });
       const _this = this;
@@ -377,8 +379,8 @@ export default {
           domainName: _this.domainName,
           hostIds: hostIds
         })
-          .then(res => {
-            _this.$message.success(res.msg);
+          .then((res) => {
+            _this.$message.success(res.message);
             _this.getHostAndStatus();
             if (isBash) {
               _this.selectedRowKeys = [];
@@ -386,8 +388,8 @@ export default {
             }
             resolve();
           })
-          .catch(err => {
-            _this.$message.error(err.response.data.msg);
+          .catch((err) => {
+            _this.$message.error(err.response.message);
             reject(err);
           });
       });
@@ -413,13 +415,13 @@ export default {
       getManagementConf({
         domainName
       })
-        .then(function(res) {
-          _this.confsOfDomain = res.confFiles || [];
+        .then(function (res) {
+          _this.confsOfDomain = res.data.confFiles || [];
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.confsOfDomainLoading = false;
         });
     },
@@ -429,25 +431,25 @@ export default {
     getHostAndStatus() {
       const _this = this;
       this.getHostList(this.domainName)
-        .then(function() {
+        .then(function () {
           _this.getDomainStatus();
           // 启动循环更新Status
           clearInterval(_this.setTimeoutKey_statusInterval);
-          _this.setTimeoutKey_statusInterval = setInterval(function() {
+          _this.setTimeoutKey_statusInterval = setInterval(function () {
             _this.getDomainStatus();
           }, defaultSettings.domainStatusRefreshInterval);
         })
-        .catch(function() {
+        .catch(function () {
           // 获取host出错（为空或报错，则清除轮训）
           clearInterval(_this.setTimeoutKey_statusInterval);
         });
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.getHostAndStatus();
     this.getConfsOfDomain(this.domainName);
   },
-  destroyed: function() {
+  destroyed: function () {
     clearInterval(this.setTimeoutKey_statusInterval);
   }
 };

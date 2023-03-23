@@ -59,7 +59,7 @@ export const generatorDynamicRouter = token => {
     loginService
       .getCurrentUserNav(token)
       .then(res => {
-        const {result} = res;
+        const {result} = res.data;
         const menuNav = [];
         const childrenNav = [];
         //      后端数据, 根级树数组,  根级 PID

@@ -3,13 +3,17 @@
     <slot name="button">
       <a-button type="primary">解密密钥</a-button>
     </slot>
-    <a-modal title="输入解密密钥" :visible="visible" :confirm-loading="isLoading" @ok="handleOk" @cancel="handleCancel">
+    <a-modal
+    title="输入解密密钥"
+    :visible="visible"
+    :confirm-loading="isLoading"
+     @ok="handleOk"
+      @cancel="handleCancel">
       <a-form :form="form" :label-col="{span: 5}" :wrapper-col="{span: 16}">
         <a-form-item label="解密密钥">
           <a-input-password
-            placeholder="请输入密钥"
-            v-decorator="['key', {rules: [{required: true, message: '请输入密钥'}, {validator: passwordCheck}]}]"
-          >
+          placeholder="请输入密钥"
+            v-decorator="['key', {rules: [{required: true, message: '请输入密钥'}, {validator: passwordCheck}]}]">
           </a-input-password>
         </a-form-item>
       </a-form>
@@ -49,15 +53,15 @@ export default {
           const _this = this;
           this.isLoading = true;
           certificateKey(values)
-            .then(function(res) {
-              _this.$message.success(res.msg);
+            .then(function (res) {
+              _this.$message.success(res.message);
               _this.form.resetFields();
               _this.$emit('close');
             })
-            .catch(function(err) {
-              _this.$message.error(err.response.data.msg);
+            .catch(function (err) {
+              _this.$message.error(err.response.message);
             })
-            .finally(function() {
+            .finally(function () {
               _this.isLoading = false;
             });
         }

@@ -168,7 +168,7 @@ export default {
                 }, 1000)
               })
               .catch(err => {
-                if (err.response.data.code === 1102) {
+                if (err.response.code === '1102') {
                   // 绑定重复账号，给予提示
                   this.$message.error('注册账号已存在!')
                 } else {
