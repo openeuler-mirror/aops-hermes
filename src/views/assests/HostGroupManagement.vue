@@ -44,9 +44,9 @@
           </a-col>
         </a-row>
         <a-table
-        :rowKey="rowKey"
-        :columns="columns"
-        :data-source="tableData"
+          :rowKey="rowKey"
+          :columns="columns"
+          :data-source="tableData"
           :pagination="pagination"
           :row-selection="rowSelection"
           @change="handleTableChange"
@@ -64,15 +64,15 @@
           </span>
         </a-table>
         <a-drawer
-        title="拥有主机"
-        :width="720"
-        placement="right"
-        :visible="hostListVisible"
+          title="拥有主机"
+          :width="720"
+          placement="right"
+          :visible="hostListVisible"
           :body-style="{paddingBottom: '80px'}"
           @close="closeHostList">
           <a-table
-          :rowKey="hostRowKey"
-          :columns="hostListColumns"
+            :rowKey="hostRowKey"
+            :columns="hostListColumns"
             :data-source="this.hostListDataStore[this.hostGroupName] || []"
             :loading="hostListIsLoading ? true : false"
             :pagination="false">
@@ -257,7 +257,7 @@ export default {
           };
         })
         .catch(function (err) {
-          _this.$message.error(err.data.msg);
+          _this.$message.error(err.response.message);
         })
         .finally(function () {
           _this.tableIsLoading = false;

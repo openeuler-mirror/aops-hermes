@@ -146,7 +146,11 @@ export default {
           _this.getMetricData();
         })
         .catch((err) => {
-          _this.$message.error(err.response.message);
+          if (err.response.code === '1108') {
+            _this.$message.info('暂无指标数据!')
+          } else {
+            _this.$message.error(err.response.message);
+          }
         })
         .finally(() => {
           _this.chartLoading = false;

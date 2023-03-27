@@ -104,6 +104,10 @@
         {{ last_scan }}
         <!-- {{ record.last_scan === null ? '未扫描' : record.last_scan }} -->
       </div>
+      <div slot="hotpatch" slot-scope="hotpatch">
+        {{ hotpatch ? '是' : '否' }}
+        <!-- {{ record.last_scan === null ? '未扫描' : record.last_scan }} -->
+      </div>
     </a-table>
   </div>
 </template>
@@ -242,6 +246,12 @@ export default {
           filters: this.standalone ? this.repoList : this.repoFilterList
         },
         {
+          dataIndex: 'hotpatch',
+          key: 'hotpatch',
+          title: '热补丁支持',
+          scopedSlots: {customRender: 'hotpatch'}
+        },
+        {
           dataIndex: 'last_scan',
           key: 'last_scan',
           title: '上次扫描',
@@ -272,10 +282,6 @@ export default {
     }
   },
   watch: {
-    $route() {
-      this.getHostList();
-      this.getHostGroup();
-    },
     paginationTotal() {
       this.pagination.total = this.paginationTotal;
     }
@@ -323,6 +329,7 @@ export default {
         const _this = this;
         getCveExport(_this.selectedRowKeys)
           .then(function (res) {
+            console.log(res)
             downloadBlobFile(res.data, res.fileName);
             // _this.scanStatusData = res.result || {};
           })
@@ -672,7 +679,7 @@ export default {
     this.getHostGroup();
     if (this.standalone) {
       // 主机列表页面中要自行获取全量主机和扫描状态
-      this.getScanStatusAll([]);
+      // this.getScanStatusAll([]);
       this.getHostListAll();
     } else {
       // 主机详情页面中要自行获取repo列表

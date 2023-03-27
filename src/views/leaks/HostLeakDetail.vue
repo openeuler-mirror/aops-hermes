@@ -125,7 +125,8 @@ export default {
       const _this = this;
       getCveExport([_this.hostId])
         .then(function (res) {
-          downloadBlobFile(res.data.data, res.datafileName);
+          console.log(res)
+          downloadBlobFile(res.data, res.fileName);
         })
         .catch(function (err) {
           _this.$message.error(err.response.message);

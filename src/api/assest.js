@@ -22,9 +22,9 @@ const api = {
   metricSet: '/manage/agent/metric/set',
   getHostDetail: '/manage/host/info/query',
 
-  getHostMetrics: '/check/host/metric/names',
-  getMetricDetails: '/check/host/metric/list',
-  getMetricData: '/check/host/metric/data'
+  getHostMetrics: '/manage/host/metric/names',
+  getMetricDetails: '/manage/host/metric/list',
+  getMetricData: '/manage/host/metric/data'
 };
 
 export default api;

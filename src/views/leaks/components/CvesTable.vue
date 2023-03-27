@@ -66,8 +66,8 @@
       </a-col>
     </a-row>
     <a-table
-    rowKey="cve_id"
-    :columns="standalone ? tableColumnsStandalone : tableColumns"
+      rowKey="cve_id"
+      :columns="standalone ? tableColumnsStandalone : tableColumns"
       :data-source="standalone ? tableData : inputList"
       :pagination="pagination"
       :rowSelection="rowSelection"
@@ -82,6 +82,9 @@
       <div slot="expandedRowRender" slot-scope="record" style="margin: 0">
         <p>Description:</p>
         <p>{{ record.description }}</p>
+      </div>
+      <div slot="hotpatch" slot-scope="hotpatch" style="margin: 0">
+        <p>{{ hotpatch ? '是' : '否' }}</p>
       </div>
     </a-table>
   </div>
@@ -171,6 +174,7 @@ export default {
         {
           dataIndex: 'publish_time',
           key: 'publish_time',
+          customRender: (publishTime) => publishTime === '' ? '—' : publishTime,
           title: '发布时间',
           sorter: true
         },
@@ -178,7 +182,7 @@ export default {
           dataIndex: 'severity',
           key: 'severity',
           title: '严重性',
-          customRender: (severity) => severityMap[severity],
+          customRender: (severity) => severityMap[severity] || '—',
           filteredValue: filters.severity || null,
           filters: [
             {
@@ -206,6 +210,7 @@ export default {
         {
           dataIndex: 'cvss_score',
           key: 'cvss_score',
+          customRender: (cvssScore) => cvssScore === '' ? '—' : cvssScore,
           title: 'CVSS 分数',
           sorter: true
         },
@@ -278,6 +283,12 @@ export default {
           sorter: true
         },
         {
+          dataIndex: 'hotpatch',
+          key: 'hotpatch',
+          title: '热补丁支持',
+          scopedSlots: {customRender: 'hotpatch'}
+        },
+        {
           dataIndex: 'status',
           key: 'status',
           title: '状态',
@@ -295,10 +306,6 @@ export default {
     }
   },
   watch: {
-    $route() {
-      this.getCves();
-      this.getCvesAll();
-    },
     paginationTotal() {
       this.pagination.total = this.paginationTotal;
     }

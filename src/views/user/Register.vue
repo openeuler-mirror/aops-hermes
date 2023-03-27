@@ -45,7 +45,7 @@
       <a-form-item>
         <a-input-password
           size="large"
-          placeholder="确认新密码和旧密码保持一致"
+          placeholder="确认前后两次输入的密码保持一致"
           v-decorator="[
             'confirm',
             {

@@ -68,6 +68,12 @@
                 {{ packages }}
               </span>
             </div>
+            <div slot="hotpatch" slot-scope="hotpatch">
+              <a-spin v-if="actionsIsLoading" />
+              <span v-else>
+                {{ hotpatch ? '是' : '否' }}
+              </span>
+            </div>
             <a-table
             rowKey="host_id"
             slot="expandedRowRender"
@@ -282,6 +288,13 @@ export default {
           width: 120,
           title: <span>重启后生效</span>,
           customRender: (reboot) => restartTypesEnum[reboot]
+        },
+        {
+          dataIndex: 'hotpatch',
+          key: 'hotpatch',
+          title: '热补丁支持',
+          width: 100,
+          scopedSlots: {customRender: 'hotpatch'}
         }
       ];
     },
@@ -553,6 +566,7 @@ export default {
       this.cveList.forEach((cveInfo) => {
         const hostListUnderCve = cveMap[cveInfo.cve_id];
         cveInfo.hostsList = hostListUnderCve || [];
+        console.log(cveInfo)
 
         if (hostListUnderCve && hostListUnderCve.length > 0) {
           this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve.map((host) => host.host_id);
@@ -564,6 +578,7 @@ export default {
       });
       // forced refresh
       this.cveList = Object.assign([], this.cveList);
+      console.log(this.cveList)
     },
     addActionsToCVEData(cveMap) {
       const tempArr = this.cveList.map((cveInfo) => {

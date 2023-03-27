@@ -54,9 +54,9 @@
           </a-col>
         </a-row>
         <a-table
-        :rowKey="rowKey"
-        :columns="columns"
-        :data-source="tableData"
+          :rowKey="rowKey"
+          :columns="columns"
+          :data-source="tableData"
           :row-selection="rowSelection"
           :loading="tableIsLoading"
           :pagination="false">
@@ -241,6 +241,7 @@ export default {
         const matchedStatusHost = this.statusData.filter((item) => item.hostId === hostTemp.hostId)[0] || {};
         hostTemp.syncStatusList = matchedStatusHost.syncStatus || [];
         hostTemp.syncStatusInfo = getStatusInfoFromAllConfs(hostTemp.syncStatusList);
+        console.log(hostTemp)
         return hostTemp;
       });
     }
@@ -257,7 +258,7 @@ export default {
         _this.tableIsLoading = true;
         domainHostList(domainName)
           .then(function (res) {
-            _this.hostList = res.data;
+            _this.hostList = res;
             resolve(res);
           })
           .catch(function (err) {
@@ -281,7 +282,7 @@ export default {
         domainName: _this.domainName
       })
         .then(function (res) {
-          _this.statusData = res.data.hostStatus || [];
+          _this.statusData = res.hostStatus || [];
         })
         .catch(function (err) {
           if (err.response.code !== '404') {
@@ -416,7 +417,7 @@ export default {
         domainName
       })
         .then(function (res) {
-          _this.confsOfDomain = res.data.confFiles || [];
+          _this.confsOfDomain = res.confFiles || [];
         })
         .catch(function (err) {
           _this.$message.error(err.response.message);

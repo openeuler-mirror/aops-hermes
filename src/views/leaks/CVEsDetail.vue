@@ -49,9 +49,6 @@
           </a-row>
           <a-row type="flex">
             <a-col :span="8">
-              {{ `修复软件包： ${detail.package || ''}` }}
-            </a-col>
-            <a-col :span="8">
               关联CVE：
               <span v-if="detail.related_cve && detail.related_cve.length">
                 <a @click="relatedCveDrawerOpen">
@@ -80,6 +77,11 @@
           </a-row>
           <h4>cve描述：</h4>
           <p class="detail-description">{{ detail.description }}</p>
+          <h4>影响产品：</h4>
+          <div style="width: 600px;">
+            <a-table :columns="columns" :data-source="productData" :pagination="false">
+            </a-table>
+          </div>
         </div>
       </a-spin>
     </a-card>
@@ -89,8 +91,8 @@
       :cveList="[detail]"
       :inputList="hostList"
       :inputLoading="hostIsLoading"
-        @getTableData="getHostData"
-        :paginationTotal="paginationTotal" />
+      @getTableData="getHostData"
+      :paginationTotal="paginationTotal" />
     </a-card>
   </page-header-wrapper>
 </template>
@@ -106,6 +108,19 @@ import HostTable from './components/HostTable';
 
 import {statusList, statusMap, severityMap, severityColorMap} from './config';
 import {getCveInfo, getHostUnderCVE, setCveStatus} from '@/api/leaks';
+
+const columns = [
+  {
+    dataIndex: 'os_version',
+    key: 'os_version',
+    title: '产品'
+  },
+  {
+    dataIndex: 'package',
+    key: 'package',
+    title: '软件包'
+  }
+];
 
 export default {
   name: 'CVEsDetail',
@@ -137,6 +152,8 @@ export default {
   },
   data() {
     return {
+      columns,
+      productData: [],
       cve_id: this.$route.params.cve_id,
       detail: {},
       infoLoading: false,
@@ -165,6 +182,7 @@ export default {
       })
         .then(function (res) {
           _this.detail = res.data.result || {};
+          _this.productData = res.data.result.package;
         })
         .finally(function () {
           _this.infoLoading = false;
@@ -182,6 +200,7 @@ export default {
       })
         .then(function (res) {
           _this.hostList = res.data.result || [];
+          console.log(_this.hostList)
           _this.paginationTotal = res.data.total_count || (res.data.total_count === 0 ? 0 : undefined);
         })
         .catch(function (err) {

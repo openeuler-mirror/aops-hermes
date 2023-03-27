@@ -184,7 +184,7 @@ export default {
       this.hostListLoading = true;
       domainHostList(this.domainName)
         .then(function (res) {
-          _this.hostList = res.data;
+          _this.hostList = res;
         })
         .catch(function (err) {
           if (err.response.code !== '400') {

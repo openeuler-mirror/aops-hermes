@@ -9,14 +9,14 @@
               <a-button> <a-icon type="upload" /> 选择文件 </a-button>
             </div>
             <div style="margin-left: 35px;margin-top: 3px;font-size:15px;">
-              <p>支持类型: xls、xlsx、csv</p>
+              <span>支持类型: xls、xlsx、csv，</span>
+              <span class="upload_head_download" @click="goDownLoad">下载模版</span>
               <!-- <p>文件需小于20M、压缩包内文件数小于100</p> -->
             </div>
           </div>
         </a-upload>
         <div style="display: flex;margin-top: 15px;">
             <div style="flex">
-              <a-button @click="goDownLoad"> <a-icon type="download" /> 下载模版 </a-button>
               <a-button style="margin-left: 20px" @click="handleAdd" v-if="tableVis"> 新增 </a-button>
             </div>
         </div>
@@ -112,7 +112,7 @@
           :loading="uploading"
           style="margin-top: 16px;width: 111px;"
           @click="goUpload">
-          {{ uploading ? '上传中' : '上传文件' }}
+          {{ uploading ? '提交中' : '提交' }}
         </a-button>
       </div>
     </a-modal>
@@ -162,7 +162,7 @@ export default {
           dataIndex: 'host_ip',
           width: 150,
           key: 'host_ip',
-          title: '主机ip',
+          title: '主机IP',
           scopedSlots: {customRender: 'host_ip'}
         },
         {
@@ -208,7 +208,7 @@ export default {
           scopedSlots: {customRender: 'management'}
         },
         {
-          title: 'operation',
+          title: '操作',
           width: 100,
           dataIndex: 'operation',
           scopedSlots: { customRender: 'operation' }
@@ -263,6 +263,8 @@ export default {
       downLoadtemplate()
         .then(function (res) {
           // download files
+          console.log(res)
+          console.log(res.data)
           downloadBlobFile(res.data, res.fileName);
           // _this.$message.success(res.message);
         })
@@ -438,6 +440,16 @@ export default {
   }
   /deep/ .ant-form-item-control {
     line-height: 16px;
+  }
+}
+
+.upload_head {
+  .upload_head_download {
+    margin-top: 3px;
+    font-size:15px;
+    cursor:pointer;
+    color: blue;
+    text-decoration:underline!important;
   }
 }
 

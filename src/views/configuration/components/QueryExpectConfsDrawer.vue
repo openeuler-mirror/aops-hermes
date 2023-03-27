@@ -68,7 +68,7 @@ export default {
         hostIds: [{hostId: host.hostId}]
       })
         .then(res => {
-          _this.collapseData = res.data.result.expectedConfsData[0].confBaseInfos;
+          _this.collapseData = res.result.expectedConfsData[0].confBaseInfos;
           _this.collapseIsLoading = false;
         })
         .catch(err => {
