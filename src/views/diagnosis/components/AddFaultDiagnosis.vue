@@ -3,38 +3,26 @@
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item label="起始日期">
-          <a-date-picker
-            v-decorator="[
+          <a-date-picker v-decorator="[
               'startTime',
               {
                 rules: [{required: true, message: '请选择起始日期'}, {validator: checkStartTime}]
               }
-            ]"
-            style="width: 100%"
-            :get-popup-container="trigger => trigger.parentNode"
-            show-time
-            format="YYYY-MM-DD HH:mm:ss"
-            :disabledDate="disabledDate"
-          />
+            ]" style="width: 100%" :get-popup-container="trigger => trigger.parentNode" show-time
+            format="YYYY-MM-DD HH:mm:ss" :disabledDate="disabledDate" />
         </a-form-item>
       </a-col>
     </a-row>
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item label="结束日期">
-          <a-date-picker
-            v-decorator="[
+          <a-date-picker v-decorator="[
               'endTime',
               {
                 rules: [{required: true, message: '请选择结束日期'}, {validator: checkEndTime}]
               }
-            ]"
-            style="width: 100%"
-            :get-popup-container="trigger => trigger.parentNode"
-            show-time
-            format="YYYY-MM-DD HH:mm:ss"
-            :disabledDate="disabledDate"
-          />
+            ]" style="width: 100%" :get-popup-container="trigger => trigger.parentNode" show-time
+            format="YYYY-MM-DD HH:mm:ss" :disabledDate="disabledDate" />
         </a-form-item>
       </a-col>
     </a-row>
@@ -47,8 +35,7 @@
               <a-icon type="question-circle-o" />
             </a-tooltip>
           </span>
-          <a-input
-            v-decorator="[
+          <a-input v-decorator="[
               'interval',
               {
                 rules: [
@@ -59,25 +46,17 @@
                   }
                 ]
               }
-            ]"
-            placeholder="请输入区间间隔(单位：秒)"
-          />
+            ]" placeholder="请输入区间间隔(单位：秒)" />
         </a-form-item>
       </a-col>
     </a-row>
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item label="所用故障树">
-          <a-select
-            v-decorator="[
+          <a-select v-decorator="[
               'tree_list',
               {rules: [{required: true, message: '请选择故障树'}, {validator: treeSelectCheck}]}
-            ]"
-            mode="multiple"
-            placeholder="请选择故障树"
-            style="width: 100%"
-            @change="handleChange"
-          >
+            ]" mode="multiple" placeholder="请选择故障树" style="width: 100%" @change="handleChange">
             <a-select-option v-for="item in filteredOptions" :key="item" :value="item">
               {{ item }}
             </a-select-option>
@@ -100,13 +79,9 @@
             placeholder="请输入需要诊断的主机，主机间用;号隔开"
           />
           -------->
-          <a-transfer
-            :data-source="hostListAll"
-            :titles="['源主机列表', '目标列表']"
-            :target-keys="targetKeys"
-            :render="item => item.host_name"
-            @change="handleTransferChange"
-          />
+          <a-transfer :data-source="hostListAll" :titles="['源主机列表', '目标列表']"
+            :target-keys="targetKeys" :render="item => item.host_name"
+            @change="handleTransferChange" />
         </a-form-item>
       </a-col>
     </a-row>
@@ -137,24 +112,24 @@ export default {
   props: {
     faultTreeList: {
       type: Array,
-      default: function() {
+      default: function () {
         return [];
       }
     },
     saveSuccess: {
       type: Function,
-      default: function() {}
+      default: function () {}
     },
     diagnosisParams: {
       type: Object,
       default: () => {}
     }
   },
-  mounted: function() {
+  mounted: function () {
     const that = this;
     this.setButtons({callBack: this.save, text: '执行诊断', type: 'primary'});
     this.getHostListAll();
-    this.onload(function() {
+    this.onload(function () {
       if (that.diagnosisParams && that.diagnosisParams.startTime) {
         that.form.setFieldsValue({
           startTime: moment(that.diagnosisParams.startTime * 1000),
@@ -169,8 +144,8 @@ export default {
       // 数组第一项为空(父页面用于放置新增故障树按钮)
       return this.faultTreeList
         .slice(1)
-        .map(item => item.tree_name)
-        .filter(o => !this.selectedItems.includes(o));
+        .map((item) => item.tree_name)
+        .filter((o) => !this.selectedItems.includes(o));
     }
   },
   methods: {
@@ -185,10 +160,12 @@ export default {
             });
             return;
           }
-          if (!that.compareDate(
-            values['startTime'].format('YYYY-MM-DD HH:mm:ss'),
-            values['endTime'].format('YYYY-MM-DD HH:mm:ss')
-          )) {
+          if (
+            !that.compareDate(
+              values['startTime'].format('YYYY-MM-DD HH:mm:ss'),
+              values['endTime'].format('YYYY-MM-DD HH:mm:ss')
+            )
+          ) {
             that.$notification.info({
               message: '起始日期不能在结束日期之后',
               description: '请重新选择日期'
@@ -204,16 +181,16 @@ export default {
           data.tree_list = that.selectedItems;
           data.interval = parseInt(values.interval);
           executeDiag(data)
-            .then(function(res) {
-              that.$message.success(res.msg);
+            .then(function (res) {
+              that.$message.success(res.message);
               that.closeSpin();
               that.close();
               that.saveSuccess();
             })
-            .catch(function(err) {
-              that.$message.error(err.response.data.msg);
+            .catch(function (err) {
+              that.$message.error(err.response.message);
             })
-            .finally(function() {
+            .finally(function () {
               that.closeSpin();
               that.close();
               that.$notification.info({
@@ -254,19 +231,19 @@ export default {
           sorter: {}
         }
       })
-        .then(function(res) {
+        .then(function (res) {
           _this.hostListAll =
-            res.host_infos.map(host => {
+            res.data.host_infos.map((host) => {
               return {
                 ...host,
                 key: host.host_id
               };
             }) || [];
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.tableIsLoading = false;
         });
     },

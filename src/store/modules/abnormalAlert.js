@@ -29,7 +29,7 @@ const abnormalAlert = {
         commit('SET_COUNT_LOADING', true);
         getAlertCount()
           .then(res => {
-            commit('SET_COUNT', res.count);
+            commit('SET_COUNT', res.data.count);
             resolve();
           })
           .catch(err => {
@@ -47,8 +47,8 @@ const abnormalAlert = {
           .then(res => {
             let tempArr = [];
             tempArr =
-              res.results
-                && res.results.map((item, idx) => {
+              res.data.results
+                && res.data.results.map((item, idx) => {
                   item.key = idx;
                   item.order = idx;
                   return item;

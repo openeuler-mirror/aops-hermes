@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/max-attributes-per-line -->
 <template>
   <div>
     <div @click="showModal" v-if="!isEdit">
@@ -5,33 +6,23 @@
         <a-button type="primary">新增配置</a-button>
       </slot>
     </div>
-    <a-drawer
-      :title="isEdit ? '编辑配置' : '新增配置'"
-      :width="720"
-      :visible="isEdit ? visibleControl : visible"
-      :body-style="{paddingBottom: '80px'}"
-      @close="handleCancel"
-    >
+    <a-drawer :title="isEdit ? '编辑配置' : '新增配置'" :width="720"
+      :visible="isEdit ? visibleControl : visible" :body-style="{paddingBottom: '80px'}"
+      @close="handleCancel">
       <a-form :form="form" :label-col="{span: 5}" :wrapper-col="{span: 18}">
         <a-form-item label="所属业务域">
           <a-input disabled v-decorator="['domainName', {initialValue: domainName}]" />
         </a-form-item>
         <div class="conf-form-item" v-for="(key, index) in formList" :key="key">
           <span v-if="!isEdit">
-            <a-icon
-              class="dynamic-delete-button"
-              type="minus-circle-o"
-              @click="removeConfForm(index)"
-              v-if="formList.length > 1"
-            />
+            <a-icon class="dynamic-delete-button" type="minus-circle-o"
+              @click="removeConfForm(index)" v-if="formList.length > 1" />
             新增配置{{ index + 1 }}
           </span>
           <a-form-item label="配置路径">
             <a-input
               v-decorator="[`confFiles[${key}].filePath`, {rules: [{required: true, message: '请输入配置路径'}]}]"
-              placeholder="请输入配置路径"
-              :disabled="isEdit"
-            />
+              placeholder="请输入配置路径" :disabled="isEdit" />
           </a-form-item>
           <a-form-item>
             <span slot="label">
@@ -40,31 +31,22 @@
               </a-tooltip>
               &nbsp;配置来源
             </span>
-            <a-select
-              :value="formSelections[key]"
-              placeholder="请选择来源"
-              @change="
+            <a-select :value="formSelections[key]" placeholder="请选择来源" @change="
                 value => {
                   formSelectionChange(key, value);
                 }
-              "
-            >
+              ">
               <a-select-option value="manuel">手动输入</a-select-option>
               <a-select-option value="auto">从主机导入</a-select-option>
             </a-select>
           </a-form-item>
           <a-form-item label="配置内容" v-if="formSelections[key] === 'manuel'">
-            <a-textarea
-              placeholder="请输入配置内容"
-              :rows="8"
-              v-decorator="[`confFiles[${key}].contents`, {rules: [{required: true, message: '请输入内容'}]}]"
-            />
+            <a-textarea placeholder="请输入配置内容" :rows="8"
+              v-decorator="[`confFiles[${key}].contents`, {rules: [{required: true, message: '请输入内容'}]}]" />
           </a-form-item>
           <a-form-item label="选择主机" v-else-if="formSelections[key] === 'auto'">
-            <a-select
-              placeholder="请选择文件所在主机"
-              v-decorator="[`confFiles[${key}].hostId`, {rules: [{required: true, message: '请选择主机'}]}]"
-            >
+            <a-select placeholder="请选择文件所在主机"
+              v-decorator="[`confFiles[${key}].hostId`, {rules: [{required: true, message: '请选择主机'}]}]">
               <a-spin v-if="hostListLoading" slot="notFoundContent" size="small" />
               <a-select-option v-for="host in hostList" :value="host.hostId" :key="host.hostId">
                 {{ host.ip }}
@@ -131,12 +113,12 @@ export default {
     };
   },
   watch: {
-    visibleControl: function() {
+    visibleControl: function () {
       const _this = this;
       if (this.isEdit && this.visibleControl === true) {
         this.getHostList();
         this.resetData();
-        setTimeout(function() {
+        setTimeout(function () {
           _this.form.setFieldsValue({confFiles: [{filePath: _this.editFilePath}]});
         }, 100);
       }
@@ -179,19 +161,19 @@ export default {
         if (!err) {
           const params = {
             domainName: _this.domainName,
-            confFiles: values.confFiles.filter(conf => conf)
+            confFiles: values.confFiles.filter((conf) => conf)
           };
           this.submitIsLoading = true;
           addManagementConf(params)
-            .then(function(res) {
-              _this.$message.success(res.msg);
+            .then(function (res) {
+              _this.$message.success(res.message);
               _this.visible = false;
               _this.$emit('ok');
             })
-            .catch(function(err) {
-              _this.$message.error(err.response.data.msg || err.response.data.detail);
+            .catch(function (err) {
+              _this.$message.error(err.response.message || err.response.data.detail);
             })
-            .finally(function() {
+            .finally(function () {
               _this.submitIsLoading = false;
             });
         }
@@ -201,17 +183,17 @@ export default {
       const _this = this;
       this.hostListLoading = true;
       domainHostList(this.domainName)
-        .then(function(res) {
+        .then(function (res) {
           _this.hostList = res;
         })
-        .catch(function(err) {
-          if (err.response.data.code !== 400) {
-            _this.$message.error(err.response.data.msg || err.response.data.detail);
+        .catch(function (err) {
+          if (err.response.code !== '400') {
+            _this.$message.error(err.response.message || err.response.data.detail);
           } else {
             _this.hostList = [];
           }
         })
-        .finally(function() {
+        .finally(function () {
           _this.hostListLoading = false;
         });
     }

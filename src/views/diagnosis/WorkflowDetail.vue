@@ -21,29 +21,26 @@
             <div>创建时间：{{ dateFormat('YYYY-mm-dd HH:MM:SS', workflow.create_time * 1000) }}</div>
             <div class="control-btns">
               <a-button
-                type="primary"
-                @click="execute"
-                :loading="excuteLoading"
-                :disabled="workflow.status === 'running'"
-              >
+              type="primary"
+              @click="execute"
+              :loading="excuteLoading"
+                :disabled="workflow.status === 'running'">
                 执行
               </a-button>
               <a-button @click="stop" :loading="stopLoading" :disabled="workflow.status === 'hold'">
                 暂停
               </a-button>
               <a-popconfirm
-                title="确定删除本工作流吗?"
-                placement="topRight"
-                ok-text="确认"
-                cancel-text="取消"
+              title="确定删除本工作流吗?"
+              placement="topRight"
+              ok-text="确认"
+              cancel-text="取消"
                 @confirm="deleteWorkflow"
-                :disabled="workflow.status === 'running'"
-              >
+                :disabled="workflow.status === 'running'">
                 <a-button
-                  type="danger"
-                  :ghost="workflow.status !== 'running'"
-                  :disabled="workflow.status === 'running'"
-                >
+                type="danger"
+                :ghost="workflow.status !== 'running'"
+                  :disabled="workflow.status === 'running'">
                   删除
                 </a-button>
               </a-popconfirm>
@@ -52,30 +49,32 @@
         </a-row>
         <a-row class="tab-container">
           <a-tabs :default-active-key="key" @change="callback">
-            <a-tab-pane v-for="item in detailMap" :key="item" :tab="detailStatusMap[item]"> </a-tab-pane>
+            <a-tab-pane v-for="item in detailMap" :key="item" :tab="detailStatusMap[item]">
+            </a-tab-pane>
           </a-tabs>
         </a-row>
       </a-card>
       <a-card v-show="key == 'singlecheck'" :bordered="false" class="aops-theme">
         <div class="tableWidth">
           <a-table
-            rowKey="host_ip"
-            :columns="hostcheckColums"
-            :data-source="singlecheck"
+          rowKey="host_ip"
+          :columns="hostcheckColums"
+          :data-source="singlecheck"
             :pagination="pagination"
             :loading="tableIsLoading"
-            :expandedRowKeys.sync="expandedRowKeys"
-          >
+            :expandedRowKeys.sync="expandedRowKeys">
             <p slot="expandedRowRender" slot-scope="value" style="margin: 0">
               <a-table
-                rowKey="single"
-                :columns="singlecheckColumns"
-                :data-source="value.model"
+              rowKey="single"
+              :columns="singlecheckColumns"
+              :data-source="value.model"
                 :scroll="{y: 240}"
-                :pagination="false"
-              >
+                :pagination="false">
                 <template slot="action" slot-scope="record">
-                  <a slot="action" href="javascript:;" @click="showModal(record, 'singlecheck')">修改</a>
+                  <a
+                  slot="action"
+                  href="javascript:;"
+                    @click="showModal(record, 'singlecheck')">修改</a>
                 </template>
               </a-table>
             </p>
@@ -84,12 +83,11 @@
       </a-card>
       <a-card v-show="key == 'multicheck'" :bordered="false" class="aops-theme">
         <a-table
-          :columns="multicheckColumns"
-          :data-source="multicheck"
-          rowKey="host_id"
+        :columns="multicheckColumns"
+        :data-source="multicheck"
+        rowKey="host_id"
           :pagination="pagination"
-          :loading="tableIsLoading"
-        >
+          :loading="tableIsLoading">
           <template slot="action" slot-scope="record">
             <a slot="action" href="javascript:;" @click="showModal(record, 'multicheck')">修改</a>
           </template>
@@ -98,12 +96,11 @@
       <a-card v-show="key == 'diag'" :bordered="false" class="aops-theme">
         <div class="tableWidth">
           <a-table
-            :columns="diagColumns"
-            rowKey="model_name"
-            :data-source="diag"
+          :columns="diagColumns"
+          rowKey="model_name"
+          :data-source="diag"
             :pagination="false"
-            :loading="tableIsLoading"
-          >
+            :loading="tableIsLoading">
             <template slot="action" slot-scope="record">
               <a slot="action" href="javascript:;" @click="showModal(record, 'diag')">修改</a>
             </template>
@@ -111,13 +108,13 @@
         </div>
       </a-card>
       <UpdateModel
-        :workflow="workflow"
-        :updateTarget="updateTarget"
-        :visible="visible"
+      :workflow="workflow"
+      :updateTarget="updateTarget"
+      :visible="visible"
         @getWorkflowDatails="getWorkflowDatails"
         @changeVisible="changeVisible"
-        ref="updateModel"
-      ></UpdateModel>
+        ref="updateModel">
+      </UpdateModel>
     </div>
   </my-page-header-wrapper>
 </template>
@@ -155,7 +152,7 @@ const diagColumns = [
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  showTotal: total => `总计 ${total} 项`,
+  showTotal: (total) => `总计 ${total} 项`,
   size: 'small',
   showSizeChanger: true,
   showQuickJumper: true
@@ -171,7 +168,7 @@ export default {
     MyPageHeaderWrapper,
     UpdateModel
   },
-  mounted: function() {
+  mounted: function () {
     this.workflow_id = this.$route.params.workflowId;
     this.getWorkflowDatails();
   },
@@ -238,7 +235,7 @@ export default {
           title: '创建时间',
           dataIndex: 'create_time',
           key: 'create_time',
-          customRender: time => time && dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)
+          customRender: (time) => time && dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)
         }
       ];
     },
@@ -260,10 +257,10 @@ export default {
       const _this = this;
       this.tableIsLoading = true;
       getWorkflowDatail(this.workflow_id)
-        .then(function(res) {
-          _this.workflow = res.result;
-          _this.key = Object.keys(res.result.detail)[0];
-          _this.detailMap = Object.keys(res.result.detail);
+        .then(function (res) {
+          _this.workflow = res.data.result;
+          _this.key = Object.keys(res.data.result.detail)[0];
+          _this.detailMap = Object.keys(res.data.result.detail);
           const tempArr = [];
           for (const modelId in _this.workflow.model_info) {
             if (modelId === _this.workflow.detail.diag) {
@@ -274,10 +271,10 @@ export default {
           _this.buildSinglecheckData();
           _this.buildMulticheckData();
         })
-        .catch(function(err) {
+        .catch(function (err) {
           _this.$message.error(err.response.msg);
         })
-        .finally(function() {
+        .finally(function () {
           _this.tableIsLoading = false;
         });
     },
@@ -337,12 +334,12 @@ export default {
       executeWorkflow({
         workflowId: this.workflow_id
       })
-        .then(res => {
-          this.$message.success(res.msg);
+        .then((res) => {
+          this.$message.success(res.message);
           this.getWorkflowDatails();
         })
-        .catch(err => {
-          this.$message.error(err.response.data.msg);
+        .catch((err) => {
+          this.$message.error(err.response.message);
         })
         .finally(() => {
           this.excuteLoading = false;
@@ -353,12 +350,12 @@ export default {
       stopWorkflow({
         workflowId: this.workflow_id
       })
-        .then(res => {
-          this.$message.success(res.msg);
+        .then((res) => {
+          this.$message.success(res.message);
           this.getWorkflowDatails();
         })
-        .catch(err => {
-          this.$message.error(err.response.data.msg);
+        .catch((err) => {
+          this.$message.error(err.response.message);
         })
         .finally(() => {
           this.stopLoading = false;
@@ -369,14 +366,14 @@ export default {
       deleteWorkflow({
         workflowId: this.workflow_id
       })
-        .then(res => {
-          this.$message.success(res.msg);
-          setTimeout(function() {
+        .then((res) => {
+          this.$message.success(res.message);
+          setTimeout(function () {
             router.push('/diagnosis/workflow');
           }, 500);
         })
-        .catch(err => {
-          this.$message.error(err.response.data.msg);
+        .catch((err) => {
+          this.$message.error(err.response.message);
         })
         .finally(() => {
           this.deleteLoading = false;

@@ -11,9 +11,8 @@
                   <div slot="message">
                     <span>{{ `已选择` + selectedRowKeys.length + `项` }}</span>
                     <a
-                      v-if="selectedRowKeys.length > 0"
-                      @click="deleteHostBash(selectedRowKeys, selectedRowsAll)"
-                    >
+                    v-if="selectedRowKeys.length > 0"
+                      @click="deleteHostBash(selectedRowKeys, selectedRowsAll)">
                       批量删除
                     </a>
                   </div>
@@ -37,6 +36,9 @@
                 </router-link>
               </a-col>
               <a-col>
+                <add-more-host @addSuccess="handleUploadSuccess" />
+              </a-col>
+              <a-col>
                 <a-button @click="handleRefresh"> <a-icon type="redo" />刷新 </a-button>
               </a-col>
             </a-row>
@@ -50,16 +52,14 @@
           :row-selection="rowSelection"
           @change="handleTableChange"
           :loading="tableIsLoading"
-          :locale="{emptyText: getEmpty}"
-        >
+          :locale="{emptyText: getEmpty}">
           <router-link
-            :to="{path: `/assests/host/detail/${record.host_id}`}"
-            slot="hostName"
-            slot-scope="hostName, record"
-            >{{ hostName }}</router-link
-          >
+          :to="{path: `/assests/host/detail/${record.host_id}`}"
+          slot="hostName"
+            slot-scope="hostName, record">{{ hostName }}</router-link>
           <span slot="isManagement" slot-scope="isMana">{{ isMana ? '是' : '否' }}</span>
-          <span slot="statusItem" slot-scope="status">{{ status || '暂无' }}</span>
+          <span slot="statusItem" slot-scope="status">{{ statusMap(status) }}</span>
+          <span slot="scene" slot-scope="scene">{{ scene ? ( scene === 'normal' ? '通用' : scene ) : '暂无' }}</span>
           <span slot="action" slot-scope="record">
             <!-- <a @click="openDetail(record.host_id)">查看</a>
                 ----后续增加-----
@@ -67,6 +67,8 @@
                 <span>编辑</span>
                 ----------------
                 <a-divider type="vertical" /> -->
+            <a @click="connectHost(record)">连接</a>
+            <span> | </span>
             <a @click="deleteHost(record)">删除</a>
           </span>
           <!-- <div slot="expandedRowRender" style="margin: 0">
@@ -82,7 +84,7 @@
 <script>
 import store from '@/store';
 import router from '@/vendor/ant-design-pro/router';
-
+import AddMoreHost from './components/addMoreHost.vue';
 import MyPageHeaderWrapper from '@/views/utils/MyPageHeaderWrapper';
 import {getSelectedRow} from '@/views/utils/getSelectedRow';
 import HostDetailDrawer from './components/HostDetailDrawer';
@@ -93,7 +95,7 @@ import {hostList, deleteHost, hostGroupList} from '@/api/assest';
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  showTotal: total => `总计 ${total} 项`,
+  showTotal: (total) => `总计 ${total} 项`,
   showSizeChanger: true,
   showQuickJumper: true
 };
@@ -102,7 +104,8 @@ export default {
   name: 'HostManagement',
   components: {
     MyPageHeaderWrapper,
-    HostDetailDrawer
+    HostDetailDrawer,
+    AddMoreHost
     // HostTerminal
   },
   data() {
@@ -129,6 +132,7 @@ export default {
       return [
         {
           dataIndex: 'host_name',
+          width: 200,
           key: 'host_name',
           title: '主机名称',
           scopedSlots: {customRender: 'hostName'},
@@ -136,16 +140,18 @@ export default {
           sortOrder: sorter.columnKey === 'host_name' && sorter.order
         },
         {
-          dataIndex: 'public_ip',
-          key: 'public_ip',
+          dataIndex: 'host_ip',
+          width: 200,
+          key: 'host_ip',
           title: 'IP地址'
         },
         {
           dataIndex: 'host_group_name',
+          width: 200,
           key: 'host_group_name',
           title: '所属主机组',
           filteredValue: filters.host_group_name || null,
-          filters: this.groupData.map(group => {
+          filters: this.groupData.map((group) => {
             return {
               text: group.host_group_name,
               value: group.host_group_name
@@ -154,6 +160,7 @@ export default {
         },
         {
           dataIndex: 'management',
+          width: 200,
           key: 'management',
           title: '管理节点',
           filteredValue: filters.management || null,
@@ -172,18 +179,21 @@ export default {
         },
         {
           dataIndex: 'status',
+          width: 200,
           key: 'status',
           title: '运行状态',
           scopedSlots: {customRender: 'statusItem'}
         },
         {
           dataIndex: 'scene',
+          width: 200,
           key: 'scene',
           title: '场景',
-          customRender: scene => scene || '暂无'
+          scopedSlots: {customRender: 'scene'}
         },
         {
           key: 'operation',
+          width: 200,
           title: '操作',
           scopedSlots: {customRender: 'action'}
         }
@@ -204,6 +214,20 @@ export default {
       this.sorter = sorter;
       // 出发排序、筛选、分页时，重新请求主机列表
       this.getHostList();
+    },
+    handleUploadSuccess() {
+      this.getHostList();
+    },
+    statusMap(params) {
+      let status = '';
+      if (params === 1) {
+        status = '离线';
+      } else if (params === 2) {
+        status = '未连接';
+      } else {
+        status = '在线';
+      }
+      return status;
     },
     onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys;
@@ -230,21 +254,24 @@ export default {
           }
         }
       })
-        .then(function(res) {
-          _this.tableData = res.host_infos || [];
+        .then(function (res) {
+          _this.tableData = res.data.host_infos || [];
           _this.pagination = {
             ..._this.pagination,
             current: pagination.current,
             pageSize: pagination.pageSize,
-            total: res.total_count || (res.total_count === 0 ? 0 : pagination.total)
+            total: res.data.total_count || (res.data.total_count === 0 ? 0 : pagination.total)
           };
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.tableIsLoading = false;
         });
+    },
+    connectHost(record) {
+      this.$message.success('连接到主机' + record.host_ip);
     },
     deleteHost(record) {
       const _this = this;
@@ -265,7 +292,7 @@ export default {
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '删除',
-        onOk: function() {
+        onOk: function () {
           return _this.handleDelete([record.host_id]);
         },
         onCancel() {}
@@ -281,7 +308,7 @@ export default {
           </div>
         ),
         content: () =>
-          selectedRowsAll.map(row => (
+          selectedRowsAll.map((row) => (
             <p>
               <span>{row.host_name}</span>
             </p>
@@ -289,7 +316,7 @@ export default {
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '删除',
-        onOk: function() {
+        onOk: function () {
           return _this.handleDelete(selectedRowKeys, true);
         },
         onCancel() {}
@@ -301,8 +328,8 @@ export default {
         deleteHost({
           hostList
         })
-          .then(res => {
-            if (res.fail_list && Object.keys(res.fail_list).length > 0) {
+          .then((res) => {
+            if (res.data.fail_list && Object.keys(res.data.fail_list).length > 0) {
               _this.deleteErrorHandler(res);
             } else {
               this.$message.success('删除成功');
@@ -314,11 +341,11 @@ export default {
             }
             resolve();
           })
-          .catch(err => {
+          .catch((err) => {
             if (err.data.code === 1103) {
               _this.deleteErrorHandler(err.data, true);
             } else {
-              _this.$message.error(err.response.data.msg);
+              _this.$message.error(err.response.message);
             }
             // 业务逻辑，报错时依然关闭弹窗。因此触发resolve()
             resolve();
@@ -326,8 +353,8 @@ export default {
       });
     },
     deleteErrorHandler(data, allFailed = false) {
-      const deleteErrorList = Object.keys(data.fail_list || {}).map(hostId => {
-        let matchedHost = this.selectedRowsAll.filter(item => item.host_id === hostId)[0];
+      const deleteErrorList = Object.keys(data.fail_list || {}).map((hostId) => {
+        let matchedHost = this.selectedRowsAll.filter((item) => item.host_id === hostId)[0];
         // 正常情况下，未匹配到说明selectedRowsAll和返回的错误主机id不匹配。则说明用户是直接点击表格的删除按钮提交的
         if (!matchedHost) {
           matchedHost = this.deleteHostTempInfo;
@@ -387,13 +414,13 @@ export default {
           sorter: {}
         }
       })
-        .then(function(res) {
-          _this.groupData = res.host_group_infos;
+        .then(function (res) {
+          _this.groupData = res.data.host_group_infos;
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {});
+        .finally(function () {});
     },
     getEmpty() {
       return (
@@ -403,7 +430,7 @@ export default {
       );
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.getHostList();
     this.getGroupList();
   }

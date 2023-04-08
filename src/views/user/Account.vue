@@ -99,12 +99,12 @@ export default {
       const _this = this;
       codeCheck(code)
         .then(function(res) {
-          if (res.username !== '' && res.username !== null && res.username !== undefined) {
-            _this.auth_account = res.username
+          if (res.data.username !== '' && res.data.username !== null && res.data.username !== undefined) {
+            _this.auth_account = res.data.username
           }
-          _this.auth_account = res.username;
-          if (res.code === 200) {
-            _this.LoginInGitee(res)
+          _this.auth_account = res.data.username;
+          if (res.code === '200') {
+            _this.LoginInGitee(res.data)
             // 授权成功存储用户信息
             _this.$message.success('授权成功!')
             _this.loginloading = false;
@@ -122,10 +122,10 @@ export default {
           if (err.response.data.username !== '' && err.response.data.username !== null && err.response.data.username !== undefined) {
             _this.auth_account = err.response.data.username
           }
-          if (err.response.data.code === 1200) {
-            _this.requestFailed(err.response.data.msg)
+          if (err.response.code === '1200') {
+            _this.requestFailed(err.response.message)
             _this.$router.push({path: '/user'});
-          } else if (err.response.data.code === 1603) {
+          } else if (err.response.code === '1603') {
             _this.showModal();
             // 未绑定本地账户，转到绑定账户界面
           }
@@ -144,7 +144,7 @@ export default {
           loginParams.password = values.password;
           bindAccount(loginParams)
             .then(function(res) {
-              _this.LoginInGitee(res);
+              _this.LoginInGitee(res.data);
               // 绑定成功存储用户登陆信息
               _this.$message.success('绑定成功!');
               // 提示用户绑定成功
@@ -163,21 +163,21 @@ export default {
               // 重置表单
             })
             .catch(function(err) {
-              if (err.response.data.code === 1108) {
+              if (err.response.code === '1108') {
                 // 输入绑定的本地账户不存在，跳转到注册页面
                 _this.$message.warning('本地账号不存在!请先注册');
                 _this.bindvisible = false;
                 setTimeout(() => {
                   _this.$router.push('/user/register')
                 }, 1000)
-              } else if (err.response.data.code === 1605) {
+              } else if (err.response.code === '1605') {
                 // 输入绑定的本地账户已和其他gitee账户绑定
                 _this.$message.error('本地账号已与其他gitee账号绑定!')
-              } else if (err.response.data.code === 1200) {
+              } else if (err.response.code === '1200') {
                 // 本地账号密码输入错误
                 _this.$message.error('本地账号密码输入错误!')
               } else {
-                _this.$message.error(err.response.data.msg);
+                _this.$message.error(err.response.message);
               }
             })
             .finally(function() {

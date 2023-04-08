@@ -128,32 +128,34 @@ export default {
   created() {
     this.app_id = this.$route.params.appId;
   },
-  mounted: function() {
+  mounted: function () {
     this.getAppInformation();
   },
   methods: {
     getAppInformation() {
       const _this = this;
       getWorkflowAppExtraInfo(this.app_id)
-        .then(function(res) {
-          _this.appInfo = res.result;
-          _this.abb = Object.keys(res.result.detail).map((key, index) => ({
+        .then(function (res) {
+          _this.appInfo = res.data.result;
+          _this.abb = Object.keys(res.data.result.detail).map((key, index) => ({
             id: index + '',
             label: _this.detailMap[key],
             x: 150 + index * 300,
             y: 200
-          }))
-          _this.add = Object.keys(res.result.detail).map((key, index) => ({
-            source: index + '',
-            target: index + 1 + ''
-          })).slice(0, -1)
+          }));
+          _this.add = Object.keys(res.data.result.detail)
+            .map((key, index) => ({
+              source: index + '',
+              target: index + 1 + ''
+            }))
+            .slice(0, -1);
           _this.NodeData = {nodes: _this.abb, edges: _this.add};
           _this.drawMap();
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {});
+        .finally(function () {});
     },
     drawMap() {
       const graph = new G6.Graph({

@@ -1,13 +1,20 @@
 <template>
-  <a-modal :maskClosable="false" :visible="showDomainSelection" @ok="handleOk" @cancel="handleCancel">
+  <a-modal
+    :maskClosable="false"
+    :visible="showDomainSelection"
+    @ok="handleOk"
+    @cancel="handleCancel"
+  >
     <a-form :form="form" :label-col="{span: 5}" :wrapper-col="{span: 16}">
       <a-form-item label="业务域" extra="若未选择业务域，则将返回管理页面">
         <a-select
-          placeholder="请选择需要进行配置管理的业务域..."
-          style="width: 200px"
-          v-decorator="['domainName', {rules: [{required: true, message: '请选择业务域'}]}]"
-        >
-          <a-select-option v-for="(item, index) in domainNameList" :key="index" :value="item.domainName">
+        placeholder="请选择需要进行配置管理的业务域..."
+        style="width: 200px"
+          v-decorator="['domainName', {rules: [{required: true, message: '请选择业务域'}]}]">
+          <a-select-option
+            v-for="(item, index) in domainNameList"
+            :key="index"
+            :value="item.domainName">
             {{ item.domainName }}
           </a-select-option>
         </a-select>
@@ -51,14 +58,14 @@ export default {
       this.form.resetFields();
     }
   },
-  mounted: function() {
+  mounted: function () {
     const _this = this;
     domainList()
-      .then(function(res) {
+      .then(function (res) {
         _this.domainNameList = res;
       })
-      .catch(function(err) {
-        _this.$message.error(err.response.data.msg);
+      .catch(function (err) {
+        _this.$message.error(err.response.message);
       });
   }
 };

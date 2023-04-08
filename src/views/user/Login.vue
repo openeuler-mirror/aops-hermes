@@ -90,17 +90,16 @@ export default {
       const _this = this;
       LoginInGitee()
         .then(function(res) {
-          if (res.code === 200) {
-            console.log(res)
-            if (res.gitee !== '' && res.gitee !== null && res.gitee !== undefined) {
-              window.location.href = res.gitee
+          if (res.code === '200') {
+            if (res.data.gitee !== '' && res.data.gitee !== null && res.data.gitee !== undefined) {
+              window.location.href = res.data.gitee
             }
           } else {
             _this.$message.error('请求错误');
           }
         })
         .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+          _this.$message.error(err.response.message);
         })
         .finally(function() {
         });
@@ -146,7 +145,7 @@ export default {
     requestFailed(e) {
       this.$notification['error']({
         message: '错误',
-        description: e.response.data.msg || '请求出现错误，请稍后再试',
+        description: e.response.message || '请求出现错误，请稍后再试',
         duration: 4
       });
     }

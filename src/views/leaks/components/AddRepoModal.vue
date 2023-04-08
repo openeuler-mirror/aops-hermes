@@ -1,43 +1,26 @@
+<!-- eslint-disable vue/max-attributes-per-line -->
 <template>
   <div class="aops-add-repo" @click="showModal">
     <a-icon type="plus" />
-    <a-modal
-      centered
-      title="新建REPO源"
-      :visible="visible"
-      :confirm-loading="isLoading"
-      @ok="handleOk"
-      @cancel="handleCancel"
-    >
+    <a-modal centered title="新建REPO源" :visible="visible" :confirm-loading="isLoading" @ok="handleOk"
+      @cancel="handleCancel">
       <a-form :form="form" :label-col="{span: 5}" :wrapper-col="{span: 19}">
         <a-form-item label="REPO源名称">
-          <a-input
-            :maxLength="20"
-            placeholder="请输入REPO源名称，20个字符以内"
-            v-decorator="['repoName', { rules: [{ required: true, message: '请输入REPO名称' },
-                                                { max: 20, message: '20个字符以内' }]}]"
-          >
+          <a-input :maxLength="20" placeholder="请输入REPO源名称，20个字符以内" v-decorator="['repoName', { rules: [{ required: true, message: '请输入REPO名称' },
+                                                { max: 20, message: '20个字符以内' }]}]">
           </a-input>
         </a-form-item>
         <a-form-item label="REPO内容">
           <div>
-            <a-textarea
-              style="resize: none;"
+            <a-textarea style="resize: none;"
               v-decorator="['repoData', {rules: [{ required: true, message: '请输入REPO描述' }]}]"
-              :rows="16"
-              :maxLength="512"
-              placeholder="请输入REPO内容，512个字符以内"
-            />
+              :rows="16" :maxLength="512" placeholder="请输入REPO内容，512个字符以内" />
             <a-button class="download-template" @click="handleGetTemplate">下载模板</a-button>
           </div>
         </a-form-item>
         <a-form-item label="上传文件" class="upload-row">
-          <uploader
-          ref="upload"
-          toJSON
-          uid="repoUploader"
-          fileType="repo"
-          @change="handleFileUpload" />
+          <uploader ref="upload" toJSON uid="repoUploader" fileType="repo"
+            @change="handleFileUpload" />
         </a-form-item>
       </a-form>
     </a-modal>
@@ -45,7 +28,6 @@
 </template>
 
 <script>
-
 /**
  * 添加repo弹窗
  */
@@ -86,16 +68,16 @@ export default {
           const _this = this;
           this.isLoading = true;
           addRepo(values)
-            .then(function(res) {
-              _this.$message.success(res.msg);
+            .then(function (res) {
+              _this.$message.success(res.message);
               _this.$emit('addSuccess');
               _this.visible = false;
               _this.form.resetFields();
             })
-            .catch(function(err) {
-              _this.$message.error(err.response.data.msg || err.response.data.detail);
+            .catch(function (err) {
+              _this.$message.error(err.response.message || err.response.data.detail);
             })
-            .finally(function() {
+            .finally(function () {
               _this.isLoading = false;
               _this.$refs.upload.fileName = '';
               _this.$refs.upload.errorMsg = '';
@@ -108,12 +90,12 @@ export default {
     handleGetTemplate() {
       const _this = this;
       getRepoTemplate()
-        .then(function(res) {
+        .then(function (res) {
           // download files
           downloadBlobFile(res.data, res.fileName);
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         });
     },
     handleFileUpload(content) {

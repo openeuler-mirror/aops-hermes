@@ -4,13 +4,10 @@
       <div class="header">
         <h4 v-show="graphIsDoingLayout">图形布局中，请稍等 <a-spin size="small" /></h4>
         <div class="level-controller">
-          <div
-            :class="`level-controller-btn${level.type === visibleLevel ? ' active' : ''}`"
-            v-for="(level, idx) in levelOrders"
-            :key="idx"
-            @click="changeLevel(level.type)"
-          >
-            <img :src="level.src" alt="" style="width:18px;vertical-align:middle;" /><span style="margin-left:5px;">{{
+          <div :class="`level-controller-btn${level.type === visibleLevel ? ' active' : ''}`"
+            v-for="(level, idx) in levelOrders" :key="idx" @click="changeLevel(level.type)">
+            <img :src="level.src" alt="" style="width:18px;vertical-align:middle;" /><span
+              style="margin-left:5px;">{{
               level.text
             }}</span>
           </div>
@@ -19,31 +16,20 @@
       </div>
       <a-spin :spinning="dataLoading" size="large">
         <div v-for="(level, idx) in levelOrders" :key="idx">
-          <node-graph-container
-            v-show="level.type === visibleLevel"
-            :isShow="level.type === visibleLevel"
-            :containerId="`graph-container-${level.type}`"
+          <node-graph-container v-show="level.type === visibleLevel"
+            :isShow="level.type === visibleLevel" :containerId="`graph-container-${level.type}`"
             :entitiesData="{
               nodes: entitiesListByLevel[level.type],
               edges: edgesListByLevel[level.type]
-            }"
-            :dataReady="dataReady"
-            :selectedEntityId="selectedNodeId"
-            :linkMap="edgesMapByLevel[level.type]"
-            @nodeClicked="nodeClicked"
-            @addResizeFunction="addResizeFunction"
-            @showVerticalMap="showVerticalMap"
-          />
+            }" :dataReady="dataReady" :selectedEntityId="selectedNodeId"
+            :linkMap="edgesMapByLevel[level.type]" @nodeClicked="nodeClicked"
+            @addResizeFunction="addResizeFunction" @showVerticalMap="showVerticalMap" />
         </div>
       </a-spin>
     </a-card>
-    <vertical-map-drawer
-      :selectedNodeId="selectedEntityId"
-      :treeData="verticalTreeData"
-      :visible="verticalDrawerVisible"
-      @close="handleVerticalDrawerClose"
-      @treeNodeClicked="treeNodeClicked"
-    />
+    <vertical-map-drawer :selectedNodeId="selectedEntityId" :treeData="verticalTreeData"
+      :visible="verticalDrawerVisible" @close="handleVerticalDrawerClose"
+      @treeNodeClicked="treeNodeClicked" />
   </page-header-wrapper>
 </template>
 
@@ -106,7 +92,7 @@ export default {
     setGraphData(dataList) {
       const _this = this;
       // put entity data to nodeMap and entitiesListByLevel/ entitiesMapByLevel
-      dataList.forEach(function(entity) {
+      dataList.forEach(function (entity) {
         if (!entity.entityid) {
           return;
         }
@@ -150,8 +136,8 @@ export default {
         }
       });
       // deal data in order by level
-      levelOrders.forEach(function(levelInfo) {
-        _this.entitiesListByLevel[levelInfo.type].forEach(function(entity) {
+      levelOrders.forEach(function (levelInfo) {
+        _this.entitiesListByLevel[levelInfo.type].forEach(function (entity) {
           // set parent and children of each entity
           const parentId = getParentId(entity);
           if (parentId) {
@@ -160,7 +146,7 @@ export default {
           const childrenIds = gerChildrenIds(entity);
           if (childrenIds.length > 0) {
             entity.children = [];
-            childrenIds.forEach(function(childId) {
+            childrenIds.forEach(function (childId) {
               _this.nodeMap[childId] && entity.children.push(_this.nodeMap[childId]);
             });
           }
@@ -173,7 +159,7 @@ export default {
           }
           entity.startOfLinks = [];
           entity.endOfLinks = [];
-          relatedEdgeList.forEach(function(edgeInfo) {
+          relatedEdgeList.forEach(function (edgeInfo) {
             // set related edge id to entity
             if (edgeInfo.source === entity.entityid) {
               entity.startOfLinks.push(edgeInfo.id);
@@ -200,14 +186,14 @@ export default {
       // 测试时，打开下方注释。
       // _this.setGraphData(testData.entities)
       getTopoData()
-        .then(res => {
-          _this.setGraphData(res.entities || []);
+        .then((res) => {
+          _this.setGraphData(res.data.entities || []);
         })
-        .catch(err => {
-          if (err.response && err.response.data && err.response.data.status === 500) {
+        .catch((err) => {
+          if (err.response && err.response.data && err.response.status === '500') {
             _this.$message.error('服务器错误，请稍后再试');
           }
-          _this.$message.error(err.response.data.msg || err.response.data.title || '获取架构数据失败，请稍后再试');
+          _this.$message.error(err.response.message || err.response.data.title || '获取架构数据失败，请稍后再试');
         })
         .finally(() => {
           _this.dataLoading = false;
@@ -220,7 +206,7 @@ export default {
       if (typeof window !== 'undefined') {
         const _this = this;
         window.onresize = () => {
-          _this.resizeFuncs.forEach(funcs => {
+          _this.resizeFuncs.forEach((funcs) => {
             funcs();
           });
         };
@@ -249,7 +235,7 @@ export default {
       this.changeLevel(this.nodeMap[nodeId].level);
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.getGraphDataFromRemote();
     this.setResizeFunciton();
   }

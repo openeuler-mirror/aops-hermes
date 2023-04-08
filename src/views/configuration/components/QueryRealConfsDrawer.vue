@@ -5,7 +5,10 @@
       <div>主机：{{ host.hostId }}</div>
       <div>IP地址：{{ host.ip }}</div>
       <a-collapse>
-        <a-collapse-panel v-for="item in confs" :key="item.filePath" :header="`配置项：${item.filePath}`">
+        <a-collapse-panel
+        v-for="item in confs"
+        :key="item.filePath"
+          :header="`配置项：${item.filePath}`">
           <div class="conf-description">
             <a-descriptions title="属性" :column="2">
               <a-descriptions-item label="fileAttr">
@@ -57,7 +60,10 @@
     <div class="conf-section">
       <h1>主机缺失配置</h1>
       <a-collapse>
-        <a-collapse-panel v-for="item in confsNotInHost" :key="item.filePath" :header="`配置项：${item.filePath}`">
+        <a-collapse-panel
+        v-for="item in confsNotInHost"
+        :key="item.filePath"
+          :header="`配置项：${item.filePath}`">
           <div class="conf-content">
             <a-row type="flex" justify="space-between" class="conf-content-header">
               <a-col>
@@ -122,10 +128,10 @@ export default {
     };
   },
   watch: {
-    confsOfDomainLoading: function() {
+    confsOfDomainLoading: function () {
       this.compareDiff();
     },
-    collapseIsLoading: function() {
+    collapseIsLoading: function () {
       this.compareDiff();
     }
   },
@@ -137,12 +143,12 @@ export default {
         domainName: _this.domainName,
         hostIds: [{hostId}]
       })
-        .then(res => {
+        .then((res) => {
           _this.confsOfHost = (res && res[0] && res[0].confBaseInfos) || [];
         })
-        .catch(err => {
-          if (err.response.data.code !== 400) {
-            _this.$message.error(err.response.data.msg);
+        .catch((err) => {
+          if (err.response.code !== '400') {
+            _this.$message.error(err.response.message);
           }
         })
         .finally(() => {
@@ -152,11 +158,11 @@ export default {
     compareDiff() {
       const confs = [];
       const confsNotInHost = [];
-      this.confsOfDomain.forEach(confOfDomain => {
+      this.confsOfDomain.forEach((confOfDomain) => {
         let confTemp = confOfDomain;
         // 域配置返回的filePath前会加‘openEuler：’
         const confOfHostMatched = this.confsOfHost.filter(
-          conf => conf.filePath === confOfDomain.filePath.replace(/openEuler:/, '')
+          (conf) => conf.filePath === confOfDomain.filePath.replace(/openEuler:/, '')
         )[0];
         if (!confOfHostMatched) {
           confTemp.syncStatus = 'NOT IN HOST';
@@ -188,9 +194,9 @@ export default {
       this.compareDrawerVisible = false;
     }
   },
-  mounted: function() {
+  mounted: function () {
     const _this = this;
-    this.onload(function(params) {
+    this.onload(function (params) {
       _this.domainName = params.domainName;
       _this.host = params.host;
     });

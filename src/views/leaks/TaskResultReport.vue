@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/max-attributes-per-line -->
 <template>
   <page-header-wrapper :breadcrumb="breadcrumb">
     <a-card :bordered="false" class="aops-theme">
@@ -17,11 +18,8 @@
             </a-descriptions>
             <p class="reuslt-item-title">任务结果:</p>
             <a-collapse defaultActiveKey="0">
-              <a-collapse-panel
-                v-for="(resultItem, riidx) in resultData.task_result"
-                :key="riidx"
-                :header="`主机: ${resultItem.host_name}`"
-              >
+              <a-collapse-panel v-for="(resultItem, riidx) in resultData.task_result" :key="riidx"
+                :header="`主机: ${resultItem.host_name}`">
                 <a-descriptions :column="{sm: 1}">
                   <a-descriptions-item label="主机地址">
                     {{ resultItem.host_ip }}
@@ -40,11 +38,8 @@
                 <a-row>
                   <a-col span="8">
                     <a-descriptions :column="{sm: 1}" bordered size="small">
-                      <a-descriptions-item
-                        :label="item.item"
-                        v-for="(item, rkidx) in resultItem.check_items"
-                        :key="rkidx"
-                      >
+                      <a-descriptions-item :label="item.item"
+                        v-for="(item, rkidx) in resultItem.check_items" :key="rkidx">
                         <a-icon v-if="item.result" type="check" style="color: #52c41a" />
                         <a-icon v-else type="close" style="color: #f5222d" />
                       </a-descriptions-item>
@@ -54,7 +49,8 @@
                 <div v-if="taskType === 'cve fix'" style="margin-left: 50px;">
                   <p class="reuslt-item-title" style="margin-top: 12px">CVE修复情况:</p>
                   <a-collapse v-if="resultItem.cves.length !== 0" :bordered="false">
-                    <a-collapse-panel v-for="(cve, rkidx) in resultItem.cves" :key="rkidx" :header="`${cve.cve_id}`">
+                    <a-collapse-panel v-for="(cve, rkidx) in resultItem.cves" :key="rkidx"
+                      :header="`${cve.cve_id}`">
                       <div class="cve-item">
                         <p class="reuslt-item-title">结果:</p>
                         {{ statusResultTextMap[cve.result] }}
@@ -86,7 +82,6 @@
 </template>
 
 <script>
-
 /**
  * 任务结果报告页面
  */
@@ -137,7 +132,7 @@ export default {
   components: {},
   computed: {
     breadcrumb() {
-      const routes = this.$route.meta.diyBreadcrumb.map(route => {
+      const routes = this.$route.meta.diyBreadcrumb.map((route) => {
         return {
           path: route.path,
           breadcrumbName: i18nRender(route.breadcrumbName)
@@ -181,13 +176,13 @@ export default {
             taskId: this.taskId,
             cveList: []
           })
-            .then(function(res) {
-              _this.resultData = Object.assign({}, res.result);
+            .then(function (res) {
+              _this.resultData = Object.assign({}, res.data.result);
             })
-            .catch(function(err) {
-              _this.$message.error(err.response.data.msg);
+            .catch(function (err) {
+              _this.$message.error(err.response.message);
             })
-            .finally(function() {
+            .finally(function () {
               _this.resultLoading = false;
             });
           break;
@@ -196,20 +191,20 @@ export default {
             taskId: this.taskId,
             hostList: []
           })
-            .then(function(res) {
-              _this.resultData = Object.assign({}, res.result);
+            .then(function (res) {
+              _this.resultData = Object.assign({}, res.data.result);
             })
-            .catch(function(err) {
-              _this.$message.error(err.response.data.msg);
+            .catch(function (err) {
+              _this.$message.error(err.response.message);
             })
-            .finally(function() {
+            .finally(function () {
               _this.resultLoading = false;
             });
           break;
       }
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.getCheckResult();
   }
 };
@@ -217,10 +212,10 @@ export default {
 
 <style lang="less" scoped>
 .ant-col-8 {
-    display: block;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    width: 100%;
+  display: block;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 100%;
 }
 .reuslt-item-title {
   font-weight: 500;

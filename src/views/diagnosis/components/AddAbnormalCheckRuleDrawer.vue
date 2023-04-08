@@ -1,14 +1,10 @@
+<!-- eslint-disable vue/max-attributes-per-line -->
 <template>
   <a-form :form="form" layout="vertical" hide-required-mark>
     <a-form-item label="导入异常检测规则文件：">
       <div style="border: 1px solid #ccc;border-radius: 3px;display: inline-block;cursor: pointer">
-        <uploader
-          hidefocus
-          toJSON
-          uid="luleUploader"
-          fileType="json"
-          v-decorator="['ruleList', {rules: [{required: true, message: '请上传符合json格式的文件'}]}]"
-        />
+        <uploader hidefocus toJSON uid="luleUploader" fileType="json"
+          v-decorator="['ruleList', {rules: [{required: true, message: '请上传符合json格式的文件'}]}]" />
       </div>
       <div style="padding-left: 15px;color: #999;display: inline-block">
         支持文件扩展名：<span style="border-bottom: 1px solid;padding: 0 2px">.json</span> ...
@@ -48,7 +44,7 @@ export default {
   props: {
     addSuccess: {
       type: Function,
-      default: function() {}
+      default: function () {}
     }
   },
   data() {
@@ -60,7 +56,7 @@ export default {
       inputValue: ''
     };
   },
-  mounted: function() {
+  mounted: function () {
     this.setButtons({callBack: this.handleSubmit, text: '保存'});
   },
   methods: {
@@ -72,24 +68,24 @@ export default {
           const checkItems = values.ruleList ? values.ruleList.check_items : null;
           that.showSpin();
           importRule(checkItems)
-            .then(function(data) {
+            .then(function (res) {
               let msg = '';
-              if (data.succeed_list && data.succeed_list.length > 0) {
-                msg += '成功添加' + data.succeed_list.length + '条规则！';
+              if (res.data.succeed_list && res.data.succeed_list.length > 0) {
+                msg += '成功添加' + res.data.succeed_list.length + '条规则！';
               }
-              if (data.update_list && data.update_list.length > 0) {
-                msg += '成功更新' + data.update_list.length + '条规则！';
+              if (res.data.update_list && res.data.update_list.length > 0) {
+                msg += '成功更新' + res.data.update_list.length + '条规则！';
               }
-              if (data.fail_list && data.fail_list.length > 0) {
-                msg += '另有' + data.fail_list.length + '条规则添加失败！';
+              if (res.data.fail_list && res.data.fail_list.length > 0) {
+                msg += '另有' + res.data.fail_list.length + '条规则添加失败！';
               }
               that.$message.success(msg);
               that.addSuccess();
             })
-            .catch(function(err) {
-              that.$message.error(err.response.data.msg);
+            .catch(function (err) {
+              that.$message.error(err.response.message);
             })
-            .finally(function() {
+            .finally(function () {
               that.closeSpin();
               that.close();
             });

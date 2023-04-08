@@ -10,11 +10,11 @@
             <div>
               <a-row class="host-basic-info-row">
                 <a-col :span="12"> 主机名：{{ hostName }} </a-col>
-                <a-col :span="12"> 主机ip：{{ publicIp }} </a-col>
+                <a-col :span="12"> 主机ip：{{ hostIp }} </a-col>
               </a-row>
               <a-row class="host-basic-info-row">
                 <a-col :span="12"> 主机组：{{ hostGroupName }} </a-col>
-                <a-col :span="12"> 状态：{{ status }} </a-col>
+                <a-col :span="12"> 状态：{{ hostStatusMap[status] }} </a-col>
               </a-row>
               <span class="detail-info-toggle" @click="hostDetailToggle">
                 {{ detailTxt }}
@@ -110,19 +110,19 @@
                     <a-row type="flex">
                       <a-col :span="6" :order="1">
                         <span class="info-label">大小：</span>
-                        <CutText :text="data.size" />
+                        <CutText :text="data.size || '暂无'" />
                       </a-col>
                       <a-col :span="6" :order="2">
                         <span class="info-label">类型：</span>
-                        <CutText :text="data.type" />
+                        <CutText :text="data.type || '暂无'" />
                       </a-col>
                       <a-col :span="6" :order="3">
                         <span class="info-label">速度：</span>
-                        <CutText :text="data.speed" />
+                        <CutText :text="data.speed || '暂无'" />
                       </a-col>
                       <a-col :span="6" :order="4">
                         <span class="info-label">厂商：</span>
-                        <CutText :text="data.manufacturer" />
+                        <CutText :text="data.manufacturer || '暂无'" />
                       </a-col>
                     </a-row>
                   </div>
@@ -146,11 +146,11 @@
                     <a-row type="flex">
                       <a-col :span="12" :order="1">
                         <span class="info-label">容量：</span>
-                        <CutText :text="data.capacity" />
+                        <CutText :text="data.capacity || '暂无'" />
                       </a-col>
                       <a-col :span="12" :order="2">
                         <span class="info-label">模型：</span>
-                        <CutText :text="data.model" :length="20" />
+                        <CutText :text="data.model || '暂无'" :length="20" />
                       </a-col>
                     </a-row>
                   </div>
@@ -166,11 +166,21 @@
 <script>
 import CutText from '@/components/CutText';
 
+const hostStatusMap = {
+  '0': '在线',
+  '1': '离线',
+  '2': '未确认',
+  '3': '扫描中',
+  '4': '已完成',
+  '5': '未知'
+};
+
 export default {
   name: 'AddHostDetail',
   components: {CutText},
   data() {
     return {
+      hostStatusMap,
       detailToggle: true,
       detailTxt: '详情收起',
       detailIcon: 'up',
@@ -178,7 +188,7 @@ export default {
       hostId: this.$route.params.hostId,
       hostGroupName: undefined,
       hostName: undefined,
-      publicIp: undefined,
+      hostIp: undefined,
       scene: undefined,
       status: undefined,
       os: {},
@@ -217,7 +227,7 @@ export default {
     getHostDetail() {
       const data = this.basicHostInfo;
       this.hostGroupName = data.host_group_name || '暂无';
-      this.publicIp = data.public_ip || '暂无';
+      this.hostIp = data.host_ip || '暂无';
       this.status = data.status || '暂无';
       this.hostName = data.host_name || '暂无';
       this.scene = data.scene || '暂无';
@@ -232,11 +242,7 @@ export default {
         this.cpu[member] = data.cpu[member] || '暂无';
       }
       for (const member in data.memory) {
-        if (member === 'info') {
-          this.memory[member] = '暂无'
-        } else {
-          this.memory[member] = data.memory[member] || '暂无';
-        }
+        this.memory[member] = data.memory[member] || '暂无';
       }
       this.disk = data.disk || [];
     },

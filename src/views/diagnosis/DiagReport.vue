@@ -22,7 +22,8 @@
       </div>
       <a-tabs default-active-key="1" style="min-height: 350px">
         <a-tab-pane key="1" tab="树图">
-          <fault-tree :treeData="reportData.report || {}" :treeDataLoading="reportLoading" :highLightError="true" />
+          <fault-tree :treeData="reportData.report || {}" :treeDataLoading="reportLoading"
+            :highLightError="true" />
         </a-tab-pane>
         <a-tab-pane key="2" tab="文件" force-render>
           <a-card style="white-space: pre-wrap;">
@@ -68,9 +69,9 @@ export default {
       reportList.push(_this.task_id);
       this.reportLoading = true;
       getdiagreport(reportList)
-        .then(function(res) {
-          if (res.code === 200) {
-            const temp = res.result[0] || {};
+        .then(function (res) {
+          if (res.code === '200') {
+            const temp = res.data.result[0] || {};
             _this.reportData = {
               ...temp,
               timeRange: `${dateFormat('YYYY-mm-dd HH:MM:SS', temp.start * 1000)} - ${dateFormat(
@@ -84,10 +85,10 @@ export default {
             _this.getHostInfo(temp && temp.host_id);
           }
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.reportLoading = false;
         });
     },
@@ -98,13 +99,13 @@ export default {
         basic: true,
         host_list: [id]
       })
-        .then(function(res) {
-          _this.hostInfo = (res.host_infos && res.host_infos[0]) || {};
+        .then(function (res) {
+          _this.hostInfo = (res.data.host_infos && res.data.host_infos[0]) || {};
         })
-        .catch(function(err) {
-          _this.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.hostInfoLoading = false;
         });
     }

@@ -72,7 +72,7 @@ export default {
           _this.collapseIsLoading = false;
         })
         .catch(err => {
-          _this.$message.error(err.response.data.message);
+          _this.$message.error(err.response.message);
           _this.collapseIsLoading = false;
         });
     }

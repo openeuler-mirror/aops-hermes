@@ -25,22 +25,15 @@
               </a-button>
             </template>
             <template slot="drawerView">
-              <add-abnormal-check-rule-drawer :addSuccess="handleAddSuccess"></add-abnormal-check-rule-drawer>
+              <add-abnormal-check-rule-drawer
+                :addSuccess="handleAddSuccess"></add-abnormal-check-rule-drawer>
             </template>
           </drawer-view>
         </a-col>
       </a-row>
-      <a-table
-        rowKey="check_item"
-        :columns="columns"
-        :data-source="ruleList"
-        :pagination="pagination"
-        :row-selection="rowSelection"
-        @change="handleTableChange"
-        :loading="tableIsLoading"
-        :expandIconAsCell="false"
-        :expandIconColumnIndex="2"
-      >
+      <a-table rowKey="check_item" :columns="columns" :data-source="ruleList"
+        :pagination="pagination" :row-selection="rowSelection" @change="handleTableChange"
+        :loading="tableIsLoading" :expandIconAsCell="false" :expandIconColumnIndex="2">
         <span slot="index" slot-scope="text, record, index">
           {{ index + firstIndex }}
         </span>
@@ -50,7 +43,8 @@
         <span slot="action" slot-scope="rule">
           <a href="#" @click="handleDelete([rule.check_item])">删除</a>
         </span>
-        <div slot="expandedRowRender" slot-scope="result" style="width: 100%;margin: 1px;padding-left: 50px;">
+        <div slot="expandedRowRender" slot-scope="result"
+          style="width: 100%;margin: 1px;padding-left: 50px;">
           <check-result-expanded :dataSource="result.data_list"></check-result-expanded>
         </div>
       </a-table>
@@ -79,7 +73,7 @@ export default {
     CheckResultExpanded,
     CutText
   },
-  mounted: function() {
+  mounted: function () {
     this.getRuleCount();
     this.getResultCountTopTen();
     this.getRuleList();
@@ -119,11 +113,11 @@ export default {
       var that = this;
       this.countIsLoading = true;
       getRuleCount()
-        .then(function(data) {
-          that.ruleCount = data.rule_count;
+        .then(function (res) {
+          that.ruleCount = res.data.rule_count;
         })
-        .catch(function(err) {
-          that.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          that.$message.error(err.response.message);
         })
         .finally(() => {
           that.countIsLoading = false;
@@ -132,11 +126,11 @@ export default {
     getResultCountTopTen() {
       var that = this;
       getResultCountTopTen()
-        .then(function(data) {
-          that.resultCountList = data.results;
+        .then(function (res) {
+          that.resultCountList = res.data.results;
         })
-        .catch(function(err) {
-          that.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          that.$message.error(err.response.message);
         });
     },
     handleTableChange(pagination) {
@@ -148,13 +142,13 @@ export default {
       var that = this;
       this.tableIsLoading = true;
       getRule({perPage: this.pagination.pageSize, page: this.pagination.current})
-        .then(function(data) {
-          that.ruleList = data.check_items;
+        .then(function (res) {
+          that.ruleList = res.data.check_items;
           that.pagination = {...that.pagination};
-          that.pagination.total = data.total_count;
+          that.pagination.total = res.data.total_count;
         })
-        .catch(function(err) {
-          that.$message.error(err.response.data.msg);
+        .catch(function (err) {
+          that.$message.error(err.response.message);
         })
         .finally(() => {
           that.tableIsLoading = false;
@@ -165,14 +159,14 @@ export default {
       const _this = this;
       return new Promise((resolve, reject) => {
         deleteRule(chekcItemList)
-          .then(res => {
+          .then((res) => {
             that.selectedRowKeys = [];
             that.refresh();
-            that.$message.success(res.msg);
+            that.$message.success(res.message);
             resolve();
           })
-          .catch(err => {
-            _this.$message.error(err.response.data.msg);
+          .catch((err) => {
+            _this.$message.error(err.response.message);
             reject(err);
           });
       });
@@ -189,7 +183,7 @@ export default {
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '删除',
-        onOk: function() {
+        onOk: function () {
           return _this.deleteRule(checkItemList);
         },
         onCancel() {}
@@ -207,7 +201,7 @@ export default {
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '删除',
-        onOk: function() {
+        onOk: function () {
           return _this.deleteRule(_this.selectedRowKeys);
         },
         onCancel() {}
@@ -220,7 +214,7 @@ export default {
       const _this = this;
       this.tableIsLoading = true;
       this.countIsLoading = true;
-      setTimeout(function() {
+      setTimeout(function () {
         _this.getRuleCount();
         _this.getRuleList();
       }, 1500);
