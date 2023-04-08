@@ -68,10 +68,16 @@
                 {{ packages }}
               </span>
             </div>
+            <div slot="hotpatch" slot-scope="hotpatch">
+              <a-spin v-if="actionsIsLoading" />
+              <span v-else>
+                {{ hotpatch ? '是' : '否' }}
+              </span>
+            </div>
             <a-table
-              rowKey="host_id"
-              slot="expandedRowRender"
-              slot-scope="record"
+            rowKey="host_id"
+            slot="expandedRowRender"
+            slot-scope="record"
               :columns="innerColumns"
               :rowSelection="{
                 selectedRowKeys: selectedRowKeyMaps[record.cve_id] || [],
@@ -578,6 +584,7 @@ export default {
       this.cveList.forEach((cveInfo) => {
         const hostListUnderCve = cveMap[cveInfo.cve_id];
         cveInfo.hostsList = hostListUnderCve || [];
+        console.log(cveInfo)
 
         if (hostListUnderCve && hostListUnderCve.length > 0) {
           this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve.map((host) => host.host_id);

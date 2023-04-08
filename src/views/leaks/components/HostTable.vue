@@ -678,7 +678,7 @@ export default {
     this.getHostGroup();
     if (this.standalone) {
       // 主机列表页面中要自行获取全量主机和扫描状态
-      this.getScanStatusAll([]);
+      // this.getScanStatusAll([]);
       this.getHostListAll();
     } else {
       // 主机详情页面中要自行获取repo列表

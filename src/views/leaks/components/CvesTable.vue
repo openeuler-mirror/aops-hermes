@@ -32,12 +32,17 @@
               @statusUpdated="handleStatusUpdated" />
           </a-col> -->
           <a-col>
+            <status-change-modal
+            :selectedRowsAll="selectedRowsAll"
+              @statusUpdated="handleStatusUpdated" />
+          </a-col>
+          <a-col>
             <upload-file v-if="standalone ? true : false" @addSuccess="handleUploadSuccess" />
           </a-col>
           <a-col v-if="selectedRowKeys.length === 0">
             <create-repair-task-drawer
-              text="生成修复任务"
-              taskType="cve fix"
+            text="生成修复任务"
+            taskType="cve fix"
               :cveListProps="standalone ? cveAllList : cveAllListProp"
               :loading="standalone ? cveAllIsLoading : cveAllIsLoadingProp"
               :hostListType="standalone ? 'byLoading' : 'byOneHost'"
