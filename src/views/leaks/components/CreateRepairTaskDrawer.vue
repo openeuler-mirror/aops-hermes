@@ -89,8 +89,8 @@
               :pagination="false">
               <div slot="hotpatch" slot-scope="hotpatch">
                 <span>
-                  <a-switch :defaultChecked="hotpatch" checked-children="是" un-checked-children="否" :disabled="!hotpatch" style="margin-bottom:5px"
-                  @change="hotchange" />
+                  <a-switch :defaultChecked="hotpatch" checked-children="是" un-checked-children="否" :disabled="!record.hotpatch" style="margin-bottom:5px"
+                  @change="hotchange(record.cve_id)" />
                 </span>
               </div>
             </a-table>
@@ -371,8 +371,15 @@ export default {
       return true;
     },
 
-    hotchange(checked) {
-      console.log(checked)
+    // 更改cve下主机的热更新状态
+    hotchange(value) {
+      this.cveList.forEach((item) => {
+        if (item.cve_id === value) {
+          item.hostsList.forEach((msg) => {
+           this.$set(msg, 'hotpatch', !msg.hotpatch)
+          })
+        }
+      })
     },
 
     // 每次展开抽屉时触发，替代mounted
@@ -384,6 +391,7 @@ export default {
       this.visible = true;
       console.log(this.cveListProps)
       this.cveList = this.cveListProps;
+      console.log(this.cveList)
       this.isResetChecked = true;
       this.selectedRowKeyMaps = {};
       this.selectedRowsAllMaps = {};
@@ -456,6 +464,7 @@ export default {
     handleSubmit(excuteASAP = false) {
       const _this = this;
       this.form.validateFields((err, values) => {
+        console.log(values)
         if (!err) {
           if (!excuteASAP) {
             this.submitLoading = true;

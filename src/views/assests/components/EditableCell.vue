@@ -9,6 +9,7 @@
         <a-form-model-item :prop="formkey">
           <a-input @change="handleChange" @pressEnter="check" v-model="form[formkey]" />
           <a-icon
+            style="top: -7px;"
             type="check"
             class="editable-cell-icon-check"
             @click="check"
@@ -16,8 +17,11 @@
         </a-form-model-item>
       </div>
       <div v-else class="editable-cell-text-wrapper">
-         <div class="editable-content">{{ value || ' ' }}</div>
-         <a-icon type="edit" class="editable-cell-icon" @click="edit" />
+        <div class="editable-content">
+          <!-- <a-input :type="formkey === 'password' ? 'password' : 'text'" v-model="value" /> -->
+         {{ value || ' ' }}
+        </div>
+        <a-icon type="edit" class="editable-cell-icon" @click="edit" />
       </div>
     </a-form-model>
   </div>

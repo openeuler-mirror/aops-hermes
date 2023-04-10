@@ -10,7 +10,7 @@
             不受影响
           </a-radio-button>
         </a-radio-group>
-        <a-input-search placeholder="按CVE ID搜索" style="width: 200px;margin-left: 10px;" @search="onSearch" />
+        <a-input-search placeholder="按CVE ID搜索" style="width: 200px;margin-left: 10px;" v-model="cveSearch" @change="searchChange" @search="onSearch" />
       </a-col>
       <a-col>
         <a-row type="flex" :gutter="6">
@@ -31,11 +31,6 @@
             :selectedRowsAll="selectedRowsAll"
               @statusUpdated="handleStatusUpdated" />
           </a-col> -->
-          <a-col>
-            <status-change-modal
-            :selectedRowsAll="selectedRowsAll"
-              @statusUpdated="handleStatusUpdated" />
-          </a-col>
           <a-col>
             <upload-file v-if="standalone ? true : false" @addSuccess="handleUploadSuccess" />
           </a-col>
@@ -307,6 +302,7 @@ export default {
   },
   data() {
     return {
+      cveSearch: '',
       scanloading: false,
       size: 'small',
       tableData: [],
@@ -328,6 +324,17 @@ export default {
     };
   },
   methods: {
+    searchChange() {
+      console.log(this.cveSearch)
+      if (!this.filters) {
+        this.filters = {};
+      }
+      if (this.cveSearch !== '') {
+        this.filters.cveId = this.cveSearch;
+      } else {
+        this.filters.cveId = undefined;
+      }
+    },
     handleChange(e) {
       if (e.target.value === 'a') {
         this.affected = true;

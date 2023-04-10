@@ -12,7 +12,7 @@
     </div>
     <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
       <a-col>
-        <a-input-search placeholder="按主机名搜索" style="width: 200px" @search="onSearch" />
+        <a-input-search placeholder="按主机名搜索" v-model="hostSearch" @change="searchChange" style="width: 200px" @search="onSearch" />
       </a-col>
       <a-col>
         <a-row type="flex" :gutter="6">
@@ -288,6 +288,7 @@ export default {
   },
   data() {
     return {
+      hostSearch: '',
       hostTableData: [],
       hostTableIsLoading: false,
       pagination: defaultPagination,
@@ -311,6 +312,17 @@ export default {
     };
   },
   methods: {
+    searchChange() {
+      console.log(this.hostSearch)
+      if (!this.filters) {
+        this.filters = {};
+      }
+      if (this.hostSearch !== '') {
+        this.filters.host_name = this.hostSearch;
+      } else {
+        this.filters.host_name = undefined;
+      }
+    },
     getAllHost() {
       this.getHostList();
       this.getHostGroup();

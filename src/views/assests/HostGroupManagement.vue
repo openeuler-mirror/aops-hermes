@@ -297,7 +297,11 @@ export default {
     },
     deleteHostGroup(record) {
       if (record.host_count > 0) {
-        this.$warning({title: '主机组内有主机时无法删除'});
+        this.$warning({
+          title: '主机组内有主机时无法删除',
+          onOk: function () {
+          }
+        });
         return;
       }
       const _this = this;

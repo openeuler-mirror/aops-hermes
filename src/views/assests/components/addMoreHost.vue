@@ -8,13 +8,13 @@
             <div style="flex">
               <a-button> <a-icon type="upload" /> 选择文件 </a-button>
             </div>
-            <div style="margin-left: 35px;margin-top: 3px;font-size:15px;">
-              <span>支持类型: xls、xlsx、csv，</span>
-              <span class="upload_head_download" @click="goDownLoad">下载模版</span>
-              <!-- <p>文件需小于20M、压缩包内文件数小于100</p> -->
-            </div>
           </div>
         </a-upload>
+        <span style="font-size: 15px;position: absolute;left: 147px;top: 84px;">
+            <span>支持类型: xls、xlsx、csv，</span>
+            <span class="upload_head_download" @click="goDownLoad">下载模版</span>
+            <!-- <p>文件需小于20M、压缩包内文件数小于100</p> -->
+        </span>
         <div style="display: flex;margin-top: 15px;">
             <div style="flex">
               <a-button style="margin-left: 20px" @click="handleAdd" v-if="tableVis"> 新增 </a-button>
@@ -302,7 +302,6 @@ export default {
       if (!arr.includes(suffix)) {
         this.$message.error('文件类型不符合规定!');
         this.removeFile(file);
-        return false;
       } else {
         // 处理文件数据
         const data = await this.readFile(file);
@@ -314,7 +313,6 @@ export default {
           if (!arr.includes('host_ip') || !arr.includes('ssh_port') || !arr.includes('ssh_user') || !arr.includes('password') || !arr.includes('host_name') || !arr.includes('host_group_name') || !arr.includes('management')) {
             this.removeFile(file);
             this.dataAllow = false;
-            return false;
           }
         })
         setTimeout(() => {
@@ -429,6 +427,24 @@ export default {
 }
 .tableShow{
   display: revert;
+}
+/* /deep/ .editable-cell-text-wrapper {
+  height: 32px!important;
+} */
+/deep/ .ant-form-item {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    color: rgba(0, 0, 0, 0.65);
+    font-size: 14px;
+    font-variant: tabular-nums;
+    line-height: 1.5;
+    list-style: none;
+    -webkit-font-feature-settings: 'tnum';
+    font-feature-settings: 'tnum';
+    margin-bottom: 0!important;
+    vertical-align: top;
 }
 </style>
 <style lang="less" scoped>

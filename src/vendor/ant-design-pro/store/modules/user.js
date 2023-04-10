@@ -146,7 +146,7 @@ const user = {
     // 刷新token
     RefreshToken({ commit, state }) {
       return new Promise((resolve, reject) => {
-        const refreshToken = `${state.refreshToken}`
+        const refreshToken = localStorage.getItem('Refresh-Token').substring(1, localStorage.getItem('Refresh-Token').length - 1)
         refreshTokenFn(refreshToken).then((res) => {
           if (res.code === '200') {
             const in20Minutes = 1 / 72;
