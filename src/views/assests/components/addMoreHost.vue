@@ -29,57 +29,57 @@
           bordered>
           <template slot="host_ip" slot-scope="text, record">
             <editable-cell
-            ref="host_ip"
-            formkey="host_ip"
-            :text="String(text)"
+              ref="host_ip"
+              formkey="host_ip"
+              :text="String(text)"
               @uploadstatus="uploadstatus($event)"
               @change="onCellChange(record.key, 'host_ip', $event)" />
           </template>
           <template slot="ssh_port" slot-scope="text, record">
             <editable-cell
-            ref="ssh_port"
-            formkey="ssh_port"
-            :text="String(text)"
+              ref="ssh_port"
+              formkey="ssh_port"
+              :text="String(text)"
               @uploadstatus="uploadstatus($event)"
               @change="onCellChange(record.key, 'ssh_port', $event)" />
           </template>
           <template slot="ssh_user" slot-scope="text, record">
             <editable-cell
-            ref="ssh_user"
-            formkey="ssh_user"
-            :text="String(text)"
+              ref="ssh_user"
+              formkey="ssh_user"
+              :text="String(text)"
               @uploadstatus="uploadstatus($event)"
               @change="onCellChange(record.key, 'ssh_user', $event)" />
           </template>
           <template slot="password" slot-scope="text, record">
             <editable-cell
-            ref="password"
-            formkey="password"
-            :text="String(text)"
+              ref="password"
+              formkey="password"
+              :text="String(text)"
               @uploadstatus="uploadstatus($event)"
               @change="onCellChange(record.key, 'password', $event)" />
           </template>
           <template slot="host_name" slot-scope="text, record">
             <editable-cell
-            ref="host_name"
-            formkey="host_name"
-            :text="String(text)"
+              ref="host_name"
+              formkey="host_name"
+              :text="String(text)"
               @uploadstatus="uploadstatus($event)"
               @change="onCellChange(record.key, 'host_name', $event)" />
           </template>
           <template slot="host_group_name" slot-scope="text, record">
             <editable-cell
-            ref="host_group_name"
-            formkey="host_group_name"
-            :text="String(text)"
+              ref="host_group_name"
+              formkey="host_group_name"
+              :text="String(text)"
               @uploadstatus="uploadstatus($event)"
               @change="onCellChange(record.key, 'host_group_name', $event)" />
           </template>
           <template slot="management" slot-scope="text, record">
             <editable-cell
-            ref="management"
-            formkey="management"
-            :text="String(text)"
+              ref="management"
+              formkey="management"
+              :text="String(text)"
               @uploadstatus="uploadstatus($event)"
               @change="onCellChange(record.key, 'management', $event)" />
           </template>
@@ -191,6 +191,7 @@ export default {
           width: 150,
           key: 'host_name',
           title: '主机名称',
+          // customRender: (hostName) => String(hostName),
           scopedSlots: {customRender: 'host_name'}
         },
         {
@@ -294,43 +295,47 @@ export default {
       });
     },
     async preUpload(file) {
-      this.dataAllow = true
-      this.fileDataList = [file];
-      // 文件类型
-      var suffix = file.name.substring(file.name.lastIndexOf('.') + 1);
-      var arr = ['xlsx', 'xls', 'csv'];
-      if (!arr.includes(suffix)) {
-        this.$message.error('文件类型不符合规定!');
-        this.removeFile(file);
-      } else {
-        // 处理文件数据
-        const data = await this.readFile(file);
-        const workbook = XLSX.read(data, {type: 'binary'}); //  解析二进制格式数据
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]]; // 获取第一个Sheet
-        const result = XLSX.utils.sheet_to_json(worksheet); // 将数据json数据格式
-        result.forEach((item) => {
-          const arr = Object.keys(item)
-          if (!arr.includes('host_ip') || !arr.includes('ssh_port') || !arr.includes('ssh_user') || !arr.includes('password') || !arr.includes('host_name') || !arr.includes('host_group_name') || !arr.includes('management')) {
-            this.removeFile(file);
-            this.dataAllow = false;
-          }
-        })
-        setTimeout(() => {
-          if (this.dataAllow) {
-            this.tableData = result;
-            this.count = this.tableData.length
-            for (let i = 0; i < this.tableData.length; i++) {
-              this.tableData[i]['key'] = i.toString();
-              this.tableData[i]['result'] = '';
+      return new Promise(async (resolve, reject) => {
+        this.dataAllow = true
+        this.fileDataList = [file];
+        // 文件类型
+        var suffix = file.name.substring(file.name.lastIndexOf('.') + 1);
+        var arr = ['xlsx', 'xls', 'csv'];
+        if (!arr.includes(suffix)) {
+          this.$message.error('文件类型不符合规定!');
+          this.removeFile(file);
+        } else {
+          // 处理文件数据
+          const data = await this.readFile(file);
+          const workbook = XLSX.read(data, {type: 'binary'}); //  解析二进制格式数据
+          const worksheet = workbook.Sheets[workbook.SheetNames[0]]; // 获取第一个Sheet
+          const result = XLSX.utils.sheet_to_json(worksheet); // 将数据json数据格式
+          result.forEach((item) => {
+            const arr = Object.keys(item)
+            if (!arr.includes('host_ip') || !arr.includes('ssh_port') || !arr.includes('ssh_user') || !arr.includes('password') || !arr.includes('host_name') || !arr.includes('host_group_name') || !arr.includes('management')) {
+              this.removeFile(file);
+              this.dataAllow = false;
             }
-            this.cacheData = this.tableData.map((item) => ({...item}));
-            this.tableVis = true;
-          } else {
-            this.$message.error('文件参数不符合规定!');
-          }
-        }, 1)
-      }
-      return false
+          })
+          setTimeout(() => {
+            if (this.dataAllow) {
+              this.tableData = result;
+              this.count = this.tableData.length
+              for (let i = 0; i < this.tableData.length; i++) {
+                this.tableData[i]['key'] = i.toString();
+                this.tableData[i]['result'] = '';
+              }
+              this.cacheData = this.tableData.map((item) => ({...item}));
+              this.tableVis = true;
+            } else {
+              this.$message.error('文件参数不符合规定!');
+            }
+          }, 1)
+        }
+        //  eslint-disable-next-line prefer-promise-reject-errors
+        return reject(false)
+        //  reject阻止默认上传
+      })
     },
     goUpload() {
       const {fileDataList} = this;
@@ -340,6 +345,7 @@ export default {
       });
       const tableParams = JSON.parse(JSON.stringify(this.tableData));
       tableParams.forEach((item) => {
+        this.$set(item, 'host_name', String(item.host_name))
         item.management = Boolean(item.management)
         delete item.key;
         delete item.editable;

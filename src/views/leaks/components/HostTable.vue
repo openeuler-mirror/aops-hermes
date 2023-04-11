@@ -479,11 +479,11 @@ export default {
           _this.scanStatusData = res.data.result || {};
           if (_this.standalone) {
             _this.scanningHostIds = _this.getScanningHostAll(res.data.result);
-            // if (_this.scanningHostIds.length > 0) {
+            if (_this.scanningHostIds.length > 0) {
             _this.scanStatueAllTimeout = setTimeout(function () {
               _this.getScanStatusAll(_this.scanningHostIds);
             }, configs.scanProgressInterval);
-            // }
+            }
           }
         })
         .catch(function (err) {
