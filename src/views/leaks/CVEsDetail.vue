@@ -40,7 +40,7 @@
                 <table class="drawer-cve-table">
                   <th>序号</th>
                   <th>cve名称</th>
-                  <tr v-for="(cve, index) in detail.related_cve" :key="index">
+                  <tr v-for="(cve, index) in detail.related_cve" :key="cve">
                     <td>{{ index + 1 }}</td>
                     <td>
                       <a @click="jumpToAnotherCVE(cve)">{{ cve }}</a>

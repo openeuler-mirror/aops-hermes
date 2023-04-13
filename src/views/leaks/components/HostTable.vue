@@ -118,6 +118,7 @@
  * hostlist 表格的业务逻辑公共组件。根据props中standalone属性确定是自动获取列表信息，还是通过外部获取列表信息。
  */
 
+import { Modal } from 'ant-design-vue';
 import CreateRepairTaskDrawer from './CreateRepairTaskDrawer';
 import {getHostLeakList, scanHost, getHostScanStatus, getRepoList, getCveExport} from '@/api/leaks';
 import {hostGroupList} from '@/api/assest';
@@ -392,8 +393,13 @@ export default {
             _this.$confirm({
               title: '确定扫描以下主机?',
               content: _this.selectedRowsAll.map((host) => host.host_name).join('、'),
+              okText: '确认',
+              cancelText: '取消',
               icon: () => <a-icon type="exclamation-circle" />,
-              onOk: function () {
+              onOk: function (value, a) {
+                console.log(value, a)
+                const modal = Modal.confirm();
+                modal.destroy();
                 _this.scanloading = true;
                 const requestIds = _this.selectedRowKeys;
                 return scanHost({

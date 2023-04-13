@@ -18,7 +18,8 @@ export function register(parameter) {
     method: 'post',
     data: {
       username: parameter.username,
-      password: parameter.password
+      password: parameter.password,
+      email: parameter.email
     }
   });
 }

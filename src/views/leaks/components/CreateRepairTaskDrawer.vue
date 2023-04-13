@@ -432,6 +432,8 @@ export default {
             .then(function (res) {
               // hostlists are contained in cveMap
               const cveMap = res.data.result || {};
+              console.log(cveMap)
+              console.log(_this.cveList)
               _this.addHostListToCVEData(cveMap);
             })
             .catch(function (err) {
