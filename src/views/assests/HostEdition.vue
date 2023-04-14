@@ -12,7 +12,7 @@
             :maxLength="50"
              v-decorator="[
                 'host_name',
-                {rules: [{required: true, message: '请输入主机名称'}, {validator: checkNameInput}]}
+                {rules: [{ required: true, message: '请输入主机名称'}, {validator: checkNameInput}]}
               ]"
               placeholder="请输入主机名称,50个字符以内">
               <a-tooltip slot="suffix" title="最大长度50个字符，由数字、小写字母、英文下划线_组成。以小写字母开头，且结尾不能是英文下划线_">
@@ -45,6 +45,7 @@
           </a-form-item>
           <a-form-item label="IP地址">
             <a-input
+            :disabled="pageType === 'edit'"
             v-decorator="[
                 'host_ip',
                 {
@@ -73,8 +74,8 @@
             <a-radio-group
             name="managementGroup"
               v-decorator="['management', {initialValue: true}]">
-              <a-radio :value="false">管理节点</a-radio>
-              <a-radio :value="true">监控节点</a-radio>
+              <a-radio :value="true">管理节点</a-radio>
+              <a-radio :value="false">监控节点</a-radio>
             </a-radio-group>
           </a-form-item>
           <a-form-item label="主机用户名">
@@ -93,9 +94,9 @@
             <a-input-password
             v-decorator="[
                 'password',
-                {rules: [{required: true, message: '请输入主机登录密码'}]}
+                {rules: [{required: pageType === 'create' ? true : false, message: '请输入主机登录密码'}]}
               ]"
-              placeholder="请设置登录密码"></a-input-password>
+              placeholder="请设置登录密码, 若为空则不修改"></a-input-password>
           </a-form-item>
           <!-- <a-form-item label="主机sudo密码">
             <a-input-password
@@ -143,16 +144,16 @@ import {i18nRender} from '@/vendor/ant-design-pro/locales';
 import {PageHeaderWrapper} from '@ant-design-vue/pro-layout';
 import AddHostGroupModal from './components/AddHostGroupModal';
 
-import {hostGroupList, addHost} from '@/api/assest';
-
+import {hostGroupList, addHost, getHostDetail, editHost} from '@/api/assest';
 export default {
-  name: 'HostEdition',
   components: {
     PageHeaderWrapper,
     AddHostGroupModal
   },
   data() {
     return {
+      hostId: '',
+      basicHostInfo: undefined,
       pageType: 'edit',
       hostGroupList: [],
       hostGroupIsLoading: false,
@@ -188,12 +189,12 @@ export default {
   },
   created() {
     // 判断是新建页面还是编辑页面
-    if (this.$route.path.indexOf('edit') > -1) {
+    if (this.$route.query.pageType === 'edit') {
       this.pageType = 'edit';
       if (!this.hostInfo.host_id) {
-        router.go(-1);
+        // router.go(-1);
       }
-      this.hostId = this.$route.params.hostId;
+      this.hostId = this.$route.query.hostId;
     } else {
       this.pageType = 'create';
     }
@@ -226,11 +227,21 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           this.submitLoading = true;
-          // 后需调整：修改时传host_id, 新建时传host_name
+          // 后需调整：修改时传host_id, 新建时传host_ip
           if (this.pageType === 'edit') {
-            values.host_id = this.hostInfo.host_id;
-          }
-          addHost(values)
+            delete values.host_ip
+            const tableParams = JSON.parse(JSON.stringify(values));
+            for (const key in tableParams) {
+             if (tableParams[key] === this.basicHostInfo[key]) {
+               delete tableParams[key] //  删除未修改数据
+             }
+             if (key === 'password') {
+               if (tableParams[key].length === 0) {
+                 delete tableParams[key] //  password为空不传
+               }
+             }
+            }
+            editHost(tableParams, this.hostId)
             .then(function (res) {
               _this.$message.success(res.message);
               store.dispatch('resetHostInfo');
@@ -242,6 +253,20 @@ export default {
             .finally(function () {
               _this.submitLoading = false;
             });
+          } else {
+            addHost(values)
+            .then(function (res) {
+              _this.$message.success(res.message);
+              store.dispatch('resetHostInfo');
+              router.push('/assests/hosts-management');
+            })
+            .catch(function (err) {
+              _this.$message.error(err.response.message);
+            })
+            .finally(function () {
+              _this.submitLoading = false;
+            });
+          }
         }
       });
     },
@@ -319,18 +344,33 @@ export default {
         return;
       }
       cb();
+    },
+    getHostInfo() {
+      const _this = this;
+      getHostDetail(this.hostId, true)
+        .then(function (res) {
+          _this.basicHostInfo = res.data.host_infos[0];
+          _this.form.setFieldsValue({
+            host_name: _this.basicHostInfo.host_name,
+            host_group_name: _this.basicHostInfo.host_group_name,
+            host_ip: _this.basicHostInfo.host_ip,
+            ssh_port: _this.basicHostInfo.ssh_port,
+            ssh_user: _this.basicHostInfo.ssh_user,
+            management: _this.basicHostInfo.management
+          });
+        })
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
+        })
+        .finally(() => {
+          _this.basicHostInfoIsLoading = false;
+        });
     }
   },
   mounted: function () {
     this.getHostGroupList();
     if (this.pageType === 'edit') {
-      this.form.setFieldsValue({
-        host_name: this.hostInfo.host_name,
-        host_group_id: this.hostInfo.host_group_id,
-        host_ip: this.hostInfo.host_ip,
-        ssh_port: this.hostInfo.ssh_port,
-        management: (this.hostInfo.management || '').toLowerCase() === 'true' || false
-      });
+      this.getHostInfo()
     }
   }
 };

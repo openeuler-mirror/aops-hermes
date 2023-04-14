@@ -19,7 +19,8 @@
       <div v-else class="editable-cell-text-wrapper">
         <div class="editable-content">
           <!-- <a-input :type="formkey === 'password' ? 'password' : 'text'" v-model="value" /> -->
-         {{ value || ' ' }}
+          <span v-if="formkey === 'password'">******</span>
+          <span v-else>{{ value || ' ' }}</span>
         </div>
         <a-icon type="edit" class="editable-cell-icon" @click="edit" />
       </div>
@@ -156,10 +157,16 @@ export default {
   padding: 5px 24px 5px 5px;
 }
 
-.editable-cell-icon,
-.editable-cell-icon-check {
+.editable-cell-icon {
   position: absolute;
   right: 0;
+  width: 20px;
+  cursor: pointer;
+}
+
+.editable-cell-icon-check {
+  position: absolute;
+  right: -26px;
   width: 20px;
   cursor: pointer;
 }

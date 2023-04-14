@@ -31,6 +31,10 @@ const routeMap = {
           CreateHost: {
             title: 'menu.assests.create-host',
             path: '/assests/hosts-management/host-create'
+          },
+          EditHost: {
+            title: 'menu.assests.edit-host',
+            path: '/assests/hosts-management/host-edit'
           }
         }
       }
@@ -264,13 +268,31 @@ export const asyncRouterMap = [
                 }
               },
               {
-                path: '/assests/host/edit/:hostId',
+                path: routeMap.assests.children.hostView.children.EditHost.path,
                 name: 'EditHost',
                 hidden: true,
                 component: () => import('@/views/assests/HostEdition'),
                 meta: {
-                  title: 'menu.assests.edit-host',
-                  permission: ['assests']
+                  title: routeMap.assests.children.hostView.children.EditHost.title,
+                  permission: ['assests'],
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.assests.title,
+                      path: routeMap.assests.path
+                    },
+                    {
+                      breadcrumbName: routeMap.assests.children.hostView.children.HostsManagement.title,
+                      path: routeMap.assests.children.hostView.children.HostsManagement.path
+                    },
+                    {
+                      breadcrumbName: routeMap.assests.children.hostView.children.EditHost.title,
+                      path: routeMap.assests.children.hostView.children.EditHost.path
+                    }
+                  ]
                 }
               }
             ]

@@ -1,7 +1,7 @@
 <template>
   <my-page-header-wrapper extraDesc="对建立的主机组进行管理。">
     <a-card :bordered="false" class="aops-theme">
-      <div>
+      <div class="hostgroupbox">
         <div>共获取到{{ tableData.length }}条主机组信息</div>
         <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
           <a-col>
@@ -299,6 +299,7 @@ export default {
       if (record.host_count > 0) {
         this.$warning({
           title: '主机组内有主机时无法删除',
+          okText: '确定',
           onOk: function () {
           }
         });
@@ -405,6 +406,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.aops-theme {
+  .hostgroupbox {
+    overflow: auto;
+  }
+}
 .ant-lert {
   line-height: 14px;
 }

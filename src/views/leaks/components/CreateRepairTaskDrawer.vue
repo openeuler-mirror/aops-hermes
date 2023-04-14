@@ -432,8 +432,20 @@ export default {
             .then(function (res) {
               // hostlists are contained in cveMap
               const cveMap = res.data.result || {};
-              console.log(cveMap)
-              console.log(_this.cveList)
+              Object.keys(cveMap).forEach((cve) => {
+                let existsHotpatch = false
+                cveMap[cve].forEach((host) => {
+                  if (host.hotpatch) {
+                    existsHotpatch = true
+                  }
+                })
+
+                _this.cveList.forEach((cveinfo, index) => {
+                  if (cveinfo.cve_id === cve) {
+                    _this.cveList[index].hotpatch = existsHotpatch
+                  }
+                })
+              })
               _this.addHostListToCVEData(cveMap);
             })
             .catch(function (err) {

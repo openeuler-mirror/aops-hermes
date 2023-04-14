@@ -108,7 +108,7 @@
       <div style="display: flex;justify-content: flex-end;">
         <a-button
           type="primary"
-          :disabled="fileDataList.length === 0"
+          :disabled="fileDataList.length === 0 || tableData.length === 0"
           :loading="uploading"
           style="margin-top: 16px;width: 111px;"
           @click="goUpload">
@@ -437,7 +437,7 @@ export default {
 /* /deep/ .editable-cell-text-wrapper {
   height: 32px!important;
 } */
-/deep/ .ant-form-item {
+ ::v-deep .ant-form-item {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     margin: 0;

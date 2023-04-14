@@ -1,7 +1,7 @@
 <template>
   <my-page-header-wrapper extraDesc="对已纳管的主机进行管理。">
     <a-card :bordered="false" class="aops-theme">
-      <div>
+      <div class="hostbox">
         <div>共获取到{{ tableData.length }}条主机信息</div>
         <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
           <a-col>
@@ -67,7 +67,7 @@
                 <span>编辑</span>
                 ----------------
                 <a-divider type="vertical" /> -->
-            <a @click="connectHost(record)">连接</a>
+            <router-link :to="{path: `hosts-management/host-edit`, query: { hostId:record.host_id ,pageType: 'edit' }}" @click="editHost(record)">编辑</router-link>
             <span> | </span>
             <a @click="deleteHost(record)">删除</a>
           </span>
@@ -193,7 +193,7 @@ export default {
         },
         {
           key: 'operation',
-          width: 200,
+          width: 150,
           title: '操作',
           scopedSlots: {customRender: 'action'}
         }
@@ -270,7 +270,7 @@ export default {
           _this.tableIsLoading = false;
         });
     },
-    connectHost(record) {
+    editHost(record) {
       this.$message.success('连接到主机' + record.host_ip);
     },
     deleteHost(record) {
@@ -425,7 +425,7 @@ export default {
     getEmpty() {
       return (
         <div class="aops-app-table-empty">
-          <a-empty description="请先至客户端注册主机" image={require('@/assets/empty.svg')} />
+          <a-empty description="暂无主机数据" image={require('@/assets/empty.svg')} />
         </div>
       );
     }
@@ -438,6 +438,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.hostbox {
+  overflow: auto;
+}
 .ant-lert {
   line-height: 14px;
 }
