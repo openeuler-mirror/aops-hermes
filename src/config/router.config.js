@@ -430,7 +430,7 @@ export const asyncRouterMap = [
                 meta: {
                   title: routeMap.leaks.children.HostView.children.HostLeakList.title,
                   permission: ['leaks'],
-                  keepAlive: true,
+                  // keepAlive: true,
                   diyBreadcrumb: [
                     {
                       breadcrumbName: routeMap.index.title,
