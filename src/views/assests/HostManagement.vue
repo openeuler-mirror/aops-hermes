@@ -6,7 +6,7 @@
         <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
           <a-col>
             <a-row type="flex" :gutter="16">
-              <a-col>
+              <a-col v-if="selectedRowKeys.length > 0">
                 <a-alert type="info" show-icon>
                   <div slot="message">
                     <span>{{ `已选择` + selectedRowKeys.length + `项` }}</span>

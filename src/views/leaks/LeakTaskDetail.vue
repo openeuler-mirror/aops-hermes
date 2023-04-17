@@ -142,6 +142,7 @@
         <div slot="progress" slot-scope="progress, record">
           <a-progress :percent="Math.ceil(((progress || 0) / record.host_num) * 100)" />
         </div>
+        <span slot="package" slot-scope="packageitem">{{ packageitem || '——' }}</span>
         <div slot="status" slot-scope="status">
           <span class="task-status">
             <a-badge :status="statusValueMap[status]" />

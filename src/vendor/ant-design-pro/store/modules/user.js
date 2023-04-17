@@ -150,6 +150,8 @@ const user = {
         refreshTokenFn(refreshToken).then((res) => {
           if (res.code === '200') {
             const in20Minutes = 1 / 72;
+            storage.set(ACCESS_TOKEN, res.data.token, 7 * 24 * 60 * 60 * 1000);
+            storage.set(REFRESH_TOKIN, res.data.refresh_token, 7 * 24 * 60 * 60 * 1000)
             cookie.set('aops_token', res.data.token, {
               expires: in20Minutes
             });
