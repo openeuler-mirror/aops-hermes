@@ -7,7 +7,7 @@ const api = {
   hostInfo: '/manage/host/info/query',
   addHost: '/manage/host/add',
   addMoreHost: '/manage/host/add/batch', // 批量添加主机
-  editHost: '/manage/host/edit_host', // 未提供
+  editHost: '/manage/host/update', // 编辑主机
   deleteHost: '/manage/host/delete',
   hostGroupList: '/manage/host/group/get',
   addHostGroup: '/manage/host/group/add',
@@ -22,9 +22,9 @@ const api = {
   metricSet: '/manage/agent/metric/set',
   getHostDetail: '/manage/host/info/query',
 
-  getHostMetrics: '/check/host/metric/names',
-  getMetricDetails: '/check/host/metric/list',
-  getMetricData: '/check/host/metric/data'
+  getHostMetrics: '/manage/host/metric/names',
+  getMetricDetails: '/manage/host/metric/list',
+  getMetricData: '/manage/host/metric/data'
 };
 
 export default api;
@@ -125,7 +125,23 @@ export function addHost(parameter) {
           management: parameter.management,
           ssh_user: parameter.ssh_user,
           password: parameter.password
-          // sudo_password: parameter.sudo_password
+        }
+  });
+}
+
+// 修改主机
+export function editHost(parameter, id) {
+  return request({
+    url: api.editHost,
+    method: 'post',
+    data: {
+          host_id: Number(id),
+          host_name: parameter.host_name,
+          host_group_name: parameter.host_group_name,
+          ssh_port: parameter.ssh_port,
+          management: parameter.management,
+          ssh_user: parameter.ssh_user,
+          password: parameter.password
         }
   });
 }

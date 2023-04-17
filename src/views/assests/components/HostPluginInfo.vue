@@ -4,7 +4,7 @@
     <div class="scene-identify">
       <a-button @click="sceneIdentify()" type="primary" :loading="sceneLoading"> 场景识别 </a-button>
       <div class="recommend-list">
-        <div>当前场景：{{ scene }}</div>
+        <div>当前场景：{{ sceneMap[scene] }}</div>
         <div style="display: flex; width: 100%">
           建议开启：
           <a-collapse v-if="scenePropertys.length">
@@ -84,6 +84,13 @@
 <script>
 import {sceneGet, pluginInfoGet, metricSet, pluginSet} from '@/api/assest';
 import CutText from '@/components/CutText';
+const sceneMap = {
+  'big_data': '大数据',
+  'web': 'web服务',
+  'edge': '边缘设备',
+  'cloud': '云服务',
+  'normal': '通用'
+};
 const columns = [
   {
     title: '名称',
@@ -125,6 +132,7 @@ export default {
   },
   data() {
     return {
+      sceneMap,
       tableData: [],
       originData: [],
       columns,
@@ -231,6 +239,7 @@ export default {
         hostId: _this.hostId
       })
         .then(function (res) {
+          _this.scene = res.data.scene
           _this.$set(_this.sceneData, 'collect_items', res.data.collect_items);
           // 创建数组scenePropertys存储sceneData.collect_items的属性，即推荐开启的插件列表
           _this.scenePropertys = Object.keys(_this.sceneData.collect_items);

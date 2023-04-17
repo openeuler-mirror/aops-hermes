@@ -16,7 +16,7 @@ export default {
 
   'layouts.usermenu.dialog.title': '信息',
   'layouts.usermenu.dialog.content': '您确定要注销吗？',
-  'layouts.userLayout.title': '欢迎来到A-ops系统',
+  'layouts.userLayout.title': '欢迎来到A-Ops系统',
   ...components,
   ...global,
   ...menu,

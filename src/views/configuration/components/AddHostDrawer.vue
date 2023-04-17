@@ -50,8 +50,8 @@ const leftTableColumns = [
     title: '主机名'
   },
   {
-    dataIndex: 'public_ip',
-    key: 'public_ip',
+    dataIndex: 'host_ip',
+    key: 'host_ip',
     title: 'IP地址'
   }
 ];
@@ -120,8 +120,8 @@ export default {
       const _this = this;
       domainHostList(domainName)
         .then(function (res) {
-          _this.targetKeys = res.data.map((host) => host.hostId);
-          _this.oldTargetKeys = res.data.map((host) => host.hostId);
+          _this.targetKeys = res.map((host) => host.hostId);
+          _this.oldTargetKeys = res.map((host) => host.hostId);
         })
         .catch(function (err) {
           // code == 400时，为域内未添加主机，不报错
@@ -150,11 +150,12 @@ export default {
           }
           newTargetKeys.forEach(function (hostId) {
             const matchedHost = _this.hostListAll.filter((host) => host.host_id === hostId)[0] || {};
+            console.log(matchedHost)
             hostInfos.push({
               // 只传hostId
               hostId: hostId,
               ipv6: 'ipv4',
-              ip: matchedHost.public_ip
+              ip: matchedHost.host_ip
             });
           });
           addHost(values.domainName, hostInfos)

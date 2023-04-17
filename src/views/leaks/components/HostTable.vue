@@ -12,7 +12,7 @@
     </div>
     <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
       <a-col>
-        <a-input-search placeholder="按主机名搜索" style="width: 200px" @search="onSearch" />
+        <a-input-search placeholder="按主机名搜索" v-model="hostSearch" @change="searchChange" style="width: 200px" @search="onSearch" />
       </a-col>
       <a-col>
         <a-row type="flex" :gutter="6">
@@ -102,6 +102,10 @@
       slot-scope="host_name, record">{{ host_name }}</router-link>
       <div slot="last_scan" slot-scope="last_scan">
         {{ last_scan }}
+        <!-- {{ record.last_scan === null ? '未扫描' : record.last_scan }} -->
+      </div>
+      <div slot="hotpatch" slot-scope="hotpatch">
+        {{ hotpatch ? '是' : '否' }}
         <!-- {{ record.last_scan === null ? '未扫描' : record.last_scan }} -->
       </div>
     </a-table>
@@ -242,6 +246,12 @@ export default {
           filters: this.standalone ? this.repoList : this.repoFilterList
         },
         {
+          dataIndex: 'hotpatch',
+          key: 'hotpatch',
+          title: '热补丁支持',
+          scopedSlots: {customRender: 'hotpatch'}
+        },
+        {
           dataIndex: 'last_scan',
           key: 'last_scan',
           title: '上次扫描',
@@ -272,16 +282,13 @@ export default {
     }
   },
   watch: {
-    $route() {
-      this.getHostList();
-      this.getHostGroup();
-    },
     paginationTotal() {
       this.pagination.total = this.paginationTotal;
     }
   },
   data() {
     return {
+      hostSearch: '',
       hostTableData: [],
       hostTableIsLoading: false,
       pagination: defaultPagination,
@@ -305,6 +312,17 @@ export default {
     };
   },
   methods: {
+    searchChange() {
+      console.log(this.hostSearch)
+      if (!this.filters) {
+        this.filters = {};
+      }
+      if (this.hostSearch !== '') {
+        this.filters.host_name = this.hostSearch;
+      } else {
+        this.filters.host_name = undefined;
+      }
+    },
     getAllHost() {
       this.getHostList();
       this.getHostGroup();
@@ -374,6 +392,8 @@ export default {
             _this.$confirm({
               title: '确定扫描以下主机?',
               content: _this.selectedRowsAll.map((host) => host.host_name).join('、'),
+              okText: '确认',
+              cancelText: '取消',
               icon: () => <a-icon type="exclamation-circle" />,
               onOk: function () {
                 _this.scanloading = true;
@@ -461,11 +481,11 @@ export default {
           _this.scanStatusData = res.data.result || {};
           if (_this.standalone) {
             _this.scanningHostIds = _this.getScanningHostAll(res.data.result);
-            // if (_this.scanningHostIds.length > 0) {
+            if (_this.scanningHostIds.length > 0) {
             _this.scanStatueAllTimeout = setTimeout(function () {
               _this.getScanStatusAll(_this.scanningHostIds);
             }, configs.scanProgressInterval);
-            // }
+            }
           }
         })
         .catch(function (err) {
@@ -672,7 +692,7 @@ export default {
     this.getHostGroup();
     if (this.standalone) {
       // 主机列表页面中要自行获取全量主机和扫描状态
-      this.getScanStatusAll([]);
+      // this.getScanStatusAll([]);
       this.getHostListAll();
     } else {
       // 主机详情页面中要自行获取repo列表

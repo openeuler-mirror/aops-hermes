@@ -62,7 +62,7 @@ export default {
     const _this = this;
     domainList()
       .then(function (res) {
-        _this.domainNameList = res.data;
+        _this.domainNameList = res;
       })
       .catch(function (err) {
         _this.$message.error(err.response.message);

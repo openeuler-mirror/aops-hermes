@@ -1,6 +1,7 @@
 import request from '@/vendor/ant-design-pro/utils/request';
 
 const userApi = {
+  RefreshToken: '/manage/account/refreshtoken',
   bindAccount: '/manage/account/bindaccount',
   codeCheck: '/manage/account/gitee/login?code=',
   LoginInGitee: '/manage/account/authredirecturl',
@@ -17,9 +18,25 @@ export function register(parameter) {
     method: 'post',
     data: {
       username: parameter.username,
-      password: parameter.password
+      password: parameter.password,
+      email: parameter.email
     }
   });
+}
+
+/**
+ * 刷新token
+ * @param {*} parameter
+ * @returns
+ */
+export function refreshTokenFn (parameter) {
+  return request({
+    url: userApi.RefreshToken,
+    method: 'post',
+    data: {
+      refresh_token: parameter
+    }
+  })
 }
 
 export function bindAccount(parameter) {

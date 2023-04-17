@@ -303,7 +303,8 @@ export default {
         },
         {
           dataIndex: 'package',
-          title: '解决方案'
+          title: '解决方案',
+          scopedSlots: {customRender: 'package'}
         },
         {
           dataIndex: 'reboot',

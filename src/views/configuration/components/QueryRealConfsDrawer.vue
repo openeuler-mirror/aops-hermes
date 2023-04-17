@@ -144,7 +144,7 @@ export default {
         hostIds: [{hostId}]
       })
         .then((res) => {
-          _this.confsOfHost = (res.data && res.data[0] && res.data[0].confBaseInfos) || [];
+          _this.confsOfHost = (res && res[0] && res[0].confBaseInfos) || [];
         })
         .catch((err) => {
           if (err.response.code !== '400') {

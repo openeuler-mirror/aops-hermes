@@ -1,8 +1,8 @@
 <template>
   <div>
     <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
-      <a-col v-if="!standalone">
-        <a-radio-group default-value="a" button-style="solid" @change="handleChange">
+      <a-col>
+        <a-radio-group v-if="!standalone" default-value="a" button-style="solid" @change="handleChange">
           <a-radio-button value="a">
             受影响
           </a-radio-button>
@@ -10,9 +10,7 @@
             不受影响
           </a-radio-button>
         </a-radio-group>
-      </a-col>
-      <a-col>
-        <a-input-search placeholder="按CVE ID搜索" style="width: 200px" @search="onSearch" />
+        <a-input-search placeholder="按CVE ID搜索" style="width: 200px;margin-left: 10px;" v-model="cveSearch" @change="searchChange" @search="onSearch" />
       </a-col>
       <a-col>
         <a-row type="flex" :gutter="6">
@@ -29,13 +27,10 @@
       <a-col>
         <a-row type="flex" :gutter="6">
           <!-- <a-col>
-            <a-input-search placeholder="按CVE ID搜索" style="width: 200px" @search="onSearch" />
-          </a-col> -->
-          <a-col>
             <status-change-modal
             :selectedRowsAll="selectedRowsAll"
               @statusUpdated="handleStatusUpdated" />
-          </a-col>
+          </a-col> -->
           <a-col>
             <upload-file v-if="standalone ? true : false" @addSuccess="handleUploadSuccess" />
           </a-col>
@@ -66,10 +61,10 @@
       </a-col>
     </a-row>
     <a-table
-    rowKey="cve_id"
-    :columns="standalone ? tableColumnsStandalone : tableColumns"
+      rowKey="cve_id"
+      :columns="standalone ? tableColumnsStandalone : tableColumns"
       :data-source="standalone ? tableData : inputList"
-      :pagination="pagination"
+      :pagination="pagination.total === 0 ? false : pagination"
       :rowSelection="rowSelection"
       :expandIconAsCell="false"
       :expandIconColumnIndex="1"
@@ -82,6 +77,9 @@
       <div slot="expandedRowRender" slot-scope="record" style="margin: 0">
         <p>Description:</p>
         <p>{{ record.description }}</p>
+      </div>
+      <div slot="hotpatch" slot-scope="hotpatch" style="margin: 0">
+        <p>{{ hotpatch ? '是' : '否' }}</p>
       </div>
     </a-table>
   </div>
@@ -98,7 +96,7 @@ import StatusChangeModal from './StatusChangeModal';
 import {getSelectedRow} from '../utils/getSelectedRow';
 import {getCveList} from '@/api/leaks';
 
-import {statusList, statusMap, severityMap} from '../config';
+import { severityMap } from '../config';
 import UploadFile from './UploadFile.vue';
 
 const defaultPagination = {
@@ -143,7 +141,7 @@ export default {
     // 当通过父组件获取数据时，通过此属性同步数据的最大数量
     paginationTotal: {
       type: Number,
-      default: undefined
+      default: 0
     },
     // 当通过父组件获取全量cve列表数据时，使用此属性
     cveAllListProp: {
@@ -171,6 +169,7 @@ export default {
         {
           dataIndex: 'publish_time',
           key: 'publish_time',
+          customRender: (publishTime) => publishTime === '' ? '—' : publishTime,
           title: '发布时间',
           sorter: true
         },
@@ -178,7 +177,7 @@ export default {
           dataIndex: 'severity',
           key: 'severity',
           title: '严重性',
-          customRender: (severity) => severityMap[severity],
+          customRender: (severity) => severityMap[severity] || '—',
           filteredValue: filters.severity || null,
           filters: [
             {
@@ -206,6 +205,7 @@ export default {
         {
           dataIndex: 'cvss_score',
           key: 'cvss_score',
+          customRender: (cvssScore) => cvssScore === '' ? '—' : cvssScore,
           title: 'CVSS 分数',
           sorter: true
         },
@@ -214,14 +214,6 @@ export default {
           key: 'host_num',
           title: '主机',
           sorter: true
-        },
-        {
-          dataIndex: 'status',
-          key: 'status',
-          title: '状态',
-          filteredValue: filters.status || null,
-          filters: statusList,
-          customRender: (status) => statusMap[status]
         }
       ];
     },
@@ -278,12 +270,21 @@ export default {
           sorter: true
         },
         {
-          dataIndex: 'status',
-          key: 'status',
-          title: '状态',
-          filteredValue: filters.status || null,
-          filters: statusList,
-          customRender: (status) => statusMap[status]
+          dataIndex: 'hotpatch',
+          key: 'hotpatch',
+          title: '热补丁支持',
+          filteredValue: filters.hotpatch || null,
+          filters: [
+            {
+              text: '是',
+              value: 1
+            },
+            {
+              text: '否',
+              value: 0
+            }
+          ],
+          scopedSlots: {customRender: 'hotpatch'}
         }
       ];
     },
@@ -295,16 +296,13 @@ export default {
     }
   },
   watch: {
-    $route() {
-      this.getCves();
-      this.getCvesAll();
-    },
     paginationTotal() {
       this.pagination.total = this.paginationTotal;
     }
   },
   data() {
     return {
+      cveSearch: '',
       scanloading: false,
       size: 'small',
       tableData: [],
@@ -326,6 +324,17 @@ export default {
     };
   },
   methods: {
+    searchChange() {
+      console.log(this.cveSearch)
+      if (!this.filters) {
+        this.filters = {};
+      }
+      if (this.cveSearch !== '') {
+        this.filters.cveId = this.cveSearch;
+      } else {
+        this.filters.cveId = undefined;
+      }
+    },
     handleChange(e) {
       if (e.target.value === 'a') {
         this.affected = true;
@@ -387,6 +396,8 @@ export default {
             }
           }
         });
+        this.pagination.total = this.paginationTotal;
+        console.log(this.pagination)
         return;
       }
       getCveList({
@@ -422,7 +433,7 @@ export default {
     // 获取全部cve数据，用于生成修复任务时选择全部cve
     getCvesAll() {
       const _this = this;
-      this.cveAllIsLoading = true;
+      // this.cveAllIsLoading = true;
       if (!this.standalone) {
         this.$emit('getCveAll', {
           tableInfo: {
@@ -493,13 +504,19 @@ export default {
     },
     uploadfile() {},
     handleUploadSuccess() {
-      this.getCves();
+      setTimeout(() => {
       this.getCvesAll();
+      console.log(11111)
+    }, 500);
+    this.getCves();
     }
   },
   mounted() {
+    setTimeout(() => {
+      this.getCvesAll();
+      console.log(11111)
+    }, 500);
     this.getCves();
-    this.getCvesAll();
   }
 };
 </script>

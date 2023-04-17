@@ -24,34 +24,6 @@
               {{ `CVSS 3.0 评分： ${detail.cvss_score || ''}` }}
             </a-col>
             <a-col :span="8">
-              {{ `状态： ${statusMap[detail.status] || ''}` }}
-              <a-dropdown :trigger="['click']">
-                <a-icon type="edit" class="edit-icon" />
-                <a-menu slot="overlay">
-                  <a-menu-item key="0">
-                    <a @click="setStatus(statusMenuList[0].value)">{{ statusMenuList[0].text }}</a>
-                  </a-menu-item>
-                  <a-menu-item key="1">
-                    <a @click="setStatus(statusMenuList[1].value)">{{ statusMenuList[1].text }}</a>
-                  </a-menu-item>
-                  <a-menu-item key="2">
-                    <a @click="setStatus(statusMenuList[2].value)">{{ statusMenuList[2].text }}</a>
-                  </a-menu-item>
-                  <a-menu-item key="3">
-                    <a @click="setStatus(statusMenuList[3].value)">{{ statusMenuList[3].text }}</a>
-                  </a-menu-item>
-                  <a-menu-item key="4">
-                    <a @click="setStatus(statusMenuList[4].value)">{{ statusMenuList[4].text }}</a>
-                  </a-menu-item>
-                </a-menu>
-              </a-dropdown>
-            </a-col>
-          </a-row>
-          <a-row type="flex">
-            <a-col :span="8">
-              {{ `修复软件包： ${detail.package || ''}` }}
-            </a-col>
-            <a-col :span="8">
               关联CVE：
               <span v-if="detail.related_cve && detail.related_cve.length">
                 <a @click="relatedCveDrawerOpen">
@@ -68,7 +40,7 @@
                 <table class="drawer-cve-table">
                   <th>序号</th>
                   <th>cve名称</th>
-                  <tr v-for="(cve, index) in detail.related_cve" :key="index">
+                  <tr v-for="(cve, index) in detail.related_cve" :key="cve">
                     <td>{{ index + 1 }}</td>
                     <td>
                       <a @click="jumpToAnotherCVE(cve)">{{ cve }}</a>
@@ -80,6 +52,16 @@
           </a-row>
           <h4>cve描述：</h4>
           <p class="detail-description">{{ detail.description }}</p>
+          <h4>影响产品：</h4>
+          <div style="width: 600px;">
+            <a-table
+            :columns="columns"
+            :data-source="productData"
+            :rowKey="(record, index) => { return index }"
+            :pagination="false"
+            >
+            </a-table>
+          </div>
         </div>
       </a-spin>
     </a-card>
@@ -89,8 +71,8 @@
       :cveList="[detail]"
       :inputList="hostList"
       :inputLoading="hostIsLoading"
-        @getTableData="getHostData"
-        :paginationTotal="paginationTotal" />
+      @getTableData="getHostData"
+      :paginationTotal="paginationTotal" />
     </a-card>
   </page-header-wrapper>
 </template>
@@ -106,6 +88,19 @@ import HostTable from './components/HostTable';
 
 import {statusList, statusMap, severityMap, severityColorMap} from './config';
 import {getCveInfo, getHostUnderCVE, setCveStatus} from '@/api/leaks';
+
+const columns = [
+  {
+    dataIndex: 'os_version',
+    key: 'os_version',
+    title: '产品'
+  },
+  {
+    dataIndex: 'package',
+    key: 'package',
+    title: '软件包'
+  }
+];
 
 export default {
   name: 'CVEsDetail',
@@ -137,6 +132,8 @@ export default {
   },
   data() {
     return {
+      columns,
+      productData: [],
       cve_id: this.$route.params.cve_id,
       detail: {},
       infoLoading: false,
@@ -165,6 +162,7 @@ export default {
       })
         .then(function (res) {
           _this.detail = res.data.result || {};
+          _this.productData = res.data.result.package;
         })
         .finally(function () {
           _this.infoLoading = false;

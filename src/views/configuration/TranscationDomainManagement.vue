@@ -124,7 +124,7 @@ export default {
       domainList()
         .then(function (res) {
           // 特殊处理
-          _this.domainData = res.data || [];
+          _this.domainData = res || [];
         })
         .catch(function (err) {
           if (err.response.code === '400') return;

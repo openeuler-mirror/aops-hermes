@@ -1,7 +1,7 @@
 <template>
   <my-page-header-wrapper extraDesc="对建立的主机组进行管理。">
     <a-card :bordered="false" class="aops-theme">
-      <div>
+      <div class="hostgroupbox">
         <div>共获取到{{ tableData.length }}条主机组信息</div>
         <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
           <a-col>
@@ -44,9 +44,9 @@
           </a-col>
         </a-row>
         <a-table
-        :rowKey="rowKey"
-        :columns="columns"
-        :data-source="tableData"
+          :rowKey="rowKey"
+          :columns="columns"
+          :data-source="tableData"
           :pagination="pagination"
           :row-selection="rowSelection"
           @change="handleTableChange"
@@ -64,15 +64,15 @@
           </span>
         </a-table>
         <a-drawer
-        title="拥有主机"
-        :width="720"
-        placement="right"
-        :visible="hostListVisible"
+          title="拥有主机"
+          :width="720"
+          placement="right"
+          :visible="hostListVisible"
           :body-style="{paddingBottom: '80px'}"
           @close="closeHostList">
           <a-table
-          :rowKey="hostRowKey"
-          :columns="hostListColumns"
+            :rowKey="hostRowKey"
+            :columns="hostListColumns"
             :data-source="this.hostListDataStore[this.hostGroupName] || []"
             :loading="hostListIsLoading ? true : false"
             :pagination="false">
@@ -257,7 +257,7 @@ export default {
           };
         })
         .catch(function (err) {
-          _this.$message.error(err.data.msg);
+          _this.$message.error(err.response.message);
         })
         .finally(function () {
           _this.tableIsLoading = false;
@@ -297,7 +297,12 @@ export default {
     },
     deleteHostGroup(record) {
       if (record.host_count > 0) {
-        this.$warning({title: '主机组内有主机时无法删除'});
+        this.$warning({
+          title: '主机组内有主机时无法删除',
+          okText: '确定',
+          onOk: function () {
+          }
+        });
         return;
       }
       const _this = this;
@@ -401,6 +406,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.aops-theme {
+  .hostgroupbox {
+    overflow: auto;
+  }
+}
 .ant-lert {
   line-height: 14px;
 }

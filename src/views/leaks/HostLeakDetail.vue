@@ -125,7 +125,7 @@ export default {
       const _this = this;
       getCveExport([_this.hostId])
         .then(function (res) {
-          downloadBlobFile(res.data.data, res.datafileName);
+          downloadBlobFile(res.data, res.fileName);
         })
         .catch(function (err) {
           _this.$message.error(err.response.message);
@@ -163,7 +163,7 @@ export default {
       })
         .then(function (res) {
           _this.cveList = res.data.result;
-          _this.paginationTotal = res.data.total_count || (res.data.total_count === 0 ? 0 : undefined);
+          _this.paginationTotal = res.data.total_count;
         })
         .catch(function (err) {
           _this.$message.error(err.response.message);
@@ -174,7 +174,7 @@ export default {
     },
     getCveAllList(data) {
       const _this = this;
-      this.cveAllIsLoading = true;
+      // this.cveAllIsLoading = true;
       getCveUnderHost({
         ...data,
         host_id: this.hostId
@@ -196,7 +196,7 @@ export default {
       const _this = this;
       this.scanloading = true;
       scanHost({
-        hostList: [_this.hostId],
+        hostList: [Number(_this.hostId)],
         filter: null
       })
         .then(function (res) {

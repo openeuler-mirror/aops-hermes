@@ -96,8 +96,7 @@ export function getCveList({ tableInfo, ...parameter }) {
       filter: {
         affected: tableInfo.affected,
         cve_id: tableInfo.filters.cveId,
-        severity: tableInfo.filters.severity || [],
-        status: tableInfo.filters.status || []
+        severity: tableInfo.filters.severity || []
       },
       page: tableInfo.pagination.current,
       per_page: tableInfo.pagination.pageSize
@@ -232,7 +231,7 @@ export function getCveUnderHost({ tableInfo, ...parameter }) {
         cve_id: tableInfo.filters.cveId,
         affected: tableInfo.affected,
         severity: tableInfo.filters.severity || [],
-        status: tableInfo.filters.status || []
+        hotpatch: tableInfo.filters.hotpatch || []
       },
       page: tableInfo.pagination.current,
       per_page: tableInfo.pagination.pageSize

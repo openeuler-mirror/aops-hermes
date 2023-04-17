@@ -14,7 +14,7 @@
               </a-row>
               <a-row class="host-basic-info-row">
                 <a-col :span="12"> 主机组：{{ hostGroupName }} </a-col>
-                <a-col :span="12"> 状态：{{ status }} </a-col>
+                <a-col :span="12"> 状态：{{ hostStatusMap[status] || '暂无' }} </a-col>
               </a-row>
               <span class="detail-info-toggle" @click="hostDetailToggle">
                 {{ detailTxt }}
@@ -166,11 +166,21 @@
 <script>
 import CutText from '@/components/CutText';
 
+const hostStatusMap = {
+  '0': '在线',
+  '1': '离线',
+  '2': '未确认',
+  '3': '扫描中',
+  '4': '已完成',
+  '5': '未知'
+};
+
 export default {
   name: 'AddHostDetail',
   components: {CutText},
   data() {
     return {
+      hostStatusMap,
       detailToggle: true,
       detailTxt: '详情收起',
       detailIcon: 'up',
@@ -218,7 +228,7 @@ export default {
       const data = this.basicHostInfo;
       this.hostGroupName = data.host_group_name || '暂无';
       this.hostIp = data.host_ip || '暂无';
-      this.status = data.status || '暂无';
+      this.status = data.status;
       this.hostName = data.host_name || '暂无';
       this.scene = data.scene || '暂无';
     },

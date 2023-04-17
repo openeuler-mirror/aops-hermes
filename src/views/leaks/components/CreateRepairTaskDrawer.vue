@@ -68,6 +68,12 @@
                 {{ packages }}
               </span>
             </div>
+            <div slot="hotpatch" slot-scope="hotpatch">
+              <a-spin v-if="actionsIsLoading" />
+              <span v-else>
+                {{ hotpatch ? '是' : '否' }}
+              </span>
+            </div>
             <a-table
             rowKey="host_id"
             slot="expandedRowRender"
@@ -81,6 +87,12 @@
               }"
               :data-source="record.hostsList || []"
               :pagination="false">
+              <div slot="hotpatch" slot-scope="hotpatch">
+                <span>
+                  <a-switch :defaultChecked="hotpatch" checked-children="是" un-checked-children="否" :disabled="!record.hotpatch" style="margin-bottom:5px"
+                  @change="hotchange(record.cve_id)" />
+                </span>
+              </div>
             </a-table>
           </a-table>
         </div>
@@ -279,9 +291,15 @@ export default {
         {
           dataIndex: 'reboot',
           key: 'reboot',
-          width: 120,
+          width: 80,
           title: <span>重启后生效</span>,
           customRender: (reboot) => restartTypesEnum[reboot]
+        },
+        {
+          dataIndex: 'hotpatch',
+          key: 'hotpatch',
+          title: '热补丁支持',
+          scopedSlots: {customRender: 'hotpatch'}
         }
       ];
     },
@@ -296,6 +314,12 @@ export default {
           dataIndex: 'host_ip',
           key: 'host_ip',
           title: 'ip地址'
+        },
+        {
+          dataIndex: 'hotpatch',
+          key: 'hotpatch',
+          title: '热补丁支持',
+          scopedSlots: {customRender: 'hotpatch'}
         }
       ];
     },
@@ -347,6 +371,17 @@ export default {
       return true;
     },
 
+    // 更改cve下主机的热更新状态
+    hotchange(value) {
+      this.cveList.forEach((item) => {
+        if (item.cve_id === value) {
+          item.hostsList.forEach((msg) => {
+           this.$set(msg, 'hotpatch', !msg.hotpatch)
+          })
+        }
+      })
+    },
+
     // 每次展开抽屉时触发，替代mounted
     handleOpen() {
       // inital defualt data
@@ -354,7 +389,9 @@ export default {
         this.$emit('getAllHost');
       }
       this.visible = true;
+      console.log(this.cveListProps)
       this.cveList = this.cveListProps;
+      console.log(this.cveList)
       this.isResetChecked = true;
       this.selectedRowKeyMaps = {};
       this.selectedRowsAllMaps = {};
@@ -382,6 +419,7 @@ export default {
           _this.actionsIsLoading = false;
         });
       // 根据主机数据获取类型，自行或cve下的主机数据或者使用外部输入的主机数据更行talbe数据
+      console.log(this.hostListType)
       switch (this.hostListType) {
         case hostListTypes[0]:
           _this.hostUnderCveLoading = true;
@@ -394,6 +432,20 @@ export default {
             .then(function (res) {
               // hostlists are contained in cveMap
               const cveMap = res.data.result || {};
+              Object.keys(cveMap).forEach((cve) => {
+                let existsHotpatch = false
+                cveMap[cve].forEach((host) => {
+                  if (host.hotpatch) {
+                    existsHotpatch = true
+                  }
+                })
+
+                _this.cveList.forEach((cveinfo, index) => {
+                  if (cveinfo.cve_id === cve) {
+                    _this.cveList[index].hotpatch = existsHotpatch
+                  }
+                })
+              })
               _this.addHostListToCVEData(cveMap);
             })
             .catch(function (err) {
@@ -414,7 +466,8 @@ export default {
               return {
                 host_id: host.host_id,
                 host_name: host.host_name,
-                host_ip: host.host_ip
+                host_ip: host.host_ip,
+                hotpatch: cve.hotpatch
               };
             });
           });
@@ -425,6 +478,7 @@ export default {
     handleSubmit(excuteASAP = false) {
       const _this = this;
       this.form.validateFields((err, values) => {
+        console.log(values)
         if (!err) {
           if (!excuteASAP) {
             this.submitLoading = true;
@@ -553,6 +607,7 @@ export default {
       this.cveList.forEach((cveInfo) => {
         const hostListUnderCve = cveMap[cveInfo.cve_id];
         cveInfo.hostsList = hostListUnderCve || [];
+        console.log(cveInfo)
 
         if (hostListUnderCve && hostListUnderCve.length > 0) {
           this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve.map((host) => host.host_id);
@@ -564,6 +619,7 @@ export default {
       });
       // forced refresh
       this.cveList = Object.assign([], this.cveList);
+      console.log(this.cveList)
     },
     addActionsToCVEData(cveMap) {
       const tempArr = this.cveList.map((cveInfo) => {

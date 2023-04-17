@@ -9,6 +9,7 @@
         <a-form-model-item :prop="formkey">
           <a-input @change="handleChange" @pressEnter="check" v-model="form[formkey]" />
           <a-icon
+            style="top: -7px;"
             type="check"
             class="editable-cell-icon-check"
             @click="check"
@@ -16,8 +17,12 @@
         </a-form-model-item>
       </div>
       <div v-else class="editable-cell-text-wrapper">
-         <div class="editable-content">{{ value || ' ' }}</div>
-         <a-icon type="edit" class="editable-cell-icon" @click="edit" />
+        <div class="editable-content">
+          <!-- <a-input :type="formkey === 'password' ? 'password' : 'text'" v-model="value" /> -->
+          <span v-if="formkey === 'password'">******</span>
+          <span v-else>{{ value || ' ' }}</span>
+        </div>
+        <a-icon type="edit" class="editable-cell-icon" @click="edit" />
       </div>
     </a-form-model>
   </div>
@@ -152,10 +157,16 @@ export default {
   padding: 5px 24px 5px 5px;
 }
 
-.editable-cell-icon,
-.editable-cell-icon-check {
+.editable-cell-icon {
   position: absolute;
   right: 0;
+  width: 20px;
+  cursor: pointer;
+}
+
+.editable-cell-icon-check {
+  position: absolute;
+  right: -26px;
   width: 20px;
   cursor: pointer;
 }

@@ -17,7 +17,7 @@
           v-decorator="[
             'username',
             {
-              rules: [{required: true, message: $t('user.userName.required')}, {validator: handleUsernameOrEmail}],
+              rules: [{required: true, message: $t('user.userName.required')}, {validator: handleUsername}],
               validateTrigger: 'blur'
             }
           ]"
@@ -45,7 +45,7 @@
       <a-form-item>
         <a-input-password
           size="large"
-          placeholder="确认新密码和旧密码保持一致"
+          placeholder="确认前后两次输入的密码保持一致"
           v-decorator="[
             'confirm',
             {
@@ -58,6 +58,24 @@
           <a-icon slot="prefix" type="lock" :style="{color: 'rgba(0,0,0,.25)'}" />
         </a-input-password>
       </a-form-item>
+
+      <a-form-item>
+        <a-input
+          size="large"
+          type="text"
+          placeholder="输入由英文字母、数字、下划线、英文句号、以及中划线组成的邮箱地址"
+          v-decorator="[
+            'email',
+            {
+              rules: [{required: true, message: $t('user.email.required')}, {validator: handleEmail}],
+              validateTrigger: 'blur'
+            }
+          ]"
+        >
+          <a-icon slot="prefix" type="user" :style="{color: 'rgba(0,0,0,.25)'}" />
+        </a-input>
+      </a-form-item>
+
       <a-form-item style="margin-top:24px">
         <a-button
           size="large"
@@ -134,10 +152,19 @@ export default {
         }
       }
     },
-    handleUsernameOrEmail(rule, value, callback) {
+    handleUsername(rule, value, callback) {
       const regex = /^[a-zA-Z0-9]{5,20}$/;
       if (!regex.test(value)) {
         const text = '请输入5-20位字母或数字的用户名!';
+        callback(text);
+      } else {
+        callback();
+      }
+    },
+    handleEmail(rule, value, callback) {
+      const regex = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$/;
+      if (!regex.test(value)) {
+        const text = '只允许英文字母、数字、下划线、英文句号、以及中划线组成!';
         callback(text);
       } else {
         callback();
@@ -159,6 +186,7 @@ export default {
             delete loginParams.username;
             loginParams.username = values.username;
             loginParams.password = values.password;
+            loginParams.email = values.email;
             register(loginParams)
               .then(res => {
                 this.form.resetFields();

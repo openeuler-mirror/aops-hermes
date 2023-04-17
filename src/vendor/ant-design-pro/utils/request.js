@@ -6,7 +6,7 @@ import axios from 'axios';
 import store from '@/store';
 import cookie from 'js-cookie';
 import notification from 'ant-design-vue/es/notification';
-import {VueAxios} from './axios';
+import { VueAxios } from './axios';
 
 const errorMsgs = {
   noResponse: 'request failed, no response'
@@ -64,16 +64,17 @@ request.interceptors.request.use(config => {
     config.headers['Access-Token'] = token;
 
     // reset cookie expired time
-    const in30Minutes = 1 / 48;
-    cookie.set('aops_token', token, {expires: in30Minutes});
+    const in20Minutes = 1 / 72;
+    cookie.set('aops_token', token, { expires: in20Minutes });
     const userName = cookie.get('user_name');
-    userName && cookie.set('user_name', userName, {expires: in30Minutes});
+    userName && cookie.set('user_name', userName, { expires: in20Minutes });
   }
   return config;
 }, errorHandler);
 
 // response interceptor
 request.interceptors.response.use(response => {
+  console.log(response)
   // 这对业务域相关接口返回体做特殊处理，后续需要统一
   const code = response.data.code || response.status;
   // 不处理所有2xx的状态码
@@ -90,6 +91,15 @@ request.interceptors.response.use(response => {
             window.location.reload();
           }, 1000);
         });
+        break;
+      case '1207':
+        // token过期后，调接口，刷新token
+        store.dispatch('RefreshToken').then(() => {
+        // 再发请求
+          return request(response.config)
+        }).catch((err) => {
+          this.$message.error(err.response.message)
+        })
         break;
       default:
         err = new Error(response.data.message);
@@ -122,4 +132,4 @@ const installer = {
 
 export default request;
 
-export {installer as VueAxios, request as axios};
+export { installer as VueAxios, request as axios };
