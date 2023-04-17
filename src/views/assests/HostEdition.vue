@@ -227,7 +227,6 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           this.submitLoading = true;
-          // 后需调整：修改时传host_id, 新建时传host_ip
           if (this.pageType === 'edit') {
             delete values.host_ip
             const tableParams = JSON.parse(JSON.stringify(values));

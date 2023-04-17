@@ -7,7 +7,7 @@ const api = {
   hostInfo: '/manage/host/info/query',
   addHost: '/manage/host/add',
   addMoreHost: '/manage/host/add/batch', // 批量添加主机
-  editHost: '/manage/host/update', // 未提供
+  editHost: '/manage/host/update', // 编辑主机
   deleteHost: '/manage/host/delete',
   hostGroupList: '/manage/host/group/get',
   addHostGroup: '/manage/host/group/add',
@@ -125,7 +125,6 @@ export function addHost(parameter) {
           management: parameter.management,
           ssh_user: parameter.ssh_user,
           password: parameter.password
-          // sudo_password: parameter.sudo_password
         }
   });
 }
@@ -143,7 +142,6 @@ export function editHost(parameter, id) {
           management: parameter.management,
           ssh_user: parameter.ssh_user,
           password: parameter.password
-          // sudo_password: parameter.sudo_password
         }
   });
 }
