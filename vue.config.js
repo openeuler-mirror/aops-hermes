@@ -53,6 +53,9 @@ const vueConfig = {
   },
 
   chainWebpack: config => {
+    config.plugins.delete('prefetch')
+    config.plugins.delete('preload')
+
     config.resolve.alias.set('@$', resolve('src'));
 
     const svgRule = config.module.rule('svg');

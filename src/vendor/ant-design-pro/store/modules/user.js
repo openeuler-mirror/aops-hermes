@@ -4,7 +4,7 @@
 
 import storage from 'store';
 import cookie from 'js-cookie';
-import { login, logout, refreshTokenFn } from '@/api/login';
+import { login, refreshTokenFn } from '@/api/login';
 import { ACCESS_TOKEN, REFRESH_TOKIN } from '@/vendor/ant-design-pro/store/mutation-types';
 
 const user = {
@@ -130,26 +130,17 @@ const user = {
       cookie.remove('aops_token');
       cookie.remove('user_name');
       cookie.remove('refreshtoken');
-
-      return new Promise(resolve => {
-        logout(state.token)
-          .then(() => {
-            resolve();
-          })
-          .catch(() => {
-            resolve();
-          })
-          .finally(() => { });
-      });
     },
 
     // 刷新token
     RefreshToken({ commit, state }) {
+      storage.set('is_tokenvalid', true, 7 * 24 * 60 * 60 * 1000);
       return new Promise((resolve, reject) => {
         const refreshToken = localStorage.getItem('Refresh-Token').substring(1, localStorage.getItem('Refresh-Token').length - 1)
         refreshTokenFn(refreshToken).then((res) => {
           if (res.code === '200') {
             const in20Minutes = 1 / 72;
+            storage.remove('is_tokenvalid');
             storage.set(ACCESS_TOKEN, res.data.token, 7 * 24 * 60 * 60 * 1000);
             storage.set(REFRESH_TOKIN, res.data.refresh_token, 7 * 24 * 60 * 60 * 1000)
             cookie.set('aops_token', res.data.token, {

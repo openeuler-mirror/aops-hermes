@@ -96,7 +96,7 @@ request.interceptors.response.use(response => {
         // token过期后，调接口，刷新token
         store.dispatch('RefreshToken').then(() => {
         // 再发请求
-          return request(response.config)
+          return request(response.config);
         }).catch((err) => {
           this.$message.error(err.response.message)
         })

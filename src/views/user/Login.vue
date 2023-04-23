@@ -30,6 +30,7 @@
               validateTrigger: 'blur'
             }
           ]"
+          autocomplete
         >
           <a-icon slot="prefix" type="lock" :style="{color: 'rgba(0,0,0,.25)'}" />
         </a-input-password>
