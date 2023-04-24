@@ -104,6 +104,9 @@
         {{ last_scan }}
         <!-- {{ record.last_scan === null ? '未扫描' : record.last_scan }} -->
       </div>
+      <div slot="repo" slot-scope="repo">
+        {{ repo || '——' }}
+      </div>
       <div slot="hotpatch" slot-scope="hotpatch">
         {{ hotpatch ? '是' : '否' }}
         <!-- {{ record.last_scan === null ? '未扫描' : record.last_scan }} -->
@@ -199,7 +202,8 @@ export default {
           key: 'repo',
           title: 'CVE REPO',
           filteredValue: filters.repo || [],
-          filters: this.repoList
+          filters: this.repoList,
+          scopedSlots: {customRender: 'repo'}
         },
         {
           dataIndex: 'cve_num',
@@ -243,7 +247,8 @@ export default {
           key: 'repo',
           title: 'CVE REPO',
           filteredValue: filters.repo || null,
-          filters: this.standalone ? this.repoList : this.repoFilterList
+          filters: this.standalone ? this.repoList : this.repoFilterList,
+          scopedSlots: {customRender: 'repo'}
         },
         {
           dataIndex: 'hotpatch',

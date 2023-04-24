@@ -37,6 +37,10 @@ const routeMap = {
             path: '/assests/hosts-management/host-edit'
           }
         }
+      },
+      hostgroupView: {
+        title: 'menu.assests.host-group-management',
+        path: '/assests/host-group-management'
       }
     }
   },
@@ -303,7 +307,21 @@ export const asyncRouterMap = [
             component: () => import('@/views/assests/HostGroupManagement'),
             meta: {
               title: 'menu.assests.host-group-management',
-              permission: ['assests']
+              permission: ['assests'],
+              diyBreadcrumb: [
+                {
+                  breadcrumbName: routeMap.index.title,
+                  path: routeMap.index.path
+                },
+                {
+                  breadcrumbName: routeMap.assests.title,
+                  path: routeMap.assests.path
+                },
+                {
+                  breadcrumbName: routeMap.assests.children.hostgroupView.title,
+                  path: routeMap.assests.children.hostgroupView.path
+                }
+              ]
             }
           }
         ]

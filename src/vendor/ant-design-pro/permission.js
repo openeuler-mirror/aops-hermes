@@ -64,7 +64,18 @@ router.beforeEach((to, from, next) => {
             });
           });
       } else {
-        next();
+        // 路由跳转前判断token是否过期
+        if (localStorage.getItem('is_tokenvalid')) {
+            var interval = setInterval(function() {
+              if (!localStorage.getItem('is_tokenvalid')) {
+                clearInterval(interval);
+                // 执行某些操作
+                next()
+              }
+            }, 1000); // 每隔1秒钟执行一次判断操作
+        } else {
+          next();
+        }
       }
     }
   } else {
