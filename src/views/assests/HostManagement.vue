@@ -58,7 +58,7 @@
           slot="hostName"
             slot-scope="hostName, record">{{ hostName }}</router-link>
           <span slot="isManagement" slot-scope="isMana">{{ isMana ? '是' : '否' }}</span>
-          <span slot="statusItem" slot-scope="status">{{ statusMap(status) }}</span>
+          <span slot="statusItem" slot-scope="status">{{ hostStatusMap[status] }}</span>
           <span slot="scene" slot-scope="scene">{{ scene ? ( scene === 'normal' ? '通用' : scene ) : '暂无' }}</span>
           <span slot="action" slot-scope="record">
             <!-- <a @click="openDetail(record.host_id)">查看</a>
@@ -89,8 +89,16 @@ import MyPageHeaderWrapper from '@/views/utils/MyPageHeaderWrapper';
 import {getSelectedRow} from '@/views/utils/getSelectedRow';
 import HostDetailDrawer from './components/HostDetailDrawer';
 // import HostTerminal from '@/views/assests/components/HostTerminal';
-
 import {hostList, deleteHost, hostGroupList} from '@/api/assest';
+
+const hostStatusMap = {
+  '0': '在线',
+  '1': '离线',
+  '2': '未确认',
+  '3': '扫描中',
+  '4': '已完成',
+  '5': '未知'
+};
 
 const defaultPagination = {
   current: 1,
@@ -110,6 +118,7 @@ export default {
   },
   data() {
     return {
+      hostStatusMap,
       rowKey: 'host_id',
       pagination: defaultPagination,
       filters: null,
@@ -217,17 +226,6 @@ export default {
     },
     handleUploadSuccess() {
       this.getHostList();
-    },
-    statusMap(params) {
-      let status = '';
-      if (params === 1) {
-        status = '离线';
-      } else if (params === 2) {
-        status = '未连接';
-      } else {
-        status = '在线';
-      }
-      return status;
     },
     onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys;

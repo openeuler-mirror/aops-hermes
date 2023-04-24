@@ -63,7 +63,7 @@
         <a-input
           size="large"
           type="text"
-          placeholder="输入由英文字母、数字、下划线、英文句号、以及中划线组成的邮箱地址"
+          placeholder="输入邮箱地址,由英文字母、数字、下划线、英文句号、以及中划线组成"
           v-decorator="[
             'email',
             {
@@ -72,7 +72,7 @@
             }
           ]"
         >
-          <a-icon slot="prefix" type="user" :style="{color: 'rgba(0,0,0,.25)'}" />
+          <a-icon slot="prefix" type="mail" :style="{color: 'rgba(0,0,0,.25)'}" />
         </a-input>
       </a-form-item>
 
@@ -233,7 +233,7 @@ export default {
   }
 
   .jump_login {
-    margin-left: 245px;
+    text-align: right;
     margin-top: -20px;
     .spin_top_jump {
       color:#005980;

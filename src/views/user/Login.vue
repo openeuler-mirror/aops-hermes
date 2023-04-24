@@ -162,7 +162,7 @@ export default {
   }
 
   .jump_registar {
-    margin-left: 245px;
+    text-align: right;
     margin-top: -20px;
     .spin_top_jump {
       color:#005980;

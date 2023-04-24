@@ -158,7 +158,8 @@ export default {
       }
 
       .footer {
-        width: 100%;
+        position: absolute;
+        width: 98%;
         bottom: 0;
         padding: 0 16px;
         margin: 155px 0 24px;

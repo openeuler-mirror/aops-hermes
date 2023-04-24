@@ -32,7 +32,8 @@
               ref="host_ip"
               formkey="host_ip"
               :text="String(text)"
-              @uploadstatus="uploadstatus($event)"
+              @unSubmit="unSubmit()"
+              @allowSub="allowSub()"
               @change="onCellChange(record.key, 'host_ip', $event)" />
           </template>
           <template slot="ssh_port" slot-scope="text, record">
@@ -40,7 +41,8 @@
               ref="ssh_port"
               formkey="ssh_port"
               :text="String(text)"
-              @uploadstatus="uploadstatus($event)"
+              @unSubmit="unSubmit()"
+              @allowSub="allowSub()"
               @change="onCellChange(record.key, 'ssh_port', $event)" />
           </template>
           <template slot="ssh_user" slot-scope="text, record">
@@ -48,7 +50,8 @@
               ref="ssh_user"
               formkey="ssh_user"
               :text="String(text)"
-              @uploadstatus="uploadstatus($event)"
+              @unSubmit="unSubmit()"
+              @allowSub="allowSub()"
               @change="onCellChange(record.key, 'ssh_user', $event)" />
           </template>
           <template slot="password" slot-scope="text, record">
@@ -56,7 +59,8 @@
               ref="password"
               formkey="password"
               :text="String(text)"
-              @uploadstatus="uploadstatus($event)"
+              @unSubmit="unSubmit()"
+              @allowSub="allowSub()"
               @change="onCellChange(record.key, 'password', $event)" />
           </template>
           <template slot="host_name" slot-scope="text, record">
@@ -64,7 +68,8 @@
               ref="host_name"
               formkey="host_name"
               :text="String(text)"
-              @uploadstatus="uploadstatus($event)"
+              @unSubmit="unSubmit()"
+              @allowSub="allowSub()"
               @change="onCellChange(record.key, 'host_name', $event)" />
           </template>
           <template slot="host_group_name" slot-scope="text, record">
@@ -72,7 +77,8 @@
               ref="host_group_name"
               formkey="host_group_name"
               :text="String(text)"
-              @uploadstatus="uploadstatus($event)"
+              @unSubmit="unSubmit()"
+              @allowSub="allowSub()"
               @change="onCellChange(record.key, 'host_group_name', $event)" />
           </template>
           <template slot="management" slot-scope="text, record">
@@ -80,7 +86,8 @@
               ref="management"
               formkey="management"
               :text="String(text)"
-              @uploadstatus="uploadstatus($event)"
+              @unSubmit="unSubmit()"
+              @allowSub="allowSub()"
               @change="onCellChange(record.key, 'management', $event)" />
           </template>
           <template slot="operation" slot-scope="text, record">
@@ -108,7 +115,7 @@
       <div style="display: flex;justify-content: flex-end;">
         <a-button
           type="primary"
-          :disabled="fileDataList.length === 0 || tableData.length === 0"
+          :disabled="fileDataList.length === 0 || tableData.length === 0 || isSubDisable"
           :loading="uploading"
           style="margin-top: 16px;width: 111px;"
           @click="goUpload">
@@ -133,6 +140,7 @@ export default {
   props: {},
   data() {
     return {
+      editNum: 0,
       dataAllow: true,
       count: '',
       rowKey: 'ip',
@@ -156,6 +164,13 @@ export default {
     };
   },
   computed: {
+    isSubDisable() {
+      if (this.editNum > 0) {
+        return true
+      } else {
+        return false
+      }
+    },
     columns() {
       return [
         {
@@ -224,7 +239,12 @@ export default {
     }
   },
   methods: {
-    uploadstatus(value) {},
+    unSubmit() {
+      this.editNum++;
+    },
+    allowSub() {
+      this.editNum--;
+    },
     onCellChange(key, dataIndex, value) {
       const dataSource = [...this.tableData];
       const target = dataSource.find((item) => item.key === key);
@@ -413,6 +433,22 @@ export default {
             })
             _this.$message.error('全部主机添加失败!')
           } else {
+            if (err.response.code === '1000') {
+              const errorList = [];
+              const errorData = {};
+              err.response.data.forEach((item) => {
+                errorList.push(item.host_ip);
+                errorData[item.host_ip] = item.reason
+              });
+              _this.tableData.forEach((item) => {
+                if (errorList.includes(item.host_ip)) {
+                  item.result = '添加失败'
+                }
+                if (Object.keys(errorData).includes(item.host_ip)) {
+                  item.reason = errorData[item.host_ip]
+                }
+              })
+            }
             _this.$message.error(err.response.message || err.response.data.detail);
           }
         })
