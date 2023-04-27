@@ -12,10 +12,10 @@
             :maxLength="50"
              v-decorator="[
                 'host_name',
-                {rules: [{ required: true, message: '请输入主机名称'}, {validator: checkNameInput}]}
+                {rules: [{ required: true, message: '请输入主机名称'}, {validator: checkNameInput, validateTrigger: 'blur'}]},
               ]"
               placeholder="请输入主机名称,50个字符以内">
-              <a-tooltip slot="suffix" title="最大长度50个字符，由数字、小写字母、英文下划线_组成。以小写字母开头，且结尾不能是英文下划线_">
+              <a-tooltip slot="suffix" title="最大长度50个字符，首尾不能为空格，不允许全空格">
                 <a-icon type="info-circle" style="color: rgba(0,0,0,.45)" />
               </a-tooltip>
             </a-input>
@@ -64,6 +64,7 @@
             <a-input-number
             :min="0"
             :max="65535"
+            @change="handlePortChange"
             v-decorator="[
                 'ssh_port',
                 {initialValue: 22, rules: [{required: true, message: '请输入 0~65535 内正整数'}]}
@@ -80,6 +81,7 @@
           </a-form-item>
           <a-form-item label="主机用户名">
             <a-input
+            @change="handleUserChange"
             v-decorator="[
                 'ssh_user',
                 {rules: [{required: true, message: '请输入主机用户名'}]}
@@ -94,25 +96,10 @@
             <a-input-password
             v-decorator="[
                 'password',
-                {rules: [{required: pageType === 'create' ? true : false, message: '请输入主机登录密码'}]}
+                {rules: [{required: pageType === 'create' ? true : requiredRules, message: '请输入主机登录密码'}]}
               ]"
-              placeholder="请设置登录密码, 若为空则不修改"></a-input-password>
+              :placeholder="pageType === 'create' ? '请设置主机登录密码' : '请输入主机登陆密码, 若未修改主机用户名或端口可以为空'"></a-input-password>
           </a-form-item>
-          <!-- <a-form-item label="主机sudo密码">
-            <a-input-password
-              v-decorator="[
-                'sudo_password',
-                {rules: [{required: true, message: '请输入主机sudo密码'}, {validator: passwordCheck}]}
-              ]"
-              placeholder="请设置sudo密码，长度8-20个字符"
-            />
-          </a-form-item> -->
-          <!-- <a-form-item label="加密密钥">
-            <a-input-password
-              v-decorator="['key', {rules: [{required: true, message: '请输入加密密钥'}, {validator: passwordCheck}]}]"
-              placeholder="请设置用于给主机私密信息加密的密钥，长度8-20个字符"
-            />
-          </a-form-item> -->
           <a-form-item :wrapper-col="{span: 10, offset: 5}">
             <a-button @click="handleCancel">取消</a-button>
             <a-button
@@ -158,7 +145,9 @@ export default {
       hostGroupList: [],
       hostGroupIsLoading: false,
       form: this.$form.createForm(this),
-      submitLoading: false
+      submitLoading: false,
+      PortRequired: false,
+      UserRequired: false
     };
   },
   computed: {
@@ -183,6 +172,10 @@ export default {
         }
       };
     },
+    requiredRules() {
+      // 当前为修改页面，只要端口号或主机用户名有一个改变时，密码为必须项
+      return this.UserRequired || this.PortRequired
+    },
     ...mapState({
       hostInfo: (state) => state.host.hostInfo
     })
@@ -200,6 +193,16 @@ export default {
     }
   },
   methods: {
+    handleUserChange(value) {
+      if (this.pageType === 'edit') {
+        value.target.value === this.basicHostInfo.ssh_user ? this.UserRequired = false : this.UserRequired = true
+      }
+    },
+    handlePortChange(value) {
+      if (this.pageType === 'edit') {
+        value === this.basicHostInfo.ssh_port ? this.PortRequired = false : this.PortRequired = true
+      }
+    },
     // 获取主机组列表数据
     getHostGroupList() {
       const _this = this;
@@ -240,18 +243,23 @@ export default {
                }
              }
             }
-            editHost(tableParams, this.hostId)
-            .then(function (res) {
-              _this.$message.success(res.message);
-              store.dispatch('resetHostInfo');
-              router.push('/assests/hosts-management');
-            })
-            .catch(function (err) {
-              _this.$message.error(err.response.message);
-            })
-            .finally(function () {
-              _this.submitLoading = false;
-            });
+            if (JSON.stringify(tableParams) === '{}') {
+              this.$message.info('未存在修改数据!')
+              this.submitLoading = false;
+            } else {
+              editHost(tableParams, this.hostId)
+                .then(function (res) {
+                  _this.$message.success(res.message);
+                  store.dispatch('resetHostInfo');
+                  router.push('/assests/hosts-management');
+                })
+                .catch(function (err) {
+                  _this.$message.error(err.response.message);
+                })
+                .finally(function () {
+                  _this.submitLoading = false;
+                });
+            }
           } else {
             addHost(values)
             .then(function (res) {
@@ -278,15 +286,15 @@ export default {
       router.go(-1);
     },
     checkNameInput(rule, value, cb) {
-      if (/[^0-9a-z_.]/.test(value)) {
+      if (!/^\S.*\S$/.test(value)) {
         /* eslint-disable */
-        cb('只能输入数字、小写字母和英文.和_');
+        cb('首尾不允许空格');
         /* eslint-enable */
         return;
       }
-      if (/[_]$/.test(value)) {
+      if (!/^(?!\s*$).+/.test(value)) {
         /* eslint-disable */
-        cb('结尾不能是英文下划线');
+        cb('不允许全空格');
         /* eslint-enable */
         return;
       }

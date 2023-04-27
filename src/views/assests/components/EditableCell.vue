@@ -1,5 +1,5 @@
 <template>
-  <div class="editable-cell">
+  <div class="editable-cell" ref="childitem">
     <a-form-model
       ref="ruleForm"
       :model="form"
@@ -7,7 +7,9 @@
     >
       <div v-if="editable" class="editable-cell-input-wrapper">
         <a-form-model-item :prop="formkey">
-          <a-input @change="handleChange" @pressEnter="check" v-model="form[formkey]" />
+          <!-- 当formkey为密码时，使用密码框组件 -->
+          <a-input-password v-if="formkey === 'password'" @change="handleChange" @pressEnter="check" v-model="form[formkey]" />
+          <a-input v-else @change="handleChange" @pressEnter="check" v-model="form[formkey]" />
           <a-icon
             style="top: -7px;"
             type="check"
@@ -19,7 +21,7 @@
       <div v-else class="editable-cell-text-wrapper">
         <div class="editable-content">
           <!-- <a-input :type="formkey === 'password' ? 'password' : 'text'" v-model="value" /> -->
-          <span v-if="formkey === 'password'">******</span>
+          <span v-if="formkey === 'password'">{{ countStar(form[formkey]) }}</span>
           <span v-else>{{ value || ' ' }}</span>
         </div>
         <a-icon type="edit" class="editable-cell-icon" @click="edit" />
@@ -58,15 +60,15 @@ export default {
       }
     };
     const checkNameInput = (rule, value, callback) => {
-      if (/[^0-9a-z_.]/.test(value)) {
+      if (!/^\S.*\S$/.test(value)) {
         /* eslint-disable */
-        callback(new Error('只能输入数字、小写字母和英文.和_'));
+        callback(new Error('首尾不允许空格'));
         /* eslint-enable */
         return;
       }
-      if (/[_]$/.test(value)) {
+      if (!/^(?!\s*$).+/.test(value)) {
         /* eslint-disable */
-        callback(new Error('结尾不能是英文下划线'));
+        callback(new Error('不允许全空格'));
         /* eslint-enable */
         return;
       }
@@ -102,6 +104,13 @@ export default {
     };
   },
   methods: {
+    countStar(num) {
+      let str = ''
+      for (let i = 0; i < num.length; i++) {
+        str += '*'
+      }
+      return str
+    },
     handleChange(e) {
       const value = e.target.value;
       this.value = value;
@@ -113,22 +122,39 @@ export default {
     check() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
-          this.editable = false;
-          this.$emit('change', this.value);
+          if (this.editable) {
+            // 判断当前状态，只对处于修改状态的组件执行此操作，节省性能
+            this.editable = false;
+            this.$emit('allowSub')
+            this.$emit('change', this.value);
+          }
         } else {
           return false;
         }
       });
     },
     edit() {
+      this.$emit('unSubmit')
       this.editable = true;
+    },
+    handleClickOutside(event) {
+    // 鼠标监听事件
+      const target = event.target
+      const wrapper = this.$refs.childitem
+      // 判断点击的区域是否是当前组件的区域
+      if (!wrapper.contains(target)) {
+        // 当点击组件之外时 执行校验操作
+        this.check()
+      }
     }
   },
   created() {
   },
+  beforeDestroy() {
+    document.removeEventListener('mouseup', this.handleClickOutside)
+  },
   mounted() {
-    // this.edit()
-    // this.check()
+    document.addEventListener('mouseup', this.handleClickOutside)
   },
   computed: {
     form () {

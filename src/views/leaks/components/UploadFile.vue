@@ -17,7 +17,7 @@
         </a-upload>
       </div>
       <div style="margin-top: 14px;font-size: 15px;">
-        <a-radio-group name="radioGroup" v-model="value" :default-value="1" @change="onChange">
+        <a-radio-group name="radioGroup" v-model="value" :default-value="2" @change="onChange">
           <a-radio :value="1">
             不受影响
           </a-radio>
@@ -43,7 +43,7 @@ export default {
   props: {},
   data() {
     return {
-      value: 1,
+      value: 2,
       fileDataList: [],
       visible: false,
       uploading: false
