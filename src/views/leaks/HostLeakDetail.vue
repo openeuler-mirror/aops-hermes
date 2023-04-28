@@ -45,6 +45,7 @@
     <a-card :bordered="false" class="aops-theme">
       <h1>CVEs</h1>
       <cves-table
+        ref="cve_table"
         :inputList="cveList"
         :inputLoading="cveIsLoading"
         :hostList="[detail]"
@@ -202,6 +203,10 @@ export default {
         .then(function (res) {
           _this.$message.success(res.message);
           _this.scanStatus = 3;
+          _this.$refs.cve_table.getCves();
+          setTimeout(() => {
+            _this.$refs.cve_table.getCvesAll();
+          }, 500);
           _this.getScanStatue();
         })
         .catch(function (err) {

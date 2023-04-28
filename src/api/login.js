@@ -7,7 +7,7 @@ const userApi = {
   LoginInGitee: '/manage/account/authredirecturl',
   register: '/manage/account/add',
   Login: '/manage/account/login',
-  Logout: '/manage/logout',
+  Logout: '/manage/account/logout',
   changePassword: '/manage/account/change',
   certificateKey: '/manage/account/certificate'
 };
@@ -101,10 +101,9 @@ export function certificateKey(parameter) {
   });
 }
 
-export function logout(parameter) {
+export function logout() {
   return request({
     url: userApi.Logout,
-    method: 'post',
-    data: parameter
+    method: 'post'
   });
 }
