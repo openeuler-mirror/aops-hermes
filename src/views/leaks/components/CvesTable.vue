@@ -514,7 +514,6 @@ export default {
   mounted() {
     setTimeout(() => {
       this.getCvesAll();
-      console.log(11111)
     }, 500);
     this.getCves();
   }

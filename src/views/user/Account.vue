@@ -82,7 +82,14 @@ export default {
   },
   created() {
     this.code = (window.location.search).split('=')[1];
-    this.getConnection(this.code)
+    if (this.code === 'access_denied&error_description') {
+      // 拒绝授权，跳转登陆页
+      this.$message.info('拒绝授权!')
+      this.$router.push('/user/login')
+    } else {
+      // 同意授权，跳转首页
+      this.getConnection(this.code)
+    }
   },
   methods: {
     ...mapActions(['LoginInGitee']),

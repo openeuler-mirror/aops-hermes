@@ -4,7 +4,7 @@
 
 import storage from 'store';
 import cookie from 'js-cookie';
-import { login, refreshTokenFn } from '@/api/login';
+import { login, logout, refreshTokenFn } from '@/api/login';
 import { ACCESS_TOKEN, REFRESH_TOKIN } from '@/vendor/ant-design-pro/store/mutation-types';
 
 const user = {
@@ -122,14 +122,24 @@ const user = {
 
     // 登出
     Logout({ commit, state }) {
-      commit('SET_TOKEN', '');
-      commit('SET_ROLES', []);
-      commit('SET_RETOKEN', []);
-      storage.remove(ACCESS_TOKEN);
-      storage.remove(REFRESH_TOKIN);
-      cookie.remove('aops_token');
-      cookie.remove('user_name');
-      cookie.remove('refreshtoken');
+      return new Promise(resolve => {
+        logout()
+          .then(() => {
+            commit('SET_TOKEN', '');
+            commit('SET_ROLES', []);
+            commit('SET_RETOKEN', '');
+            storage.remove(ACCESS_TOKEN);
+            storage.remove(REFRESH_TOKIN);
+            cookie.remove('aops_token');
+            cookie.remove('user_name');
+            cookie.remove('refreshtoken');
+            resolve();
+          })
+          .catch(() => {
+            resolve();
+          })
+          .finally(() => { });
+      });
     },
 
     // 刷新token
