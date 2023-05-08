@@ -318,7 +318,6 @@ export default {
   },
   methods: {
     searchChange() {
-      console.log(this.hostSearch)
       if (!this.filters) {
         this.filters = {};
       }
@@ -342,7 +341,6 @@ export default {
     },
     handleExport() {
       if (this.selectedRowKeys.length !== 0) {
-        console.log(this.selectedRowKeys);
         const _this = this;
         getCveExport(_this.selectedRowKeys)
           .then(function (res) {
@@ -441,7 +439,6 @@ export default {
               title: '有主机正在进行扫描，不能扫描全部主机！'
             });
           } else {
-            console.log(_this.filters);
             const hasFilter = _this.checkHasFilter(_this.filters);
             _this.$confirm({
               title: hasFilter ? '按当前筛选条件扫描主机？' : '确定扫描全部主机?',
@@ -633,7 +630,6 @@ export default {
       } else {
         this.filters.host_name = undefined;
       }
-      console.log(this.filters);
       this.getHostList();
       if (this.standalone) {
         this.getHostListAll();

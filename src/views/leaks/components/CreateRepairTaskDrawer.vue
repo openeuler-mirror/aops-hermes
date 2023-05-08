@@ -246,7 +246,7 @@ export default {
       submitLoading: false,
       submitAndExecuteLoading: false,
       // 是否重启按钮数据
-      isResetChecked: true,
+      isResetChecked: false,
       // 自动生成的任务名称和描述，初始化为空
       taskNameDefault: '',
       taskDescDefault: '',
@@ -298,7 +298,7 @@ export default {
         {
           dataIndex: 'hotpatch',
           key: 'hotpatch',
-          title: '热补丁支持',
+          title: '支持热补丁',
           scopedSlots: {customRender: 'hotpatch'}
         }
       ];
@@ -318,7 +318,7 @@ export default {
         {
           dataIndex: 'hotpatch',
           key: 'hotpatch',
-          title: '热补丁支持',
+          title: '热补丁修复',
           scopedSlots: {customRender: 'hotpatch'}
         }
       ];
@@ -392,7 +392,7 @@ export default {
       console.log(this.cveListProps)
       this.cveList = this.cveListProps;
       console.log(this.cveList)
-      this.isResetChecked = true;
+      this.isResetChecked = false;
       this.selectedRowKeyMaps = {};
       this.selectedRowsAllMaps = {};
       this.setDefaultInfo();
@@ -422,6 +422,7 @@ export default {
       console.log(this.hostListType)
       switch (this.hostListType) {
         case hostListTypes[0]:
+        // hostListType为byLoading
           _this.hostUnderCveLoading = true;
           if (this.cveLiIsEmpty()) {
             return;
@@ -456,7 +457,26 @@ export default {
             });
           break;
         case hostListTypes[1]:
+        // hostListType为bySelection
+          if (this.cveLiIsEmpty()) {
+            return;
+          }
+          const tempObj1 = {};
+          this.cveList.forEach((cve) => {
+            tempObj1[cve.cve_id] = this.hostList.map((host) => {
+              return {
+                host_id: host.host_id,
+                host_name: host.host_name,
+                host_ip: host.host_ip,
+                hotpatch: host.hotpatch
+                // 当传入hostList为cve列表下选择的主机列表时，直接选用当前主机的hotpatch
+              };
+            });
+          });
+          this.addHostListToCVEData(tempObj1);
+          break;
         case hostListTypes[2]:
+        // hostListType为byOneHost
           if (this.cveLiIsEmpty()) {
             return;
           }
@@ -468,6 +488,7 @@ export default {
                 host_name: host.host_name,
                 host_ip: host.host_ip,
                 hotpatch: cve.hotpatch
+                // 当传入hostList为主机列表下选择的cve列表时，选用cveList循环到当前cve的hotpatch
               };
             });
           });
