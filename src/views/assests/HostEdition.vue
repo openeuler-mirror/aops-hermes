@@ -82,6 +82,7 @@
           <a-form-item label="主机用户名">
             <a-input
             @change="handleUserChange"
+            :maxLength="32"
             v-decorator="[
                 'ssh_user',
                 {rules: [{required: true, message: '请输入主机用户名'}]}
