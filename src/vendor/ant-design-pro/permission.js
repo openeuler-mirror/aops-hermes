@@ -19,7 +19,7 @@ router.beforeEach((to, from, next) => {
   to.meta && typeof to.meta.title !== 'undefined' && setDocumentTitle(`${i18nRender(to.meta.title)} - ${domTitle}`);
 
   // has token
-  const aToken = cookie.get('aops_token');
+  const aToken = localStorage.getItem('Access-Token').substring(1, localStorage.getItem('Access-Token').length - 1)
   if (aToken && aToken !== 'undefined') {
     if (to.path === loginRoutePath) {
       next({path: defaultRoutePath});
@@ -64,18 +64,7 @@ router.beforeEach((to, from, next) => {
             });
           });
       } else {
-        // 路由跳转前判断token是否过期
-        if (localStorage.getItem('is_tokenvalid')) {
-            var interval = setInterval(function() {
-              if (!localStorage.getItem('is_tokenvalid')) {
-                clearInterval(interval);
-                // 执行某些操作
-                next()
-              }
-            }, 1000); // 每隔1秒钟执行一次判断操作
-        } else {
-          next();
-        }
+        next();
       }
     }
   } else {

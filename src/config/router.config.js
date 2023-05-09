@@ -381,8 +381,6 @@ export const asyncRouterMap = [
                 meta: {
                   title: routeMap.leaks.children.CVEsView.children.CVEsManagement.title,
                   permission: ['leaks'],
-                  // isUseCache: false,
-                  keepAlive: true,
                   diyBreadcrumb: [
                     {
                       breadcrumbName: routeMap.index.title,
@@ -448,7 +446,6 @@ export const asyncRouterMap = [
                 meta: {
                   title: routeMap.leaks.children.HostView.children.HostLeakList.title,
                   permission: ['leaks'],
-                  // keepAlive: true,
                   diyBreadcrumb: [
                     {
                       breadcrumbName: routeMap.index.title,
@@ -514,7 +511,6 @@ export const asyncRouterMap = [
                 meta: {
                   title: routeMap.leaks.children.leakTaskView.children.leakTaskList.title,
                   permission: ['leaks'],
-                  keepAlive: true,
                   diyBreadcrumb: [
                     {
                       breadcrumbName: routeMap.index.title,

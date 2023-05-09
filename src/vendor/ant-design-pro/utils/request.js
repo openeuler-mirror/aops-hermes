@@ -57,7 +57,7 @@ const errorHandler = error => {
 
 // request interceptor
 request.interceptors.request.use(config => {
-  const token = cookie.get('aops_token');
+  const token = localStorage.getItem('Access-Token').substring(1, localStorage.getItem('Access-Token').length - 1)
   // 如果 token 存在
   // 让每个请求携带自定义 token 请根据实际情况自行修改
   if (token) {
@@ -74,7 +74,6 @@ request.interceptors.request.use(config => {
 
 // response interceptor
 request.interceptors.response.use(response => {
-  console.log(response)
   // 这对业务域相关接口返回体做特殊处理，后续需要统一
   const code = response.data.code || response.status;
   // 不处理所有2xx的状态码
