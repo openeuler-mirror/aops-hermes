@@ -19,7 +19,7 @@ router.beforeEach((to, from, next) => {
   to.meta && typeof to.meta.title !== 'undefined' && setDocumentTitle(`${i18nRender(to.meta.title)} - ${domTitle}`);
 
   // has token
-  const aToken = localStorage.getItem('Access-Token').substring(1, localStorage.getItem('Access-Token').length - 1)
+  const aToken = localStorage.getItem('Access-Token')
   if (aToken && aToken !== 'undefined') {
     if (to.path === loginRoutePath) {
       next({path: defaultRoutePath});
