@@ -374,7 +374,6 @@ export default {
         } else {
           this.fixed = true;
         }
-      console.log(this.fixed)
       this.selectedRowKeys = []
       // 切换修复状态后重新请求受影响主机列表
       this.getHostList();
@@ -627,7 +626,6 @@ export default {
           _this.hostTableData.forEach((item) => {
             item.cve_num = `${item.unfixed_cve_num}/${item.fixed_cve_num}`
           })
-          console.log(_this.hostTableData)
           _this.pagination = {
             ..._this.pagination,
             current: pagination.current,

@@ -425,9 +425,7 @@ export default {
         this.$emit('getAllHost');
       }
       this.visible = true;
-      console.log(this.cveListProps)
       this.cveList = this.cveListProps;
-      console.log(this.cveList)
       this.isResetChecked = false;
       this.selectedRowKeyMaps = {};
       this.selectedRowsAllMaps = {};
@@ -455,7 +453,6 @@ export default {
           _this.actionsIsLoading = false;
         });
       // 根据主机数据获取类型，自行或cve下的主机数据或者使用外部输入的主机数据更行talbe数据
-      console.log(this.hostListType)
       switch (this.hostListType) {
         case hostListTypes[0]:
         // hostListType为byLoading
@@ -536,7 +533,6 @@ export default {
     handleSubmit(excuteASAP = false) {
       const _this = this;
       this.form.validateFields((err, values) => {
-        console.log(values)
         if (!err) {
           if (!excuteASAP) {
             this.submitLoading = true;
@@ -559,7 +555,6 @@ export default {
                   })
                   .filter((item) => item.host_info && item.host_info.length > 0)
               };
-              console.log(params.info)
               if (params.info.length === 0) {
                 this.$message.info('至少需要选择一个cve才能设置cve修复任务!');
                 this.submitLoading = false;
@@ -569,7 +564,6 @@ export default {
                 // make request
                 generateTask(params)
                   .then(function (res) {
-                    console.log(res)
                     _this.$message.success(res.message);
                     if (excuteASAP) {
                       _this.handleExcuteASAP(res.data.task_id, res.data);
@@ -605,9 +599,7 @@ export default {
                 generateRepoTask(repoParams)
                   .then(function (res) {
                     _this.$message.success(res.message);
-                    console.log(excuteASAP);
                     if (excuteASAP) {
-                      console.log(_this.hostList);
                       _this.handleExcuteASAP(res.data.task_id, res.data);
                     } else {
                       _this.visible = false;
@@ -632,9 +624,6 @@ export default {
               }
             case 'cve rollback':
               // prepare data
-              console.log(this.selectedRowKeyMaps)
-              console.log(this.selectedRowsAllMaps)
-              console.log(this.cveList)
               const cveRollback = Object()
               this.cveList.forEach((cveInfo) => {
                 cveInfo.hostsList.forEach((host) => {
@@ -658,9 +647,6 @@ export default {
                   cves: cveRollback[hostId]
                 }
               })
-              console.log(cveRollback)
-              console.log(cveRoobackInfo)
-              console.log(values)
               const rollParams = {
                   task_name: values.task_name,
                   description: values.task_desc,
@@ -675,7 +661,6 @@ export default {
                 generateRollbackTask(rollParams)
                   .then(function (res) {
                     _this.$message.success(res.message);
-                    console.log(res)
                     if (excuteASAP) {
                       _this.handleExcuteASAP(res.data.task_id, res.data);
                     } else {
@@ -739,7 +724,6 @@ export default {
       this.cveList.forEach((cveInfo) => {
         const hostListUnderCve = cveMap[cveInfo.cve_id];
         cveInfo.hostsList = hostListUnderCve || [];
-        console.log(cveInfo)
 
         if (hostListUnderCve && hostListUnderCve.length > 0) {
           if (this.taskType === 'cve fix') {
@@ -755,7 +739,6 @@ export default {
       });
       // forced refresh
       this.cveList = Object.assign([], this.cveList);
-      console.log(this.cveList)
     },
     addActionsToCVEData(cveMap) {
       const tempArr = this.cveList.map((cveInfo) => {

@@ -394,7 +394,6 @@ export default {
         this.selectedRowKeys = []
         this.getCves();
       } else {
-        console.log(e.target.value)
       }
     },
     handleFixChange(e) {
