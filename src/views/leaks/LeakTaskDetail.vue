@@ -146,7 +146,7 @@
         <div slot="status" slot-scope="status">
           <span class="task-status">
             <a-badge :status="statusValueMap[status]" />
-            {{ taskType === 'cve fix' ? cveStatusTextMap[status] : repoStatusTextMap[status] }}
+            {{ taskType === 'cve fix' ? cveStatusTextMap[status] : taskType === 'cve rollback' ? rollStatusTextMap[status] : repoStatusTextMap[status] }}
             <a-icon
             v-if="statusValueMap[status] === 'processing'"
             type="loading"
@@ -198,6 +198,13 @@ const rowKeyMap = {
 const cveStatusTextMap = {
   succeed: '修复成功',
   fail: '待修复',
+  running: '运行中',
+  unknown: '未知'
+};
+
+const rollStatusTextMap = {
+  succeed: '回滚成功',
+  fail: '待回滚',
   running: '运行中',
   unknown: '未知'
 };
@@ -255,6 +262,7 @@ export default {
       hostListOfCveId: null,
       cveStatusTextMap,
       repoStatusTextMap,
+      rollStatusTextMap,
       taskTypeMap,
       rowKeyMap,
       statusValueMap
