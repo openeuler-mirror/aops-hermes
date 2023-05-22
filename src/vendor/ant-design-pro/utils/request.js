@@ -82,9 +82,8 @@ request.interceptors.response.use(response => {
           description: response.data.message
         });
         const _this = this
-        store.dispatch('Logout').then(() => {
-          _this.$router.push({ name: 'login' });
-        });
+        store.dispatch('Logout')
+        _this.$router.push({ name: 'login' });
         break;
       case '1207':
         // token过期后，调接口，刷新token
