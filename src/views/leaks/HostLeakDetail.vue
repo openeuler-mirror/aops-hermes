@@ -38,6 +38,9 @@
                 导出cve信息
               </a-button>
             </a-col>
+            <a-col span="8">
+              <p>{{ `已修复的CVE数量： ${detail.fixed_cve_num}` }}</p>
+            </a-col>
           </a-row>
         </div>
       </a-spin>
@@ -159,12 +162,11 @@ export default {
       this.cveIsLoading = true;
       getCveUnderHost({
         ...data,
-        host_id: hostId,
-        affected: this.affected
+        host_id: hostId
       })
         .then(function (res) {
           _this.cveList = res.data.result;
-          _this.paginationTotal = res.data.total_count;
+          _this.paginationTotal = res.data.total_count || (res.data.total_count === 0 ? 0 : undefined);
         })
         .catch(function (err) {
           _this.$message.error(err.response.message);

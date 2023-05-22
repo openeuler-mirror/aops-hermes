@@ -13,19 +13,19 @@
             <a-col :span="8">
               <p>主机个数：{{ detail.host_num }}</p>
             </a-col>
-            <a-col :span="8">
+            <!-- <a-col :span="8">
               <p>{{ detail.need_reboot }}台主机需要重启</p>
-            </a-col>
+            </a-col> -->
           </a-row>
           <a-row type="flex">
-            <a-col :span="8">
+            <!-- <a-col :span="8">
               <p>自动重启：{{ detail.auto_reboot ? '是' : '否' }} <a-tooltip placement="top">
                   <template slot="title">
                     <span>是否开启自动重启，开启后若cve修复后需要重启则会进行重启， 否则不会重启</span>
                   </template>
                   <span><a-icon type="question-circle" /></span>
                 </a-tooltip></p>
-            </a-col>
+            </a-col> -->
           </a-row>
           <a-row>
             <a-col :span="8">
@@ -33,7 +33,7 @@
                 最新状态
                 <a-tooltip placement="top">
                   <template slot="title">
-                    <span>{{ taskType === 'cve fix' ? `修复成功` : `已设置` }}</span>
+                    <span>{{ taskType === 'cve fix' ? `修复成功` : taskType === 'cve rollback' ? `已回滚` : `已设置` }}</span>
                   </template>
                   <span><a-icon type="check-circle" class="color-check-circle" />{{
                     detail.statuses && detail.statuses['succeed']
@@ -41,7 +41,7 @@
                 </a-tooltip>
                 <a-tooltip placement="top">
                   <template slot="title">
-                    <span>{{ taskType === 'cve fix' ? `待修复` : `未设置` }}</span>
+                    <span>{{ taskType === 'cve fix' ? `待修复` : taskType === 'cve rollback' ? `未回滚` : `未设置` }}</span>
                   </template>
                   <span><a-icon type="close-circle" class="color-close-circle" />{{
                     detail.statuses && detail.statuses['fail']
@@ -110,7 +110,7 @@
           <a-row type="flex" :gutter="6">
             <a-col>
               <a-input-search
-              :placeholder="taskType === 'cve fix' ? `按CVE ID搜索` : `按主机名搜索`"
+              :placeholder="taskType === 'cve fix' ? `按CVE ID搜索` : taskType === 'cve rollback' ? `按CVE ID搜索` : `按主机名搜索`"
                 style="width: 200px"
                 @search="onSearch" />
             </a-col>
@@ -129,7 +129,7 @@
       </a-row>
       <a-table
         :rowKey="rowKeyMap[taskType]"
-        :columns="taskType === 'cve fix' ? cveColumns : repoColumns"
+        :columns="taskType === 'cve fix' || taskType === 'cve rollback' ? cveColumns : repoColumns"
         :data-source="tableData"
         :pagination="pagination"
         :row-selection="taskType === 'cve fix' ? undefined : undefined"
@@ -186,10 +186,12 @@ import configs from '@/config/defaultSettings';
 
 const taskTypeMap = {
   'cve fix': '漏洞修复',
-  'repo set': 'REPO设置'
+  'repo set': 'REPO设置',
+  'cve rollback': 'cve回滚'
 };
 const rowKeyMap = {
   'cve fix': 'cve_id',
+  'cve rollback': 'cve_id',
   'repo set': 'host_id'
 };
 
@@ -325,7 +327,7 @@ export default {
         },
         {
           dataIndex: 'status',
-          title: '修复状态',
+          title: this.taskType === 'cve fix' ? '修复状态' : '回滚状态',
           width: 140,
           scopedSlots: {customRender: 'status'},
           filteredValue: filters.status || null,
@@ -388,7 +390,7 @@ export default {
       this.filters = Object.assign({}, this.filters, filters);
       this.sorter = sorter;
       // 出发排序、筛选、分页时，重新请求主机列表
-      if (this.taskType === 'cve fix') {
+      if (this.taskType === 'cve fix' || this.taskType === 'cve rollback') {
         this.getCveList();
       } else {
         this.getHostList();
@@ -645,6 +647,9 @@ export default {
           break;
         case 'repo set':
           this.getHostList();
+          break;
+        case 'cve rollback':
+          this.getCveList();
           break;
       }
     },

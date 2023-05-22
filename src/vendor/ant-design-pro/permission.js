@@ -1,7 +1,7 @@
 import router from '@/vendor/ant-design-pro/router';
 import store from '@/store';
 // import storage from 'store'
-import cookie from 'js-cookie';
+// import cookie from 'js-cookie';
 import NProgress from 'nprogress'; // progress bar
 import '@/vendor/ant-design-pro/components/NProgress/nprogress.less'; // progress bar custom style
 import notification from 'ant-design-vue/es/notification';
@@ -19,7 +19,7 @@ router.beforeEach((to, from, next) => {
   to.meta && typeof to.meta.title !== 'undefined' && setDocumentTitle(`${i18nRender(to.meta.title)} - ${domTitle}`);
 
   // has token
-  const aToken = localStorage.getItem('Access-Token').substring(1, localStorage.getItem('Access-Token').length - 1)
+  const aToken = localStorage.getItem('Access-Token')
   if (aToken && aToken !== 'undefined') {
     if (to.path === loginRoutePath) {
       next({path: defaultRoutePath});
@@ -28,7 +28,7 @@ router.beforeEach((to, from, next) => {
       // check login user.roles is null
       if (store.getters.roles.length === 0) {
         // 因为getInfo暂时还没有实现，此处主动存一下用户信息
-        store.dispatch('setUserName', cookie.get('user_name'));
+        store.dispatch('setUserName', localStorage.getItem('user_name'));
         // request login userInfo
         store
           .dispatch('GetInfo') // 因为这个接口目前还没有。getInfo内容被跳过了，返回空的结果

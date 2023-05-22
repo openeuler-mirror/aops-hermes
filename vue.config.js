@@ -173,7 +173,7 @@ const vueConfig = {
       },
       '/api': {
         // target: serverMap.serverIpBase + ':11111',
-        target: serverMap.serveiIp2 + ':11111',
+        target: serverMap.serveiIp1 + ':11111',
         ws: false,
         changeOrigin: true,
         pathRewrite: {

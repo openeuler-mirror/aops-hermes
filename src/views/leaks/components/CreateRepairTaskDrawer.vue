@@ -1,11 +1,11 @@
 <template>
   <div>
     <a-button :disabled="disabled" :loading="loading" @click="handleOpen" type="primary">
-      {{ taskType === 'cve fix' ? `${text}` : '设置REPO' }}
+      {{ taskTypsbutton[taskType] }}
     </a-button>
     <a-drawer
-    :title="`生成任务${taskType === 'repo set' ? ' 设置REPO' : ''}`"
-    closable
+      :title="`生成任务${taskType === 'repo set' ? ' 设置REPO' : ''}`"
+      closable
       @close="handleCancel"
       :get-container="false"
       :visible="visible"
@@ -50,7 +50,7 @@
             </a-select>
           </a-form-item>
         </a-form>
-        <div v-if="taskType === 'cve fix'">
+        <div v-if="taskType === 'cve fix' || taskType === 'cve rollback'">
           <a-table
           rowKey="cve_id"
           :columns="tableColumns"
@@ -81,6 +81,11 @@
               :columns="innerColumns"
               :rowSelection="{
                 selectedRowKeys: selectedRowKeyMaps[record.cve_id] || [],
+                getCheckboxProps: (it) => ({
+                  props: {
+                    disabled: !it.hotpatch && taskType === 'cve rollback'
+                  }
+                }),
                 onChange: function(selectedRowKeys, selectedRows){
                   onSelectChange(selectedRowKeys, selectedRows, record.cve_id);
                 }
@@ -88,9 +93,13 @@
               :data-source="record.hostsList || []"
               :pagination="false">
               <div slot="hotpatch" slot-scope="hotpatch">
-                <span>
-                  <a-switch :defaultChecked="hotpatch" checked-children="是" un-checked-children="否" :disabled="!record.hotpatch" style="margin-bottom:5px"
+                <span v-if="taskType === 'cve fix'">
+                  <a-switch :defaultChecked="hotpatch" checked-children="是" un-checked-children="否"
+                  :disabled="!record.hotpatch || taskType === 'cve rollback'" style="margin-bottom:5px"
                   @change="hotchange(record.cve_id)" />
+                </span>
+                <span v-else>
+                {{ hotpatch ? '是' : '否' }}
                 </span>
               </div>
             </a-table>
@@ -174,25 +183,36 @@ import {
   getActionUnderMultipleCVE,
   generateTask,
   executeTask,
-  generateRepoTask
+  generateRepoTask,
+  generateRollbackTask
 } from '@/api/leaks';
 
-const taskTypes = ['cve fix', 'repo set'];
+const taskTypes = ['cve fix', 'repo set', 'cve rollback'];
 const dataTypes = ['selected', 'all'];
+const taskTypsbutton = {
+  'cve fix': '生成修复任务',
+  'repo set': '设置REPO',
+  'cve rollback': '生成回滚任务'
+};
 const taskTypsEnum = {
   'cve fix': 'cve修复',
-  'repo set': 'repo设置'
+  'repo set': 'repo设置',
+  'cve rollback': 'cve回滚(当前仅支持热补丁回滚)'
 };
 const hostListTypes = ['byLoading', 'bySelection', 'byOneHost'];
-const restartTypesEnum = {
-  true: '是',
-  false: '否'
-};
+// const restartTypesEnum = {
+//   true: '是',
+//   false: '否'
+// };
 
 export default {
   name: 'CreateRepairTaskDrawer',
   props: {
     // 基本控制信息
+    fixed: {
+      type: Boolean,
+      default: false
+    },
     text: {
       type: String,
       default: '生成修复任务'
@@ -236,6 +256,7 @@ export default {
   },
   data() {
     return {
+      taskTypsbutton: taskTypsbutton,
       visible: false,
       taskTypsEnum,
       form: this.$form.createForm(this),
@@ -288,17 +309,17 @@ export default {
           width: 100,
           scopedSlots: {customRender: 'packages'}
         },
-        {
-          dataIndex: 'reboot',
-          key: 'reboot',
-          width: 80,
-          title: <span>重启后生效</span>,
-          customRender: (reboot) => restartTypesEnum[reboot]
-        },
+        // {
+        //   dataIndex: 'reboot',
+        //   key: 'reboot',
+        //   width: 80,
+        //   title: <span>重启后生效</span>,
+        //   customRender: (reboot) => restartTypesEnum[reboot]
+        // },
         {
           dataIndex: 'hotpatch',
           key: 'hotpatch',
-          title: '支持热补丁',
+          title: this.taskType === 'cve rollback' ? '热补丁修复' : '支持热补丁',
           scopedSlots: {customRender: 'hotpatch'}
         }
       ];
@@ -343,6 +364,17 @@ export default {
         onChange: this.onRepoSelectChange
       };
     }
+    // rollRowSelection() {
+    //   return {
+    //     selectedRowKeys: this.selectedRowKeyMaps[record.cve_id] || [],
+    //     getCheckboxProps: (it) => ({
+    //       disabled: !it.hotpatch
+    //     }),
+    //     onChange: function(selectedRowKeys, selectedRows) {
+    //       this.onSelectChange(selectedRowKeys, selectedRows, record.cve_id);
+    //     }
+    //   }
+    // }
   },
   watch: {},
   created() {},
@@ -366,7 +398,11 @@ export default {
         return false;
       }
       this.visible = false;
-      this.$message.info('至少需要选择一个CVE才能进行修复!');
+      if (this.taskType === 'cve fix') {
+        this.$message.info('至少需要选择一个CVE才能进行修复!');
+      } else {
+        this.$message.info('至少需要选择一个CVE才能进行回滚!');
+      }
       this.hostUnderCveLoading = false;
       return true;
     },
@@ -428,7 +464,8 @@ export default {
             return;
           }
           getHostUnderMultipleCVE({
-            cveList: this.cveList.map((cve) => cve.cve_id)
+            cveList: this.cveList.map((cve) => cve.cve_id),
+            fixed: this.fixed
           })
             .then(function (res) {
               // hostlists are contained in cveMap
@@ -506,7 +543,6 @@ export default {
           } else {
             this.submitAndExecuteLoading = true;
           }
-
           switch (this.taskType) {
             case 'cve fix':
               // prepare data
@@ -523,26 +559,35 @@ export default {
                   })
                   .filter((item) => item.host_info && item.host_info.length > 0)
               };
-              // make request
-              generateTask(params)
-                .then(function (res) {
-                  _this.$message.success(res.message);
-                  if (excuteASAP) {
-                    _this.handleExcuteASAP(res.data.task_id, res.data);
-                  } else {
-                    _this.visible = false;
-                    _this.handleGenerateSuccess(res.data, 'CVE修复', 'normal');
-                  }
-                })
-                .catch(function (err) {
-                  _this.$message.error(err.response.message);
-                })
-                .finally(function () {
-                  if (!excuteASAP) {
-                    _this.submitLoading = false;
-                  }
-                });
-              break;
+              console.log(params.info)
+              if (params.info.length === 0) {
+                this.$message.info('至少需要选择一个cve才能设置cve修复任务!');
+                this.submitLoading = false;
+                this.submitAndExecuteLoading = false;
+                break;
+              } else {
+                // make request
+                generateTask(params)
+                  .then(function (res) {
+                    console.log(res)
+                    _this.$message.success(res.message);
+                    if (excuteASAP) {
+                      _this.handleExcuteASAP(res.data.task_id, res.data);
+                    } else {
+                      _this.visible = false;
+                      _this.handleGenerateSuccess(res.data, 'CVE修复', 'normal');
+                    }
+                  })
+                  .catch(function (err) {
+                    _this.$message.error(err.response.message);
+                  })
+                  .finally(function () {
+                    if (!excuteASAP) {
+                      _this.submitLoading = false;
+                    }
+                  });
+                break;
+              }
             case 'repo set':
               // prepare data
               if (this.selectedRepoRows.length !== 0) {
@@ -585,6 +630,69 @@ export default {
                 this.submitAndExecuteLoading = false;
                 break;
               }
+            case 'cve rollback':
+              // prepare data
+              console.log(this.selectedRowKeyMaps)
+              console.log(this.selectedRowsAllMaps)
+              console.log(this.cveList)
+              const cveRollback = Object()
+              this.cveList.forEach((cveInfo) => {
+                cveInfo.hostsList.forEach((host) => {
+                  const cveRollbackInfo = {
+                    cve_id: cveInfo.cve_id,
+                    hotpatch: host.hotpatch
+                  }
+                  if (this.selectedRowKeyMaps[cveInfo.cve_id].includes(host.host_id)) {
+                  // 筛选出选中的某主机中的cve
+                    if (cveRollback.hasOwnProperty(host.host_id)) {
+                      cveRollback[host.host_id].push(cveRollbackInfo)
+                    } else {
+                      cveRollback[host.host_id] = [cveRollbackInfo]
+                    }
+                  }
+                })
+              })
+              const cveRoobackInfo = Object.keys(cveRollback).map(hostId => {
+                return {
+                  host_id: Number(hostId),
+                  cves: cveRollback[hostId]
+                }
+              })
+              console.log(cveRollback)
+              console.log(cveRoobackInfo)
+              console.log(values)
+              const rollParams = {
+                  task_name: values.task_name,
+                  description: values.task_desc,
+                  info: cveRoobackInfo
+              }
+              if (cveRoobackInfo.length === 0) {
+                this.$message.info('至少需要选择一个cve才能设置cve回滚任务!');
+                this.submitLoading = false;
+                this.submitAndExecuteLoading = false;
+                break;
+              } else {
+                generateRollbackTask(rollParams)
+                  .then(function (res) {
+                    _this.$message.success(res.message);
+                    console.log(res)
+                    if (excuteASAP) {
+                      _this.handleExcuteASAP(res.data.task_id, res.data);
+                    } else {
+                      _this.visible = false;
+                      _this.handleGenerateSuccess(res.data, 'CVE回滚', 'normal');
+                    }
+                  })
+                  .catch(function (err) {
+                    _this.$message.error(err.response.message);
+                  })
+                  .finally(function () {
+                    if (!excuteASAP) {
+                      _this.submitLoading = false;
+                    }
+                  });
+                break;
+              }
           }
         }
       });
@@ -601,6 +709,9 @@ export default {
               break;
             case 'repo set':
               text = 'REPO设置';
+              break;
+            case 'cve rollback':
+              text = 'CVE回滚';
               break;
           }
 
@@ -631,7 +742,11 @@ export default {
         console.log(cveInfo)
 
         if (hostListUnderCve && hostListUnderCve.length > 0) {
-          this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve.map((host) => host.host_id);
+          if (this.taskType === 'cve fix') {
+            this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve.map((host) => host.host_id);
+          } else if (this.taskType === 'cve rollback') {
+            this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve.filter((host) => host.hotpatch === true).map((host) => host.host_id);
+          }
           this.selectedRowsAllMaps[cveInfo.cve_id] = hostListUnderCve;
         } else {
           this.selectedRowKeyMaps[cveInfo.cve_id] = [];
@@ -689,14 +804,22 @@ export default {
     },
     // 自动填写任务信息
     setDefaultInfo() {
-      this.taskNameDefault = `${this.taskType === 'cve fix' ? 'CVE修复任务' : 'REPO设置任务'}`;
+      // this.taskNameDefault = `${this.taskType === 'cve fix' ? 'CVE修复任务' : 'REPO设置任务'}`;
       switch (this.taskType) {
         case 'cve fix':
+          this.taskNameDefault = 'CVE修复任务'
           this.taskDescDefault = `修复以下${this.cveListProps.length}个CVE：${this.cveListProps
             .map((cve) => cve.cve_id)
             .join('、')}`;
           break;
+        case 'cve rollback':
+          this.taskNameDefault = 'CVE回滚任务'
+          this.taskDescDefault = `回滚以下${this.cveListProps.length}个CVE：${this.cveListProps
+            .map((cve) => cve.cve_id)
+            .join('、')}`;
+          break;
         case 'repo set':
+          this.taskNameDefault = 'REPO设置任务'
           this.taskDescDefault = `为以下${this.hostList.length}个主机设置Repo：${this.hostList
             .map((host) => host.host_name)
             .join('、')}`;
