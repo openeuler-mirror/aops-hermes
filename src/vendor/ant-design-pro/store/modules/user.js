@@ -104,22 +104,22 @@ const user = {
 
     // 登出
     Logout({ commit, state }) {
-      return new Promise((resolve, reject) => {
-        logout()
-          .then(() => {
+      // return new Promise((resolve, reject) => {
+      //   logout()
+      //     .then(() => {
             commit('SET_TOKEN', '');
             commit('SET_ROLES', []);
             commit('SET_RETOKEN', '');
             localStorage.removeItem(ACCESS_TOKEN);
             localStorage.removeItem(REFRESH_TOKIN);
             localStorage.removeItem('user_name');
-            resolve();
-          })
-          .catch(error => {
-            reject(error);
-          })
-          .finally(() => { });
-      });
+      //       resolve();
+      //     })
+      //     .catch(error => {
+      //       reject(error);
+      //     })
+      //     .finally(() => { });
+      // });
     },
 
     // 刷新token
