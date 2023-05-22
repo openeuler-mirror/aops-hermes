@@ -39,7 +39,8 @@ const api = {
   getRepoTemplate: '/vulnerability/repo/template/get',
   upload: '/vulnerability/cve/advisory/upload',
   reupload: '/vulnerability/cve/unaffected/upload',
-  getCveExport: '/vulnerability/cve/info/export'
+  getCveExport: '/vulnerability/cve/info/export',
+  generateRollbackTask: '/vulnerability/task/cve-rollback/generate'
 };
 
 const sorterMap = {
@@ -48,6 +49,18 @@ const sorterMap = {
 };
 
 export default api;
+
+export function generateRollbackTask(parameters) {
+  return request({
+    url: api.generateRollbackTask,
+    method: 'post',
+    data: {
+      task_name: parameters.task_name,
+      description: parameters.description,
+      info: parameters.info || []
+    }
+  });
+}
 
 export function getCveExport(parameter) {
   return request({
@@ -96,7 +109,8 @@ export function getCveList({ tableInfo, ...parameter }) {
       filter: {
         affected: tableInfo.affected,
         cve_id: tableInfo.filters.cveId,
-        severity: tableInfo.filters.severity || []
+        severity: tableInfo.filters.severity || [],
+        fixed: tableInfo.fixed
       },
       page: tableInfo.pagination.current,
       per_page: tableInfo.pagination.pageSize
@@ -134,6 +148,7 @@ export function getHostUnderCVE({ tableInfo, ...parameter }) {
       sort: tableInfo.sorter.field,
       direction: sorterMap[tableInfo.sorter.order],
       filter: {
+        fixed: tableInfo.fixed,
         host_name: tableInfo.filters.host_name === null ? undefined : tableInfo.filters.host_name,
         host_group: tableInfo.filters.host_group === null ? undefined : tableInfo.filters.host_group,
         repo: tableInfo.filters.repo === null ? undefined : tableInfo.filters.repo,
@@ -150,7 +165,10 @@ export function getHostUnderMultipleCVE({ tableInfo, ...parameter }) {
     url: api.getHostUnderMultipleCVE,
     method: 'post',
     data: {
-      cve_list: parameter.cveList
+      cve_list: parameter.cveList,
+      filter: {
+        fixed: parameter.fixed
+      }
     }
   });
 }
@@ -230,6 +248,7 @@ export function getCveUnderHost({ tableInfo, ...parameter }) {
       filter: {
         cve_id: tableInfo.filters.cveId,
         affected: tableInfo.affected,
+        fixed: tableInfo.fixed,
         severity: tableInfo.filters.severity || [],
         hotpatch: tableInfo.filters.hotpatch || []
       },

@@ -4,7 +4,6 @@
 
 import axios from 'axios';
 import store from '@/store';
-import cookie from 'js-cookie';
 import notification from 'ant-design-vue/es/notification';
 import { VueAxios } from './axios';
 
@@ -24,7 +23,7 @@ const errorHandler = error => {
   if (error.response) {
     const data = error.response.data;
     // 从 localstorage 获取 token
-    const token = cookie.get('aops_token');
+    const token = localStorage.getItem('Access-Token');
     if (error.response.status === '403') {
       notification.error({
         message: 'Forbidden',
@@ -60,14 +59,11 @@ request.interceptors.request.use(config => {
   // 如果 token 存在
   // 让每个请求携带自定义 token 请根据实际情况自行修改
   if (localStorage.getItem('Access-Token')) {
-    const token = localStorage.getItem('Access-Token').substring(1, localStorage.getItem('Access-Token').length - 1)
+    const token = localStorage.getItem('Access-Token')
     config.headers['Access-Token'] = token;
-
-    // reset cookie expired time
-    const in20Minutes = 1 / 72;
-    cookie.set('aops_token', token, { expires: in20Minutes });
-    const userName = cookie.get('user_name');
-    userName && cookie.set('user_name', userName, { expires: in20Minutes });
+    localStorage.setItem('aops_token', token)
+    const userName = localStorage.getItem('user_name')
+    userName && localStorage.setItem('user_name', userName);
   }
   return config;
 }, errorHandler);
@@ -88,13 +84,13 @@ request.interceptors.response.use(response => {
         store.dispatch('Logout').then(() => {
           setTimeout(() => {
             window.location.reload();
-          }, 1000);
-        });
+          }, 1500);
+        })
         break;
       case '1207':
         // token过期后，调接口，刷新token
         store.dispatch('RefreshToken').then(() => {
-        // 再发请求
+          // 再发请求
           return request(response.config);
         }).catch((err) => {
           this.$message.error(err.response.message)

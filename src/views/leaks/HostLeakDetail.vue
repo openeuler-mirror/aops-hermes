@@ -9,7 +9,7 @@
               <p>{{ `主机组： ${detail.host_group || ''}` }}</p>
             </a-col>
             <a-col span="8">
-              <p>{{ `受影响的CVE数量： ${detail.affected_cve_num}` }}</p>
+              <p>{{ `未修复的CVE数量： ${detail.affected_cve_num}` }}</p>
             </a-col>
             <a-col span="8">
               <p>{{ `CVE REPO： ${detail.repo || ''}` }}</p>
@@ -18,7 +18,7 @@
               <p>{{ `IP： ${detail.host_ip || ''}` }}</p>
             </a-col>
             <a-col span="8">
-              <p>{{ `不受影响的CVE数量： ${detail.unaffected_cve_num}` }}</p>
+              <p>{{ `已修复的CVE数量： ${detail.fixed_cve_num}` }}</p>
             </a-col>
             <a-col span="8">
               <p>
@@ -38,6 +38,9 @@
                 导出cve信息
               </a-button>
             </a-col>
+            <a-col span="8">
+              <p>{{ `不受影响的CVE数量： ${detail.unaffected_cve_num}` }}</p>
+            </a-col>
           </a-row>
         </div>
       </a-spin>
@@ -51,6 +54,7 @@
         :hostList="[detail]"
         @statusUpdated="handleStatusUpdated"
         @getTableData="getCveData"
+        @updataCveAllList="updataCveAllList"
         :paginationTotal="paginationTotal"
         @getCveAll="getCveAllList"
         :cveAllIsLoadingProp="cveAllIsLoading"
@@ -159,12 +163,11 @@ export default {
       this.cveIsLoading = true;
       getCveUnderHost({
         ...data,
-        host_id: hostId,
-        affected: this.affected
+        host_id: hostId
       })
         .then(function (res) {
           _this.cveList = res.data.result;
-          _this.paginationTotal = res.data.total_count;
+          _this.paginationTotal = res.data.total_count || (res.data.total_count === 0 ? 0 : undefined);
         })
         .catch(function (err) {
           _this.$message.error(err.response.message);
@@ -190,6 +193,9 @@ export default {
           _this.cveAllIsLoading = false;
         });
     },
+    updataCveAllList(val) {
+      this.cveAllList = val
+    },
     handleStatusUpdated(data) {
       this.getCVEList(this.hostId, data);
     },
@@ -204,6 +210,7 @@ export default {
           _this.$message.success(res.message);
           _this.scanStatus = 3;
           _this.$refs.cve_table.getCves();
+          _this.getDetail();
           setTimeout(() => {
             _this.$refs.cve_table.getCvesAll();
           }, 500);

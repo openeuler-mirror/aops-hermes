@@ -27,6 +27,9 @@
                   <a-descriptions-item label="状态" v-if="resultData.task_type === 'cve fix'">
                     {{ cveStatusTextMap[resultItem.status] }}
                   </a-descriptions-item>
+                  <a-descriptions-item label="状态" v-if="resultData.task_type === 'cve rollback'">
+                    {{ rollStatusTextMap[resultItem.status] }}
+                  </a-descriptions-item>
                   <a-descriptions-item label="状态" v-if="resultData.task_type === 'repo set'">
                     {{ repoStatusTextMap[resultItem.status] }}
                   </a-descriptions-item>
@@ -67,6 +70,27 @@
                     <p class="result-log">{{ resultItem.log }}</p>
                   </div>
                 </div>
+                <div v-if="taskType === 'cve rollback'" style="margin-left: 50px;">
+                  <p class="reuslt-item-title" style="margin-top: 12px">CVE回滚情况:</p>
+                  <a-collapse v-if="resultItem.cves.length !== 0" :bordered="false">
+                    <a-collapse-panel v-for="(cve, rkidx) in resultItem.cves" :key="rkidx"
+                      :header="`${cve.cve_id}`">
+                      <div class="cve-item">
+                        <p class="reuslt-item-title">结果:</p>
+                        {{ rollStatusTextMap[cve.result] }}
+                      </div>
+                      <div class="cve-item">
+                        <p class="reuslt-item-title" style="margin-top: 12px">Log:</p>
+                        <p class="result-log" v-html="logFormat(cve.log)"></p>
+                      </div>
+                      <a-badge :status="statusResultValueMap[cve.result]" slot="extra" />
+                    </a-collapse-panel>
+                  </a-collapse>
+                  <div v-else class="cve-item">
+                    <p class="reuslt-item-title" style="margin-top: 12px">Log:</p>
+                    <p class="result-log">{{ resultItem.log }}</p>
+                  </div>
+                </div>
                 <div v-if="taskType === 'repo set'">
                   <p class="reuslt-item-title" style="margin-top: 16px">Log:</p>
                   <p class="result-log">{{ resultItem.log }}</p>
@@ -94,6 +118,13 @@ import {dateFormat} from '@/views/utils/Utils';
 const cveStatusTextMap = {
   succeed: '修复成功',
   fail: '待修复',
+  running: '运行中',
+  unknown: '未知'
+};
+
+const rollStatusTextMap = {
+  succeed: '回滚成功',
+  fail: '待回滚',
   running: '运行中',
   unknown: '未知'
 };
@@ -156,6 +187,7 @@ export default {
       resultData: {},
       repoStatusTextMap,
       cveStatusTextMap,
+      rollStatusTextMap,
       statusValueMap,
       statusResultTextMap,
       statusResultValueMap
@@ -190,6 +222,21 @@ export default {
           getRepoTaskResult({
             taskId: this.taskId,
             hostList: []
+          })
+            .then(function (res) {
+              _this.resultData = Object.assign({}, res.data.result);
+            })
+            .catch(function (err) {
+              _this.$message.error(err.response.message);
+            })
+            .finally(function () {
+              _this.resultLoading = false;
+            });
+          break;
+        case 'cve rollback':
+          getCveTaskResult({
+            taskId: this.taskId,
+            cveList: []
           })
             .then(function (res) {
               _this.resultData = Object.assign({}, res.data.result);
