@@ -147,6 +147,7 @@ export default {
       statusMenuList: statusList,
 
       relatedCveDrawerVisble: false,
+      fixed: false,
       // 数据展示映射
       statusMap,
       severityMap,

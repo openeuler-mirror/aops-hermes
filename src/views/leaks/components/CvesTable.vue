@@ -2,12 +2,23 @@
   <div>
     <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
       <a-col>
-        <a-radio-group v-if="!standalone" default-value="a" button-style="solid" @change="handleChange">
+        <a-radio-group v-if="!standalone" default-value="a" button-style="solid" @change="handleAffectChange">
           <a-radio-button value="a">
-            受影响
+            未修复
+          </a-radio-button>
+          <a-radio-button value="c">
+            已修复
           </a-radio-button>
           <a-radio-button value="b">
             不受影响
+          </a-radio-button>
+        </a-radio-group>
+        <a-radio-group v-else default-value="a" button-style="solid" @change="handleFixChange">
+          <a-radio-button value="a">
+            未修复
+          </a-radio-button>
+          <a-radio-button value="b">
+            已修复
           </a-radio-button>
         </a-radio-group>
         <a-input-search placeholder="按CVE ID搜索" style="width: 200px;margin-left: 10px;" v-model="cveSearch" @change="searchChange" @search="onSearch" />
@@ -34,24 +45,51 @@
           <a-col>
             <upload-file v-if="standalone ? true : false" @addSuccess="handleUploadSuccess" />
           </a-col>
-          <a-col v-if="selectedRowKeys.length === 0">
-            <create-repair-task-drawer
-            text="生成修复任务"
-            taskType="cve fix"
-              :cveListProps="standalone ? cveAllList : cveAllListProp"
-              :loading="standalone ? cveAllIsLoading : cveAllIsLoadingProp"
-              :hostListType="standalone ? 'byLoading' : 'byOneHost'"
-              :hostList="hostList"
-              @createSuccess="handleTaskCreateSuccess" />
-          </a-col>
-          <a-col v-else>
-            <create-repair-task-drawer
-            taskType="cve fix"
-            :cveListProps="selectedRowsAll"
-              :hostListType="standalone ? 'byLoading' : 'byOneHost'"
-              :hostList="hostList"
-              @createSuccess="handleTaskCreateSuccess" />
-          </a-col>
+          <div v-if="fixed || rollback">
+            <a-col v-if="selectedRowKeys.length === 0">
+            <!-- 回滚按钮 -->
+              <create-repair-task-drawer
+                text="生成回滚任务"
+                taskType="cve rollback"
+                :fixed="fixed"
+                :cveListProps="standalone ? cveAllList : cveAllListProp"
+                :loading="standalone ? cveAllIsLoading : cveAllIsLoadingProp"
+                :hostListType="standalone ? 'byLoading' : 'byOneHost'"
+                :hostList="hostList"
+                @createSuccess="handleTaskCreateSuccess" />
+            </a-col>
+            <a-col v-if="selectedRowKeys.length !== 0">
+                <create-repair-task-drawer
+                taskType="cve rollback"
+                :fixed="fixed"
+                :cveListProps="selectedRowsAll"
+                :hostListType="standalone ? 'byLoading' : 'byOneHost'"
+                :hostList="hostList"
+                @createSuccess="handleTaskCreateSuccess" />
+            </a-col>
+          </div>
+          <div v-else>
+            <a-col v-if="selectedRowKeys.length === 0 && affected">
+              <create-repair-task-drawer
+                text="生成修复任务"
+                taskType="cve fix"
+                :fixed="fixed"
+                :cveListProps="standalone ? cveAllList : cveAllListProp"
+                :loading="standalone ? cveAllIsLoading : cveAllIsLoadingProp"
+                :hostListType="standalone ? 'byLoading' : 'byOneHost'"
+                :hostList="hostList"
+                @createSuccess="handleTaskCreateSuccess" />
+            </a-col>
+            <a-col v-if="selectedRowKeys.length !== 0 && affected">
+              <create-repair-task-drawer
+                taskType="cve fix"
+                :fixed="fixed"
+                :cveListProps="selectedRowsAll"
+                :hostListType="standalone ? 'byLoading' : 'byOneHost'"
+                :hostList="hostList"
+                @createSuccess="handleTaskCreateSuccess" />
+            </a-col>
+          </div>
           <a-col>
             <a-button @click="handleRefresh">
               <a-icon type="redo" />
@@ -296,8 +334,8 @@ export default {
     }
   },
   watch: {
-    paginationTotal() {
-      this.pagination.total = this.paginationTotal;
+    paginationTotal () {
+      this.$set(this.pagination, 'total', this.paginationTotal)
     }
   },
   data() {
@@ -319,8 +357,11 @@ export default {
       cveAllIsLoading: false,
       // 控制上传弹框显隐
       upLoadFileVisible: false,
+      fixed: false,
+      // 控制获取的cve是否被修复的变量，默认为未修复
+      affected: true,
       // 控制获取的cve是否受影响的变量，默认为受影响
-      affected: true
+      rollback: false
     };
   },
   methods: {
@@ -335,12 +376,33 @@ export default {
         this.filters.cveId = undefined;
       }
     },
-    handleChange(e) {
-      if (e.target.value === 'a') {
-        this.affected = true;
+    handleAffectChange(e) {
+      if (!this.standalone) {
+        if (e.target.value === 'a') {
+          this.fixed = undefined
+          this.affected = true;
+          this.rollback = false;
+        } else if (e.target.value === 'b') {
+          this.fixed = undefined
+          this.affected = false;
+          this.rollback = false;
+        } else {
+          this.fixed = true;
+          this.affected = true;
+          this.rollback = true;
+        }
+        this.selectedRowKeys = []
+        this.getCves();
       } else {
-        this.affected = false;
       }
+    },
+    handleFixChange(e) {
+      if (e.target.value === 'a') {
+          this.fixed = false;
+        } else {
+          this.fixed = true;
+        }
+      this.selectedRowKeys = []
       this.getCves();
     },
     handleTableChange(pagination, filters, sorter) {
@@ -390,14 +452,13 @@ export default {
             },
             filters: filters,
             affected: this.affected,
+            fixed: this.fixed,
             sorter: {
               field: sorter.field,
               order: sorter.order
             }
           }
         });
-        this.pagination.total = this.paginationTotal;
-        console.log(this.pagination)
         return;
       }
       getCveList({
@@ -408,6 +469,7 @@ export default {
           },
           filters: filters,
           affected: this.affected,
+          fixed: this.fixed,
           sorter: {
             field: sorter.field,
             order: sorter.order
@@ -449,6 +511,7 @@ export default {
           pagination: {},
           filters: {},
           affected: this.affected,
+          fixed: this.fixed,
           sorter: {}
         }
       })

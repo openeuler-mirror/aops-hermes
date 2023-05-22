@@ -11,6 +11,16 @@
       </a-row>
     </div>
     <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
+      <a-col v-if="!standalone">
+        <a-radio-group default-value="a" button-style="solid" @change="handleFixChange">
+          <a-radio-button value="a">
+            未修复
+          </a-radio-button>
+          <a-radio-button value="b">
+            已修复
+          </a-radio-button>
+        </a-radio-group>
+      </a-col>
       <a-col>
         <a-input-search placeholder="按主机名搜索" v-model="hostSearch" @change="searchChange" style="width: 200px" @search="onSearch" />
       </a-col>
@@ -62,23 +72,42 @@
           <a-col v-if="standalone">
             <a-button @click="handleExport" type="primary">导出</a-button>
           </a-col>
-          <a-col v-if="!standalone && selectedRowKeys.length === 0">
+          <a-col v-if="!standalone && !fixed && selectedRowKeys.length === 0">
             <create-repair-task-drawer
             text="生成修复任务"
             taskType="cve fix"
+            :fixed="fixed"
             :cveListProps="cveList"
               hostListType="byLoading"
               @createSuccess="handleTaskCreateSuccess" />
           </a-col>
-          <a-col v-if="!standalone && selectedRowKeys.length !== 0">
+          <a-col v-if="!standalone && !fixed && selectedRowKeys.length !== 0">
             <create-repair-task-drawer
             taskType="cve fix"
+            :fixed="fixed"
             :cveListProps="cveList"
               hostListType="bySelection"
               :hostList="selectedRowsAll"
               @createSuccess="handleTaskCreateSuccess" />
           </a-col>
-          <a-col></a-col>
+          <a-col v-if="!standalone && fixed && selectedRowKeys.length === 0">
+            <create-repair-task-drawer
+              text="生成回滚任务"
+              taskType="cve rollback"
+              :fixed="fixed"
+              :cveListProps="cveList"
+              hostListType="byLoading"
+              @createSuccess="handleTaskCreateSuccess" />
+          </a-col>
+          <a-col v-if="!standalone && fixed && selectedRowKeys.length !== 0">
+            <create-repair-task-drawer
+              taskType="cve rollback"
+              :fixed="fixed"
+              :cveListProps="cveList"
+              hostListType="bySelection"
+              :hostList="selectedRowsAll"
+              @createSuccess="handleTaskCreateSuccess" />
+          </a-col>
           <a-col v-if="standalone">
             <a-button @click="handleRefresh">
               <a-icon type="redo" />
@@ -208,8 +237,7 @@ export default {
         {
           dataIndex: 'cve_num',
           key: 'cve_num',
-          title: '受影响CVE个数',
-          sorter: true
+          title: '未修复/已修复CVE'
         },
         {
           dataIndex: 'last_scan',
@@ -288,7 +316,7 @@ export default {
   },
   watch: {
     paginationTotal() {
-      this.pagination.total = this.paginationTotal;
+      this.$set(this.pagination, 'total', this.paginationTotal)
     }
   },
   data() {
@@ -313,7 +341,8 @@ export default {
       scanStatusloading: false,
       scanStatusData: {},
       scanningHostIds: [],
-      scanStatueAllTimeout: null
+      scanStatueAllTimeout: null,
+      fixed: false
     };
   },
   methods: {
@@ -338,6 +367,16 @@ export default {
         // 主机详情页面中要自行获取repo列表
         this.getRepoList();
       }
+    },
+    handleFixChange(e) {
+      if (e.target.value === 'a') {
+          this.fixed = false;
+        } else {
+          this.fixed = true;
+        }
+      this.selectedRowKeys = []
+      // 切换修复状态后重新请求受影响主机列表
+      this.getHostList();
     },
     handleExport() {
       if (this.selectedRowKeys.length !== 0) {
@@ -559,6 +598,7 @@ export default {
               pageSize: pagination.pageSize
             },
             filters: filters,
+            fixed: this.fixed,
             sorter: {
               field: sorter.field,
               order: sorter.order
@@ -583,6 +623,9 @@ export default {
       })
         .then(function (res) {
           _this.hostTableData = res.data.result || [];
+          _this.hostTableData.forEach((item) => {
+            item.cve_num = `${item.unfixed_cve_num}/${item.fixed_cve_num}`
+          })
           _this.pagination = {
             ..._this.pagination,
             current: pagination.current,
