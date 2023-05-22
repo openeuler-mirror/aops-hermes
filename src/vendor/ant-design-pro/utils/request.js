@@ -58,13 +58,7 @@ const errorHandler = error => {
 request.interceptors.request.use(config => {
   // 如果 token 存在
   // 让每个请求携带自定义 token 请根据实际情况自行修改
-  console.log('=====================================')
-  console.log(localStorage.getItem('Access-Token'))
-  console.log('=====================================')
   if (localStorage.getItem('Access-Token')) {
-    console.log('----------------------------------')
-    console.log(localStorage.getItem('Access-Token'))
-    console.log('----------------------------------')
     const token = localStorage.getItem('Access-Token')
     config.headers['Access-Token'] = token;
     localStorage.setItem('aops_token', token)
@@ -88,10 +82,6 @@ request.interceptors.response.use(response => {
           description: response.data.message
         });
         const _this = this
-        console.log('+++++++++++++++++++++++++++++++++++')
-        console.log(localStorage.getItem('Access-Token'))
-        console.log(response.data)
-        console.log('+++++++++++++++++++++++++++++++++++')
         store.dispatch('Logout').then(() => {
           _this.$router.push({ name: 'login' });
         });
