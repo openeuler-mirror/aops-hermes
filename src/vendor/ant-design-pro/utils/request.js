@@ -81,9 +81,11 @@ request.interceptors.response.use(response => {
           message: '用户校验失败',
           description: response.data.message
         });
-        const _this = this
-        store.dispatch('Logout')
-        _this.$router.push({ name: 'login' });
+        store.dispatch('Logout').then(() => {
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        })
         break;
       case '1207':
         // token过期后，调接口，刷新token
