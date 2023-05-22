@@ -366,7 +366,6 @@ export default {
   },
   methods: {
     searchChange() {
-      console.log(this.cveSearch)
       if (!this.filters) {
         this.filters = {};
       }
@@ -392,6 +391,7 @@ export default {
           this.rollback = true;
         }
         this.selectedRowKeys = []
+        this.getCvesAll()
         this.getCves();
       } else {
       }
@@ -403,6 +403,7 @@ export default {
           this.fixed = true;
         }
       this.selectedRowKeys = []
+      this.getCvesAll()
       this.getCves();
     },
     handleTableChange(pagination, filters, sorter) {
@@ -501,7 +502,8 @@ export default {
           tableInfo: {
             pagination: {},
             filters: {},
-            sorter: {}
+            sorter: {},
+            fixed: this.fixed
           }
         });
         return;
@@ -517,6 +519,8 @@ export default {
       })
         .then(function (res) {
           _this.cveAllList = res.data.result || [];
+          this.$emit('updataCveAllList', res.data.result || [])
+          // _this.cveAllListProp = res.data.result || [];
         })
         .catch(function (err) {
           _this.$message.error(err.response.message);
@@ -569,7 +573,6 @@ export default {
     handleUploadSuccess() {
       setTimeout(() => {
       this.getCvesAll();
-      console.log(11111)
     }, 500);
     this.getCves();
     }

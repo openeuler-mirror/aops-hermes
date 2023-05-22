@@ -309,17 +309,17 @@ export default {
           title: '解决方案',
           scopedSlots: {customRender: 'package'}
         },
-        {
-          dataIndex: 'reboot',
-          title: '重启后生效',
-          customRender: (reboot) => (reboot ? '是' : '否'),
-          filteredValue: filters.reboot || null,
-          filterMultiple: false,
-          filters: [
-            {text: '是', value: 'true'},
-            {text: '否', value: 'false'}
-          ]
-        },
+        // {
+        //   dataIndex: 'reboot',
+        //   title: '重启后生效',
+        //   customRender: (reboot) => (reboot ? '是' : '否'),
+        //   filteredValue: filters.reboot || null,
+        //   filterMultiple: false,
+        //   filters: [
+        //     {text: '是', value: 'true'},
+        //     {text: '否', value: 'false'}
+        //   ]
+        // },
         {
           dataIndex: 'progress',
           title: '执行进度（已处理/总数）',

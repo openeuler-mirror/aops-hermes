@@ -34,12 +34,12 @@
               :rows="4"
               placeholder="请输入任务描述，50个字符以内" />
           </a-form-item>
-          <a-form-item label="自动重启" v-if="taskType === 'cve fix'">
+          <!-- <a-form-item label="自动重启" v-if="taskType === 'cve fix'">
             <a-switch :checked="isResetChecked" @click="handleResetChanage">
               <a-icon slot="checkedChildren" type="check" />
               <a-icon slot="unCheckedChildren" type="close" />
             </a-switch>
-          </a-form-item>
+          </a-form-item> -->
           <a-form-item label="选择REPO" v-if="taskType === 'repo set'">
             <a-select
             v-decorator="['repo', {rules: [{required: true, message: '请选择REPO'}]}]"
