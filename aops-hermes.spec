@@ -2,7 +2,7 @@
 
 Name:		aops-hermes
 Version:	v1.2.0
-Release:	4
+Release:	1
 Summary:	Web for an intelligent diagnose frame
 License:	MulanPSL2
 URL:		https://gitee.com/openeuler/%{name}
