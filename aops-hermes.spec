@@ -1,19 +1,13 @@
 %define debug_package %{nil}
 
 Name:		aops-hermes
-Version:	v1.2.0
+Version:	v1.2.1
 Release:	1
 Summary:	Web for an intelligent diagnose frame
 License:	MulanPSL2
 URL:		https://gitee.com/openeuler/%{name}
 Source0:	%{name}-%{version}.tar.gz
 Source1:	node-modules.tar.gz
-Patch0001:      0001-optimize-page-loading-and-routing.patch
-Patch0002:      0002-fix-verify-the-host-name-field-issue.patchcd
-Patch0003:      0003-add-token-exit-interface-and-optimize-Gitee-authorization.patch
-Patch0004:      0004-Vulnerability-management-and-token-legacy-issues-resolution.patch
-Patch0005:      0005-Host-Management-Host-User-Name-Addition-Field-Length-Limits.patch
-Patch0006:      0006-Modify-token-settings-in-the-configuration-file.patch
 
 
 BuildRequires: nodejs node-gyp nodejs-yarn
@@ -25,7 +19,7 @@ Web for an intelligent diagnose frame
 
 
 %prep
-%autosetup -n %{name}-%{version} -p1
+%autosetup -n %{name}-%{version}
 %setup -T -D -a 1
 
 
@@ -49,16 +43,8 @@ cp -r deploy/aops-hermes.service %{buildroot}/usr/lib/systemd/system/
 
 
 %changelog
-* Wed May 10 2023 wangkunlong<505997900@qq.com> - v1.2.0-4
-- Modify token settings in the configuration file
-
-* Tue May 9 2023 wangkunlong<505997900@qq.com> - v1.2.0-3
-- Resolve token failure issues
-- Resolve the issue of switching menu data not being refreshed
-- Resolve issues where the cve repair task was not transferred to hotpatch
-- Modify cve repair task hot update text prompt
-- Modify the Generate CVE Repair Task button to be grayed out by default
-- Host Management Host User Name Addition Field Length Limit
+* Tue May 23 2023 wangkunlong<505997900@qq.com> - v1.2.1-1
+- Vulnerability Management Part Code Hot Update Function Update
 
 * Fri Apr 28 2023 wangkunlong<505997900@qq.com> - v1.2.0-2
 - Optimize page loading speed
