@@ -281,7 +281,7 @@ export default {
         {
           dataIndex: 'hotpatch',
           key: 'hotpatch',
-          title: '热补丁支持',
+          title: '热补丁修复/状态',
           scopedSlots: {customRender: 'hotpatch'}
         },
         {
@@ -376,7 +376,7 @@ export default {
         }
       this.selectedRowKeys = []
       // 切换修复状态后重新请求受影响主机列表
-      this.getHostList();
+      this.handleReset();
     },
     handleExport() {
       if (this.selectedRowKeys.length !== 0) {

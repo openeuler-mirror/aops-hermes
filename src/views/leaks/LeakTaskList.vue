@@ -30,9 +30,9 @@
           </a-row>
         </a-row>
         <a-table
-        rowKey="task_id"
-        :columns="columns"
-        :data-source="tableData"
+          rowKey="task_id"
+          :columns="columns"
+          :data-source="tableData"
           :pagination="pagination"
           :row-selection="rowSelection"
           @change="handleTableChange"
@@ -204,6 +204,10 @@ export default {
             {
               text: 'repo set',
               value: 'repo set'
+            },
+            {
+              text: 'cve rollback',
+              value: 'cve rollback'
             }
           ]
         },

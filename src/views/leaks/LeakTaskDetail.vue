@@ -156,8 +156,9 @@
       </a-table>
     </a-card>
     <host-status-in-task-drawer
-    :visible="hostListUnderCveVisible"
-    @close="closeHostListUnderCve"
+      :visible="hostListUnderCveVisible"
+      :taskType="taskType"
+      @close="closeHostListUnderCve"
       :taskId="taskId"
       :cveId="hostListOfCveId" />
   </page-header-wrapper>
@@ -339,9 +340,14 @@ export default {
           width: 140,
           scopedSlots: {customRender: 'status'},
           filteredValue: filters.status || null,
-          filters: [
+          filters: this.taskType === 'cve fix' ? [
             {text: '修复成功', value: 'succeed'},
             {text: '待修复', value: 'fail'},
+            {text: '运行中', value: 'running'},
+            {text: '未知', value: 'unknown'}
+          ] : [
+            {text: '回滚成功', value: 'succeed'},
+            {text: '待回滚', value: 'fail'},
             {text: '运行中', value: 'running'},
             {text: '未知', value: 'unknown'}
           ]
@@ -705,7 +711,7 @@ export default {
       if (!this.filters) {
         this.filters = {};
       }
-      if (this.taskType === 'cve fix') {
+      if (this.taskType === 'cve fix' || this.taskType === 'cve rollback') {
         if (text !== '') {
           this.filters.cveId = text;
         } else {
