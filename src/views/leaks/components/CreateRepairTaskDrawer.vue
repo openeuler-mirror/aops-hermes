@@ -40,6 +40,12 @@
               <a-icon slot="unCheckedChildren" type="close" />
             </a-switch>
           </a-form-item> -->
+          <a-form-item label="是否accept" v-if="taskType === 'cve fix'">
+            <a-switch :checked="isResetChecked" @click="handleResetChanage">
+              <a-icon slot="checkedChildren" type="check" />
+              <a-icon slot="unCheckedChildren" type="close" />
+            </a-switch>
+          </a-form-item>
           <a-form-item label="选择REPO" v-if="taskType === 'repo set'">
             <a-select
             v-decorator="['repo', {rules: [{required: true, message: '请选择REPO'}]}]"

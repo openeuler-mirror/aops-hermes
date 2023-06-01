@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:		aops-hermes
-Version:	v1.2.0
+Version:	v1.2.1
 Release:	1
 Summary:	Web for an intelligent diagnose frame
 License:	MulanPSL2
@@ -39,11 +39,26 @@ cp -r deploy/aops-hermes.service %{buildroot}/usr/lib/systemd/system/
 %files
 %attr(0755, root, root) /opt/aops/web/dist/*
 %attr(0755, root, root) %{_sysconfdir}/nginx/aops-nginx.conf
-%attr(0755, root, root) %{_unitdir}/aops-hermes.service
+%attr(0755, root, root) /usr/lib/systemd/system/aops-hermes.service
 
 
 %changelog
-* Fri Mar 24 2023 wangkunlong<505997900@qq.com> - v1.2.0-1
+* Tue May 23 2023 wangkunlong<505997900@qq.com> - v1.2.1-1
+- Vulnerability Management Part Code Hot Update Function Update
+
+* Fri Apr 28 2023 wangkunlong<505997900@qq.com> - v1.2.0-2
+- Optimize page loading speed
+- Optimize routing
+- Optimize login and exit interface
+- Solve the inconsistency in verifying the host name field between the front and back ends when adding hosts in a single and batch manner
+- Optimize login interface UI display
+- Resolve the display of registration interface icons and text
+- Solve legacy issues with batch adding hosts and editing host interfaces
+- Optimize CVE list refresh logic
+- Add exit interface
+- Optimize Gitee authorization login jump logic
+
+* Mon Apr 17 2023 wangkunlong<505997900@qq.com> - v1.2.0-1
 - add host interfaces, optimize the display effect of some interfaces
 
 * Mon Dec 19 2022 wenxin<shusheng.wen@outlook.com> - v1.1.2-4

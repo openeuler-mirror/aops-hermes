@@ -4,7 +4,10 @@
     <a-table rowKey="host_id" :columns="columns" :data-source="tableData" :pagination="false"
       :loading="tableIsLoading" bordered>
       <div slot="status" slot-scope="status">
-        <span><a-badge :status="statusValueMap[status]" />{{ statusTextMap[status] }}</span>
+        <span>
+          <a-badge :status="statusValueMap[status]" />
+          {{ taskType === 'cve fix' ? fixStatusTextMap[status] : rollbackStatusTextMap[status] }}
+        </span>
       </div>
     </a-table>
   </a-drawer>
@@ -17,9 +20,16 @@
 
 import {getHostOfCveInCveTask} from '@/api/leaks';
 
-const statusTextMap = {
+const fixStatusTextMap = {
   succeed: '已修复',
   fail: '未修复',
+  running: '运行中',
+  unknown: '未知'
+};
+
+const rollbackStatusTextMap = {
+  succeed: '已回滚',
+  fail: '待回滚',
   running: '运行中',
   unknown: '未知'
 };
@@ -45,14 +55,18 @@ export default {
     cveId: {
       type: String,
       default: null
+    },
+    taskType: {
+      type: String,
+      default: 'cve fix'
     }
   },
   data() {
     return {
       tableData: [],
       tableIsLoading: false,
-
-      statusTextMap,
+      rollbackStatusTextMap,
+      fixStatusTextMap,
       statusValueMap
     };
   },

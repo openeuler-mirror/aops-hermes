@@ -392,7 +392,7 @@ export default {
         }
         this.selectedRowKeys = []
         this.getCvesAll()
-        this.getCves();
+        this.handleReset();
       } else {
       }
     },
@@ -404,7 +404,7 @@ export default {
         }
       this.selectedRowKeys = []
       this.getCvesAll()
-      this.getCves();
+      this.handleReset();
     },
     handleTableChange(pagination, filters, sorter) {
       // 存储翻页状态
