@@ -297,6 +297,7 @@ export function generateTask(parameters) {
       task_name: parameters.task_name,
       description: parameters.task_desc,
       auto_reboot: parameters.auto_reboot,
+      accepted: parameters.accepted,
       info: parameters.info || []
     }
   });

@@ -181,6 +181,10 @@ export default {
       })
         .then(function (res) {
           _this.hostList = res.data.result || [];
+          _this.hostList.forEach((item) => {
+            item.hp_status = item.hp_status ? item.hp_status : '——'
+            item.fixStatus = item.hotpatch ? `是(${item.hp_status})` : '否'
+          })
           _this.paginationTotal = res.data.total_count || (res.data.total_count === 0 ? 0 : undefined);
         })
         .catch(function (err) {

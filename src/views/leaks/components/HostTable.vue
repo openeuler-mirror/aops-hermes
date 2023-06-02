@@ -279,10 +279,10 @@ export default {
           scopedSlots: {customRender: 'repo'}
         },
         {
-          dataIndex: 'hotpatch',
-          key: 'hotpatch',
-          title: '热补丁修复/状态',
-          scopedSlots: {customRender: 'hotpatch'}
+          dataIndex: 'fixStatus',
+          key: 'fixStatus',
+          title: '热补丁修复',
+          scopedSlots: {customRender: 'fixStatus'}
         },
         {
           dataIndex: 'last_scan',
