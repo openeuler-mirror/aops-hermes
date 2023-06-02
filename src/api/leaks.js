@@ -250,7 +250,8 @@ export function getCveUnderHost({ tableInfo, ...parameter }) {
         affected: tableInfo.affected,
         fixed: tableInfo.fixed,
         severity: tableInfo.filters.severity || [],
-        hotpatch: tableInfo.filters.hotpatch || []
+        hotpatch: tableInfo.filters.hotpatch || [],
+        hp_status: tableInfo.filters.hp_status || []
       },
       page: tableInfo.pagination.current,
       per_page: tableInfo.pagination.pageSize
