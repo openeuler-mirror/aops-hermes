@@ -321,7 +321,20 @@ export default {
               text: '否',
               value: 0
             }
-          ] : null,
+          ] : [
+            {
+              text: '是(ACCEPTED)',
+              value: 1
+            },
+            {
+              text: '是(ACTIVED)',
+              value: 2
+            },
+            {
+              text: '否',
+              value: 0
+            }
+          ],
           scopedSlots: {customRender: this.hotpatchContent === '热补丁支持' ? 'hotpatch' : 'fixStatus'}
         }
       ];
@@ -410,14 +423,40 @@ export default {
       this.getCvesAll()
       this.handleReset();
     },
+    assignFiltersFixStatus(fixStatus) {
+      this.filters.hotpatch = []
+      this.filters.hp_status = []
+      fixStatus.forEach(value => {
+        if (value === 1) {
+          if (!this.filters.hotpatch.includes(1)) {
+            this.filters.hotpatch.push(1)
+          }
+          this.filters.hp_status.push('ACCEPTED')
+        }
+        if (value === 2) {
+          if (!this.filters.hotpatch.includes(1)) {
+            this.filters.hotpatch.push(1)
+          }
+          this.filters.hp_status.push('ACTIVED')
+        }
+        if (value === 0) {
+          this.filters.hotpatch.push(0)
+        }
+      })
+    },
     handleTableChange(pagination, filters, sorter) {
       // 存储翻页状态
       this.pagination = pagination;
+
       this.filters = Object.assign({}, this.filters, filters);
+      if (this.filters['fixStatus'] != null) {
+        this.assignFiltersFixStatus(this.filters['fixStatus'])
+      }
       this.sorter = sorter;
       // 出发排序、筛选、分页时，重新请求主机列表
       this.getCves();
     },
+
     onSelectChange(selectedRowKeys, selectedRows) {
       const tableData = this.standalone ? this.tableData : this.inputList;
       this.selectedRowKeys = selectedRowKeys;
