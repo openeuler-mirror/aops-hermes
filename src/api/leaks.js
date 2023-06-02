@@ -152,7 +152,9 @@ export function getHostUnderCVE({ tableInfo, ...parameter }) {
         host_name: tableInfo.filters.host_name === null ? undefined : tableInfo.filters.host_name,
         host_group: tableInfo.filters.host_group === null ? undefined : tableInfo.filters.host_group,
         repo: tableInfo.filters.repo === null ? undefined : tableInfo.filters.repo,
-        last_scan: tableInfo.filters.last_scan
+        last_scan: tableInfo.filters.last_scan,
+        hotpatch: tableInfo.filters.hotpatch || [],
+        hp_status: tableInfo.filters.hp_status || []
       },
       page: tableInfo.pagination.current,
       per_page: tableInfo.pagination.pageSize
