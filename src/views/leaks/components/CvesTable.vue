@@ -116,7 +116,7 @@
         <p>Description:</p>
         <p>{{ record.description }}</p>
       </div>
-      <div slot="hotpatch" slot-scope="hotpatch" style="margin: 0">
+      <div v-if="!fixed" slot="hotpatch" slot-scope="hotpatch" style="margin: 0">
         <p>{{ hotpatch ? '是' : '否' }}</p>
       </div>
     </a-table>
@@ -308,11 +308,11 @@ export default {
           sorter: true
         },
         {
-          dataIndex: 'hotpatch',
-          key: 'hotpatch',
-          title: '热补丁支持',
-          filteredValue: filters.hotpatch || null,
-          filters: [
+          dataIndex: this.hotpatchContent === '热补丁支持' ? 'hotpatch' : 'fixStatus',
+          key: this.hotpatchContent === '热补丁支持' ? 'hotpatch' : 'fixStatus',
+          title: this.hotpatchContent,
+          filteredValue: this.hotpatchContent === '热补丁支持' ? filters.hotpatch || null : filters.fixStatus || null,
+          filters: this.hotpatchContent === '热补丁支持' ? [
             {
               text: '是',
               value: 1
@@ -321,8 +321,8 @@ export default {
               text: '否',
               value: 0
             }
-          ],
-          scopedSlots: {customRender: 'hotpatch'}
+          ] : null,
+          scopedSlots: {customRender: this.hotpatchContent === '热补丁支持' ? 'hotpatch' : 'fixStatus'}
         }
       ];
     },
@@ -340,6 +340,7 @@ export default {
   },
   data() {
     return {
+      hotpatchContent: '热补丁支持',
       cveSearch: '',
       scanloading: false,
       size: 'small',
@@ -378,14 +379,17 @@ export default {
     handleAffectChange(e) {
       if (!this.standalone) {
         if (e.target.value === 'a') {
+          this.hotpatchContent = '热补丁支持'
           this.fixed = undefined
           this.affected = true;
           this.rollback = false;
         } else if (e.target.value === 'b') {
+          this.hotpatchContent = '热补丁支持'
           this.fixed = undefined
           this.affected = false;
           this.rollback = false;
         } else {
+          this.hotpatchContent = '热补丁修复'
           this.fixed = true;
           this.affected = true;
           this.rollback = true;
@@ -578,6 +582,7 @@ export default {
     }
   },
   mounted() {
+    console.log(this.inputList)
     setTimeout(() => {
       this.getCvesAll();
     }, 500);

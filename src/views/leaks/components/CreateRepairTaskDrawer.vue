@@ -41,7 +41,7 @@
             </a-switch>
           </a-form-item> -->
           <a-form-item label="是否accept" v-if="taskType === 'cve fix'">
-            <a-switch :checked="isResetChecked" @click="handleResetChanage">
+            <a-switch :checked="accepted" @click="handleAcceptedChanage">
               <a-icon slot="checkedChildren" type="check" />
               <a-icon slot="unCheckedChildren" type="close" />
             </a-switch>
@@ -274,6 +274,7 @@ export default {
       submitAndExecuteLoading: false,
       // 是否重启按钮数据
       isResetChecked: false,
+      accepted: false,
       // 自动生成的任务名称和描述，初始化为空
       taskNameDefault: '',
       taskDescDefault: '',
@@ -433,6 +434,7 @@ export default {
       this.visible = true;
       this.cveList = this.cveListProps;
       this.isResetChecked = false;
+      this.accepted = false;
       this.selectedRowKeyMaps = {};
       this.selectedRowsAllMaps = {};
       this.setDefaultInfo();
@@ -551,6 +553,7 @@ export default {
               const params = {
                 ...values,
                 auto_reboot: this.isResetChecked,
+                accepted: this.accepted,
                 info: this.cveList
                   .map((cveInfo) => {
                     return {
@@ -718,6 +721,9 @@ export default {
     },
     handleResetChanage(checked) {
       this.isResetChecked = checked;
+    },
+    handleAcceptedChanage(checked) {
+      this.accepted = checked;
     },
     onSelectChange(selectedRowKeys, selectedRows, cid) {
       this.selectedRowKeyMaps[cid] = selectedRowKeys;
