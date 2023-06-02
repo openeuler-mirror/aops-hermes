@@ -282,6 +282,21 @@ export default {
           dataIndex: 'fixStatus',
           key: 'fixStatus',
           title: '热补丁修复',
+          filteredValue: filters.fixStatus || null,
+          filters: [
+            {
+              text: '是(ACCEPTED)',
+              value: 1
+            },
+            {
+              text: '是(ACTIVED)',
+              value: 2
+            },
+            {
+              text: '否',
+              value: 0
+            }
+          ],
           scopedSlots: {customRender: 'fixStatus'}
         },
         {
@@ -396,10 +411,34 @@ export default {
         this.$message.info('请至少选择一组主机!');
       }
     },
+    assignFiltersFixStatus(fixStatus) {
+      this.filters.hotpatch = []
+      this.filters.hp_status = []
+      fixStatus.forEach(value => {
+        if (value === 1) {
+          if (!this.filters.hotpatch.includes(1)) {
+            this.filters.hotpatch.push(1)
+          }
+          this.filters.hp_status.push('ACCEPTED')
+        }
+        if (value === 2) {
+          if (!this.filters.hotpatch.includes(1)) {
+            this.filters.hotpatch.push(1)
+          }
+          this.filters.hp_status.push('ACTIVED')
+        }
+        if (value === 0) {
+          this.filters.hotpatch.push(0)
+        }
+      })
+    },
     handleTableChange(pagination, filters, sorter) {
       // 存储翻页状态
       this.pagination = pagination;
       this.filters = Object.assign({}, this.filters, filters);
+      if (this.filters['fixStatus'] != null) {
+        this.assignFiltersFixStatus(this.filters['fixStatus'])
+      }
       this.sorter = sorter;
       // 排序、筛选、分页时，重新请求主机列表
       this.getHostList();
