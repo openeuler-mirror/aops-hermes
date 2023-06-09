@@ -7,6 +7,24 @@ import store from '@/store';
 import notification from 'ant-design-vue/es/notification';
 import { VueAxios } from './axios';
 
+// 全局声明缓存变量
+var timestamp1;
+var isRefreshing = false;
+
+let subscribers = []
+// 刷新 token 后, 将缓存的接口重新请求一次
+function onAccessTokenFetched(newToken) {
+  subscribers.forEach((callback) => {
+    callback(newToken)
+  })
+  // 清空缓存接口
+  subscribers = []
+}
+// 添加缓存接口
+function addSubscriber(callback) {
+  subscribers.push(callback)
+}
+
 const errorMsgs = {
   noResponse: 'request failed, no response'
 };
@@ -77,25 +95,41 @@ request.interceptors.response.use(response => {
     let err = null;
     switch (code) {
       case '1201':
-        notification.error({
-          message: '用户校验失败',
-          description: response.data.message
-        });
-        store.dispatch('Logout').then(() => {
+        if (!timestamp1 || timestamp1 + 1632252465 < new Date().getTime()) {
+          timestamp1 = new Date().getTime();
+          notification.error({
+            message: '用户校验失败',
+            description: response.data.message
+          });
           setTimeout(() => {
-            window.location.reload();
-          }, 1500);
-        })
+            store.dispatch('Logout').then(() => {
+              window.location.reload();
+            }).catch((err) => {
+              this.$message.error(err.response.message)
+            })
+          }, 1000)
+        }
         break;
       case '1207':
-        // token过期后，调接口，刷新token
-        store.dispatch('RefreshToken').then(() => {
-          // 再发请求
-          return request(response.config);
-        }).catch((err) => {
-          this.$message.error(err.response.message)
+        if (!isRefreshing) {
+          isRefreshing = true
+          store.dispatch('RefreshToken').then(() => {
+            // 再发请求
+            isRefreshing = false
+            onAccessTokenFetched(localStorage.getItem('Access-Token'))
+          }).catch(() => {
+            isRefreshing = false;
+            window.location.reload();
+          })
+        }
+        const retryRequest = new Promise((resolve) => {
+          addSubscriber((newToken) => {
+            response.config.headers['Access-Token'] = newToken;
+            response.config.url = response.config.url.replace(response.config.baseURL, '')
+            resolve(request(response.config))
+          })
         })
-        break;
+        return retryRequest
       default:
         err = new Error(response.data.message);
         err.data = response.data.data;
