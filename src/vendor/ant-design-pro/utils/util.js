@@ -2,6 +2,22 @@
  * @file: antd vue框架的通用工具文件
  */
 
+// 节流函数
+export function throttle(func, wait) {
+  let timeout;
+  return () => {
+    const context = this
+    const args = arguments
+    if (!timeout) {
+      func.apply(context, args);
+      timeout = setTimeout(function () {
+        timeout = null
+      }, wait)
+    }
+  }
+}
+export default throttle
+
 export function timeFix() {
   const time = new Date();
   const hour = time.getHours();

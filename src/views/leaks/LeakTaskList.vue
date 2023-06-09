@@ -251,7 +251,8 @@ export default {
     handleTableChange(pagination, filters, sorter) {
       // 存储翻页状态
       this.pagination = pagination;
-      this.filters = filters;
+      // this.filters = filters;
+      this.filters = Object.assign({}, this.filters, filters);
       this.sorter = sorter;
       // 出发排序、筛选、分页时，重新请求主机列表
       this.getTaskList();

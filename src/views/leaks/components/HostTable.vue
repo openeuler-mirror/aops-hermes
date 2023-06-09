@@ -20,8 +20,9 @@
             已修复
           </a-radio-button>
         </a-radio-group>
+        <a-input-search placeholder="按主机名搜索" v-model="hostSearch" @change="searchChange" style="width: 200px;margin-left: 10px;" @search="onSearch" />
       </a-col>
-      <a-col>
+      <a-col v-else>
         <a-input-search placeholder="按主机名搜索" v-model="hostSearch" @change="searchChange" style="width: 200px" @search="onSearch" />
       </a-col>
       <a-col>
