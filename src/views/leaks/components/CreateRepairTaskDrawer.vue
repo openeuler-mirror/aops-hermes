@@ -41,6 +41,9 @@
             </a-switch>
           </a-form-item> -->
           <a-form-item label="是否accept" v-if="taskType === 'cve fix'">
+            <description-tips v-if="taskType === 'cve fix'" style="margin-right: 6px;">
+              如使用热补丁修复，accept后会在重启时自动应用热补丁，不勾选则重启时失效
+            </description-tips>
             <a-switch :checked="accepted" @click="handleAcceptedChanage">
               <a-icon slot="checkedChildren" type="check" />
               <a-icon slot="unCheckedChildren" type="close" />
@@ -62,6 +65,12 @@
           :columns="tableColumns"
           :data-source="cveList"
             :pagination="false">
+            <span slot="customTitle">{{ taskType === 'cve rollback' ? '热补丁修复' : '支持热补丁' }}
+              <description-tips v-if="taskType === 'cve fix'">
+                若支持热补丁，默认使用热补丁修复；
+                注意：由于一个软件包只能应用一个热补丁，热补丁修复时可能导致部分已修复cve重新生成
+              </description-tips>
+            </span>
             <div slot="hostsList" slot-scope="hostsList">
               <a-spin v-if="hostUnderCveLoading" />
               <span v-else>
@@ -192,6 +201,7 @@ import {
   generateRepoTask,
   generateRollbackTask
 } from '@/api/leaks';
+import DescriptionTips from '@/components/DescriptionTips';
 
 const taskTypes = ['cve fix', 'repo set', 'cve rollback'];
 const dataTypes = ['selected', 'all'];
@@ -213,6 +223,9 @@ const hostListTypes = ['byLoading', 'bySelection', 'byOneHost'];
 
 export default {
   name: 'CreateRepairTaskDrawer',
+  components: {
+    DescriptionTips
+  },
   props: {
     // 基本控制信息
     fixed: {
@@ -300,20 +313,20 @@ export default {
           key: 'cve_id',
           title: 'CVE_ID',
           scopedSlots: {customRender: 'cve_id'},
-          width: 180
+          width: 150
         },
         {
           dataIndex: 'hostsList',
           key: 'hostsList',
           title: '主机',
-          width: 60,
+          width: 100,
           scopedSlots: {customRender: 'hostsList'}
         },
         {
           dataIndex: 'package',
           key: 'package',
           title: '修复软件包',
-          width: 100,
+          width: 140,
           scopedSlots: {customRender: 'packages'}
         },
         // {
@@ -326,7 +339,7 @@ export default {
         {
           dataIndex: 'hotpatch',
           key: 'hotpatch',
-          title: this.taskType === 'cve rollback' ? '热补丁修复' : '支持热补丁',
+          slots: { title: 'customTitle' },
           scopedSlots: {customRender: 'hotpatch'}
         }
       ];

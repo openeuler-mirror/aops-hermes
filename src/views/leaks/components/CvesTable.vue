@@ -308,11 +308,11 @@ export default {
           sorter: true
         },
         {
-          dataIndex: this.hotpatchContent === '热补丁支持' ? 'hotpatch' : 'fixStatus',
-          key: this.hotpatchContent === '热补丁支持' ? 'hotpatch' : 'fixStatus',
+          dataIndex: this.hotpatchContent === '支持热补丁' ? 'hotpatch' : 'fixStatus',
+          key: this.hotpatchContent === '支持热补丁' ? 'hotpatch' : 'fixStatus',
           title: this.hotpatchContent,
-          filteredValue: this.hotpatchContent === '热补丁支持' ? filters.hotpatch || null : filters.fixStatus || null,
-          filters: this.hotpatchContent === '热补丁支持' ? [
+          filteredValue: this.hotpatchContent === '支持热补丁' ? filters.hotpatch || null : filters.fixStatus || null,
+          filters: this.hotpatchContent === '支持热补丁' ? [
             {
               text: '是',
               value: 1
@@ -335,7 +335,7 @@ export default {
               value: 0
             }
           ],
-          scopedSlots: {customRender: this.hotpatchContent === '热补丁支持' ? 'hotpatch' : 'fixStatus'}
+          scopedSlots: {customRender: this.hotpatchContent === '支持热补丁' ? 'hotpatch' : 'fixStatus'}
         }
       ];
     },
@@ -353,7 +353,7 @@ export default {
   },
   data() {
     return {
-      hotpatchContent: '热补丁支持',
+      hotpatchContent: '支持热补丁',
       cveSearch: '',
       scanloading: false,
       size: 'small',
@@ -392,12 +392,12 @@ export default {
     handleAffectChange(e) {
       if (!this.standalone) {
         if (e.target.value === 'a') {
-          this.hotpatchContent = '热补丁支持'
+          this.hotpatchContent = '支持热补丁'
           this.fixed = undefined
           this.affected = true;
           this.rollback = false;
         } else if (e.target.value === 'b') {
-          this.hotpatchContent = '热补丁支持'
+          this.hotpatchContent = '支持热补丁'
           this.fixed = undefined
           this.affected = false;
           this.rollback = false;
