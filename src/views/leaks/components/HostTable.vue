@@ -280,11 +280,20 @@ export default {
           scopedSlots: {customRender: 'repo'}
         },
         {
-          dataIndex: 'fixStatus',
-          key: 'fixStatus',
-          title: '热补丁修复',
-          filteredValue: filters.fixStatus || null,
-          filters: [
+          dataIndex: this.hotpatchContent === '支持热补丁' ? 'hotpatch' : 'fixStatus',
+          key: this.hotpatchContent === '支持热补丁' ? 'hotpatch' : 'fixStatus',
+          title: this.hotpatchContent,
+          filteredValue: this.hotpatchContent === '支持热补丁' ? filters.hotpatch || null : filters.fixStatus || null,
+          filters: this.hotpatchContent === '支持热补丁' ? [
+            {
+              text: '是',
+              value: 1
+            },
+            {
+              text: '否',
+              value: 0
+            }
+          ] : [
             {
               text: '是(ACCEPTED)',
               value: 1
@@ -298,7 +307,7 @@ export default {
               value: 0
             }
           ],
-          scopedSlots: {customRender: 'fixStatus'}
+          scopedSlots: {customRender: this.hotpatchContent === '支持热补丁' ? 'hotpatch' : 'fixStatus'}
         },
         {
           dataIndex: 'last_scan',
@@ -337,6 +346,7 @@ export default {
   },
   data() {
     return {
+      hotpatchContent: '支持热补丁',
       hostSearch: '',
       hostTableData: [],
       hostTableIsLoading: false,
@@ -386,10 +396,12 @@ export default {
     },
     handleFixChange(e) {
       if (e.target.value === 'a') {
-          this.fixed = false;
-        } else {
-          this.fixed = true;
-        }
+        this.hotpatchContent = '支持热补丁'
+        this.fixed = false;
+      } else {
+        this.hotpatchContent = '热补丁修复'
+        this.fixed = true;
+      }
       this.selectedRowKeys = []
       // 切换修复状态后重新请求受影响主机列表
       this.handleReset();
