@@ -578,7 +578,7 @@ export default {
                   .filter((item) => item.host_info && item.host_info.length > 0)
               };
               if (params.info.length === 0) {
-                this.$message.info('至少需要选择一个cve才能设置cve修复任务!');
+                this.$message.info('请至少选择一个cve下的一台主机进行修复!');
                 this.submitLoading = false;
                 this.submitAndExecuteLoading = false;
                 break;
@@ -675,7 +675,7 @@ export default {
                   info: cveRoobackInfo
               }
               if (cveRoobackInfo.length === 0) {
-                this.$message.info('至少需要选择一个cve才能设置cve回滚任务!');
+                this.$message.info('请至少选择一个cve下的一台主机进行回滚!');
                 this.submitLoading = false;
                 this.submitAndExecuteLoading = false;
                 break;
