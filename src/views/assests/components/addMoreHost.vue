@@ -367,6 +367,7 @@ export default {
       tableParams.forEach((item) => {
         this.$set(item, 'host_name', String(item.host_name))
         item.management = Boolean(item.management)
+        item.password = String(item.password)
         delete item.key;
         delete item.editable;
         delete item.result;

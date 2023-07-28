@@ -102,7 +102,7 @@
       rowKey="cve_id"
       :columns="standalone ? tableColumnsStandalone : tableColumns"
       :data-source="standalone ? tableData : inputList"
-      :pagination="pagination.total === 0 ? false : pagination"
+      :pagination="pagination.total === 0 ? false : (!standalone ? (paginationTotal === 0 ? false : pagination) : pagination)"
       :rowSelection="rowSelection"
       :expandIconAsCell="false"
       :expandIconColumnIndex="1"
@@ -562,11 +562,11 @@ export default {
       })
         .then(function (res) {
           _this.cveAllList = res.data.result || [];
-          this.$emit('updataCveAllList', res.data.result || [])
+          _this.$emit('updataCveAllList', res.data.result || [])
           // _this.cveAllListProp = res.data.result || [];
         })
         .catch(function (err) {
-          _this.$message.error(err.response.message);
+          _this.$message.error(err.response);
         })
         .finally(function () {
           _this.cveAllIsLoading = false;
@@ -621,7 +621,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.inputList)
     setTimeout(() => {
       this.getCvesAll();
     }, 500);
