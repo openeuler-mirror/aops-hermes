@@ -332,7 +332,10 @@ export default {
             } else {
               this.$message.success('删除成功');
             }
+            _this.pagination.current = 1
+            // 删除主机后重置当前分页为第一页
             _this.getHostList();
+            // 重新请求主机列表
             if (isBash) {
               _this.selectedRowKeys = [];
               _this.selectedRowsAll = [];
