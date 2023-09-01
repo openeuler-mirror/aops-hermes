@@ -77,10 +77,10 @@
                   dateFormat('YYYY-mm-dd HH:MM:SS', detail.latest_execute_time * 1000) :
                   '未执行'
                 }}
-                <router-link
+                <a
                   v-if="reportvisible && detail.latest_execute_time"
-                  :to="`/leaks/task-report/${taskType}/${taskId}`"
-                  target="blank">查看报告</router-link>
+                  @click="jumptoResult(detail.latest_execute_time)"
+                  target="blank">查看报告</a>
               </p>
             </a-col>
           </a-row>
@@ -126,19 +126,44 @@
             </a-col>
           </a-row>
         </a-col>
+        <!-- <a-col>
+          <a-row type="flex" :gutter="6">
+            <a-col v-if="selectedRowKeys.length === 0">
+              <create-repair-task-drawer
+                text="生成回滚任务"
+                taskType="cve rollback"
+                :fixed="fixed"
+                :cveListProps="standalone ? cveAllList : cveAllListProp"
+                :loading="standalone ? cveAllIsLoading : cveAllIsLoadingProp"
+                :hostListType="standalone ? 'byLoading' : 'byOneHost'"
+                :hostList="hostList"
+                @createSuccess="handleTaskCreateSuccess" />
+            </a-col>
+            <a-col v-if="selectedRowKeys.length !== 0">
+                <create-repair-task-drawer
+                taskType="cve rollback"
+                :fixed="fixed"
+                :cveListProps="selectedRowsAll"
+                :hostListType="standalone ? 'byLoading' : 'byOneHost'"
+                :hostList="hostList"
+                @createSuccess="handleTaskCreateSuccess" />
+            </a-col>
+          </a-row>
+        </a-col> -->
       </a-row>
       <a-table
         :rowKey="rowKeyMap[taskType]"
         :columns="taskType === 'cve fix' || taskType === 'cve rollback' ? cveColumns : repoColumns"
         :data-source="tableData"
         :pagination="pagination"
-        :row-selection="taskType === 'cve fix' ? undefined : undefined"
+        :row-selection="taskType === 'cve fix' ? rowSelection : undefined"
         @change="handleTableChange"
+        @expand="expand"
         :loading="tableIsLoading">
         <a
         slot="hosts"
         slot-scope="hosts, record"
-          @click="showHostListUnderCve(record.cve_id)">{{ hosts }}</a>
+          @click="showHostListUnderCve('rpm', record)">{{ hosts }}</a>
         <div slot="progress" slot-scope="progress, record">
           <a-progress :percent="Math.ceil(((progress || 0) / record.host_num) * 100)" />
         </div>
@@ -153,14 +178,27 @@
               class="color-running-circle" />
           </span>
         </div>
+        <div v-if="taskType === 'cve fix'" slot="expandedRowRender" slot-scope="record" style="margin: 0">
+          <a-table
+            :row-key="innerrecord => taskType === 'cve fix' ? record.cve_id + innerrecord.installed_rpm : record.cve_id + innerrecord.available_rpm"
+            :columns="innerColumns"
+            :data-source="record.rpms || []"
+            :pagination="false">
+            <a slot="host_list" slot-scope="host_list, innerrecord" @click="showHostListUnderCve('host', record, innerrecord)">
+              {{ host_list.length }}
+            </a>
+          </a-table>
+        </div>
       </a-table>
     </a-card>
     <host-status-in-task-drawer
+      :propType="propType"
       :visible="hostListUnderCveVisible"
       :taskType="taskType"
       @close="closeHostListUnderCve"
       :taskId="taskId"
-      :cveId="hostListOfCveId" />
+      :cveId="hostListOfCveId"
+      :rpmrecord="rpmrecord" />
   </page-header-wrapper>
 </template>
 
@@ -170,6 +208,7 @@
  */
 
 import {PageHeaderWrapper} from '@ant-design-vue/pro-layout';
+import CreateRepairTaskDrawer from './components/CreateRepairTaskDrawer.vue';
 import HostStatusInTaskDrawer from './components/HostStatusInTaskDrawer';
 import {i18nRender} from '@/vendor/ant-design-pro/locales';
 import {dateFormat} from '@/views/utils/Utils';
@@ -181,7 +220,8 @@ import {
   getHostUnderRepoTask,
   executeTask,
   getTaskProgress,
-  rollbackCveTask
+  rollbackCveTask,
+  getCvefixLeakRpm
 } from '@/api/leaks';
 import configs from '@/config/defaultSettings';
 
@@ -238,10 +278,14 @@ export default {
   name: 'LeakTaskDetail',
   components: {
     PageHeaderWrapper,
-    HostStatusInTaskDrawer
+    HostStatusInTaskDrawer,
+    CreateRepairTaskDrawer
   },
   data() {
     return {
+      rpmrecord: {},
+      propType: '',
+      progressUpdateCaller: null,
       reportvisible: false,
       runningCveIds: [],
       timer: '',
@@ -385,10 +429,69 @@ export default {
           ]
         }
       ];
+    },
+    innerColumns() {
+      return [
+        {
+          dataIndex: 'available_rpm',
+          key: 'available_rpm',
+          title: '受影响rpm'
+        },
+        {
+          dataIndex: 'installed_rpm',
+          key: 'installed_rpm',
+          title: '待安装rpm',
+          scopedSlots: {customRender: 'installed_rpm'}
+        },
+        {
+          dataIndex: 'fix_way',
+          key: 'fix_way',
+          title: '修复方式'
+        },
+        {
+          dataIndex: 'host_list',
+          key: 'host_list',
+          title: '主机数量',
+          scopedSlots: {customRender: 'host_list'}
+        }
+      ];
     }
   },
   methods: {
     dateFormat,
+    jumptoResult(value) {
+      this.$router.push({
+        path: `/leaks/task-report/${this.taskType}/${this.taskId}`,
+        query: {
+          taskId: this.taskId,
+          taskType: this.taskType,
+          latestExecuteTime: value
+        }
+      })
+    },
+    expand(expanded, record) {
+      if (expanded && this.taskType === 'cve fix') {
+        const _this = this
+        const Params = {
+          cve_id: record.cve_id,
+          task_id: this.$route.query.task_id
+        }
+          getCvefixLeakRpm(Params)
+          .then(function (res) {
+            console.log(res)
+              const target = _this.tableData.find(item => item.cve_id === record.cve_id)
+              target.rpms = res.data
+              // 数据更新后给表格重新赋值
+              _this.tableData = JSON.parse(JSON.stringify(_this.tableData))
+          })
+          .catch(function (err) {
+            _this.$message.error(err.response.message);
+          })
+          .finally(function () {
+            _this.tableIsLoading = false;
+          });
+      }
+    },
     handleTableChange(pagination, filters, sorter) {
       // 存储翻页状态
       for (var key in filters) {
@@ -646,9 +749,13 @@ export default {
         }
       });
     },
-    showHostListUnderCve(cveId) {
+    showHostListUnderCve(type, record, innerRecord) {
+      console.log(type)
+      this.propType = type;
       this.hostListUnderCveVisible = true;
-      this.hostListOfCveId = cveId;
+      this.hostListOfCveId = record.cve_id;
+      this.rpmrecord = innerRecord;
+      console.log(innerRecord)
     },
     closeHostListUnderCve() {
       this.hostListUnderCveVisible = false;
@@ -728,7 +835,16 @@ export default {
       }
     }
   },
+  beforeRouteLeave(to, from, next) {
+  // 路由跳转前，清除轮询
+    next();
+    if (this.progressUpdateCaller) {
+      clearInterval(this.progressUpdateCaller);
+      this.progressUpdateCaller = null;
+    }
+  },
   mounted: function () {
+    console.log(this.$route.query.task_id)
     this.getInitalData();
   }
 };

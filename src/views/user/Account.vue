@@ -25,7 +25,7 @@
     >
       <div style="display: flex;align-items: center;margin-bottom: 15px;">
         <a-icon type="user-add" style="margin-right: 18px;font-size: 19px;" />
-        <span style="font-size:15px">当前gitee账号尚未绑定本地账号! 绑定一个本地账号以继续登陆</span>
+        <span style="font-size:15px">当前gitee账号尚未绑定本地账号! 绑定一个本地账号以继续登录</span>
       </div>
       <div style="margin-bottom: 23px;margin-left: 37px;">
         <span style="font-size:14px;">没有账号? </span>

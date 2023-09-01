@@ -99,7 +99,7 @@
                 'password',
                 {rules: [{required: pageType === 'create' ? true : requiredRules, message: '请输入主机登录密码'}]}
               ]"
-              :placeholder="pageType === 'create' ? '请设置主机登录密码' : '请输入主机登陆密码, 若未修改主机用户名或端口可以为空'"></a-input-password>
+              :placeholder="pageType === 'create' ? '请设置主机登录密码' : '请输入主机登录密码, 若未修改主机用户名或端口可以为空'"></a-input-password>
           </a-form-item>
           <a-form-item :wrapper-col="{span: 10, offset: 5}">
             <a-button @click="handleCancel">取消</a-button>

@@ -147,7 +147,12 @@ export default {
       })
         .then((res) => {
           that.alertRecordData = res.data.result;
-          that.pagination.total = res.data.total_count;
+          that.pagination = {
+            ...that.pagination,
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+            total: res.data.total_count
+          };
         })
         .catch((err) => {
           this.$message.error(err.response.message);
