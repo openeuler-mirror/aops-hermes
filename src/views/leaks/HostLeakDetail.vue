@@ -156,7 +156,6 @@ export default {
         });
     },
     getCveData(data) {
-      console.log(data)
       this.getCVEList(this.hostId, data);
     },
     getCVEList(hostId, data) {

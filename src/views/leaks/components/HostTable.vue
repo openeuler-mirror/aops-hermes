@@ -393,7 +393,12 @@ export default {
     innerRowSelection() {
       return {
         selectedRowKeys: this.innerselectedRowKeys,
-        onChange: this.innerOnSelectChange
+        onChange: this.innerOnSelectChange,
+        getCheckboxProps: (it) => ({
+          props: {
+            disabled: this.fixed
+          }
+        })
       };
     },
     // 通过repo筛选时的数据转换
@@ -462,7 +467,6 @@ export default {
       this.hostListUnderCveVisible = false;
     },
     showHostListUnderCve(params, innerparams) {
-      console.log(params)
       this.hostListUnderCveVisible = true;
       this.hostListOfCveId = this.cveId;
       this.propAvailablerpm = innerparams.available_rpm
@@ -481,7 +485,6 @@ export default {
         if (this.fixed) {
           getCveFixRpm(Params)
           .then(function (res) {
-            console.log(res)
             const target = _this.propData.find(item => item.host_id === record.host_id)
             target.rpms = res.data
             target.rpms.forEach((item) => {
@@ -499,7 +502,6 @@ export default {
         } else {
         getCveUnfixRpm(Params)
           .then(function (res) {
-            console.log(res)
             const target = _this.propData.find(item => item.host_id === record.host_id)
             target.rpms = res.data
             target.rpms.forEach((item) => {
@@ -932,7 +934,6 @@ export default {
   mounted() {
     this.getHostList();
     this.getHostGroup();
-    console.log(this.cveList)
     if (this.standalone) {
       // 主机列表页面中要自行获取全量主机和扫描状态
       // this.getScanStatusAll([]);

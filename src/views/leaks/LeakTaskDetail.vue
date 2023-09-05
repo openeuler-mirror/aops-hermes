@@ -480,7 +480,6 @@ export default {
         }
           getCvefixLeakRpm(Params)
           .then(function (res) {
-            console.log(res)
               const target = _this.tableData.find(item => item.cve_id === record.cve_id)
               target.rpms = res.data
               localStorage.setItem('taskRpm', _this.table)
@@ -755,12 +754,10 @@ export default {
       });
     },
     showHostListUnderCve(type, record, innerRecord) {
-      console.log(type)
       this.propType = type;
       this.hostListUnderCveVisible = true;
       this.hostListOfCveId = record.cve_id;
       this.rpmrecord = innerRecord;
-      console.log(innerRecord)
     },
     closeHostListUnderCve() {
       this.hostListUnderCveVisible = false;
@@ -849,7 +846,6 @@ export default {
     }
   },
   mounted: function () {
-    console.log(this.$route.query.task_id)
     this.getInitalData();
   }
 };

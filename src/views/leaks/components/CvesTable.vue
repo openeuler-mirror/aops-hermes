@@ -455,12 +455,17 @@ export default {
       };
     },
     innerRowSelection() {
-      return {
-        selectedRowKeys: this.innerselectedRowKeys,
-        onChange: this.innerOnSelectChange,
-        onSelect: this.innerOnSelect,
-        onSelectAll: this.innerOnSelectAll
-      };
+        return {
+          selectedRowKeys: this.innerselectedRowKeys,
+          onChange: this.innerOnSelectChange,
+          onSelect: this.innerOnSelect,
+          onSelectAll: this.innerOnSelectAll,
+          getCheckboxProps: (it) => ({
+            props: {
+              disabled: this.fixed
+            }
+          })
+       }
     }
   },
   watch: {
@@ -519,7 +524,6 @@ export default {
       this.hostListUnderCveVisible = false;
     },
     showHostListUnderCve(params, innerparams) {
-      console.log(params)
       this.hostListUnderCveVisible = true;
       this.hostListOfCveId = params.cve_id;
       this.propAvailablerpm = innerparams.available_rpm
@@ -535,7 +539,6 @@ export default {
         if (this.fixed) {
         getCveFixRpm(Params)
         .then(function (res) {
-          console.log(res)
           if (_this.standalone) {
             const target = _this.tableData.find(item => item.cve_id === record.cve_id)
             target.rpms = res.data
@@ -563,7 +566,6 @@ export default {
         } else {
         getCveUnfixRpm(Params)
         .then(function (res) {
-          console.log(res)
           if (_this.standalone) {
             const target = _this.tableData.find(item => item.cve_id === record.cve_id)
             target.rpms = res.data
@@ -687,16 +689,13 @@ export default {
       const tableData = this.standalone ? this.tableData : this.propData;
       this.selectedRowKeys = selectedRowKeys;
       this.selectedRowsAll = getSelectedRow(selectedRowKeys, this.selectedRowsAll, tableData, 'cve_id');
-      // console.log(this.selectedRowsAll)
     },
     innerOnSelectChange(selectedRowKeys, selectedRows) {
       this.innerselectedRowKeys = selectedRowKeys;
     },
     innerOnSelect(record, selected, selectedRows, nativeEvent) {
-      console.log(record)
       if (this.innerCveList.length !== 0) {
               const result = this.innerCveList.some(item => item.cve_id === record.cve_id)
-              console.log(result)
               if (result) {
                 const target = this.innerCveList.find(item => item.cve_id === record.cve_id)
                 if (selected) {
@@ -746,11 +745,8 @@ export default {
                }
              }
       }
-      console.log(this.innerCveList)
-      console.log(this.selectedRowsAll)
     },
     innerOnSelectAll(selected, selectedRows, changeRows) {
-      console.log(changeRows)
       if (this.innerCveList.length !== 0) {
         if (!selected) {
           const recordId = changeRows[0].cve_id
@@ -799,7 +795,6 @@ export default {
            })
         })
       }
-      console.log(this.innerCveList)
     },
     resetSelection() {
       this.selectedRowKeys = [];
