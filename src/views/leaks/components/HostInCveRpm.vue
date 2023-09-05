@@ -67,8 +67,6 @@ export default {
       if (this.visible) {
         const _this = this;
         this.tableIsLoading = true;
-        console.log(this.propAvailablerpm)
-        console.log(this.propInstalledrpm)
         const params = {
           page: 1,
           per_page: 10,
