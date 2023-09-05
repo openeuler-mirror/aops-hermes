@@ -87,8 +87,8 @@
                 </div>
                 <div v-if="taskType === 'cve rollback'" style="margin-left: 50px;">
                   <p class="reuslt-item-title" style="margin-top: 12px">CVE回滚情况:</p>
-                  <a-collapse v-if="resultItem.cves.length !== 0" :bordered="false">
-                    <a-collapse-panel v-for="(cve, rkidx) in resultItem.cves" :key="rkidx"
+                  <a-collapse v-if="resultItem.task_result.cves.length !== 0" :bordered="false">
+                    <a-collapse-panel v-for="(cve, rkidx) in resultItem.task_result.cves" :key="rkidx"
                       :header="`${cve.cve_id}`">
                       <div class="cve-item">
                         <p class="reuslt-item-title">结果:</p>
@@ -258,7 +258,7 @@ export default {
             cveList: []
           })
             .then(function (res) {
-              _this.resultData = Object.assign({}, res.data.result);
+              _this.resultData = Object.assign({}, res.data);
             })
             .catch(function (err) {
               _this.$message.error(err.response.message);

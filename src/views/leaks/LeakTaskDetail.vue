@@ -159,6 +159,7 @@
         :row-selection="taskType === 'cve fix' ? rowSelection : undefined"
         @change="handleTableChange"
         @expand="expand"
+        :expanded-row-keys.sync="expandedRowKeys"
         :loading="tableIsLoading">
         <a
         slot="hosts"
@@ -283,6 +284,7 @@ export default {
   },
   data() {
     return {
+      expandedRowKeys: [],
       rpmrecord: {},
       propType: '',
       progressUpdateCaller: null,
@@ -481,6 +483,7 @@ export default {
             console.log(res)
               const target = _this.tableData.find(item => item.cve_id === record.cve_id)
               target.rpms = res.data
+              localStorage.setItem('taskRpm', _this.table)
               // 数据更新后给表格重新赋值
               _this.tableData = JSON.parse(JSON.stringify(_this.tableData))
           })
@@ -740,6 +743,8 @@ export default {
               // 执行任务成功后刷新
               setTimeout(function () {
                 _this.getInitalData();
+                // const expandedRowKeys = _this.$refs.taskTable.getExpandedRowKeys()
+                _this.expandedRowKeys = []
               }, 3000);
               // _this.getInitalData()
             })

@@ -56,6 +56,7 @@
                 taskType="cve rollback"
                 :fixed="fixed"
                 :cveListProps="standalone ? cveAllList : cveAllListProp"
+                :innerCveList="innerCveList"
                 :loading="standalone ? cveAllIsLoading : cveAllIsLoadingProp"
                 :hostListType="standalone ? 'byLoading' : 'byOneHost'"
                 :hostList="hostList"
@@ -66,13 +67,14 @@
                 taskType="cve rollback"
                 :fixed="fixed"
                 :cveListProps="selectedRowsAll"
+                :innerCveList="innerCveList"
                 :hostListType="standalone ? 'byLoading' : 'byOneHost'"
                 :hostList="hostList"
                 @createSuccess="handleTaskCreateSuccess" />
             </a-col>
           </div>
-          <div v-if="!(fixed || rollback) && affected">
-            <a-col v-if="selectedRowKeys.length === 0 && innerCveList === 0">
+          <div v-if="!(fixed || rollback)">
+            <a-col v-if="selectedRowKeys.length === 0 && innerselectedRowKeys.length === 0 && affected">
               <create-repair-task-drawer
                 text="生成修复任务"
                 taskType="cve fix"
@@ -84,9 +86,20 @@
                 :hostList="hostList"
                 @createSuccess="handleTaskCreateSuccess" />
             </a-col>
-            <a-col v-if="selectedRowKeys.length === 0 && innerCveList !== 0">
+            <a-col v-if="selectedRowKeys.length === 0 && innerselectedRowKeys.length !== 0 && affected">
               <create-repair-task-drawer
                 text="生成修复任务"
+                taskType="cve fix"
+                :fixed="fixed"
+                :cveListProps="selectedRowsAll"
+                :innerCveList="innerCveList"
+                :loading="standalone ? cveAllIsLoading : cveAllIsLoadingProp"
+                :hostListType="standalone ? 'byLoading' : 'byOneHost'"
+                :hostList="hostList"
+                @createSuccess="handleTaskCreateSuccess" />
+            </a-col>
+            <a-col v-if="selectedRowKeys.length !== 0 && innerselectedRowKeys.length === 0 && affected">
+              <create-repair-task-drawer
                 taskType="cve fix"
                 :fixed="fixed"
                 :cveListProps="selectedRowsAll"
@@ -95,19 +108,8 @@
                 :hostList="hostList"
                 @createSuccess="handleTaskCreateSuccess" />
             </a-col>
-            <a-col v-if="selectedRowKeys.length !== 0 && innerCveList === 0">
+            <a-col v-if="selectedRowKeys.length !== 0 && innerselectedRowKeys.length !== 0 && affected">
               <create-repair-task-drawer
-                taskType="cve fix"
-                :fixed="fixed"
-                :cveListProps="selectedRowsAll"
-                :innerCveList="innerCveList"
-                :hostListType="standalone ? 'byLoading' : 'byOneHost'"
-                :hostList="hostList"
-                @createSuccess="handleTaskCreateSuccess" />
-            </a-col>
-            <a-col v-if="selectedRowKeys.length !== 0 && innerCveList !== 0">
-              <create-repair-task-drawer
-                text="生成修复任务"
                 taskType="cve fix"
                 :fixed="fixed"
                 :cveListProps="selectedRowsAll"
@@ -144,7 +146,7 @@
         <p>Description:</p>
         <p>{{ record.description }}</p>
         <a-table
-              :row-key="innerrecord => fixed ? record.cve_id + innerrecord.installed_rpm : record.cve_id + innerrecord.available_rpm"
+              :row-key="innerrecord => fixed ? record.cve_id + innerrecord.installed_rpm : record.cve_id + innerrecord.available_rpm + innerrecord.installed_rpm"
               :columns="fixed ? (standalone ? ainnerColumns : binnerColumns) : (standalone ? aloneinnerColumns : innerColumns)"
               :data-source="record.rpms || []"
               :rowSelection="innerRowSelection"
@@ -378,12 +380,11 @@ export default {
         {
           dataIndex: 'installed_rpm',
           key: 'installed_rpm',
-          title: '待安装rpm',
-          scopedSlots: {customRender: 'b'}
+          title: '待安装rpm'
         },
         {
-          dataIndex: 'fixed_way',
-          key: 'fixed_way',
+          dataIndex: 'support_way',
+          key: 'support_way',
           title: '修复方式'
         }
       ];
@@ -704,6 +705,9 @@ export default {
                     available_rpm: record.available_rpm,
                     fix_way: record.support_way
                   })
+                  if (!this.selectedRowKeys.includes(record.cve_id)) {
+                    this.selectedRowKeys.push(record.cve_id)
+                  }
                 } else {
                   const index = target.rpms.findIndex(item => item.installed_rpm === record.installed_rpm)
                   target.rpms.splice(index, 1)
@@ -721,7 +725,10 @@ export default {
                        available_rpm: record.available_rpm,
                        fix_way: record.support_way
                    }]
-                 })
+                  })
+                  if (!this.selectedRowKeys.includes(record.cve_id)) {
+                    this.selectedRowKeys.push(record.cve_id)
+                  }
                 }
               }
       } else {
@@ -734,6 +741,9 @@ export default {
                      fix_way: record.support_way
                  }]
                })
+               if (!this.selectedRowKeys.includes(record.cve_id)) {
+                 this.selectedRowKeys.push(record.cve_id)
+               }
              }
       }
       console.log(this.innerCveList)
@@ -798,7 +808,7 @@ export default {
     handleRefresh() {
       this.selectedRowKeys = [];
       this.selectedRowsAll = [];
-      this.innerCveList = [];
+      // this.innerCveList = [];
       this.getCves();
     },
     handleReset() {

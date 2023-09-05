@@ -232,6 +232,7 @@ export function getHostUnderMultipleCVE({ tableInfo, ...parameter }) {
     method: 'post',
     data: {
       cve_list: parameter.cveList,
+      host_list: parameter.host_list || undefined,
       fixed: parameter.fixed
     }
   });
@@ -303,6 +304,7 @@ export function getCveUnderHost({ tableInfo, ...parameter }) {
         cve_id: tableInfo.filters.cveId,
         affected: tableInfo.affected,
         fixed: tableInfo.fixed,
+        package: tableInfo.filters.package,
         severity: tableInfo.filters.severity || []
       },
       page: tableInfo.pagination.current,

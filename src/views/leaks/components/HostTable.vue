@@ -79,14 +79,14 @@
             taskType="cve fix"
             :fixed="fixed"
             :cveListProps="cveList"
-              hostListType="byLoading"
-              @createSuccess="handleTaskCreateSuccess" />
+            hostListType="byLoading"
+            @createSuccess="handleTaskCreateSuccess" />
           </a-col>
           <a-col v-if="!standalone && !fixed && selectedRowKeys.length !== 0">
             <create-repair-task-drawer
-            taskType="cve fix"
-            :fixed="fixed"
-            :cveListProps="cveList"
+              taskType="cve fix"
+              :fixed="fixed"
+              :cveListProps="cveList"
               hostListType="bySelection"
               :hostList="selectedRowsAll"
               @createSuccess="handleTaskCreateSuccess" />
@@ -125,6 +125,7 @@
       :rowSelection="rowSelection"
       @change="handleTableChange"
       @expand="expand"
+      :expanded-row-keys.sync="expandedRowKeys"
       :loading="standalone ? hostTableIsLoading : inputLoading"
     >
       <router-link
@@ -144,7 +145,7 @@
       </div>
       <div v-if="!standalone" slot="expandedRowRender" slot-scope="record" style="margin: 0">
         <a-table
-              :rowKey="fixed ? 'installed_rpm' : 'available_rpm'"
+              :row-key="innerrecord => fixed ? record.host_id + innerrecord.installed_rpm : record.host_id + innerrecord.available_rpm + innerrecord.installed_rpm"
               :columns="fixed ? ainnerColumns : innerColumns"
               :data-source="record.rpms || []"
               :rowSelection="innerRowSelection"
@@ -424,6 +425,7 @@ export default {
   },
   data() {
     return {
+      expandedRowKeys: [],
       innerselectedRowKeys: [],
       propData: this.inputList,
       hotpatchContent: '支持热补丁',
@@ -480,13 +482,13 @@ export default {
           getCveFixRpm(Params)
           .then(function (res) {
             console.log(res)
-              const target = _this.propData.find(item => item.cve_id === record.cve_id)
-              target.rpms = res.data
-              target.rpms.forEach((item) => {
-                _this.$set(item, 'cve_id', record.cve_id)
-              })
-              // 数据更新后给表格重新赋值
-              _this.propData = JSON.parse(JSON.stringify(_this.propData))
+            const target = _this.propData.find(item => item.host_id === record.host_id)
+            target.rpms = res.data
+            target.rpms.forEach((item) => {
+              _this.$set(item, 'host_id', record.host_id)
+            })
+            // 数据更新后给表格重新赋值
+            _this.propData = JSON.parse(JSON.stringify(_this.propData))
           })
           .catch(function (err) {
             _this.$message.error(err.response.message);
@@ -498,10 +500,13 @@ export default {
         getCveUnfixRpm(Params)
           .then(function (res) {
             console.log(res)
-              const target = _this.propData.find(item => item.cve_id === record.cve_id)
-              target.rpms = res.data
-              // 数据更新后给表格重新赋值
-              _this.propData = JSON.parse(JSON.stringify(_this.propData))
+            const target = _this.propData.find(item => item.host_id === record.host_id)
+            target.rpms = res.data
+            target.rpms.forEach((item) => {
+              _this.$set(item, 'host_id', record.host_id)
+            })
+            // 数据更新后给表格重新赋值
+            _this.propData = JSON.parse(JSON.stringify(_this.propData))
           })
           .catch(function (err) {
             _this.$message.error(err.response.message);
@@ -542,6 +547,7 @@ export default {
         this.hotpatchContent = '热补丁修复'
         this.fixed = true;
       }
+      this.expandedRowKeys = []
       this.selectedRowKeys = []
       // 切换修复状态后重新请求受影响主机列表
       this.handleReset();
@@ -926,6 +932,7 @@ export default {
   mounted() {
     this.getHostList();
     this.getHostGroup();
+    console.log(this.cveList)
     if (this.standalone) {
       // 主机列表页面中要自行获取全量主机和扫描状态
       // this.getScanStatusAll([]);
