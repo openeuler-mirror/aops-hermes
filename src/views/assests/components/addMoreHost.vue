@@ -184,7 +184,7 @@ export default {
           dataIndex: 'ssh_port',
           width: 150,
           key: 'ssh_port',
-          title: 'SSH登陆端口',
+          title: 'SSH登录端口',
           scopedSlots: {customRender: 'ssh_port'}
         },
         {
@@ -198,7 +198,7 @@ export default {
           dataIndex: 'password',
           width: 200,
           key: 'password',
-          title: '登陆密码',
+          title: '登录密码',
           scopedSlots: {customRender: 'password'}
         },
         {

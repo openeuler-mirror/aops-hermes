@@ -127,7 +127,7 @@ export default {
     validateToNextPassword(rule, value, callback) {
       const regex = /^[a-zA-Z0-9]{6,20}$/;
       if (!regex.test(value)) {
-        const text = '请输入6-20位字母或数字组成的密码!';
+        const text = '请输入6-20位字母和数字组成的密码!';
         callback(text);
       } else {
         const form = this.form;
@@ -141,7 +141,7 @@ export default {
       const regex = /^[a-zA-Z0-9]{6,20}$/;
       const form = this.form;
       if (!regex.test(value)) {
-        const text = '请输入6-20位字母或数字组成的密码!';
+        const text = '请输入6-20位字母和数字组成的密码!';
         callback(text);
       } else {
         if (value && value !== form.getFieldValue('password')) {
@@ -164,7 +164,7 @@ export default {
     handleEmail(rule, value, callback) {
       const regex = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$/;
       if (!regex.test(value)) {
-        const text = '只允许英文字母、数字、下划线、英文句号、以及中划线组成!';
+        const text = '只允许英文字母、数字、@、下划线、以及中划线组成!';
         callback(text);
       } else {
         callback();

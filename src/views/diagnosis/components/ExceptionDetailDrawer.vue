@@ -17,7 +17,7 @@
         :pagination="false"
       >
         <span slot="metric_label" slot-scope="text">
-          <ExceptionDetailCutText :text="text" :length="10" />
+          {{ text }}
         </span>
       </a-table>
     </a-table>
@@ -27,7 +27,7 @@
 <script>
 import {getAlertDetail} from '@/api/check';
 import {dateFormat} from '@/views/utils/Utils';
-import ExceptionDetailCutText from '@/views/diagnosis/components/ExceptionDetailCutText';
+// import ExceptionDetailCutText from '@/views/diagnosis/components/ExceptionDetailCutText';
 export default {
   name: 'ExceptionDetailDrawer',
   props: {
@@ -36,7 +36,7 @@ export default {
       default: ''
     }
   },
-  components: {ExceptionDetailCutText},
+  // components: {ExceptionDetailCutText},
   data() {
     return {
       data: [],
@@ -98,32 +98,34 @@ export default {
           customRender: (text, record, index) => dateFormat('YYYY-mm-dd HH:MM:SS', text * 1000)
         },
         {
-          title: '数据项',
-          dataIndex: 'metric_name',
-          align: 'center'
-        },
-        {
-          title: '标签',
+          title: '异常项',
           dataIndex: 'metric_label',
           align: 'center',
-          scopedSlots: {customRender: 'metric_label'}
+          scopedSlots: {customRender: 'metric_label'},
+          ellipsis: true
         },
         {
-          title: '根因异常',
-          dataIndex: 'is_root',
+          title: '数据项',
+          dataIndex: 'metric_name',
           align: 'center',
-          customRender: (text, record, index) => {
-            if (text) {
-              return (
-                <a-tag color="red" style="font-weight:500;">
-                  是
-                </a-tag>
-              );
-            } else {
-              return '否';
-            }
-          }
+          ellipsis: true
         }
+        // {
+        //   title: '根因异常',
+        //   dataIndex: 'is_root',
+        //   align: 'center',
+        //   customRender: (text, record, index) => {
+        //     if (text) {
+        //       return (
+        //         <a-tag color="red" style="font-weight:500;">
+        //           是
+        //         </a-tag>
+        //       );
+        //     } else {
+        //       return '否';
+        //     }
+        //   }
+        // }
       ];
     }
   },

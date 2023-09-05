@@ -12,7 +12,6 @@ const api = {
   setCveStatus: '/vulnerability/cve/status/set',
   getHostUnderCVE: '/vulnerability/cve/host/get',
   getHostUnderMultipleCVE: '/vulnerability/cve/task/host/get',
-  getActionUnderMultipleCVE: '/vulnerability/cve/action/query',
   getHostLeakList: '/vulnerability/host/list/get',
   getHostInfo: '/vulnerability/host/info/get',
   scanHost: '/vulnerability/host/scan',
@@ -21,7 +20,7 @@ const api = {
   addRepo: '/vulnerability/repo/import',
   getRepo: '/vulnerability/repo/get',
   deleteRepo: '/vulnerability/repo/delete',
-  generateTask: '/vulnerability/task/cve/generate',
+  generateTask: '/vulnerability/task/cve-fix/generate',
   executeTask: '/vulnerability/task/execute',
   rollbackCveTask: '/vulnerability/task/cve/rollback', // 简单测试
   generateRepoTask: '/vulnerability/task/repo/generate',
@@ -40,7 +39,12 @@ const api = {
   upload: '/vulnerability/cve/advisory/upload',
   reupload: '/vulnerability/cve/unaffected/upload',
   getCveExport: '/vulnerability/cve/info/export',
-  generateRollbackTask: '/vulnerability/task/cve-rollback/generate'
+  generateRollbackTask: '/vulnerability/task/cve-rollback/generate',
+  getCveUnfixRpm: '/vulnerability/cve/unfixed/packages/get', // 查询cve未修复的rpm包
+  getCveFixRpm: '/vulnerability/cve/fixed/packages/get', // 查询cve已修复的rpm包
+  getRpmUnderCve: '/vulnerability/cve/packages/host/get', // 查询cve影响的rpm包的主机列表
+  getCvefixLeakRpm: '/vulnerability/task/cve/rpm/get', // 修复任务详情中cve列表的二级package
+  getCveRpmHostUnderLeak: '/vulnerability/task/cve/rpm/host/get' // 查询修复任务下的cve影响的rpm包的主机列表
 };
 
 const sorterMap = {
@@ -49,6 +53,67 @@ const sorterMap = {
 };
 
 export default api;
+
+export function getCveRpmHostUnderLeak(parameters) {
+  return request({
+    url: api.getCveRpmHostUnderLeak,
+    method: 'post',
+    data: {
+      task_id: parameters.task_id,
+      cve_id: parameters.cve_id,
+      installed_rpm: parameters.installed_rpm,
+      available_rpm: parameters.available_rpm
+    }
+  });
+}
+
+export function getCvefixLeakRpm(parameters) {
+  return request({
+    url: api.getCvefixLeakRpm,
+    method: 'post',
+    data: {
+      task_id: parameters.task_id,
+      cve_id: parameters.cve_id
+    }
+  });
+}
+
+export function getRpmUnderCve(parameters) {
+  return request({
+    url: api.getRpmUnderCve,
+    method: 'post',
+    data: {
+      page: parameters.page,
+      per_page: parameters.per_page,
+      cve_id: parameters.cve_id,
+      available_rpm: parameters.available_rpm === null ? undefined : parameters.available_rpm,
+      installed_rpm: parameters.installed_rpm === null ? undefined : parameters.installed_rpm,
+      direction: parameters.direction
+    }
+  });
+}
+
+export function getCveUnfixRpm(parameters) {
+  return request({
+    url: api.getCveUnfixRpm,
+    method: 'post',
+    data: {
+      cve_id: parameters.cve_id,
+      host_ids: parameters.host_ids
+    }
+  });
+}
+
+export function getCveFixRpm(parameters) {
+  return request({
+    url: api.getCveFixRpm,
+    method: 'post',
+    data: {
+      cve_id: parameters.cve_id,
+      host_ids: parameters.host_ids
+    }
+  });
+}
 
 export function generateRollbackTask(parameters) {
   return request({
@@ -109,6 +174,7 @@ export function getCveList({ tableInfo, ...parameter }) {
       filter: {
         affected: tableInfo.affected,
         cve_id: tableInfo.filters.cveId,
+        package: tableInfo.filters.package,
         severity: tableInfo.filters.severity || [],
         fixed: tableInfo.fixed
       },
@@ -152,9 +218,7 @@ export function getHostUnderCVE({ tableInfo, ...parameter }) {
         host_name: tableInfo.filters.host_name === null ? undefined : tableInfo.filters.host_name,
         host_group: tableInfo.filters.host_group === null ? undefined : tableInfo.filters.host_group,
         repo: tableInfo.filters.repo === null ? undefined : tableInfo.filters.repo,
-        last_scan: tableInfo.filters.last_scan,
-        hotpatch: tableInfo.filters.hotpatch || [],
-        hp_status: tableInfo.filters.hp_status || []
+        last_scan: tableInfo.filters.last_scan
       },
       page: tableInfo.pagination.current,
       per_page: tableInfo.pagination.pageSize
@@ -168,19 +232,8 @@ export function getHostUnderMultipleCVE({ tableInfo, ...parameter }) {
     method: 'post',
     data: {
       cve_list: parameter.cveList,
-      filter: {
-        fixed: parameter.fixed
-      }
-    }
-  });
-}
-
-export function getActionUnderMultipleCVE({ tableInfo, ...parameter }) {
-  return request({
-    url: api.getActionUnderMultipleCVE,
-    method: 'post',
-    data: {
-      cve_list: parameter.cveList
+      host_list: parameter.host_list || undefined,
+      fixed: parameter.fixed
     }
   });
 }
@@ -251,9 +304,8 @@ export function getCveUnderHost({ tableInfo, ...parameter }) {
         cve_id: tableInfo.filters.cveId,
         affected: tableInfo.affected,
         fixed: tableInfo.fixed,
-        severity: tableInfo.filters.severity || [],
-        hotpatch: tableInfo.filters.hotpatch || [],
-        hp_status: tableInfo.filters.hp_status || []
+        package: tableInfo.filters.package,
+        severity: tableInfo.filters.severity || []
       },
       page: tableInfo.pagination.current,
       per_page: tableInfo.pagination.pageSize
@@ -299,8 +351,9 @@ export function generateTask(parameters) {
     data: {
       task_name: parameters.task_name,
       description: parameters.task_desc,
-      auto_reboot: parameters.auto_reboot,
       accepted: parameters.accepted,
+      check_items: parameters.check_items,
+      takeover: parameters.takeover,
       info: parameters.info || []
     }
   });

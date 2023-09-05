@@ -21,7 +21,11 @@
             已修复
           </a-radio-button>
         </a-radio-group>
-        <a-input-search placeholder="按CVE ID搜索" style="width: 200px;margin-left: 10px;" v-model="cveSearch" @change="searchChange" @search="onSearch" />
+        <a-input-search v-if="isCve" placeholder="按CVE ID搜索" style="width: 200px;margin-left: 10px;" v-model="cveSearch" @change="searchChange"
+        @search="onSearch" />
+        <a-input-search v-else placeholder="按package搜索" style="width: 200px;margin-left: 10px;" v-model="packageSearch" @change="searchChange"
+        @search="onSearch" />
+        <a-button @click="filterChange" style="margin-left: 10px;width: 31px;height: 31px;" size="small" icon="swap" />
       </a-col>
       <a-col>
         <a-row type="flex" :gutter="6">
@@ -47,12 +51,12 @@
           </a-col>
           <div v-if="fixed || rollback">
             <a-col v-if="selectedRowKeys.length === 0">
-            <!-- 回滚按钮 -->
               <create-repair-task-drawer
                 text="生成回滚任务"
                 taskType="cve rollback"
                 :fixed="fixed"
                 :cveListProps="standalone ? cveAllList : cveAllListProp"
+                :innerCveList="innerCveList"
                 :loading="standalone ? cveAllIsLoading : cveAllIsLoadingProp"
                 :hostListType="standalone ? 'byLoading' : 'byOneHost'"
                 :hostList="hostList"
@@ -63,28 +67,53 @@
                 taskType="cve rollback"
                 :fixed="fixed"
                 :cveListProps="selectedRowsAll"
+                :innerCveList="innerCveList"
                 :hostListType="standalone ? 'byLoading' : 'byOneHost'"
                 :hostList="hostList"
                 @createSuccess="handleTaskCreateSuccess" />
             </a-col>
           </div>
-          <div v-else>
-            <a-col v-if="selectedRowKeys.length === 0 && affected">
+          <div v-if="!(fixed || rollback)">
+            <a-col v-if="selectedRowKeys.length === 0 && innerselectedRowKeys.length === 0 && affected">
               <create-repair-task-drawer
                 text="生成修复任务"
                 taskType="cve fix"
                 :fixed="fixed"
                 :cveListProps="standalone ? cveAllList : cveAllListProp"
+                :innerCveList="innerCveList"
                 :loading="standalone ? cveAllIsLoading : cveAllIsLoadingProp"
                 :hostListType="standalone ? 'byLoading' : 'byOneHost'"
                 :hostList="hostList"
                 @createSuccess="handleTaskCreateSuccess" />
             </a-col>
-            <a-col v-if="selectedRowKeys.length !== 0 && affected">
+            <a-col v-if="selectedRowKeys.length === 0 && innerselectedRowKeys.length !== 0 && affected">
+              <create-repair-task-drawer
+                text="生成修复任务"
+                taskType="cve fix"
+                :fixed="fixed"
+                :cveListProps="selectedRowsAll"
+                :innerCveList="innerCveList"
+                :loading="standalone ? cveAllIsLoading : cveAllIsLoadingProp"
+                :hostListType="standalone ? 'byLoading' : 'byOneHost'"
+                :hostList="hostList"
+                @createSuccess="handleTaskCreateSuccess" />
+            </a-col>
+            <a-col v-if="selectedRowKeys.length !== 0 && innerselectedRowKeys.length === 0 && affected">
               <create-repair-task-drawer
                 taskType="cve fix"
                 :fixed="fixed"
                 :cveListProps="selectedRowsAll"
+                :innerCveList="innerCveList"
+                :hostListType="standalone ? 'byLoading' : 'byOneHost'"
+                :hostList="hostList"
+                @createSuccess="handleTaskCreateSuccess" />
+            </a-col>
+            <a-col v-if="selectedRowKeys.length !== 0 && innerselectedRowKeys.length !== 0 && affected">
+              <create-repair-task-drawer
+                taskType="cve fix"
+                :fixed="fixed"
+                :cveListProps="selectedRowsAll"
+                :innerCveList="innerCveList"
                 :hostListType="standalone ? 'byLoading' : 'byOneHost'"
                 :hostList="hostList"
                 @createSuccess="handleTaskCreateSuccess" />
@@ -99,14 +128,15 @@
       </a-col>
     </a-row>
     <a-table
-      rowKey="cve_id"
+      :row-key="record => record.cve_id"
       :columns="standalone ? tableColumnsStandalone : tableColumns"
-      :data-source="standalone ? tableData : inputList"
+      :data-source="standalone ? tableData : propData"
       :pagination="pagination.total === 0 ? false : (!standalone ? (paginationTotal === 0 ? false : pagination) : pagination)"
       :rowSelection="rowSelection"
       :expandIconAsCell="false"
-      :expandIconColumnIndex="1"
       @change="handleTableChange"
+      @expand="expand"
+      :expanded-row-keys.sync="expandedRowKeys"
       :loading="standalone ? tableIsLoading : inputLoading">
       <router-link
       :to="{path: `/leaks/cves-management/${id}`}"
@@ -115,11 +145,28 @@
       <div slot="expandedRowRender" slot-scope="record" style="margin: 0">
         <p>Description:</p>
         <p>{{ record.description }}</p>
+        <a-table
+              :row-key="innerrecord => fixed ? record.cve_id + innerrecord.installed_rpm : record.cve_id + innerrecord.available_rpm + innerrecord.installed_rpm"
+              :columns="fixed ? (standalone ? ainnerColumns : binnerColumns) : (standalone ? aloneinnerColumns : innerColumns)"
+              :data-source="record.rpms || []"
+              :rowSelection="innerRowSelection"
+              :pagination="false">
+              <a
+               slot="hosts"
+               slot-scope="hosts, innerrecord"
+               @click="showHostListUnderCve(record, innerrecord)">{{ hosts }}</a>
+        </a-table>
       </div>
       <div v-if="!fixed" slot="hotpatch" slot-scope="hotpatch" style="margin: 0">
         <p>{{ hotpatch ? '是' : '否' }}</p>
       </div>
     </a-table>
+    <host-in-cve-rpm
+      :visible="hostListUnderCveVisible"
+      @close="closeHostListUnderCve"
+      :propAvailablerpm="propAvailablerpm"
+      :propInstalledrpm="propInstalledrpm"
+      :cveId="hostListOfCveId" />
   </div>
 </template>
 
@@ -130,9 +177,10 @@
  */
 
 import CreateRepairTaskDrawer from './CreateRepairTaskDrawer';
+import HostInCveRpm from './HostInCveRpm';
 import StatusChangeModal from './StatusChangeModal';
 import {getSelectedRow} from '../utils/getSelectedRow';
-import {getCveList} from '@/api/leaks';
+import {getCveList, getCveUnfixRpm, getCveFixRpm} from '@/api/leaks';
 
 import { severityMap } from '../config';
 import UploadFile from './UploadFile.vue';
@@ -150,7 +198,8 @@ export default {
   components: {
     CreateRepairTaskDrawer,
     StatusChangeModal,
-    UploadFile
+    UploadFile,
+    HostInCveRpm
   },
   props: {
     // 判断表格是自己发起请求获取数据还是，触发事件通过父组件获取列表数据
@@ -210,6 +259,12 @@ export default {
           customRender: (publishTime) => publishTime === '' ? '—' : publishTime,
           title: '发布时间',
           sorter: true
+        },
+        {
+          dataIndex: 'package',
+          key: 'package',
+          customRender: (_package) => _package === '' ? '—' : _package,
+          title: '软件包'
         },
         {
           dataIndex: 'severity',
@@ -273,6 +328,12 @@ export default {
           sorter: true
         },
         {
+          dataIndex: 'package',
+          key: 'package',
+          customRender: (_package) => _package === '' ? '—' : _package,
+          title: '软件包'
+        },
+        {
           dataIndex: 'severity',
           key: 'severity',
           title: '严重性',
@@ -306,36 +367,84 @@ export default {
           key: 'cvss_score',
           title: 'CVSS 分数',
           sorter: true
+        }
+      ];
+    },
+    innerColumns() {
+      return [
+        {
+          dataIndex: 'available_rpm',
+          key: 'available_rpm',
+          title: '受影响rpm'
         },
         {
-          dataIndex: this.hotpatchContent === '支持热补丁' ? 'hotpatch' : 'fixStatus',
-          key: this.hotpatchContent === '支持热补丁' ? 'hotpatch' : 'fixStatus',
-          title: this.hotpatchContent,
-          filteredValue: this.hotpatchContent === '支持热补丁' ? filters.hotpatch || null : filters.fixStatus || null,
-          filters: this.hotpatchContent === '支持热补丁' ? [
-            {
-              text: '是',
-              value: 1
-            },
-            {
-              text: '否',
-              value: 0
-            }
-          ] : [
-            {
-              text: '是(ACCEPTED)',
-              value: 1
-            },
-            {
-              text: '是(ACTIVED)',
-              value: 2
-            },
-            {
-              text: '否',
-              value: 0
-            }
-          ],
-          scopedSlots: {customRender: this.hotpatchContent === '支持热补丁' ? 'hotpatch' : 'fixStatus'}
+          dataIndex: 'installed_rpm',
+          key: 'installed_rpm',
+          title: '待安装rpm'
+        },
+        {
+          dataIndex: 'support_way',
+          key: 'support_way',
+          title: '修复方式'
+        }
+      ];
+    },
+    ainnerColumns() {
+      return [
+        {
+          dataIndex: 'installed_rpm',
+          key: 'installed_rpm',
+          title: '已安装rpm'
+        },
+        {
+          dataIndex: 'fixed_way',
+          key: 'fixed_way',
+          title: '修复方式'
+        },
+        {
+          dataIndex: 'host_num',
+          key: 'host_num',
+          title: '主机数量',
+          scopedSlots: {customRender: 'hosts'}
+        }
+      ];
+    },
+    binnerColumns() {
+      return [
+        {
+          dataIndex: 'installed_rpm',
+          key: 'installed_rpm',
+          title: '已安装rpm'
+        },
+        {
+          dataIndex: 'fixed_way',
+          key: 'fixed_way',
+          title: '修复方式'
+        }
+      ];
+    },
+    aloneinnerColumns() {
+      return [
+        {
+          dataIndex: 'available_rpm',
+          key: 'available_rpm',
+          title: '受影响rpm'
+        },
+        {
+          dataIndex: 'installed_rpm',
+          key: 'installed_rpm',
+          title: '待安装rpm'
+        },
+        {
+          dataIndex: 'support_way',
+          key: 'support_way',
+          title: '修复方式'
+        },
+        {
+          dataIndex: 'host_num',
+          key: 'host_num',
+          title: '涉及主机数量',
+          scopedSlots: {customRender: 'hosts'}
         }
       ];
     },
@@ -344,17 +453,42 @@ export default {
         selectedRowKeys: this.selectedRowKeys,
         onChange: this.onSelectChange
       };
+    },
+    innerRowSelection() {
+      return {
+        selectedRowKeys: this.innerselectedRowKeys,
+        onChange: this.innerOnSelectChange,
+        onSelect: this.innerOnSelect,
+        onSelectAll: this.innerOnSelectAll
+      };
     }
   },
   watch: {
     paginationTotal () {
       this.$set(this.pagination, 'total', this.paginationTotal)
+    },
+    inputList: {
+      handler (newVal, oldval) {
+        this.propData = newVal
+      },
+      deep: true,
+      immediate: true
     }
   },
   data() {
     return {
+      innerCveList: [],
+      // 勾选二级列表rpm参数时传入的数据流
+      propAvailablerpm: null,
+      propInstalledrpm: null,
+      propData: this.inputList,
+      expandedRowKeys: [],
+      hostListOfCveId: null,
+      hostListUnderCveVisible: false,
+      isCve: true,
       hotpatchContent: '支持热补丁',
       cveSearch: '',
+      packageSearch: '',
       scanloading: false,
       size: 'small',
       tableData: [],
@@ -364,6 +498,8 @@ export default {
       filters: null,
       sorter: null,
       // selection control
+      innerselectedRowKeys: [],
+      innerSelectedRowsAll: [],
       selectedRowKeys: [],
       selectedRowsAll: [],
       // standalone模式下获取全量cve数据
@@ -379,18 +515,108 @@ export default {
     };
   },
   methods: {
+    closeHostListUnderCve() {
+      this.hostListUnderCveVisible = false;
+    },
+    showHostListUnderCve(params, innerparams) {
+      console.log(params)
+      this.hostListUnderCveVisible = true;
+      this.hostListOfCveId = params.cve_id;
+      this.propAvailablerpm = innerparams.available_rpm
+      this.propInstalledrpm = innerparams.installed_rpm
+    },
+    expand(expanded, record) {
+      if (expanded) {
+        const _this = this
+        const Params = {
+          cve_id: record.cve_id,
+          host_ids: []
+        }
+        if (this.fixed) {
+        getCveFixRpm(Params)
+        .then(function (res) {
+          console.log(res)
+          if (_this.standalone) {
+            const target = _this.tableData.find(item => item.cve_id === record.cve_id)
+            target.rpms = res.data
+            target.rpms.forEach((item) => {
+              _this.$set(item, 'cve_id', record.cve_id)
+            })
+            // 数据更新后给表格重新赋值
+            _this.tableData = JSON.parse(JSON.stringify(_this.tableData))
+          } else {
+            const target = _this.propData.find(item => item.cve_id === record.cve_id)
+            target.rpms = res.data
+            target.rpms.forEach((item) => {
+              _this.$set(item, 'cve_id', record.cve_id)
+            })
+            // 数据更新后给表格重新赋值
+            _this.propData = JSON.parse(JSON.stringify(_this.propData))
+          }
+        })
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
+        })
+        .finally(function () {
+          _this.tableIsLoading = false;
+        });
+        } else {
+        getCveUnfixRpm(Params)
+        .then(function (res) {
+          console.log(res)
+          if (_this.standalone) {
+            const target = _this.tableData.find(item => item.cve_id === record.cve_id)
+            target.rpms = res.data
+            target.rpms.forEach((item) => {
+              _this.$set(item, 'cve_id', record.cve_id)
+            })
+            // 数据更新后给表格重新赋值
+            _this.tableData = JSON.parse(JSON.stringify(_this.tableData))
+          } else {
+            const target = _this.propData.find(item => item.cve_id === record.cve_id)
+            target.rpms = res.data
+            target.rpms.forEach((item) => {
+              _this.$set(item, 'cve_id', record.cve_id)
+            })
+            // 数据更新后给表格重新赋值
+            _this.propData = JSON.parse(JSON.stringify(_this.propData))
+          }
+        })
+        .catch(function (err) {
+          _this.$message.error(err.response.message);
+        })
+        .finally(function () {
+          _this.tableIsLoading = false;
+        });
+      }
+      }
+    },
+    filterChange() {
+      this.isCve = !this.isCve
+      this.cveSearch = '';
+      this.packageSearch = '';
+      this.filters = {};
+    },
     searchChange() {
       if (!this.filters) {
         this.filters = {};
       }
-      if (this.cveSearch !== '') {
-        this.filters.cveId = this.cveSearch;
-      } else {
-        this.filters.cveId = undefined;
+      if (this.isCve) {
+        if (this.cveSearch !== '') {
+          this.filters.cveId = this.cveSearch;
+        } else {
+          this.filters.cveId = undefined;
+        }
+      }
+      if (!this.isCve) {
+        if (this.packageSearch !== '') {
+          this.filters.package = this.packageSearch;
+        } else {
+          this.filters.package = undefined;
+        }
       }
     },
     handleAffectChange(e) {
-      if (!this.standalone) {
         if (e.target.value === 'a') {
           this.hotpatchContent = '支持热补丁'
           this.fixed = undefined
@@ -407,11 +633,10 @@ export default {
           this.affected = true;
           this.rollback = true;
         }
+        this.expandedRowKeys = []
         this.selectedRowKeys = []
         this.getCvesAll()
         this.handleReset();
-      } else {
-      }
     },
     handleFixChange(e) {
       if (e.target.value === 'a') {
@@ -419,6 +644,7 @@ export default {
         } else {
           this.fixed = true;
         }
+      this.expandedRowKeys = []
       this.selectedRowKeys = []
       this.getCvesAll()
       this.handleReset();
@@ -458,9 +684,122 @@ export default {
     },
 
     onSelectChange(selectedRowKeys, selectedRows) {
-      const tableData = this.standalone ? this.tableData : this.inputList;
+      const tableData = this.standalone ? this.tableData : this.propData;
       this.selectedRowKeys = selectedRowKeys;
       this.selectedRowsAll = getSelectedRow(selectedRowKeys, this.selectedRowsAll, tableData, 'cve_id');
+      // console.log(this.selectedRowsAll)
+    },
+    innerOnSelectChange(selectedRowKeys, selectedRows) {
+      this.innerselectedRowKeys = selectedRowKeys;
+    },
+    innerOnSelect(record, selected, selectedRows, nativeEvent) {
+      console.log(record)
+      if (this.innerCveList.length !== 0) {
+              const result = this.innerCveList.some(item => item.cve_id === record.cve_id)
+              console.log(result)
+              if (result) {
+                const target = this.innerCveList.find(item => item.cve_id === record.cve_id)
+                if (selected) {
+                  target.rpms.push({
+                    installed_rpm: record.installed_rpm,
+                    available_rpm: record.available_rpm,
+                    fix_way: record.support_way
+                  })
+                  if (!this.selectedRowKeys.includes(record.cve_id)) {
+                    this.selectedRowKeys.push(record.cve_id)
+                  }
+                } else {
+                  const index = target.rpms.findIndex(item => item.installed_rpm === record.installed_rpm)
+                  target.rpms.splice(index, 1)
+                  if (target.rpms.length === 0) {
+                    const dindex = this.innerCveList.findIndex(it => it.cve_id === record.cve_id)
+                    this.innerCveList.splice(dindex, 1)
+                  }
+                }
+              } else {
+                if (selected) {
+                  this.innerCveList.push({
+                   cve_id: record.cve_id,
+                   rpms: [{
+                       installed_rpm: record.installed_rpm,
+                       available_rpm: record.available_rpm,
+                       fix_way: record.support_way
+                   }]
+                  })
+                  if (!this.selectedRowKeys.includes(record.cve_id)) {
+                    this.selectedRowKeys.push(record.cve_id)
+                  }
+                }
+              }
+      } else {
+             if (selected) {
+               this.innerCveList.push({
+                 cve_id: record.cve_id,
+                 rpms: [{
+                     installed_rpm: record.installed_rpm,
+                     available_rpm: record.available_rpm,
+                     fix_way: record.support_way
+                 }]
+               })
+               if (!this.selectedRowKeys.includes(record.cve_id)) {
+                 this.selectedRowKeys.push(record.cve_id)
+               }
+             }
+      }
+      console.log(this.innerCveList)
+      console.log(this.selectedRowsAll)
+    },
+    innerOnSelectAll(selected, selectedRows, changeRows) {
+      console.log(changeRows)
+      if (this.innerCveList.length !== 0) {
+        if (!selected) {
+          const recordId = changeRows[0].cve_id
+          const index = this.innerCveList.findIndex(item => item.cve_id === recordId)
+          this.innerCveList.splice(index, 1)
+        } else {
+          const recordId = changeRows[0].cve_id
+          const target = this.innerCveList.find(item => item.cve_id === recordId)
+          const result = this.innerCveList.some(item => item.cve_id === recordId)
+          if (result) {
+            changeRows.forEach((item) => {
+              if (!target.rpms.some(it => it.available_rpm === item.available_rpm)) {
+                target.rpms.push({
+                  installed_rpm: item.installed_rpm,
+                  available_rpm: item.available_rpm,
+                  fix_way: item.support_way
+                })
+              }
+            })
+          } else {
+            this.innerCveList.push({
+              cve_id: recordId,
+              rpms: []
+            })
+            const ls = this.innerCveList.findIndex(item => item.cve_id === recordId)
+            changeRows.forEach((item) => {
+               this.innerCveList[ls].rpms.push({
+                 installed_rpm: item.installed_rpm,
+                 available_rpm: item.available_rpm,
+                 fix_way: item.support_way
+               })
+            })
+          }
+        }
+      } else {
+        const recordId = changeRows[0].cve_id
+        this.innerCveList.push({
+          cve_id: recordId,
+          rpms: []
+        })
+        changeRows.forEach((item) => {
+           this.innerCveList[0].rpms.push({
+             installed_rpm: item.installed_rpm,
+             available_rpm: item.available_rpm,
+             fix_way: item.support_way
+           })
+        })
+      }
+      console.log(this.innerCveList)
     },
     resetSelection() {
       this.selectedRowKeys = [];
@@ -469,6 +808,7 @@ export default {
     handleRefresh() {
       this.selectedRowKeys = [];
       this.selectedRowsAll = [];
+      // this.innerCveList = [];
       this.getCves();
     },
     handleReset() {
@@ -477,6 +817,7 @@ export default {
       this.filters = null;
       this.selectedRowKeys = [];
       this.selectedRowsAll = [];
+      this.innerCveList = [];
       this.getCves();
     },
     // 获取cve列表数据
@@ -577,10 +918,19 @@ export default {
       if (!this.filters) {
         this.filters = {};
       }
-      if (text !== '') {
-        this.filters.cveId = text;
-      } else {
-        this.filters.cveId = undefined;
+      if (this.isCve) {
+        if (text !== '') {
+          this.filters.cveId = text;
+        } else {
+          this.filters.cveId = undefined;
+        }
+      }
+      if (!this.isCve) {
+        if (text !== '') {
+          this.filters.package = text;
+        } else {
+          this.filters.package = undefined;
+        }
       }
       this.getCves();
     },
@@ -619,6 +969,11 @@ export default {
     }, 500);
     this.getCves();
     }
+  },
+  beforeRouteLeave(to, from, next) {
+  // 路由跳转前，清除轮询
+    next();
+    this.innerCveList = []
   },
   mounted() {
     setTimeout(() => {

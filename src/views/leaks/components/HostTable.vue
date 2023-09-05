@@ -79,14 +79,14 @@
             taskType="cve fix"
             :fixed="fixed"
             :cveListProps="cveList"
-              hostListType="byLoading"
-              @createSuccess="handleTaskCreateSuccess" />
+            hostListType="byLoading"
+            @createSuccess="handleTaskCreateSuccess" />
           </a-col>
           <a-col v-if="!standalone && !fixed && selectedRowKeys.length !== 0">
             <create-repair-task-drawer
-            taskType="cve fix"
-            :fixed="fixed"
-            :cveListProps="cveList"
+              taskType="cve fix"
+              :fixed="fixed"
+              :cveListProps="cveList"
               hostListType="bySelection"
               :hostList="selectedRowsAll"
               @createSuccess="handleTaskCreateSuccess" />
@@ -120,10 +120,12 @@
     <a-table
       rowKey="host_id"
       :columns="standalone ? hostTableColumnsStandalone : hostTableColumns"
-      :data-source="standalone ? hostTableData : inputList"
+      :data-source="standalone ? hostTableData : propData"
       :pagination="pagination"
       :rowSelection="rowSelection"
       @change="handleTableChange"
+      @expand="expand"
+      :expanded-row-keys.sync="expandedRowKeys"
       :loading="standalone ? hostTableIsLoading : inputLoading"
     >
       <router-link
@@ -141,7 +143,26 @@
         {{ hotpatch ? '是' : '否' }}
         <!-- {{ record.last_scan === null ? '未扫描' : record.last_scan }} -->
       </div>
+      <div v-if="!standalone" slot="expandedRowRender" slot-scope="record" style="margin: 0">
+        <a-table
+              :row-key="innerrecord => fixed ? record.host_id + innerrecord.installed_rpm : record.host_id + innerrecord.available_rpm + innerrecord.installed_rpm"
+              :columns="fixed ? ainnerColumns : innerColumns"
+              :data-source="record.rpms || []"
+              :rowSelection="innerRowSelection"
+              :pagination="false">
+              <a
+               slot="hosts"
+               slot-scope="hosts, innerrecord"
+               @click="showHostListUnderCve(record, innerrecord)">{{ hosts }}</a>
+            </a-table>
+      </div>
     </a-table>
+    <host-in-cve-rpm
+      :visible="hostListUnderCveVisible"
+      @close="closeHostListUnderCve"
+      :propAvailablerpm="propAvailablerpm"
+      :propInstalledrpm="propInstalledrpm"
+      :cveId="hostListOfCveId" />
   </div>
 </template>
 
@@ -152,7 +173,8 @@
  */
 
 import CreateRepairTaskDrawer from './CreateRepairTaskDrawer';
-import {getHostLeakList, scanHost, getHostScanStatus, getRepoList, getCveExport} from '@/api/leaks';
+import HostInCveRpm from './HostInCveRpm';
+import {getHostLeakList, scanHost, getHostScanStatus, getRepoList, getCveExport, getCveUnfixRpm, getCveFixRpm} from '@/api/leaks';
 import {hostGroupList} from '@/api/assest';
 import {getSelectedRow} from '../utils/getSelectedRow';
 import {downloadBlobFile} from '@/views/utils/downloadBlobFile';
@@ -171,7 +193,8 @@ const defaultPagination = {
 export default {
   name: 'HostTable',
   components: {
-    CreateRepairTaskDrawer
+    CreateRepairTaskDrawer,
+    HostInCveRpm
   },
   props: {
     // 判断表格是自己发起请求获取数据还是，触发事件通过父组件获取数据
@@ -202,6 +225,10 @@ export default {
     repoListProps: {
       type: Array,
       default: () => []
+    },
+    cveId: {
+      type: String,
+      default: ''
     }
   },
   computed: {
@@ -279,36 +306,36 @@ export default {
           filters: this.standalone ? this.repoList : this.repoFilterList,
           scopedSlots: {customRender: 'repo'}
         },
-        {
-          dataIndex: this.hotpatchContent === '支持热补丁' ? 'hotpatch' : 'fixStatus',
-          key: this.hotpatchContent === '支持热补丁' ? 'hotpatch' : 'fixStatus',
-          title: this.hotpatchContent,
-          filteredValue: this.hotpatchContent === '支持热补丁' ? filters.hotpatch || null : filters.fixStatus || null,
-          filters: this.hotpatchContent === '支持热补丁' ? [
-            {
-              text: '是',
-              value: 1
-            },
-            {
-              text: '否',
-              value: 0
-            }
-          ] : [
-            {
-              text: '是(ACCEPTED)',
-              value: 1
-            },
-            {
-              text: '是(ACTIVED)',
-              value: 2
-            },
-            {
-              text: '否',
-              value: 0
-            }
-          ],
-          scopedSlots: {customRender: this.hotpatchContent === '支持热补丁' ? 'hotpatch' : 'fixStatus'}
-        },
+        // {
+        //   dataIndex: this.hotpatchContent === '支持热补丁' ? 'hotpatch' : 'fixStatus',
+        //   key: this.hotpatchContent === '支持热补丁' ? 'hotpatch' : 'fixStatus',
+        //   title: this.hotpatchContent,
+        //   filteredValue: this.hotpatchContent === '支持热补丁' ? filters.hotpatch || null : filters.fixStatus || null,
+        //   filters: this.hotpatchContent === '支持热补丁' ? [
+        //     {
+        //       text: '是',
+        //       value: 1
+        //     },
+        //     {
+        //       text: '否',
+        //       value: 0
+        //     }
+        //   ] : [
+        //     {
+        //       text: '是(ACCEPTED)',
+        //       value: 1
+        //     },
+        //     {
+        //       text: '是(ACTIVED)',
+        //       value: 2
+        //     },
+        //     {
+        //       text: '否',
+        //       value: 0
+        //     }
+        //   ],
+        //   scopedSlots: {customRender: this.hotpatchContent === '支持热补丁' ? 'hotpatch' : 'fixStatus'}
+        // },
         {
           dataIndex: 'last_scan',
           key: 'last_scan',
@@ -318,10 +345,55 @@ export default {
         }
       ];
     },
+    innerColumns() {
+      return [
+        {
+          dataIndex: 'available_rpm',
+          key: 'available_rpm',
+          title: '受影响rpm'
+        },
+        {
+          dataIndex: 'installed_rpm',
+          key: 'installed_rpm',
+          title: '待安装rpm'
+        },
+        {
+          dataIndex: 'support_way',
+          key: 'support_way',
+          title: '修复方式'
+        },
+        {
+          dataIndex: 'host_num',
+          key: 'host_num',
+          title: '主机数量',
+          scopedSlots: {customRender: 'hosts'}
+        }
+      ];
+    },
+    ainnerColumns() {
+      return [
+        {
+          dataIndex: 'installed_rpm',
+          key: 'installed_rpm',
+          title: '已安装rpm'
+        },
+        {
+          dataIndex: 'fixed_way',
+          key: 'fixed_way',
+          title: '修复方式'
+        }
+      ];
+    },
     rowSelection() {
       return {
         selectedRowKeys: this.selectedRowKeys,
         onChange: this.onSelectChange
+      };
+    },
+    innerRowSelection() {
+      return {
+        selectedRowKeys: this.innerselectedRowKeys,
+        onChange: this.innerOnSelectChange
       };
     },
     // 通过repo筛选时的数据转换
@@ -342,10 +414,20 @@ export default {
   watch: {
     paginationTotal() {
       this.$set(this.pagination, 'total', this.paginationTotal)
+    },
+    inputList: {
+      handler (newVal, oldval) {
+        this.propData = newVal
+      },
+      deep: true,
+      immediate: true
     }
   },
   data() {
     return {
+      expandedRowKeys: [],
+      innerselectedRowKeys: [],
+      propData: this.inputList,
       hotpatchContent: '支持热补丁',
       hostSearch: '',
       hostTableData: [],
@@ -368,10 +450,73 @@ export default {
       scanStatusData: {},
       scanningHostIds: [],
       scanStatueAllTimeout: null,
-      fixed: false
+      fixed: false,
+      hostListUnderCveVisible: false,
+      hostListOfCveId: null,
+      propAvailablerpm: null,
+      propInstalledrpm: null
     };
   },
   methods: {
+    closeHostListUnderCve() {
+      this.hostListUnderCveVisible = false;
+    },
+    showHostListUnderCve(params, innerparams) {
+      console.log(params)
+      this.hostListUnderCveVisible = true;
+      this.hostListOfCveId = this.cveId;
+      this.propAvailablerpm = innerparams.available_rpm
+      this.propInstalledrpm = innerparams.installed_rpm
+    },
+    innerOnSelectChange(selectedRowKeys, selectedRows) {
+      this.innerselectedRowKeys = selectedRowKeys;
+    },
+    expand(expanded, record) {
+      if (expanded && !this.standalone) {
+        const _this = this
+        const Params = {
+          cve_id: this.cveId,
+          host_ids: []
+        }
+        if (this.fixed) {
+          getCveFixRpm(Params)
+          .then(function (res) {
+            console.log(res)
+            const target = _this.propData.find(item => item.host_id === record.host_id)
+            target.rpms = res.data
+            target.rpms.forEach((item) => {
+              _this.$set(item, 'host_id', record.host_id)
+            })
+            // 数据更新后给表格重新赋值
+            _this.propData = JSON.parse(JSON.stringify(_this.propData))
+          })
+          .catch(function (err) {
+            _this.$message.error(err.response.message);
+          })
+          .finally(function () {
+            _this.tableIsLoading = false;
+          });
+        } else {
+        getCveUnfixRpm(Params)
+          .then(function (res) {
+            console.log(res)
+            const target = _this.propData.find(item => item.host_id === record.host_id)
+            target.rpms = res.data
+            target.rpms.forEach((item) => {
+              _this.$set(item, 'host_id', record.host_id)
+            })
+            // 数据更新后给表格重新赋值
+            _this.propData = JSON.parse(JSON.stringify(_this.propData))
+          })
+          .catch(function (err) {
+            _this.$message.error(err.response.message);
+          })
+          .finally(function () {
+            _this.tableIsLoading = false;
+          });
+      }
+      }
+    },
     searchChange() {
       if (!this.filters) {
         this.filters = {};
@@ -402,6 +547,7 @@ export default {
         this.hotpatchContent = '热补丁修复'
         this.fixed = true;
       }
+      this.expandedRowKeys = []
       this.selectedRowKeys = []
       // 切换修复状态后重新请求受影响主机列表
       this.handleReset();
@@ -786,6 +932,7 @@ export default {
   mounted() {
     this.getHostList();
     this.getHostGroup();
+    console.log(this.cveList)
     if (this.standalone) {
       // 主机列表页面中要自行获取全量主机和扫描状态
       // this.getScanStatusAll([]);

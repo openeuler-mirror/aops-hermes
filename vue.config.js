@@ -27,7 +27,8 @@ function getGitHash() {
 const serverMap = {
   serverIpBase: 'http://127.0.0.1',
   serveiIp1: 'http://172.168.115.178',
-  serveiIp2: 'http://172.168.235.132'
+  serveiIp2: 'http://172.168.235.132',
+  serveiIp3: 'http://172.168.121.194'
 }
 
 // vue.config.js
@@ -101,7 +102,7 @@ const vueConfig = {
     proxy: {
       '/api/domain': {
         // target: serverMap.serverIpBase + ':11114',
-        target: serverMap.serveiIp2 + ':11114',
+        target: serverMap.serveiIp3 + ':11114',
         ws: false,
         changeOrigin: true,
         pathRewrite: {
@@ -110,7 +111,7 @@ const vueConfig = {
       },
       '/api/host': {
         // target: serverMap.serverIpBase + ':11114',
-        target: serverMap.serveiIp2 + ':11114',
+        target: serverMap.serveiIp3 + ':11114',
         ws: false,
         changeOrigin: true,
         pathRewrite: {
@@ -119,7 +120,7 @@ const vueConfig = {
       },
       '/api/confs': {
         // target: serverMap.serverIpBase + ':11114',
-        target: serverMap.serveiIp2 + ':11114',
+        target: serverMap.serveiIp3 + ':11114',
         ws: false,
         changeOrigin: true,
         pathRewrite: {
@@ -128,7 +129,7 @@ const vueConfig = {
       },
       '/api/management': {
         // target: serverMap.serverIpBase + ':11114',
-        target: serverMap.serveiIp2 + ':11114',
+        target: serverMap.serveiIp3 + ':11114',
         ws: false,
         changeOrigin: true,
         pathRewrite: {
@@ -137,7 +138,7 @@ const vueConfig = {
       },
       '/api/diag': {
         // target: serverMap.serverIpBase + ':11113',
-        target: serverMap.serveiIp2 + ':11113',
+        target: serverMap.serveiIp3 + ':11113',
         ws: false,
         changeOrigin: true,
         pathRewrite: {
@@ -146,7 +147,7 @@ const vueConfig = {
       },
       '/api/check': {
         // target: serverMap.serverIpBase + ':11112',
-        target: serverMap.serveiIp2 + ':11112',
+        target: serverMap.serveiIp3 + ':11112',
         ws: false,
         changeOrigin: true,
         pathRewrite: {
@@ -155,7 +156,7 @@ const vueConfig = {
       },
       '/api/vulnerability': {
         // target: serverMap.serverIpBase + ':11116',
-        target: serverMap.serveiIp2 + ':11116',
+        target: serverMap.serveiIp3 + ':11116',
         ws: false,
         changeOrigin: true,
         pathRewrite: {
@@ -164,7 +165,7 @@ const vueConfig = {
       },
       '/api/gala-spider': {
         // target: serverMap.serverIpBase + ':11115',
-        target: serverMap.serveiIp2 + ':11115',
+        target: serverMap.serveiIp3 + ':11115',
         ws: false,
         changeOrigin: true,
         pathRewrite: {
@@ -173,7 +174,7 @@ const vueConfig = {
       },
       '/api': {
         // target: serverMap.serverIpBase + ':11111',
-        target: serverMap.serveiIp2 + ':11111',
+        target: serverMap.serveiIp3 + ':11111',
         ws: false,
         changeOrigin: true,
         pathRewrite: {

@@ -7,34 +7,34 @@
           <div class="result-content">
             <a-descriptions :column="{sm: 1}">
               <a-descriptions-item label="任务类型">
-                {{ resultData.task_type }}
+                {{ taskType }}
               </a-descriptions-item>
               <a-descriptions-item label="上次执行时间">
                 {{
-                  resultData.latest_execute_time &&
-                    dateFormat('YYYY-mm-dd HH:MM:SS', resultData.latest_execute_time * 1000)
+                  latestExecuteTime &&
+                    dateFormat('YYYY-mm-dd HH:MM:SS', latestExecuteTime * 1000)
                 }}
               </a-descriptions-item>
             </a-descriptions>
             <p class="reuslt-item-title">任务结果:</p>
             <a-collapse defaultActiveKey="0">
-              <a-collapse-panel v-for="(resultItem, riidx) in resultData.task_result" :key="riidx"
-                :header="`主机: ${resultItem.host_name}`">
+              <a-collapse-panel v-for="(resultItem, riidx) in resultData" :key="riidx"
+                :header="`主机: ${resultItem.task_result.host_name}`">
                 <a-descriptions :column="{sm: 1}">
                   <a-descriptions-item label="主机地址">
-                    {{ resultItem.host_ip }}
+                    {{ resultItem.task_result.host_ip }}
                   </a-descriptions-item>
                   <a-descriptions-item label="状态" v-if="resultData.task_type === 'cve fix'">
-                    {{ cveStatusTextMap[resultItem.status] }}
+                    {{ cveStatusTextMap[resultItem.task_result.status] }}
                   </a-descriptions-item>
                   <a-descriptions-item label="状态" v-if="resultData.task_type === 'cve rollback'">
-                    {{ rollStatusTextMap[resultItem.status] }}
+                    {{ rollStatusTextMap[resultItem.task_result.status] }}
                   </a-descriptions-item>
                   <a-descriptions-item label="状态" v-if="resultData.task_type === 'repo set'">
-                    {{ repoStatusTextMap[resultItem.status] }}
+                    {{ repoStatusTextMap[resultItem.task_result.status] }}
                   </a-descriptions-item>
                   <a-descriptions-item label="REPO" v-if="taskType === 'repo set'">
-                    {{ resultItem.repo }}
+                    {{ resultItem.task_result.repo }}
                   </a-descriptions-item>
                 </a-descriptions>
                 <p class="reuslt-item-title">检查项:</p>
@@ -42,7 +42,7 @@
                   <a-col span="8">
                     <a-descriptions :column="{sm: 1}" bordered size="small">
                       <a-descriptions-item :label="item.item"
-                        v-for="(item, rkidx) in resultItem.check_items" :key="rkidx">
+                        v-for="(item, rkidx) in resultItem.task_result.check_items" :key="rkidx">
                         <a-icon v-if="item.result" type="check" style="color: #52c41a" />
                         <a-icon v-else type="close" style="color: #f5222d" />
                       </a-descriptions-item>
@@ -51,17 +51,32 @@
                 </a-row>
                 <div v-if="taskType === 'cve fix'" style="margin-left: 50px;">
                   <p class="reuslt-item-title" style="margin-top: 12px">CVE修复情况:</p>
-                  <a-collapse v-if="resultItem.cves.length !== 0" :bordered="false">
-                    <a-collapse-panel v-for="(cve, rkidx) in resultItem.cves" :key="rkidx"
+                  <a-collapse v-if="resultItem.task_result.cves.length !== 0" :bordered="false">
+                    <a-collapse-panel v-for="(cve, rkidx) in resultItem.task_result.cves" :key="rkidx"
                       :header="`${cve.cve_id}`">
                       <div class="cve-item">
-                        <p class="reuslt-item-title">结果:</p>
-                        {{ statusResultTextMap[cve.result] }}
+                        <p class="reuslt-item-title">结果: {{ statusResultTextMap[cve.result] }}</p>
                       </div>
                       <div class="cve-item">
+                        <p class="reuslt-item-title">RPM修复情况:</p>
+                        <a-collapse v-if="cve.rpms.length !== 0" :bordered="false">
+                         <a-collapse-panel v-for="(rpm, rpidx) in cve.rpms" :key="rpidx"
+                           :header="`${rpm.installed_rpm}`">
+                           <div class="cve-item">
+                             <p class="reuslt-item-title">结果: {{ statusResultTextMap[rpm.result] }}</p>
+                           </div>
+                           <div class="cve-item">
+                             <p class="reuslt-item-title" style="margin-top: 12px">Log:</p>
+                             <p class="result-log" v-html="logFormat(rpm.log)"></p>
+                           </div>
+                           <a-badge :status="statusResultValueMap[rpm.result]" slot="extra" />
+                          </a-collapse-panel>
+                        </a-collapse>
+                      </div>
+                      <!-- <div class="cve-item">
                         <p class="reuslt-item-title" style="margin-top: 12px">Log:</p>
                         <p class="result-log" v-html="logFormat(cve.log)"></p>
-                      </div>
+                      </div> -->
                       <a-badge :status="statusResultValueMap[cve.result]" slot="extra" />
                     </a-collapse-panel>
                   </a-collapse>
@@ -72,8 +87,8 @@
                 </div>
                 <div v-if="taskType === 'cve rollback'" style="margin-left: 50px;">
                   <p class="reuslt-item-title" style="margin-top: 12px">CVE回滚情况:</p>
-                  <a-collapse v-if="resultItem.cves.length !== 0" :bordered="false">
-                    <a-collapse-panel v-for="(cve, rkidx) in resultItem.cves" :key="rkidx"
+                  <a-collapse v-if="resultItem.task_result.cves.length !== 0" :bordered="false">
+                    <a-collapse-panel v-for="(cve, rkidx) in resultItem.task_result.cves" :key="rkidx"
                       :header="`${cve.cve_id}`">
                       <div class="cve-item">
                         <p class="reuslt-item-title">结果:</p>
@@ -93,9 +108,9 @@
                 </div>
                 <div v-if="taskType === 'repo set'">
                   <p class="reuslt-item-title" style="margin-top: 16px">Log:</p>
-                  <p class="result-log">{{ resultItem.log }}</p>
+                  <p class="result-log">{{ resultItem.task_result.log }}</p>
                 </div>
-                <a-badge :status="statusValueMap[resultItem.status]" slot="extra" />
+                <a-badge :status="statusValueMap[resultItem.task_result.status]" slot="extra" />
               </a-collapse-panel>
             </a-collapse>
           </div>
@@ -181,8 +196,9 @@ export default {
   },
   data() {
     return {
-      taskId: this.$route.params.taskId,
-      taskType: this.$route.params.taskType,
+      taskId: this.$route.query.taskId,
+      taskType: this.$route.query.taskType,
+      latestExecuteTime: this.$route.query.latestExecuteTime,
       resultLoading: false,
       resultData: {},
       repoStatusTextMap,
@@ -196,8 +212,10 @@ export default {
   methods: {
     dateFormat,
     logFormat(str) {
-      return str.replace(/\n/g, '<br>');
-      //  正则匹配替换/n换行符
+      if (str && str !== '') {
+        return str.replace(/\n/g, '<br>');
+        //  正则匹配替换/n换行符
+      }
     },
     getCheckResult() {
       const _this = this;
@@ -209,7 +227,8 @@ export default {
             cveList: []
           })
             .then(function (res) {
-              _this.resultData = Object.assign({}, res.data.result);
+              _this.resultData = Object.assign({}, res.data);
+              _this.resultLoading = false;
             })
             .catch(function (err) {
               _this.$message.error(err.response.message);
@@ -224,7 +243,7 @@ export default {
             hostList: []
           })
             .then(function (res) {
-              _this.resultData = Object.assign({}, res.data.result);
+              _this.resultData = Object.assign({}, res.data);
             })
             .catch(function (err) {
               _this.$message.error(err.response.message);
@@ -239,7 +258,7 @@ export default {
             cveList: []
           })
             .then(function (res) {
-              _this.resultData = Object.assign({}, res.data.result);
+              _this.resultData = Object.assign({}, res.data);
             })
             .catch(function (err) {
               _this.$message.error(err.response.message);

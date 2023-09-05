@@ -37,10 +37,10 @@
           :row-selection="rowSelection"
           @change="handleTableChange"
           :loading="tableIsLoading">
-          <router-link
-          :to="{path: `task/${record.task_type}/${record.task_id}`}"
+          <a
+          @click="jumptoDetail(record)"
           slot="taskName"
-            slot-scope="taskName, record">{{ taskName }}</router-link>
+            slot-scope="taskName, record">{{ taskName }}</a>
           <span slot="desc" slot-scope="text">
             <cut-text :text="text" :length="20" />
           </span>
@@ -233,6 +233,14 @@ export default {
     }
   },
   methods: {
+    jumptoDetail(value) {
+      this.$router.push({
+        path: `task/${value.task_type}/${value.task_id}`,
+        query: {
+          task_id: value.task_id
+        }
+      })
+    },
     checkStatus(data, tasktype) {
       for (const key in data) {
         if (data[key] >= 1) {

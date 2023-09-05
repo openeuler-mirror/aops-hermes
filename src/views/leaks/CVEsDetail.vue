@@ -71,6 +71,7 @@
       :cveList="[detail]"
       :inputList="hostList"
       :inputLoading="hostIsLoading"
+      :cveId="detail.cve_id"
       @getTableData="getHostData"
       :paginationTotal="paginationTotal" />
     </a-card>

@@ -57,7 +57,7 @@ export default {
       text = text.replace(/^(\s|{)+|(\s|})+$/g, '');
       if (text && text.length > length) {
         text = text.substr(0, length) + '...';
-        this.show = true;
+        this.show = false;
       } else {
         this.show = false;
       }
