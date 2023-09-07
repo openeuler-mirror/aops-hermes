@@ -52,6 +52,16 @@
               {{ statusTitleEnum[isSynced] }}
             </span>
           </span>
+          <span slot="action" slot-scope="record">
+            <a-popconfirm
+              title="你确定要同步该配置到这台主机吗?"
+              ok-text="确认"
+              cancel-text="取消"
+              @confirm="syncConfigConfirm(record)"
+              :disabled="record.isSynced !== 'NOT SYNCHRONIZE'">
+              <a-button type="link" :disabled="record.isSynced !== 'NOT SYNCHRONIZE'">同步</a-button>
+            </a-popconfirm>
+          </span>
         </a-table>
       </a-col>
     </a-row>
@@ -60,6 +70,7 @@
 
 <script>
 import {STATUS_ENUM} from '../utils/statusCheckTools';
+import {syncConf} from '@/api/configuration';
 
 const STATUS_TITLE_ENUM = {};
 STATUS_TITLE_ENUM[STATUS_ENUM.sync] = '已同步';
@@ -82,6 +93,11 @@ export default {
           title: '同步状态',
           dataIndex: 'isSynced',
           scopedSlots: {customRender: 'isSynced'}
+        },
+        {
+          key: 'operation',
+          title: '操作',
+          scopedSlots: {customRender: 'action'}
         }
       ],
       statusEnum: STATUS_ENUM,
@@ -98,6 +114,10 @@ export default {
     domainStatusIsLoading: {
       type: Boolean,
       default: false
+    },
+    domainName: {
+      type: String,
+      default: ''
     }
   },
   computed: {
@@ -108,9 +128,67 @@ export default {
   },
   methods: {
     confirm(e) {
-      this.$message.success('该功能暂未实现');
+      const _this = this;
+      const syncConfigs = [];
+      for (const obj of _this.syncStatusList) {
+        if (obj.isSynced === 'NOT SYNCHRONIZE') {
+          syncConfigs.push(obj.file_path);
+        }
+      }
+      this.syncConf(syncConfigs)
     },
-    cancel(e) {}
+    cancel(e) {},
+    syncConf(syncConfigs) {
+      const _this = this;
+      syncConf({
+        domainName: this.domainName,
+        syncList: [
+          {
+            'hostId': this.host.hostId,
+            'syncConfigs': syncConfigs
+          }
+        ]
+      })
+        .then((res) => {
+          let message = ''
+          for (const item of res) {
+            const hostId = item.hostId
+            let success = ''
+            let fail = ''
+            const syncResult = item.syncResult
+            for (const val of syncResult) {
+              if (val.result === 'SUCCESS') {
+                success += val.filePath + ';' + '\xa0\xa0'
+              } else {
+                fail += val.filePath + ';' + '\xa0\xa0'
+              }
+            }
+            if (success.length === 0 && fail.length !== 0) {
+              message += '主机' + hostId + '\xa0\xa0\xa0' + '同步失败：' + fail
+            } else if (success.length !== 0 && fail.length === 0) {
+              message += '主机' + hostId + '\xa0\xa0\xa0' + '同步成功：' + success
+            } else if (success.length !== 0 && fail.length !== 0) {
+              message += '主机' + hostId + '\xa0\xa0\xa0' + '同步成功：' + success + '\xa0\xa0\xa0' + '同步失败：' + fail
+            }
+          }
+          if (message.includes('同步失败') && message.includes('同步成功')) {
+            _this.$message.info(message);
+          } else if (message.includes('同步失败') && !message.includes('同步成功')) {
+            _this.$message.error(message);
+          } else {
+            _this.$message.success(message);
+          }
+          _this.$emit('getDomainStatus');
+        })
+        .catch((err) => {
+          _this.$message.error(err.response.message || err.response.data.detail || err.response.data.msg);
+        });
+    },
+    syncConfigConfirm(record) {
+      const syncConfigs = [];
+      syncConfigs.push(record.file_path);
+      this.syncConf(syncConfigs)
+    }
   },
   mounted: function() {
     const _this = this;
