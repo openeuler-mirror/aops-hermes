@@ -20,9 +20,13 @@
             新增配置{{ index + 1 }}
           </span>
           <a-form-item label="配置路径">
-            <a-input
+            <a-select
               v-decorator="[`confFiles[${key}].filePath`, {rules: [{required: true, message: '请输入配置路径'}]}]"
-              placeholder="请输入配置路径" :disabled="isEdit" />
+              placeholder="请选择配置路径" :disabled="isEdit" show-search>
+              <a-select-option v-for="item in supportedConfList" :value="item" :key="item">
+                {{ item }}
+              </a-select-option>
+            </a-select>
           </a-form-item>
           <a-form-item>
             <span slot="label">
@@ -67,7 +71,7 @@
 </template>
 
 <script>
-import {addManagementConf} from '@/api/management';
+import {addManagementConf, querySupportedConfs} from '@/api/management';
 import {domainHostList} from '@/api/configuration';
 // 弹窗添加主机组
 export default {
@@ -109,7 +113,8 @@ export default {
       formKey: 0,
       formList: [0],
       formSelections: {0: 'manuel'},
-      submitIsLoading: false
+      submitIsLoading: false,
+      supportedConfList: []
     };
   },
   watch: {
@@ -125,6 +130,15 @@ export default {
     }
   },
   methods: {
+    querySupportedConfs() {
+      const _this = this;
+      querySupportedConfs(this.domainName)
+        .then(function (res) {
+          _this.supportedConfList = res
+        }).catch(function (err) {
+        _this.$message.error(err);
+      })
+    },
     addConfForm() {
       this.formKey += 1;
       this.formList.push(this.formKey);
@@ -149,6 +163,7 @@ export default {
     showModal() {
       this.resetData();
       this.getHostList();
+      this.querySupportedConfs()
       this.visible = true;
     },
     handleCancel() {
@@ -166,12 +181,16 @@ export default {
           this.submitIsLoading = true;
           addManagementConf(params)
             .then(function (res) {
-              _this.$message.success(res.message);
+              if (res.code === 200) {
+                _this.$message.success(res.msg);
+              } else if (res.code === 206) {
+                _this.$message.warning(res.msg);
+              }
               _this.visible = false;
               _this.$emit('ok');
             })
             .catch(function (err) {
-              _this.$message.error(err.response.message || err.response.data.detail);
+              _this.$message.error(err.response.message || err.response.data.detail || err.response.data.msg);
             })
             .finally(function () {
               _this.submitIsLoading = false;
