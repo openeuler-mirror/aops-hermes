@@ -98,14 +98,14 @@
     </a-card>
     <a-card :bordered="false" class="aops-theme">
       <a-row type="flex" class="aops-app-table-control-row" :gutter="6" justify="space-between">
-        <a-col>
+        <!-- <a-col>
           <a-alert type="info" show-icon class="selection-alert" v-if="selectedRowKeys.length > 0">
             <div slot="message">
               <span>{{ `已选择` + selectedRowKeys.length + `项用于回滚` }}</span>
               <a @click="resetSelection"> 清除选择</a>
             </div>
           </a-alert>
-        </a-col>
+        </a-col> -->
         <a-col>
           <a-row type="flex" :gutter="6">
             <a-col>
@@ -156,7 +156,6 @@
         :columns="taskType === 'cve fix' || taskType === 'cve rollback' ? cveColumns : repoColumns"
         :data-source="tableData"
         :pagination="pagination"
-        :row-selection="taskType === 'cve fix' ? rowSelection : undefined"
         @change="handleTableChange"
         @expand="expand"
         :expanded-row-keys.sync="expandedRowKeys"
@@ -213,7 +212,6 @@ import CreateRepairTaskDrawer from './components/CreateRepairTaskDrawer.vue';
 import HostStatusInTaskDrawer from './components/HostStatusInTaskDrawer';
 import {i18nRender} from '@/vendor/ant-design-pro/locales';
 import {dateFormat} from '@/views/utils/Utils';
-import {getSelectedRow} from '../utils/getSelectedRow';
 import {
   getTaskInfo,
   getCveUnderCveTask,
@@ -337,12 +335,12 @@ export default {
         }
       };
     },
-    rowSelection() {
-      return {
-        selectedRowKeys: this.selectedRowKeys,
-        onChange: this.onSelectChange
-      };
-    },
+    // rowSelection() {
+    //   return {
+    //     selectedRowKeys: this.selectedRowKeys,
+    //     onChange: this.onSelectChange
+    //   };
+    // },
     cveColumns() {
       let {filters} = this;
       filters = filters || {};
@@ -383,7 +381,7 @@ export default {
         {
           dataIndex: 'status',
           title: this.taskType === 'cve fix' ? '修复状态' : '回滚状态',
-          width: 140,
+          // width: 140,
           scopedSlots: {customRender: 'status'},
           filteredValue: filters.status || null,
           filters: this.taskType === 'cve fix' ? [
@@ -420,7 +418,7 @@ export default {
         {
           dataIndex: 'status',
           title: '最新状态',
-          width: 140,
+          // width: 140,
           scopedSlots: {customRender: 'status'},
           filteredValue: filters.status || null,
           filters: [
@@ -482,7 +480,6 @@ export default {
           .then(function (res) {
               const target = _this.tableData.find(item => item.cve_id === record.cve_id)
               target.rpms = res.data
-              localStorage.setItem('taskRpm', _this.table)
               // 数据更新后给表格重新赋值
               _this.tableData = JSON.parse(JSON.stringify(_this.tableData))
           })
@@ -515,11 +512,11 @@ export default {
         this.getHostList();
       }
     },
-    onSelectChange(selectedRowKeys, selectedRows) {
-      const tableData = this.tableData;
-      this.selectedRowKeys = selectedRowKeys;
-      this.selectedRowsAll = getSelectedRow(selectedRowKeys, this.selectedRowsAll, tableData, 'cve_id');
-    },
+    // onSelectChange(selectedRowKeys, selectedRows) {
+    //   const tableData = this.tableData;
+    //   this.selectedRowKeys = selectedRowKeys;
+    //   this.selectedRowsAll = getSelectedRow(selectedRowKeys, this.selectedRowsAll, tableData, 'cve_id');
+    // },
     resetSelection() {
       this.selectedRowKeys = [];
       this.selectedRowsAll = [];
@@ -606,6 +603,10 @@ export default {
       })
         .then(function (res) {
           _this.tableData = res.data.result || [];
+          // 获取数据后调取方法查看是否需要展开
+          _this.$nextTick(() => {
+            _this.checkCondition();
+          });
           _this.pagination = {
             ..._this.pagination,
             current: pagination.current,
@@ -695,6 +696,10 @@ export default {
       })
         .then(function (res) {
           _this.tableData = res.data.result || [];
+          // 获取数据后调取方法查看是否需要展开
+          _this.$nextTick(() => {
+            _this.checkCondition();
+          });
           _this.pagination = {
             ..._this.pagination,
             current: pagination.current,
@@ -835,6 +840,24 @@ export default {
         }
         this.getHostList();
       }
+    },
+    checkCondition() {
+      this.$nextTick(() => {
+        const elements1 = document.querySelectorAll('.ant-table-row-expand-icon-cell')
+        const elements2 = document.querySelectorAll('.ant-table-expand-icon-th')
+        if (this.taskType !== 'cve fix') {
+          elements1.forEach(el => {
+            el.style.width = '0'
+            el.style.border = '0 !important'
+            el.style.display = 'none'
+          })
+          elements2.forEach(el => {
+            el.style.width = '0'
+            el.style.border = '0 !important'
+            el.style.display = 'none'
+          })
+        }
+      });
     }
   },
   beforeRouteLeave(to, from, next) {

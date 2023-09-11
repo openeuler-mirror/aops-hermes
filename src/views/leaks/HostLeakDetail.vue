@@ -49,6 +49,7 @@
       <h1>CVEs</h1>
       <cves-table
         ref="cve_table"
+        :hostId="hostId"
         :inputList="cveList"
         :inputLoading="cveIsLoading"
         :hostList="[detail]"
@@ -213,11 +214,6 @@ export default {
         .then(function (res) {
           _this.$message.success(res.message);
           _this.scanStatus = 3;
-          _this.$refs.cve_table.getCves();
-          _this.getDetail();
-          setTimeout(() => {
-            _this.$refs.cve_table.getCvesAll();
-          }, 500);
           _this.getScanStatue();
         })
         .catch(function (err) {
@@ -241,6 +237,13 @@ export default {
             _this.getScanStatusTimeout = setTimeout(function () {
               _this.getScanStatue();
             }, configs.scanProgressInterval);
+          } else {
+            // 扫描完成后重新请求主机详情列表
+            _this.getDetail();
+            _this.$refs.cve_table.getCves();
+            setTimeout(() => {
+              _this.$refs.cve_table.getCvesAll();
+            }, 500);
           }
         })
         .catch(function (err) {
@@ -252,7 +255,6 @@ export default {
     }
   },
   mounted: function () {
-    this.getDetail();
     this.getScanStatue();
   }
 };

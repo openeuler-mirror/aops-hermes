@@ -4,7 +4,7 @@
       <div class="leakbox">
         <a-row type="flex" class="aops-app-table-control-row" :gutter="6" justify="space-between">
           <a-col>
-            <a-input-search placeholder="按任务名称搜索" style="width: 200px" @search="onSearch" />
+            <a-input-search placeholder="按任务名称搜索" :maxLength="20" style="width: 200px" @search="onSearch" />
           </a-col>
           <a-col>
             <a-row type="flex" :gutter="6">
