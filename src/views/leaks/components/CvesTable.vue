@@ -21,11 +21,8 @@
             已修复
           </a-radio-button>
         </a-radio-group>
-        <a-input-search v-if="isCve" placeholder="按CVE ID搜索" style="width: 200px;margin-left: 10px;" v-model="cveSearch" @change="searchChange"
+        <a-input-search placeholder="按cve_id或package搜索" :maxLength="40" style="width: 200px;margin-left: 10px;" v-model="searchKey" @change="searchChange"
         @search="onSearch" />
-        <a-input-search v-else placeholder="按package搜索" style="width: 200px;margin-left: 10px;" v-model="packageSearch" @change="searchChange"
-        @search="onSearch" />
-        <a-button @click="filterChange" style="margin-left: 10px;width: 31px;height: 31px;" size="small" icon="swap" />
       </a-col>
       <a-col>
         <a-row type="flex" :gutter="6">
@@ -149,6 +146,7 @@
               :row-key="innerrecord => fixed ? record.cve_id + innerrecord.installed_rpm : record.cve_id + innerrecord.available_rpm + innerrecord.installed_rpm"
               :columns="fixed ? (standalone ? ainnerColumns : binnerColumns) : (standalone ? aloneinnerColumns : innerColumns)"
               :data-source="record.rpms || []"
+              :locale="tablenodata"
               :rowSelection="innerRowSelection"
               :pagination="false">
               <a
@@ -202,6 +200,10 @@ export default {
     HostInCveRpm
   },
   props: {
+    hostId: {
+      type: String,
+      default: undefined
+    },
     // 判断表格是自己发起请求获取数据还是，触发事件通过父组件获取列表数据
     standalone: {
       type: Boolean,
@@ -373,13 +375,13 @@ export default {
     innerColumns() {
       return [
         {
-          dataIndex: 'available_rpm',
-          key: 'available_rpm',
+          dataIndex: 'installed_rpm',
+          key: 'installed_rpm',
           title: '受影响rpm'
         },
         {
-          dataIndex: 'installed_rpm',
-          key: 'installed_rpm',
+          dataIndex: 'available_rpm',
+          key: 'available_rpm',
           title: '待安装rpm'
         },
         {
@@ -426,13 +428,13 @@ export default {
     aloneinnerColumns() {
       return [
         {
-          dataIndex: 'available_rpm',
-          key: 'available_rpm',
+          dataIndex: 'installed_rpm',
+          key: 'installed_rpm',
           title: '受影响rpm'
         },
         {
-          dataIndex: 'installed_rpm',
-          key: 'installed_rpm',
+          dataIndex: 'available_rpm',
+          key: 'available_rpm',
           title: '待安装rpm'
         },
         {
@@ -450,6 +452,8 @@ export default {
     },
     rowSelection() {
       return {
+        onSelect: this.onSelect,
+        onSelectAll: this.onSelectAll,
         selectedRowKeys: this.selectedRowKeys,
         onChange: this.onSelectChange
       };
@@ -482,6 +486,13 @@ export default {
   },
   data() {
     return {
+      tablenodata: {emptyText: () => (
+      <div><div>暂无可修复的rpm包, 可能原因为：</div>
+      <div>1. 界面未刷新</div>
+      <div>2. 冷补丁修复kernel后界面未重启</div></div>
+      )},
+      selectedRows: [], // 选中行的row
+      searchKey: '',
       innerCveList: [],
       // 勾选二级列表rpm参数时传入的数据流
       propAvailablerpm: null,
@@ -490,10 +501,8 @@ export default {
       expandedRowKeys: [],
       hostListOfCveId: null,
       hostListUnderCveVisible: false,
-      isCve: true,
       hotpatchContent: '支持热补丁',
       cveSearch: '',
-      packageSearch: '',
       scanloading: false,
       size: 'small',
       tableData: [],
@@ -534,7 +543,7 @@ export default {
         const _this = this
         const Params = {
           cve_id: record.cve_id,
-          host_ids: []
+          host_ids: this.hostId ? [this.hostId] : []
         }
         if (this.fixed) {
         getCveFixRpm(Params)
@@ -593,29 +602,14 @@ export default {
       }
       }
     },
-    filterChange() {
-      this.isCve = !this.isCve
-      this.cveSearch = '';
-      this.packageSearch = '';
-      this.filters = {};
-    },
     searchChange() {
       if (!this.filters) {
         this.filters = {};
       }
-      if (this.isCve) {
-        if (this.cveSearch !== '') {
-          this.filters.cveId = this.cveSearch;
-        } else {
-          this.filters.cveId = undefined;
-        }
-      }
-      if (!this.isCve) {
-        if (this.packageSearch !== '') {
-          this.filters.package = this.packageSearch;
-        } else {
-          this.filters.package = undefined;
-        }
+      if (this.searchKey !== '') {
+        this.filters.search_key = this.searchKey;
+      } else {
+        this.filters.search_key = undefined;
       }
     },
     handleAffectChange(e) {
@@ -684,8 +678,65 @@ export default {
       // 出发排序、筛选、分页时，重新请求主机列表
       this.getCves();
     },
-
+    // 当用户手动勾选全选 Checkbox 时触发的事件
+    onSelectAll(selected) {
+      const _this = this
+      if (selected) {
+        const tabData = this.standalone ? this.tableData : this.propData;
+        const arr = [];
+        setVal(tabData, arr);
+        this.selectedRowKeys = arr;
+      } else {
+        this.selectedRowKeys = [];
+        this.innerselectedRowKeys = [];
+      }
+      function setVal(list, arr) {
+        list.forEach(v => {
+          arr.push(v.cve_id);
+          if (v.rpms) {
+            v.rpms.forEach(it => {
+              _this.getChildCheck(v.cve_id, it)
+            })
+          }
+        });
+      }
+    },
+    getChildCheck(id, val) {
+      this.innerselectedRowKeys.push(this.fixed ? id + val.installed_rpm : id + val.available_rpm + val.installed_rpm)
+    },
+    getChildUnCheck(id, val) {
+      return this.fixed ? id + val.installed_rpm : id + val.available_rpm + val.installed_rpm
+    },
+    onSelect(record, selected) {
+      const set = new Set(this.selectedRowKeys);
+      const key = record.cve_id;
+      const _this = this
+      console.log(key)
+      if (selected) {
+        set.add(key);
+        record.rpms && setChildCheck(record.rpms);
+      } else {
+        set.delete(key);
+        record.rpms && setChildUncheck(record.rpms);
+      }
+      this.selectedRowKeys = Array.from(set);
+      // 设置child全选
+      function setChildCheck(list) {
+        list.forEach(function(v) {
+          _this.getChildCheck(record.cve_id, v)
+        });
+      }
+      // 设置child取消
+      function setChildUncheck(list) {
+        list.forEach(function(v) {
+          _this.innerselectedRowKeys = _this.innerselectedRowKeys.filter(function(item) {
+            return item !== _this.getChildUnCheck(record.cve_id, v)
+          })
+        });
+      }
+    },
     onSelectChange(selectedRowKeys, selectedRows) {
+      this.selectedRows = selectedRows
       const tableData = this.standalone ? this.tableData : this.propData;
       this.selectedRowKeys = selectedRowKeys;
       this.selectedRowsAll = getSelectedRow(selectedRowKeys, this.selectedRowsAll, tableData, 'cve_id');
@@ -704,6 +755,7 @@ export default {
                     available_rpm: record.available_rpm,
                     fix_way: record.support_way
                   })
+                  // 给父元素添加选中状态
                   if (!this.selectedRowKeys.includes(record.cve_id)) {
                     this.selectedRowKeys.push(record.cve_id)
                   }
@@ -713,6 +765,12 @@ export default {
                   if (target.rpms.length === 0) {
                     const dindex = this.innerCveList.findIndex(it => it.cve_id === record.cve_id)
                     this.innerCveList.splice(dindex, 1)
+                  }
+                  if (selectedRows.length === 0) {
+                    // 如果删除后当前cve子表剩余选中项为空，给父元素去除选中状态
+                    this.selectedRowKeys = this.selectedRowKeys.filter(function(item) {
+                      return item !== record.cve_id
+                    })
                   }
                 }
               } else {
@@ -725,8 +783,16 @@ export default {
                        fix_way: record.support_way
                    }]
                   })
+                  // 给父元素添加选中状态
                   if (!this.selectedRowKeys.includes(record.cve_id)) {
                     this.selectedRowKeys.push(record.cve_id)
+                  }
+                } else {
+                  if (selectedRows.length === 0) {
+                    // 如果删除后当前cve子表剩余选中项为空，给父元素去除选中状态
+                    this.selectedRowKeys = this.selectedRowKeys.filter(function(item) {
+                      return item !== record.cve_id
+                    })
                   }
                 }
               }
@@ -740,8 +806,16 @@ export default {
                      fix_way: record.support_way
                  }]
                })
+               // 给父元素添加选中状态
                if (!this.selectedRowKeys.includes(record.cve_id)) {
                  this.selectedRowKeys.push(record.cve_id)
+               }
+             } else {
+               if (selectedRows.length === 0) {
+                 // 如果删除后当前cve子表剩余选中项为空，给父元素去除选中状态
+                 this.selectedRowKeys = this.selectedRowKeys.filter(function(item) {
+                   return item !== record.cve_id
+                 })
                }
              }
       }
@@ -752,10 +826,16 @@ export default {
           const recordId = changeRows[0].cve_id
           const index = this.innerCveList.findIndex(item => item.cve_id === recordId)
           this.innerCveList.splice(index, 1)
+          // 给父元素去除选中状态
+          this.selectedRowKeys = this.selectedRowKeys.filter(function(item) {
+            return item !== recordId
+          })
         } else {
           const recordId = changeRows[0].cve_id
           const target = this.innerCveList.find(item => item.cve_id === recordId)
           const result = this.innerCveList.some(item => item.cve_id === recordId)
+          // 给父元素添加选中状态
+          this.selectedRowKeys.push(recordId)
           if (result) {
             changeRows.forEach((item) => {
               if (!target.rpms.some(it => it.available_rpm === item.available_rpm)) {
@@ -782,18 +862,28 @@ export default {
           }
         }
       } else {
-        const recordId = changeRows[0].cve_id
-        this.innerCveList.push({
-          cve_id: recordId,
-          rpms: []
-        })
-        changeRows.forEach((item) => {
-           this.innerCveList[0].rpms.push({
-             installed_rpm: item.installed_rpm,
-             available_rpm: item.available_rpm,
-             fix_way: item.support_way
-           })
-        })
+        if (!selected) {
+          const recordId = changeRows[0].cve_id
+          // 给父元素去除选中状态
+          this.selectedRowKeys = this.selectedRowKeys.filter(function(item) {
+            return item !== recordId
+          })
+        } else {
+          const recordId = changeRows[0].cve_id
+          // 给父元素添加选中状态
+          this.selectedRowKeys.push(recordId)
+          this.innerCveList.push({
+            cve_id: recordId,
+            rpms: []
+          })
+          changeRows.forEach((item) => {
+             this.innerCveList[0].rpms.push({
+               installed_rpm: item.installed_rpm,
+               available_rpm: item.available_rpm,
+               fix_way: item.support_way
+             })
+          })
+        }
       }
     },
     resetSelection() {
@@ -803,6 +893,9 @@ export default {
     handleRefresh() {
       this.selectedRowKeys = [];
       this.selectedRowsAll = [];
+      this.innerselectedRowKeys = [];
+      this.expandedRowKeys = [];
+      // 重新请求界面, 收起展开状态
       // this.innerCveList = [];
       this.getCves();
     },
@@ -913,21 +1006,14 @@ export default {
       if (!this.filters) {
         this.filters = {};
       }
-      if (this.isCve) {
-        if (text !== '') {
-          this.filters.cveId = text;
-        } else {
-          this.filters.cveId = undefined;
-        }
-      }
-      if (!this.isCve) {
-        if (text !== '') {
-          this.filters.package = text;
-        } else {
-          this.filters.package = undefined;
-        }
+      if (text !== '') {
+        this.filters.search_key = text.length > 40 ? text.substring(0, 40) : text;
+      } else {
+        this.filters.search_key = undefined;
       }
       this.getCves();
+      // 重新请求数据后重置列表
+      this.expandedRowKeys = []
     },
     handleTaskCreateSuccess() {
       this.handleRefresh();

@@ -113,14 +113,31 @@ request.interceptors.response.use(response => {
       case '1207':
         if (!isRefreshing) {
           isRefreshing = true
-          store.dispatch('RefreshToken').then(() => {
-            // 再发请求
-            isRefreshing = false
-            onAccessTokenFetched(localStorage.getItem('Access-Token'))
-          }).catch(() => {
-            isRefreshing = false;
-            window.location.reload();
-          })
+          if (response.config.url === '/manage/account/refreshtoken') {
+            // 当refreshtokne也过期，跳转到登录页面
+            notification.error({
+              message: '用户校验失败',
+              description: response.data.message
+            });
+            setTimeout(() => {
+              store.dispatch('Logout').then(() => {
+                isRefreshing = false
+                window.location.reload();
+              }).catch((err) => {
+                isRefreshing = false
+                this.$message.error(err.response.message)
+              })
+            }, 1000)
+          } else {
+            store.dispatch('RefreshToken').then(() => {
+              // 再发请求
+              isRefreshing = false
+              onAccessTokenFetched(localStorage.getItem('Access-Token'))
+            }).catch(() => {
+              isRefreshing = false;
+              window.location.reload();
+            })
+          }
         }
         const retryRequest = new Promise((resolve) => {
           addSubscriber((newToken) => {

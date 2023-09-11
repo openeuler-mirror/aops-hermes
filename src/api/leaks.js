@@ -173,8 +173,7 @@ export function getCveList({ tableInfo, ...parameter }) {
       direction: sorterMap[tableInfo.sorter.order],
       filter: {
         affected: tableInfo.affected,
-        cve_id: tableInfo.filters.cveId,
-        package: tableInfo.filters.package,
+        search_key: tableInfo.filters.search_key,
         severity: tableInfo.filters.severity || [],
         fixed: tableInfo.fixed
       },
@@ -301,10 +300,9 @@ export function getCveUnderHost({ tableInfo, ...parameter }) {
       sort: tableInfo.sorter.field,
       direction: sorterMap[tableInfo.sorter.order],
       filter: {
-        cve_id: tableInfo.filters.cveId,
+        search_key: tableInfo.filters.search_key,
         affected: tableInfo.affected,
         fixed: tableInfo.fixed,
-        package: tableInfo.filters.package,
         severity: tableInfo.filters.severity || []
       },
       page: tableInfo.pagination.current,

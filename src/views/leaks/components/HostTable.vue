@@ -118,6 +118,7 @@
       </a-col>
     </a-row>
     <a-table
+      class="standtable"
       rowKey="host_id"
       :columns="standalone ? hostTableColumnsStandalone : hostTableColumns"
       :data-source="standalone ? hostTableData : propData"
@@ -463,6 +464,27 @@ export default {
     };
   },
   methods: {
+    checkCondition() {
+      this.$nextTick(() => {
+        const contain = document.querySelector('.standtable')
+        if (contain) {
+          const elements1 = contain.querySelectorAll('.ant-table-row-expand-icon-cell')
+          const elements2 = contain.querySelectorAll('.ant-table-expand-icon-th')
+          if (this.standalone) {
+            elements1.forEach(el => {
+              el.style.width = '0'
+              el.style.border = '0 !important'
+              el.style.display = 'none'
+            })
+            elements2.forEach(el => {
+              el.style.width = '0'
+              el.style.border = '0 !important'
+              el.style.display = 'none'
+            })
+          }
+        }
+      });
+    },
     closeHostListUnderCve() {
       this.hostListUnderCveVisible = false;
     },
@@ -480,7 +502,7 @@ export default {
         const _this = this
         const Params = {
           cve_id: this.cveId,
-          host_ids: []
+          host_ids: [record.host_id]
         }
         if (this.fixed) {
           getCveFixRpm(Params)
@@ -726,6 +748,8 @@ export default {
             _this.scanStatueAllTimeout = setTimeout(function () {
               _this.getScanStatusAll(_this.scanningHostIds);
             }, configs.scanProgressInterval);
+            } else {
+              _this.scanStatusloading = false;
             }
           }
         })
@@ -733,7 +757,6 @@ export default {
           _this.$message.error(err.response.message);
         })
         .finally(function () {
-          _this.scanStatusloading = false;
         });
     },
     // 返回扫描状态的主机
@@ -823,6 +846,10 @@ export default {
       })
         .then(function (res) {
           _this.hostTableData = res.data.result || [];
+          // 获取数据后调取方法查看是否影藏展开符号
+          _this.$nextTick(() => {
+            _this.checkCondition();
+          });
           _this.hostTableData.forEach((item) => {
             item.cve_num = `${item.unfixed_cve_num}/${item.fixed_cve_num}`
           })
@@ -936,7 +963,7 @@ export default {
     this.getHostGroup();
     if (this.standalone) {
       // 主机列表页面中要自行获取全量主机和扫描状态
-      // this.getScanStatusAll([]);
+      this.getScanStatusAll([]);
       this.getHostListAll();
     } else {
       // 主机详情页面中要自行获取repo列表

@@ -71,16 +71,21 @@
           :columns="taskType === 'cve fix' ? tableColumns : rollbacktableColumns"
           :data-source="cveList"
             :pagination="false">
-            <span slot="customTitle">{{ taskType === 'cve rollback' ? '热补丁修复' : '支持热补丁' }}
-              <description-tips v-if="taskType === 'cve fix'">包
+            <span slot="customTitle" v-if="taskType === 'cve rollback'">{{ taskType === 'cve rollback' ? '热补丁修复' : '支持热补丁' }}
+              <description-tips>包
                 若支持热补丁，默认使用热补丁修复；
                 注意：由于一个软件包只能应用一个热补丁，热补丁修复时可能导致部分已修复cve重新生成
+              </description-tips>
+            </span>
+            <span slot="customName">主机
+              <description-tips v-if="taskType === 'cve fix'">
+                cve选中的修复方式对应的主机数量
               </description-tips>
             </span>
             <div slot="hostsList" slot-scope="hostsList">
               <a-spin v-if="hostUnderCveLoading" />
               <span v-else>
-                {{ getlength(hostsList) }}
+                {{ hostsList ? hostsList.length : 0 }}
               </span>
             </div>
             <div slot="packages" slot-scope="packages">
@@ -109,7 +114,7 @@
                   onSelectChange(selectedRowKeys, selectedRows, record.cve_id);
                 }
               }"
-              :data-source="getDataSource(record.hostsList)"
+              :data-source="record.hostsList || []"
               :pagination="false">
               <div slot="hotpatch" slot-scope="hotpatch">
                 <span v-if="taskType === 'cve fix'">
@@ -328,25 +333,11 @@ export default {
         {
           dataIndex: 'hostsList',
           key: 'hostsList',
-          title: '主机',
+          // title: '主机',
+          slots: { title: 'customName' },
           width: 150,
           scopedSlots: {customRender: 'hostsList'}
         }
-        // {
-        //   dataIndex: 'package',
-        //   key: 'package',
-        //   title: '修复软件包',
-        //   width: 140,
-        //   customRender: (_package) => _package === '' ? '—' : _package,
-        //   scopedSlots: {customRender: 'packages'}
-        // }
-        // {
-        //   dataIndex: 'reboot',
-        //   key: 'reboot',
-        //   width: 80,
-        //   title: <span>重启后生效</span>,
-        //   customRender: (reboot) => restartTypesEnum[reboot]
-        // },
       ];
     },
     rollbacktableColumns() {
@@ -447,22 +438,28 @@ export default {
   created() {
   },
   beforeDestroy() {
-    this.cveList = []
     this.$emit('createSuccess');
-    this.fixParams = {}
   },
   methods: {
     jumpToPage() {
       clearTimeout(this.jumpModalInterval);
       this.jumpModalVisible = false;
       this.$emit('createSuccess');
-      this.$router.push(`/leaks/task/${this.taskType}/${this.jumpTaskId}`);
+      this.$router.push({
+        path: `/leaks/task/${this.taskType}/${this.jumpTaskId}`,
+        query: {
+          task_id: this.jumpTaskId
+        }
+      })
     },
     handleCancel() {
+      // 弹窗关闭事件
       this.$emit('close');
       // clear status
       this.visible = false;
       this.cveList = [];
+      this.fixParams = {}
+      this.hostListparams = []
       this.form.resetFields();
     },
     // 判断cve修复任务时是否有选择cve
@@ -479,7 +476,6 @@ export default {
       this.hostUnderCveLoading = false;
       return true;
     },
-
     // 更改cve下主机的热更新状态
     hotchange(value) {
       this.cveList.forEach((item) => {
@@ -501,29 +497,6 @@ export default {
       }
       return null
     },
-    getlength(record) {
-      if (this.taskType === 'cve fix') {
-        return record ? record.length : 0
-      } else if (this.taskType === 'cve rollback') {
-        if (this.hostListType === 'byLoading') {
-          return record ? record.length : 0
-        } else {
-          return record.hosts ? record.hosts.length : 0
-        }
-      }
-    },
-    getDataSource(record) {
-      if (this.taskType === 'cve fix') {
-        return record || []
-      } else if (this.taskType === 'cve rollback') {
-        if (this.hostListType === 'byLoading') {
-          return record || []
-        } else {
-          return record.hosts || []
-        }
-      }
-    },
-
     // 每次展开抽屉时触发，替代mounted
     handleOpen() {
       // inital defualt data
@@ -536,11 +509,12 @@ export default {
       this.accepted = false;
       this.selectedRowKeyMaps = {};
       this.selectedRowsAllMaps = {};
-      this.setDefaultInfo();
       // 设置repo任务时，直接使用传入的host数据
       if (this.taskType === 'repo set') {
         this.selectedRepoKeys = this.hostList.map((host) => host.host_id);
         this.selectedRepoRows = this.hostList;
+        this.setDefaultInfo();
+      // 自动填写默认任务信息
         return;
       }
 
@@ -584,6 +558,7 @@ export default {
           switch (this.hostListType) {
             case hostListTypes[0]:
               _this.hostUnderCveLoading = true;
+              console.log(this.fixParams)
               getHostUnderMultipleCVE(this.fixParams).then(function (res) {
                  // hostlists are contained in cveMap
                  const cveMap = res.data.result || {};
@@ -606,7 +581,7 @@ export default {
                });
                break;
             case hostListTypes[1]:
-            // hostListType为bySelection
+            // hostListType为bySelection cve详情下的受影响主机界面
             // if (this.cveLiIsEmpty()) {
             //   return;
             // }
@@ -628,7 +603,7 @@ export default {
             this.addHostListToCVEData(tempObj1);
             break;
             case hostListTypes[2]:
-            // hostListType为byOneHost
+            // hostListType为byOneHost 主机详情界面下的cve界面
             // if (this.cveLiIsEmpty()) {
             //   return;
             // }
@@ -727,8 +702,9 @@ export default {
             });
           break;
           case hostListTypes[1]:
-          // hostListType为bySelection
+          // hostListType为bySelection cve详情界面下的受影响主机界面
           _this.hostUnderCveLoading = true;
+          console.log(_this.hostList)
           _this.hostList.forEach(item => {
             _this.hostListparams.push(item.host_id)
           })
@@ -767,6 +743,7 @@ export default {
             });
           break;
           case hostListTypes[2]:
+            // hostListType为byOneHost 主机详情界面下的cve界面
           _this.hostList.forEach(item => {
             _this.hostListparams.push(item.host_id)
           })
@@ -905,41 +882,22 @@ export default {
             case 'cve rollback':
               // prepare data
               const cveRollback = Object()
-              if (this.hostListType === 'byLoading') {
-                this.cveList.forEach((cveInfo) => {
-                  cveInfo.hostsList.forEach((host) => {
-                    const cveRollbackInfo = {
-                      cve_id: cveInfo.cve_id,
-                      hotpatch: host.hotpatch
+              this.cveList.forEach((cveInfo) => {
+                cveInfo.hostsList.forEach((host) => {
+                  const cveRollbackInfo = {
+                    cve_id: cveInfo.cve_id,
+                    hotpatch: host.hotpatch
+                  }
+                  if (this.selectedRowKeyMaps[cveInfo.cve_id].includes(host.host_id)) {
+                  // 筛选出选中的某主机中的cve
+                    if (cveRollback.hasOwnProperty(host.host_id)) {
+                      cveRollback[host.host_id].push(cveRollbackInfo)
+                    } else {
+                      cveRollback[host.host_id] = [cveRollbackInfo]
                     }
-                    if (this.selectedRowKeyMaps[cveInfo.cve_id].includes(host.host_id)) {
-                    // 筛选出选中的某主机中的cve
-                      if (cveRollback.hasOwnProperty(host.host_id)) {
-                        cveRollback[host.host_id].push(cveRollbackInfo)
-                      } else {
-                        cveRollback[host.host_id] = [cveRollbackInfo]
-                      }
-                    }
-                  })
+                  }
                 })
-              } else {
-                this.cveList.forEach((cveInfo) => {
-                  cveInfo.hostsList.hosts.forEach((host) => {
-                    const cveRollbackInfo = {
-                      cve_id: cveInfo.cve_id,
-                      hotpatch: host.hotpatch
-                    }
-                    if (this.selectedRowKeyMaps[cveInfo.cve_id].includes(host.host_id)) {
-                    // 筛选出选中的某主机中的cve
-                      if (cveRollback.hasOwnProperty(host.host_id)) {
-                        cveRollback[host.host_id].push(cveRollbackInfo)
-                      } else {
-                        cveRollback[host.host_id] = [cveRollbackInfo]
-                      }
-                    }
-                  })
-                })
-              }
+              })
               const cveRoobackInfo = Object.keys(cveRollback).map(hostId => {
                 return {
                   host_id: Number(hostId),
@@ -1025,24 +983,44 @@ export default {
       this.selectedRowsAllMaps = Object.assign({}, this.selectedRowsAllMaps);
     },
     // 工具方法，将主机信息更新进cve数据中
+    getHostListUnderCve(val, key) {
+      if (this.taskType === 'cve rollback') {
+        return val[key].hosts
+      }
+      if (this.taskType === 'cve fix') {
+        if (this.hostListType === 'byLoading') {
+          return val[key].hosts
+        } else {
+          return val[key]
+        }
+      }
+    },
     addHostListToCVEData(cveMap) {
+      console.log(cveMap)
+      console.log(this.cveList)
       this.cveList.forEach((cveInfo) => {
-        const hostListUnderCve = this.hostListType === 'byLoading' ? cveMap[cveInfo.cve_id].hosts : cveMap[cveInfo.cve_id];
+        // const hostListUnderCve = this.hostListType === 'byLoading' ? cveMap[cveInfo.cve_id].hosts : cveMap[cveInfo.cve_id];
+        const hostListUnderCve = this.getHostListUnderCve(cveMap, cveInfo.cve_id)
         cveInfo.hostsList = hostListUnderCve || [];
-          if (hostListUnderCve && hostListUnderCve.length > 0) {
-            if (this.taskType === 'cve fix') {
-              this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve.map((host) => host.host_id);
-            } else if (this.taskType === 'cve rollback') {
-              this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve.filter((host) => host.hotpatch === true).map((host) => host.host_id);
-            }
-            this.selectedRowsAllMaps[cveInfo.cve_id] = hostListUnderCve;
-          } else {
-            this.selectedRowKeyMaps[cveInfo.cve_id] = [];
-            this.selectedRowsAllMaps[cveInfo.cve_id] = [];
+        console.log(cveInfo.cve_id)
+        console.log(hostListUnderCve)
+        if (hostListUnderCve && hostListUnderCve.length > 0) {
+          if (this.taskType === 'cve fix') {
+            this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve.map((host) => host.host_id);
+          } else if (this.taskType === 'cve rollback') {
+            this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve.filter((host) => host.hotpatch === true).map((host) => host.host_id);
           }
+          this.selectedRowsAllMaps[cveInfo.cve_id] = hostListUnderCve;
+        } else {
+          this.selectedRowKeyMaps[cveInfo.cve_id] = [];
+          this.selectedRowsAllMaps[cveInfo.cve_id] = [];
+        }
+        console.log(this.selectedRowKeyMaps[cveInfo.cve_id])
       });
       // forced refresh
       this.cveList = Object.assign([], this.cveList);
+      this.setDefaultInfo();
+      // 自动填写默认任务信息
     },
     // repo
     onRepoSelectChange(selectedRowKeys, selectedRows) {
@@ -1084,7 +1062,7 @@ export default {
       switch (this.taskType) {
         case 'cve fix':
           this.taskNameDefault = 'CVE修复任务'
-          this.taskDescDefault = `修复以下${this.cveListProps.length}个CVE：${this.cveListProps
+          this.taskDescDefault = `修复以下${this.cveList.length}个CVE：${this.cveList
             .map((cve) => cve.cve_id)
             .join('、')}`;
           break;

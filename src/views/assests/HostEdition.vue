@@ -287,7 +287,7 @@ export default {
       router.go(-1);
     },
     checkNameInput(rule, value, cb) {
-      if (!/^\S.*\S$/.test(value)) {
+      if (!/^\S(.*\S)?$/.test(value)) {
         /* eslint-disable */
         cb('首尾不允许空格');
         /* eslint-enable */
