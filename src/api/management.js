@@ -4,7 +4,8 @@ const api = {
   addManagementConf: '/management/addManagementConf', // 新增业务域配置
   getManagementConf: '/management/getManagementConf', // 读取业务域配置信息
   queryManageConfChange: '/management/queryManageConfChange', // 读取业务域配置日志信息
-  deleteManagementConf: '/management/deleteManagementConf' // 删除业务域配置
+  deleteManagementConf: '/management/deleteManagementConf', // 删除业务域配置
+  querySupportedConfs: '/confs/querySupportedConfs' // 查询可供选择的配置文件列表
 };
 
 export default api;
@@ -44,6 +45,17 @@ export function deleteManagementConf(parameter) {
     data: {
       domainName: parameter.domainName,
       confFiles: parameter.confFiles
+    }
+  });
+}
+
+// 查询配置路径下拉列表
+export function querySupportedConfs(parameter) {
+  return request({
+    url: api.querySupportedConfs,
+    method: 'post',
+    data: {
+      domainName: parameter
     }
   });
 }
