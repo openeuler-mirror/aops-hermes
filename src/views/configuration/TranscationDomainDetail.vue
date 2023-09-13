@@ -24,7 +24,7 @@
                 </a-button>
               </a-col>
               <a-col>
-                <a-button @click="syncConf(selectedRowKeys, selectedRows)" disabled>
+                <a-button @click="syncConf(selectedRowKeys, selectedRows)" :disabled="!selectedRowKeys.length > 0">
                   <a-icon type="sync" />批量同步
                 </a-button>
               </a-col>
@@ -145,7 +145,9 @@
       <template slot="drawerView">
         <get-domain-status-drawer
         :tableData="tableData"
-          :domainStatusIsLoading="domainStatusIsLoading" />
+        :domainStatusIsLoading="domainStatusIsLoading"
+        :domainName="domainName"
+        @getDomainStatus="getDomainStatus"/>
       </template>
     </drawer-view>
   </my-page-header-wrapper>
@@ -370,18 +372,55 @@ export default {
       this.handleSyncConf(rows, true);
     },
     handleSyncConf(selectedRows, isBash) {
-      const hostIds = [];
+      const syncList = []
       selectedRows.forEach(function (item) {
-        hostIds.push({hostId: item.hostId});
+        const syncConfigs = []
+        item.syncStatusList.forEach((val) => {
+          if (val.isSynced === 'NOT SYNCHRONIZE') {
+            syncConfigs.push(val.file_path)
+          }
+        })
+        const host = {
+          'hostId': item.hostId,
+          'syncConfigs': syncConfigs
+        }
+        syncList.push(host)
       });
       const _this = this;
       return new Promise((resolve, reject) => {
         syncConf({
           domainName: _this.domainName,
-          hostIds: hostIds
+          syncList: syncList
         })
           .then((res) => {
-            _this.$message.success(res.message);
+            let msg = ''
+            for (const item of res) {
+              const hostId = item.hostId
+              let success = ''
+              let fail = ''
+              const syncResult = item.syncResult
+              for (const val of syncResult) {
+                if (val.result === 'SUCCESS') {
+                  success += val.filePath + ';' + '\xa0\xa0'
+                } else {
+                  fail += val.filePath + ';' + '\xa0\xa0'
+                }
+              }
+              if (success.length === 0 && fail.length !== 0) {
+                msg += '主机' + hostId + '\xa0\xa0\xa0' + '同步失败：' + fail
+              } else if (success.length !== 0 && fail.length === 0) {
+                msg += '主机' + hostId + '\xa0\xa0\xa0' + '同步成功：' + success
+              } else if (success.length !== 0 && fail.length !== 0) {
+                msg += '主机' + hostId + '\xa0\xa0\xa0' + '同步成功：' + success + '\xa0\xa0\xa0' + '同步失败：' + fail
+              }
+            }
+            if (msg.includes('同步失败') && msg.includes('同步成功')) {
+              _this.$message.info(msg);
+            } else if (msg.includes('同步失败') && !msg.includes('同步成功')) {
+              _this.$message.error(msg);
+            } else {
+              _this.$message.success(msg);
+            }
             _this.getHostAndStatus();
             if (isBash) {
               _this.selectedRowKeys = [];
@@ -390,7 +429,7 @@ export default {
             resolve();
           })
           .catch((err) => {
-            _this.$message.error(err.response.message);
+            _this.$message.error(err.response.message || err.response.data.detail || err.response.data.msg);
             reject(err);
           });
       });

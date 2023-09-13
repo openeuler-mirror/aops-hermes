@@ -93,14 +93,13 @@ export function deleteHost({domainName, hostInfos, ...parameter}) {
   });
 }
 // 同步
-export function syncConf(domainName, hostIds, ...parameter) {
+export function syncConf(parameter) {
   return request({
     url: api.syncConf,
-    method: 'post',
+    method: 'put',
     data: {
-      ...parameter,
-      domainName: domainName,
-      hostIds: hostIds
+      domainName: parameter.domainName,
+      syncList: parameter.syncList
     }
   });
 }
