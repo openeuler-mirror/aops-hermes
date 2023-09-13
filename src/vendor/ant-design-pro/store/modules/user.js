@@ -4,7 +4,7 @@
 
 // import storage from 'store';
 // import cookie from 'js-cookie';
-import { login, logout, refreshTokenFn } from '@/api/login';
+import { login, refreshTokenFn } from '@/api/login';
 import { ACCESS_TOKEN, REFRESH_TOKIN } from '@/vendor/ant-design-pro/store/mutation-types';
 
 const user = {
@@ -104,22 +104,22 @@ const user = {
 
     // 登出
     Logout({ commit, state }) {
-      return new Promise((resolve, reject) => {
-        logout()
-          .then(() => {
+      // return new Promise((resolve, reject) => {
+      //   logout()
+      //     .then(() => {
             commit('SET_TOKEN', '');
             commit('SET_ROLES', []);
             commit('SET_RETOKEN', '');
             localStorage.removeItem(ACCESS_TOKEN);
             localStorage.removeItem(REFRESH_TOKIN);
             localStorage.removeItem('user_name');
-            resolve();
-          })
-          .catch(error => {
-            reject(error);
-          })
-          .finally(() => { });
-      });
+      //       resolve();
+      //     })
+      //     .catch(error => {
+      //       reject(error);
+      //     })
+      //     .finally(() => { });
+      // });
     },
 
     // 刷新token
@@ -139,22 +139,22 @@ const user = {
             resolve()
           } else if (res.code === '1207') {
             // 若返回1207则refresh_token也过期，直接退出到登录页
-            return new Promise((resolve, reject) => {
-              logout()
-                .then(() => {
+            // return new Promise((resolve, reject) => {
+            //   logout()
+            //     .then(() => {
                   commit('SET_TOKEN', '');
                   commit('SET_ROLES', []);
                   commit('SET_RETOKEN', '');
                   localStorage.removeItem(ACCESS_TOKEN);
                   localStorage.removeItem(REFRESH_TOKIN);
                   localStorage.removeItem('user_name');
-                  resolve();
-                })
-                .catch(error => {
-                  reject(error);
-                })
-                .finally(() => { });
-            });
+            //       resolve();
+            //     })
+            //     .catch(error => {
+            //       reject(error);
+            //     })
+            //     .finally(() => { });
+            // });
           }
         }).catch((err) => {
           reject(err)

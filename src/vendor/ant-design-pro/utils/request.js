@@ -83,6 +83,9 @@ request.interceptors.request.use(config => {
     const userName = localStorage.getItem('user_name')
     userName && localStorage.setItem('user_name', userName);
   }
+  if (config.url === '/vulnerability/host/status/get') {
+    config.headers['Content-Type'] = 'application/json'
+  }
   return config;
 }, errorHandler);
 
@@ -111,24 +114,24 @@ request.interceptors.response.use(response => {
         }
         break;
       case '1207':
-        if (!isRefreshing) {
-          isRefreshing = true
-          if (response.config.url === '/manage/account/refreshtoken') {
-            // 当refreshtokne也过期，跳转到登录页面
-            notification.error({
-              message: '用户校验失败',
-              description: response.data.message
-            });
-            setTimeout(() => {
-              store.dispatch('Logout').then(() => {
-                isRefreshing = false
-                window.location.reload();
-              }).catch((err) => {
-                isRefreshing = false
-                this.$message.error(err.response.message)
-              })
-            }, 1000)
-          } else {
+        if (response.config.url === '/manage/account/refreshtoken') {
+          // 当refreshtokne也过期，直接跳转到登录页面
+          notification.error({
+            message: '用户校验失败',
+            description: response.data.message
+          });
+          setTimeout(() => {
+            store.dispatch('Logout').then(() => {
+              isRefreshing = false
+              window.location.reload();
+            }).catch((err) => {
+              isRefreshing = false
+              this.$message.error(err.response.message)
+            })
+          }, 1000)
+        } else {
+          if (!isRefreshing) {
+            isRefreshing = true
             store.dispatch('RefreshToken').then(() => {
               // 再发请求
               isRefreshing = false
