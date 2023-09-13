@@ -50,6 +50,9 @@
             </a-switch>
           </a-form-item>
           <a-form-item label="冷补丁收编" v-if="taskType === 'cve fix'">
+            <description-tips v-if="taskType === 'cve fix'" style="margin-right: 6px;">
+              仅针对内核：应用热补丁后会同步安装最新冷补丁。<br>若收编失败会自动accept热补丁
+            </description-tips>
             <a-switch :checked="takeover" @click="handleTakeoverChanage">
               <a-icon slot="checkedChildren" type="check" />
               <a-icon slot="unCheckedChildren" type="close" />
@@ -812,6 +815,12 @@ export default {
                   })
                   .filter((item) => item.host_info && item.host_info.length > 0)
               };
+              params.info.forEach(item => {
+                item.host_info.forEach(it => {
+                  delete it.host_name
+                  delete it.host_ip
+                })
+              })
               if (params.info.length === 0) {
                 this.$message.info('请至少选择一个cve下的一台主机进行修复!');
                 this.submitLoading = false;
@@ -846,9 +855,7 @@ export default {
                   ...values,
                   info: this.selectedRepoRows.map((host) => {
                     return {
-                      host_id: host.host_id,
-                      host_name: host.host_name,
-                      host_ip: host.host_ip
+                      host_id: host.host_id
                     };
                   })
                 };

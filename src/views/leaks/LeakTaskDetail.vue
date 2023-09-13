@@ -85,7 +85,7 @@
             </a-col>
           </a-row>
           <div>
-            <h3>任务描述：</h3>
+            <p>任务描述：</p>
             <p class="detail-description">{{ detail.description }}</p>
           </div>
           <a-row type="flex" :gutter="8" justify="end">
