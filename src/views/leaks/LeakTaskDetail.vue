@@ -433,15 +433,15 @@ export default {
     innerColumns() {
       return [
         {
-          dataIndex: 'available_rpm',
-          key: 'available_rpm',
+          dataIndex: 'installed_rpm',
+          key: 'installed_rpm',
           title: '受影响rpm'
         },
         {
-          dataIndex: 'installed_rpm',
-          key: 'installed_rpm',
+          dataIndex: 'available_rpm',
+          key: 'available_rpm',
           title: '待安装rpm',
-          scopedSlots: {customRender: 'installed_rpm'}
+          scopedSlots: {customRender: 'available_rpm'}
         },
         {
           dataIndex: 'fix_way',
@@ -861,12 +861,12 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-  // 路由跳转前，清除轮询
-    next();
+    // 路由跳转前，清除轮询
     if (this.progressUpdateCaller) {
       clearInterval(this.progressUpdateCaller);
       this.progressUpdateCaller = null;
     }
+    next();
   },
   mounted: function () {
     this.getInitalData();

@@ -162,12 +162,16 @@ export default {
       }
     },
     handleEmail(rule, value, callback) {
-      const regex = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$/;
-      if (!regex.test(value)) {
-        const text = '请输入正确的邮箱格式!';
-        callback(text);
-      } else {
+      if (!value) {
         callback();
+      } else {
+        const regex = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$/;
+        if (!regex.test(value)) {
+          const text = '请输入正确的邮箱格式!';
+          callback(text);
+        } else {
+          callback();
+        }
       }
     },
     handleSubmit(e) {

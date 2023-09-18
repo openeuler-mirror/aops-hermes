@@ -83,9 +83,7 @@ request.interceptors.request.use(config => {
     const userName = localStorage.getItem('user_name')
     userName && localStorage.setItem('user_name', userName);
   }
-  if (config.url === '/vulnerability/host/status/get') {
-    config.headers['Content-Type'] = 'application/json'
-  }
+  config.headers['Content-Type'] = 'application/json'
   return config;
 }, errorHandler);
 

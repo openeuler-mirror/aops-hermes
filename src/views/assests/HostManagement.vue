@@ -291,7 +291,7 @@ export default {
         okType: 'danger',
         okText: '删除',
         onOk: function () {
-          return _this.handleDelete([record.host_id]);
+          return _this.handleDelete([record.host_id], true);
         },
         onCancel() {}
       });
