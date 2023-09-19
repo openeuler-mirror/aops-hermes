@@ -255,6 +255,7 @@ export default {
     }
   },
   mounted: function () {
+    this.getDetail();
     this.getScanStatue();
   }
 };

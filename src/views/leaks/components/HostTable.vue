@@ -349,13 +349,13 @@ export default {
     innerColumns() {
       return [
         {
-          dataIndex: 'available_rpm',
-          key: 'available_rpm',
+          dataIndex: 'installed_rpm',
+          key: 'installed_rpm',
           title: '受影响rpm'
         },
         {
-          dataIndex: 'installed_rpm',
-          key: 'installed_rpm',
+          dataIndex: 'available_rpm',
+          key: 'available_rpm',
           title: '待安装rpm'
         },
         {
@@ -618,6 +618,7 @@ export default {
     handleTableChange(pagination, filters, sorter) {
       // 存储翻页状态
       this.pagination = pagination;
+      this.expandedRowKeys = []
       this.filters = Object.assign({}, this.filters, filters);
       if (this.filters['fixStatus'] != null) {
         this.assignFiltersFixStatus(this.filters['fixStatus'])
@@ -750,6 +751,7 @@ export default {
             }, configs.scanProgressInterval);
             } else {
               _this.scanStatusloading = false;
+              _this.handleRefresh();
             }
           }
         })
@@ -904,6 +906,8 @@ export default {
       if (this.standalone) {
         this.getHostListAll();
       }
+      // 重新请求数据后重置列表
+      this.expandedRowKeys = []
     },
     handleTaskCreateSuccess() {
       this.handleRefresh();
@@ -968,6 +972,14 @@ export default {
     } else {
       // 主机详情页面中要自行获取repo列表
       this.getRepoList();
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    next();
+    // 路由跳转前，清除轮询
+    if (this.scanStatueAllTimeout) {
+      clearInterval(this.scanStatueAllTimeout);
+      this.scanStatueAllTimeout = null;
     }
   }
 };

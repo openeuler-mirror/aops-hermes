@@ -459,6 +459,8 @@ export default {
       // 弹窗关闭事件
       this.$emit('close');
       // clear status
+      this.takeover = false
+      this.accepted = false
       this.visible = false;
       this.cveList = [];
       this.fixParams = {}
@@ -561,7 +563,6 @@ export default {
           switch (this.hostListType) {
             case hostListTypes[0]:
               _this.hostUnderCveLoading = true;
-              console.log(this.fixParams)
               getHostUnderMultipleCVE(this.fixParams).then(function (res) {
                  // hostlists are contained in cveMap
                  const cveMap = res.data.result || {};
@@ -707,7 +708,6 @@ export default {
           case hostListTypes[1]:
           // hostListType为bySelection cve详情界面下的受影响主机界面
           _this.hostUnderCveLoading = true;
-          console.log(_this.hostList)
           _this.hostList.forEach(item => {
             _this.hostListparams.push(item.host_id)
           })
@@ -1003,14 +1003,10 @@ export default {
       }
     },
     addHostListToCVEData(cveMap) {
-      console.log(cveMap)
-      console.log(this.cveList)
       this.cveList.forEach((cveInfo) => {
         // const hostListUnderCve = this.hostListType === 'byLoading' ? cveMap[cveInfo.cve_id].hosts : cveMap[cveInfo.cve_id];
         const hostListUnderCve = this.getHostListUnderCve(cveMap, cveInfo.cve_id)
         cveInfo.hostsList = hostListUnderCve || [];
-        console.log(cveInfo.cve_id)
-        console.log(hostListUnderCve)
         if (hostListUnderCve && hostListUnderCve.length > 0) {
           if (this.taskType === 'cve fix') {
             this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve.map((host) => host.host_id);
@@ -1022,7 +1018,6 @@ export default {
           this.selectedRowKeyMaps[cveInfo.cve_id] = [];
           this.selectedRowsAllMaps[cveInfo.cve_id] = [];
         }
-        console.log(this.selectedRowKeyMaps[cveInfo.cve_id])
       });
       // forced refresh
       this.cveList = Object.assign([], this.cveList);
