@@ -525,7 +525,9 @@ export default {
       // 控制获取的cve是否被修复的变量，默认为未修复
       affected: true,
       // 控制获取的cve是否受影响的变量，默认为受影响
-      rollback: false
+      rollback: false,
+      // 判断rpm二级列表是否有空值的变量
+      nullkey: 0
     };
   },
   methods: {
@@ -727,6 +729,7 @@ export default {
       } else {
         this.selectedRowKeys = [];
         this.innerselectedRowKeys = [];
+        this.innerCveList = [];
       }
       function setVal(list, arr) {
         list.forEach(v => {
@@ -740,35 +743,46 @@ export default {
       }
     },
     getChildCheck(id, val) {
-      this.innerselectedRowKeys.push(this.fixed ? id + val.installed_rpm : id + val.available_rpm + val.installed_rpm)
-      if (this.innerCveList.length !== 0) {
-              const result = this.innerCveList.some(item => item.cve_id === id)
-              if (result) {
-                const target = this.innerCveList.find(item => item.cve_id === id)
-                target.rpms.push({
-                  installed_rpm: val.installed_rpm,
-                  available_rpm: val.available_rpm,
-                  fix_way: val.support_way
-                })
-              } else {
-                this.innerCveList.push({
-                 cve_id: id,
-                 rpms: [{
-                     installed_rpm: val.installed_rpm,
-                     available_rpm: val.available_rpm,
-                     fix_way: val.support_way
-                 }]
-                })
-              }
-      } else {
-        this.innerCveList.push({
-          cve_id: id,
-          rpms: [{
-              installed_rpm: val.installed_rpm,
-              available_rpm: val.available_rpm,
-              fix_way: val.support_way
-          }]
-        })
+      // 重置nullkey
+      this.nullkey = 0
+      const _this = this
+      Object.keys(val).forEach(function(key) {
+        if (!val[key]) {
+          _this.nullkey++
+        }
+      });
+      if (this.nullkey === 0) {
+        // 若该行所有属性都不为null，再执行添加勾选及判断操作
+        this.innerselectedRowKeys.push(this.fixed ? id + val.installed_rpm : id + val.available_rpm + val.installed_rpm)
+        if (this.innerCveList.length !== 0) {
+                const result = this.innerCveList.some(item => item.cve_id === id)
+                if (result) {
+                  const target = this.innerCveList.find(item => item.cve_id === id)
+                  target.rpms.push({
+                    installed_rpm: val.installed_rpm,
+                    available_rpm: val.available_rpm,
+                    fix_way: val.support_way
+                  })
+                } else {
+                  this.innerCveList.push({
+                   cve_id: id,
+                   rpms: [{
+                       installed_rpm: val.installed_rpm,
+                       available_rpm: val.available_rpm,
+                       fix_way: val.support_way
+                   }]
+                  })
+                }
+        } else {
+          this.innerCveList.push({
+            cve_id: id,
+            rpms: [{
+                installed_rpm: val.installed_rpm,
+                available_rpm: val.available_rpm,
+                fix_way: val.support_way
+            }]
+          })
+        }
       }
     },
     getUncheck(id, val) {
@@ -990,12 +1004,14 @@ export default {
       this.selectedRowsAll = [];
       this.innerselectedRowKeys = [];
       this.expandedRowKeys = [];
+      this.innerCveList = []
     },
     handleRefresh() {
       this.selectedRowKeys = [];
       this.selectedRowsAll = [];
       this.innerselectedRowKeys = [];
       this.expandedRowKeys = [];
+      this.innerCveList = []
       // 重新请求界面, 收起展开状态
       // this.innerCveList = [];
       this.getCves();
@@ -1114,7 +1130,7 @@ export default {
       }
       this.getCves();
       // 重新请求数据后重置列表
-      this.expandedRowKeys = []
+      this.resetSelection()
     },
     handleTaskCreateSuccess() {
       this.handleRefresh();
