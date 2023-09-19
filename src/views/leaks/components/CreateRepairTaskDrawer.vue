@@ -505,9 +505,6 @@ export default {
     // 每次展开抽屉时触发，替代mounted
     handleOpen() {
       // inital defualt data
-      if (this.taskType === 'repo set') {
-        this.$emit('getAllHost');
-      }
       this.visible = true;
       this.cveList = this.cveListProps;
       this.isResetChecked = false;
@@ -519,7 +516,7 @@ export default {
         this.selectedRepoKeys = this.hostList.map((host) => host.host_id);
         this.selectedRepoRows = this.hostList;
         this.setDefaultInfo();
-      // 自动填写默认任务信息
+        // 自动填写默认任务信息
         return;
       }
 
