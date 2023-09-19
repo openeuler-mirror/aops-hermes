@@ -666,8 +666,6 @@ export default {
           this.rollback = true;
         }
         this.sorter = null
-        this.expandedRowKeys = []
-        this.selectedRowKeys = []
         this.getCvesAll()
         this.handleReset();
     },
@@ -678,8 +676,6 @@ export default {
           this.fixed = true;
         }
       this.sorter = null
-      this.expandedRowKeys = []
-      this.selectedRowKeys = []
       this.getCvesAll()
       this.handleReset();
     },
@@ -728,13 +724,14 @@ export default {
         this.selectedRowKeys = arr;
       } else {
         this.selectedRowKeys = [];
+        this.selectedRowsAll = [];
         this.innerselectedRowKeys = [];
         this.innerCveList = [];
       }
       function setVal(list, arr) {
         list.forEach(v => {
           arr.push(v.cve_id);
-          if (v.rpms) {
+          if (v.rpms && !_this.fixed) {
             v.rpms.forEach(it => {
               _this.getChildCheck(v.cve_id, it)
             })
@@ -808,12 +805,12 @@ export default {
       const _this = this
       if (selected) {
         set.add(key);
-        if (_this.expandedRowKeys.includes(key)) {
+        if (_this.expandedRowKeys.includes(key) && !_this.fixed) {
           record.rpms && setChildCheck(record.rpms);
         }
       } else {
         set.delete(key);
-        if (_this.expandedRowKeys.includes(key)) {
+        if (_this.expandedRowKeys.includes(key) && !_this.fixed) {
           record.rpms && setChildUncheck(record.rpms);
         }
       }
@@ -1020,6 +1017,7 @@ export default {
       this.pagination = defaultPagination;
       this.sorter = null;
       this.filters = null;
+      this.expandedRowKeys = [];
       this.selectedRowKeys = [];
       this.selectedRowsAll = [];
       this.innerCveList = [];
