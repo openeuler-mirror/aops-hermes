@@ -86,6 +86,8 @@ export function getRpmUnderCve(parameters) {
       page: parameters.page,
       per_page: parameters.per_page,
       cve_id: parameters.cve_id,
+      hp_status: parameters.hp_status,
+      fixed: parameters.fixed,
       available_rpm: parameters.available_rpm === null ? undefined : parameters.available_rpm,
       installed_rpm: parameters.installed_rpm === null ? undefined : parameters.installed_rpm,
       direction: parameters.direction

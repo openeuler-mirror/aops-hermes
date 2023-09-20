@@ -29,6 +29,14 @@ export default {
       type: String,
       default: null
     },
+    fixed: {
+      type: Boolean,
+      default: false
+    },
+    hpStatus: {
+      type: String,
+      default: null
+    },
     propAvailablerpm: {
       type: String,
       default: null
@@ -71,6 +79,8 @@ export default {
           page: 1,
           per_page: 10,
           cve_id: this.cveId,
+          fixed: this.fixed,
+          hp_status: this.hpStatus ? this.hpStatus : undefined,
           available_rpm: this.propAvailablerpm,
           installed_rpm: this.propInstalledrpm,
           direction: 'asc'
