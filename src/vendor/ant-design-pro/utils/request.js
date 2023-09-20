@@ -83,7 +83,11 @@ request.interceptors.request.use(config => {
     const userName = localStorage.getItem('user_name')
     userName && localStorage.setItem('user_name', userName);
   }
-  config.headers['Content-Type'] = 'application/json'
+  if (config.url === '/vulnerability/cve/advisory/upload' || config.url === '/vulnerability/cve/unaffected/upload') {
+    config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+  } else {
+    config.headers['Content-Type'] = 'application/json'
+  }
   return config;
 }, errorHandler);
 

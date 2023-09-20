@@ -705,7 +705,6 @@ export default {
       this.pagination = pagination;
       // 翻页时清楚展开状态
       this.expandedRowKeys = []
-
       this.filters = Object.assign({}, this.filters, filters);
       if (this.filters['fixStatus'] != null) {
         this.assignFiltersFixStatus(this.filters['fixStatus'])
@@ -1072,6 +1071,8 @@ export default {
             pageSize: pagination.pageSize,
             total: res.data.total_count || (res.data.total_count === 0 ? 0 : pagination.total)
           };
+          // 获取cve列表后清楚展开状态
+          _this.expandedRowKeys = [];
         })
         .catch(function (err) {
           _this.$message.error(err.response.message);
