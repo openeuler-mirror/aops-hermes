@@ -149,6 +149,7 @@
               :locale="tablenodata"
               :rowSelection="innerRowSelection"
               :pagination="false">
+              <div slot="fixed_way" slot-scope="fixed_way, innerrecord">{{ getFixedWay(fixed_way, innerrecord) }}</div>
               <a
                slot="hosts"
                slot-scope="hosts, innerrecord"
@@ -162,8 +163,10 @@
     <host-in-cve-rpm
       :visible="hostListUnderCveVisible"
       @close="closeHostListUnderCve"
+      :fixed="fixed"
       :propAvailablerpm="propAvailablerpm"
       :propInstalledrpm="propInstalledrpm"
+      :hpStatus="hpStatus"
       :cveId="hostListOfCveId" />
   </div>
 </template>
@@ -401,7 +404,8 @@ export default {
         {
           dataIndex: 'fixed_way',
           key: 'fixed_way',
-          title: '修复方式'
+          title: '修复方式',
+          scopedSlots: {customRender: 'fixed_way'}
         },
         {
           dataIndex: 'host_num',
@@ -421,7 +425,8 @@ export default {
         {
           dataIndex: 'fixed_way',
           key: 'fixed_way',
-          title: '修复方式'
+          title: '修复方式',
+          scopedSlots: {customRender: 'fixed_way'}
         }
       ];
     },
@@ -495,6 +500,7 @@ export default {
       searchKey: '',
       innerCveList: [],
       // 勾选二级列表rpm参数时传入的数据流
+      hpStatus: null,
       propAvailablerpm: null,
       propInstalledrpm: null,
       propData: this.inputList,
@@ -531,12 +537,20 @@ export default {
     };
   },
   methods: {
+    getFixedWay(fixedWay, innerrecord) {
+      if (fixedWay === 'hotpatch') {
+        return fixedWay + ' (' + innerrecord.hp_status + ')'
+      } else {
+        return fixedWay
+      }
+    },
     closeHostListUnderCve() {
       this.hostListUnderCveVisible = false;
     },
     showHostListUnderCve(params, innerparams) {
       this.hostListUnderCveVisible = true;
       this.hostListOfCveId = params.cve_id;
+      this.hpStatus = innerparams.hp_status;
       this.propAvailablerpm = innerparams.available_rpm
       this.propInstalledrpm = innerparams.installed_rpm
     },
