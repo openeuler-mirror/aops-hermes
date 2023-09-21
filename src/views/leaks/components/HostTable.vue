@@ -974,9 +974,8 @@ export default {
       this.getRepoList();
     }
   },
-  beforeRouteLeave(to, from, next) {
-    next();
-    // 路由跳转前，清除轮询
+  beforeDestroy() {
+    // 离开页面前，若当前存在轮询，清除轮询
     if (this.scanStatueAllTimeout) {
       clearInterval(this.scanStatueAllTimeout);
       this.scanStatueAllTimeout = null;

@@ -285,6 +285,8 @@ export default {
       expandedRowKeys: [],
       rpmrecord: {},
       propType: '',
+      // 轮询计时器
+      CveScanStatueTimeout: null,
       progressUpdateCaller: null,
       reportvisible: false,
       runningCveIds: [],
@@ -544,6 +546,7 @@ export default {
     updateProgress(taskList) {
       const _this = this;
       this.progressLoading = true;
+      clearTimeout(this.progressUpdateCaller);
       getTaskProgress({taskList})
         .then(function (res) {
           _this.detail.statuses = res.data.result && res.data.result[_this.taskId];
@@ -628,6 +631,7 @@ export default {
     updateCveProgress(taskId, cveList) {
       const _this = this;
       this.cveProgressIsLoading = true;
+      clearTimeout(this.CveScanStatueTimeout);
       getCveProgressUnderCveTask({
         taskId,
         cveList
@@ -637,7 +641,7 @@ export default {
           _this.runningCveIds = _this.getRunningCve(res.data.result);
           _this.reportvisible = _this.getReportVisible(res.data.result);
           if (_this.runningCveIds.length > 0) {
-            setTimeout(function () {
+            _this.CveScanStatueTimeout = setTimeout(function () {
               _this.updateCveProgress(taskId, cveList);
             }, configs.taskProgressUpdateInterval);
           } else {
@@ -860,16 +864,17 @@ export default {
       });
     }
   },
-  beforeRouteLeave(to, from, next) {
-    // 路由跳转前，清除轮询
-    if (this.progressUpdateCaller) {
-      clearInterval(this.progressUpdateCaller);
-      this.progressUpdateCaller = null;
-    }
-    next();
-  },
   mounted: function () {
     this.getInitalData();
+  },
+  beforeDestroy() {
+    // 离开页面前，若当前存在轮询，清除轮询
+    if (this.progressUpdateCaller || this.CveScanStatueTimeout) {
+      clearInterval(this.progressUpdateCaller);
+      clearInterval(this.CveScanStatueTimeout);
+      this.progressUpdateCaller = null;
+      this.CveScanStatueTimeout = null;
+    }
   }
 };
 </script>
