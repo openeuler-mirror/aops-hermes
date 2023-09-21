@@ -419,6 +419,13 @@ export default {
   },
   mounted: function () {
     this.getTaskList();
+  },
+  beforeDestroy() {
+    // 离开页面前，若当前存在轮询，清除轮询
+    if (this.progressUpdateCaller) {
+      clearInterval(this.progressUpdateCaller);
+      this.progressUpdateCaller = null;
+    }
   }
 };
 </script>

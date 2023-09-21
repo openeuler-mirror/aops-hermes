@@ -146,7 +146,6 @@
               :row-key="innerrecord => fixed ? record.cve_id + innerrecord.installed_rpm : record.cve_id + innerrecord.available_rpm + innerrecord.installed_rpm"
               :columns="fixed ? (standalone ? ainnerColumns : binnerColumns) : (standalone ? aloneinnerColumns : innerColumns)"
               :data-source="record.rpms || []"
-              :locale="tablenodata"
               :rowSelection="innerRowSelection"
               :pagination="false">
               <div slot="fixed_way" slot-scope="fixed_way, innerrecord">{{ getFixedWay(fixed_way, innerrecord) }}</div>
@@ -491,11 +490,6 @@ export default {
   },
   data() {
     return {
-      tablenodata: {emptyText: () => (
-      <div><div>暂无可修复的rpm包, 可能原因为：</div>
-      <div>1. 界面未刷新</div>
-      <div>2. 冷补丁修复kernel后界面未重启</div></div>
-      )},
       selectedRows: [], // 选中行的row
       searchKey: '',
       innerCveList: [],

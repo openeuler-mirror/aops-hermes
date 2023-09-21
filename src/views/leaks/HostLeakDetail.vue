@@ -257,6 +257,13 @@ export default {
   mounted: function () {
     this.getDetail();
     this.getScanStatue();
+  },
+  beforeDestroy() {
+    // 离开页面前，若当前存在轮询，清除轮询
+    if (this.getScanStatusTimeout) {
+      clearInterval(this.getScanStatusTimeout);
+      this.getScanStatusTimeout = null;
+    }
   }
 };
 </script>
