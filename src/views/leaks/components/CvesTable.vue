@@ -864,7 +864,7 @@ export default {
                   }
                   this.selectedRowsAll = getSelectedRow(this.selectedRowKeys, this.selectedRowsAll, this.standalone ? this.tableData : this.propData, 'cve_id');
                 } else {
-                  const index = target.rpms.findIndex(item => item.installed_rpm === record.installed_rpm)
+                  const index = target.rpms.findIndex(item => item.installed_rpm === record.installed_rpm && item.available_rpm === record.available_rpm)
                   target.rpms.splice(index, 1)
                   if (target.rpms.length === 0) {
                     const dindex = this.innerCveList.findIndex(it => it.cve_id === record.cve_id)
