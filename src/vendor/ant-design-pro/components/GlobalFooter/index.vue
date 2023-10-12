@@ -7,7 +7,7 @@
         <a href="" target="_blank">关于我们</a> -->
       </div>
       <div>
-        版权所有 ©华为技术有限公司 1998-2023。 保留一切权利。 粤A2-20044005号
+        版权所有 © 2023 openEuler 保留一切权利
       </div>
     </template>
     <template v-slot:copyright>
