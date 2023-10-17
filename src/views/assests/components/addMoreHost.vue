@@ -1,7 +1,7 @@
 <template>
   <div @click="showModal">
     <a-button type="primary">批量添加主机</a-button>
-    <a-modal title="添加主机" :visible="visible" :footer="null" @cancel="closeModal" width="1468px">
+    <a-modal title="添加主机" :visible="visible" :footer="null" @cancel="closeModal" width="1668px">
       <div class="upload_head">
         <a-upload :file-list="fileDataList" :remove="removeFile" :before-upload="preUpload">
           <div style="display:flex;">
@@ -62,6 +62,15 @@
               @unSubmit="unSubmit()"
               @allowSub="allowSub()"
               @change="onCellChange(record.key, 'password', $event)" />
+          </template>
+          <template slot="ssh_pkey" slot-scope="text, record">
+            <editable-cell
+              ref="ssh_pkey"
+              formkey="ssh_pkey"
+              :text="String(text)"
+              @unSubmit="unSubmit()"
+              @allowSub="allowSub()"
+              @change="onCellChange(record.key, 'ssh_pkey', $event)" />
           </template>
           <template slot="host_name" slot-scope="text, record">
             <editable-cell
@@ -144,7 +153,7 @@ export default {
       dataAllow: true,
       count: '',
       rowKey: 'ip',
-      colList: ['host_ip', 'ssh_port', 'ssh_user', 'password', 'host_name', 'host_group_name', 'management'],
+      colList: ['host_ip', 'ssh_port', 'ssh_user', 'password', 'ssh_pkey', 'host_name', 'host_group_name', 'management'],
       tableVis: false,
       fileDataList: [],
       visible: false,
@@ -157,6 +166,7 @@ export default {
         ssh_port: [{required: true, message: 'Please select Activity zone', trigger: 'blur'}],
         ssh_user: [{required: true, message: 'Please select Activity zone', trigger: 'blur'}],
         password: [{required: true, message: 'Please select Activity zone', trigger: 'blur'}],
+        ssh_pkey: [{required: true, message: 'Please select Activity zone', trigger: 'blur'}],
         host_name: [{required: true, message: 'Please select Activity zone', trigger: 'blur'}],
         host_group_name: [{required: true, message: 'Please select Activity zone', trigger: 'blur'}],
         management: [{required: true, message: 'Please select Activity zone', trigger: 'blur'}]
@@ -200,6 +210,13 @@ export default {
           key: 'password',
           title: '登录密码',
           scopedSlots: {customRender: 'password'}
+        },
+        {
+          dataIndex: 'ssh_pkey',
+          width: 200,
+          key: 'ssh_pkey',
+          title: '登录密钥',
+          scopedSlots: {customRender: 'ssh_pkey'}
         },
         {
           dataIndex: 'host_name',
@@ -260,6 +277,7 @@ export default {
         ssh_port: '',
         ssh_user: '',
         password: '',
+        ssh_pkey: '',
         host_name: '',
         host_group_name: '',
         management: '',
@@ -332,7 +350,7 @@ export default {
           const result = XLSX.utils.sheet_to_json(worksheet); // 将数据json数据格式
           result.forEach((item) => {
             const arr = Object.keys(item)
-            if (!arr.includes('host_ip') || !arr.includes('ssh_port') || !arr.includes('ssh_user') || !arr.includes('password') || !arr.includes('host_name') || !arr.includes('host_group_name') || !arr.includes('management')) {
+            if (!arr.includes('host_ip') || !arr.includes('ssh_port') || !arr.includes('ssh_user') || !arr.includes('password') || !arr.includes('ssh_pkey') || !arr.includes('host_name') || !arr.includes('host_group_name') || !arr.includes('management')) {
               this.removeFile(file);
               this.dataAllow = false;
             }
@@ -368,6 +386,7 @@ export default {
         this.$set(item, 'host_name', String(item.host_name))
         item.management = Boolean(item.management)
         item.password = String(item.password)
+        item.ssh_pkey = String(item.ssh_pkey)
         delete item.key;
         delete item.editable;
         delete item.result;

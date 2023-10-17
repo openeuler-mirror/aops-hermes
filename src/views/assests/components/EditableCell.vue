@@ -8,7 +8,7 @@
       <div v-if="editable" class="editable-cell-input-wrapper">
         <a-form-model-item :prop="formkey">
           <!-- 当formkey为密码时，使用密码框组件 -->
-          <a-input-password v-if="formkey === 'password'" @change="handleChange" @pressEnter="check" v-model="form[formkey]" />
+          <a-input-password v-if="formkey === 'password' || formkey === 'ssh_pkey'" @change="handleChange" @pressEnter="check" v-model="form[formkey]" />
           <a-input v-else @change="handleChange" @pressEnter="check" v-model="form[formkey]" />
           <a-icon
             style="top: -7px;"
@@ -21,7 +21,7 @@
       <div v-else class="editable-cell-text-wrapper">
         <div class="editable-content">
           <!-- <a-input :type="formkey === 'password' ? 'password' : 'text'" v-model="value" /> -->
-          <span v-if="formkey === 'password'">{{ countStar(form[formkey]) }}</span>
+          <span v-if="formkey === 'password' || formkey === 'ssh_pkey'">{{ countStar(form[formkey]) }}</span>
           <span v-else>{{ value || ' ' }}</span>
         </div>
         <a-icon type="edit" class="editable-cell-icon" @click="edit" />
@@ -97,6 +97,7 @@ export default {
         ssh_port: [{required: true, message: '请输入端口'}, {validator: checkSSHPort}],
         ssh_user: [{ validator: validateUser, trigger: 'change' }],
         password: [{ required: true, message: 'password不能为空', trigger: 'change' }],
+        ssh_pkey: [{ required: true, message: 'ssh_pkey不能为空', trigger: 'change' }],
         host_name: [{ validator: checkNameInput, trigger: 'change' }],
         host_group_name: [{ required: true, message: 'host_group_name不能为空', trigger: 'change' }],
         management: [{ validator: checkmanagement, trigger: 'change' }]

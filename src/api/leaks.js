@@ -4,7 +4,6 @@
 
 import request from '@/vendor/ant-design-pro/utils/request';
 // import { getNotEmptyObjectOrNull } from '@/vendor/ant-design-pro/utils/util';
-
 const api = {
   getCveOverview: '/vulnerability/cve/overview',
   getCveList: '/vulnerability/cve/list/get',

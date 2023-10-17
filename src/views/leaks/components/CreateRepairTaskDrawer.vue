@@ -440,9 +440,6 @@ export default {
   watch: {},
   created() {
   },
-  beforeDestroy() {
-    this.$emit('createSuccess');
-  },
   methods: {
     jumpToPage() {
       clearTimeout(this.jumpModalInterval);

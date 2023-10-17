@@ -93,13 +93,39 @@
               </a-tooltip>
             </a-input>
           </a-form-item>
-          <a-form-item label="主机登录密码">
-            <a-input-password
+          <a-form-item label="认证方式">
+            <a-radio-group name="identificationGroup" v-model="identificaWay" :default-value="1" @change="onChange">
+              <a-radio :value="1">
+                主机登录密码
+              </a-radio>
+              <a-radio :value="2">
+                主机登录公钥
+              </a-radio>
+            </a-radio-group>
+          </a-form-item>
+          <a-form-item>
+            <template v-slot:label>
+              <span v-if="identificaWay === 1">主机登录密码</span>
+              <span v-else>
+                <span>主机登录公钥</span>
+                <description-tips style="margin-left: 3px;margin-right: 1px;">
+                  id_rsa.pub
+                </description-tips>
+              </span>
+            </template>
+            <a-input-password v-if="identificaWay === 1"
             v-decorator="[
                 'password',
                 {rules: [{required: pageType === 'create' ? true : requiredRules, message: '请输入主机登录密码'}]}
               ]"
               :placeholder="pageType === 'create' ? '请设置主机登录密码' : '请输入主机登录密码, 若未修改主机用户名或端口可以为空'"></a-input-password>
+            <a-input-password v-else
+              :maxLength="4096"
+              v-decorator="[
+                'ssh_pkey',
+                {rules: [{required: pageType === 'create' ? true : requiredRules, message: '请输入主机登录公钥'}]}
+              ]"
+              :placeholder="pageType === 'create' ? '请设置主机登录公钥' : '请输入主机登录公钥, 若未修改主机用户名或端口可以为空'"></a-input-password>
           </a-form-item>
           <a-form-item :wrapper-col="{span: 10, offset: 5}">
             <a-button @click="handleCancel">取消</a-button>
@@ -133,10 +159,13 @@ import {PageHeaderWrapper} from '@ant-design-vue/pro-layout';
 import AddHostGroupModal from './components/AddHostGroupModal';
 
 import {hostGroupList, addHost, getHostDetail, editHost} from '@/api/assest';
+import DescriptionTips from '@/components/DescriptionTips';
+
 export default {
   components: {
     PageHeaderWrapper,
-    AddHostGroupModal
+    AddHostGroupModal,
+    DescriptionTips
   },
   data() {
     return {
@@ -148,7 +177,8 @@ export default {
       form: this.$form.createForm(this),
       submitLoading: false,
       PortRequired: false,
-      UserRequired: false
+      UserRequired: false,
+      identificaWay: 1 // 认证方式,
     };
   },
   computed: {
@@ -194,6 +224,9 @@ export default {
     }
   },
   methods: {
+    onChange(e) {
+      this.identificaWay = e.target.value;
+    },
     handleUserChange(value) {
       if (this.pageType === 'edit') {
         value.target.value === this.basicHostInfo.ssh_user ? this.UserRequired = false : this.UserRequired = true
