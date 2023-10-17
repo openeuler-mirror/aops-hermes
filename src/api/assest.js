@@ -124,7 +124,8 @@ export function addHost(parameter) {
           ssh_port: parameter.ssh_port,
           management: parameter.management,
           ssh_user: parameter.ssh_user,
-          password: parameter.password
+          password: parameter.password === undefined ? '' : parameter.password,
+          ssh_pkey: parameter.ssh_pkey === undefined ? '' : parameter.ssh_pkey
         }
   });
 }

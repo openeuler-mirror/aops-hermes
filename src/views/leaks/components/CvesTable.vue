@@ -38,11 +38,6 @@
       </a-col>
       <a-col>
         <a-row type="flex" :gutter="6">
-          <!-- <a-col>
-            <status-change-modal
-            :selectedRowsAll="selectedRowsAll"
-              @statusUpdated="handleStatusUpdated" />
-          </a-col> -->
           <a-col>
             <upload-file v-if="standalone ? true : false" @addSuccess="handleUploadSuccess" />
           </a-col>
@@ -794,7 +789,7 @@ export default {
         const result = this.innerCveList.some(item => item.cve_id === id)
         if (result) {
           const target = this.innerCveList.find(item => item.cve_id === id)
-          const index = target.rpms.findIndex(item => item.installed_rpm === val.installed_rpm)
+          const index = target.rpms.findIndex(item => item.installed_rpm === val.installed_rpm && item.available_rpm === val.available_rpm)
           target.rpms.splice(index, 1)
           if (target.rpms.length === 0) {
             const dindex = this.innerCveList.findIndex(it => it.cve_id === id)
@@ -1056,7 +1051,7 @@ export default {
         });
         return;
       }
-      getCveList({
+      return getCveList({
         tableInfo: {
           pagination: {
             current: pagination.current,
@@ -1142,32 +1137,6 @@ export default {
     handleTaskCreateSuccess() {
       this.handleRefresh();
     },
-    handleScanAll() {},
-    handleStatusUpdated() {
-      this.selectedRowKeys = [];
-      this.selectedRowsAll = [];
-      if (this.standalone) {
-        this.handleRefresh();
-      } else {
-        const pagination = this.pagination || {};
-        const filters = this.filters || {};
-        const sorter = this.sorter || {};
-        this.$emit('statusUpdated', {
-          tableInfo: {
-            pagination: {
-              current: pagination.current,
-              pageSize: pagination.pageSize
-            },
-            filters: filters,
-            sorter: {
-              field: sorter.field,
-              order: sorter.order
-            }
-          }
-        });
-      }
-    },
-    uploadfile() {},
     handleUploadSuccess() {
       setTimeout(() => {
       this.getCvesAll();
@@ -1175,16 +1144,15 @@ export default {
     this.getCves();
     }
   },
-  beforeRouteLeave(to, from, next) {
-  // 路由跳转前，清除轮询
-    next();
+  beforeDestroy() {
     this.innerCveList = []
   },
   mounted() {
-    setTimeout(() => {
-      this.getCvesAll();
-    }, 500);
-    this.getCves();
+    this.getCves().then(
+      () => {
+        this.getCvesAll();
+      }
+    );
   }
 };
 </script>

@@ -962,14 +962,13 @@ export default {
       return false;
     }
   },
-  mounted() {
-    this.getHostList();
+  mounted: function () {
     this.getHostGroup();
     if (this.standalone) {
       // 主机列表页面中要自行获取全量主机和扫描状态
       this.getScanStatusAll([]);
-      this.getHostListAll();
     } else {
+      this.getHostList();
       // 主机详情页面中要自行获取repo列表
       this.getRepoList();
     }
