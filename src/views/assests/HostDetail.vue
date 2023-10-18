@@ -11,14 +11,14 @@
             </HostBasicInfo>
           </a-card>
         </a-tab-pane>
-        <a-tab-pane key="2" tab="插件">
+        <!-- <a-tab-pane key="2" tab="插件">
           <a-card class="aops-theme">
             <HostPluginInfo :scene="scene" @reFetchHostInfo="reFetchHostInfo"></HostPluginInfo>
           </a-card>
-        </a-tab-pane>
+        </a-tab-pane> -->
       </a-tabs>
     </a-card>
-    <HostChartInfo :queryIp="basicHostInfo.host_ip" v-if="basicHostInfo.host_ip" />
+    <!-- <HostChartInfo :queryIp="basicHostInfo.host_ip" v-if="basicHostInfo.host_ip" /> -->
   </page-header-wrapper>
 </template>
 
