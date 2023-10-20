@@ -964,11 +964,11 @@ export default {
   },
   mounted: function () {
     this.getHostGroup();
+    this.getHostList();
     if (this.standalone) {
       // 主机列表页面中要自行获取全量主机和扫描状态
       this.getScanStatusAll([]);
     } else {
-      this.getHostList();
       // 主机详情页面中要自行获取repo列表
       this.getRepoList();
     }

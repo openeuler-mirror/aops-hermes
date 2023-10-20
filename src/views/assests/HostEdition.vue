@@ -99,7 +99,7 @@
                 主机登录密码
               </a-radio>
               <a-radio :value="2">
-                主机登录公钥
+                主机登录密钥
               </a-radio>
             </a-radio-group>
           </a-form-item>
@@ -107,9 +107,9 @@
             <template v-slot:label>
               <span v-if="identificaWay === 1">主机登录密码</span>
               <span v-else>
-                <span>主机登录公钥</span>
+                <span>主机登录密钥</span>
                 <description-tips style="margin-left: 3px;margin-right: 1px;">
-                  id_rsa.pub
+                  id_rsa
                 </description-tips>
               </span>
             </template>
@@ -119,13 +119,13 @@
                 {rules: [{required: pageType === 'create' ? true : requiredRules, message: '请输入主机登录密码'}]}
               ]"
               :placeholder="pageType === 'create' ? '请设置主机登录密码' : '请输入主机登录密码, 若未修改主机用户名或端口可以为空'"></a-input-password>
-            <a-input-password v-else
+            <a-textarea :rows="4" v-else
               :maxLength="4096"
               v-decorator="[
                 'ssh_pkey',
-                {rules: [{required: pageType === 'create' ? true : requiredRules, message: '请输入主机登录公钥'}]}
+                {rules: [{required: pageType === 'create' ? true : requiredRules, message: '请输入主机登录密钥'}]}
               ]"
-              :placeholder="pageType === 'create' ? '请设置主机登录公钥' : '请输入主机登录公钥, 若未修改主机用户名或端口可以为空'"></a-input-password>
+              :placeholder="pageType === 'create' ? '请设置主机登录密钥' : '请输入主机登录密钥, 若未修改主机用户名或端口可以为空'"></a-textarea>
           </a-form-item>
           <a-form-item :wrapper-col="{span: 10, offset: 5}">
             <a-button @click="handleCancel">取消</a-button>
@@ -271,9 +271,9 @@ export default {
              if (tableParams[key] === this.basicHostInfo[key]) {
                delete tableParams[key] //  删除未修改数据
              }
-             if (key === 'password') {
+             if (key === 'password' || key === 'ssh_pkey') {
                if (tableParams[key].length === 0) {
-                 delete tableParams[key] //  password为空不传
+                 delete tableParams[key] //  password或密钥为空不传
                }
              }
             }

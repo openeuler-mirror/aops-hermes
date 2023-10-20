@@ -142,7 +142,8 @@ export function editHost(parameter, id) {
           ssh_port: parameter.ssh_port,
           management: parameter.management,
           ssh_user: parameter.ssh_user,
-          password: parameter.password
+          password: parameter.password,
+          ssh_pkey: parameter.ssh_pkey
         }
   });
 }
