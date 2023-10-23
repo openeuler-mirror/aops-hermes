@@ -1022,6 +1022,7 @@ export default {
       this.expandedRowKeys = [];
       this.selectedRowKeys = [];
       this.selectedRowsAll = [];
+      this.innerselectedRowKeys = [];
       this.innerCveList = [];
       this.getCves();
     },

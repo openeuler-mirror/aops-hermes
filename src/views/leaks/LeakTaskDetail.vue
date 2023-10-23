@@ -286,12 +286,13 @@ export default {
       rpmrecord: {},
       propType: '',
       // 轮询计时器
+      repoInfoTimeout: null,
       CveScanStatueTimeout: null,
       progressUpdateCaller: null,
       reportvisible: false,
       runningCveIds: [],
       timer: '',
-      taskId: this.$route.params.taskId,
+      taskId: '',
       taskType: this.$route.params.taskType,
       detail: {statuses: {}},
       infoLoading: false,
@@ -476,7 +477,7 @@ export default {
         const _this = this
         const Params = {
           cve_id: record.cve_id,
-          task_id: this.$route.query.task_id
+          task_id: this.taskId
         }
           getCvefixLeakRpm(Params)
           .then(function (res) {
@@ -688,6 +689,7 @@ export default {
       this.tableIsLoading = true;
       const pagination = this.pagination || {};
       const filters = this.filters || {};
+      clearTimeout(this.repoInfoTimeout);
       getHostUnderRepoTask({
         taskId: this.taskId,
         tableInfo: {
@@ -712,7 +714,7 @@ export default {
           };
           _this.reportvisible = !_this.hostRepostatusCheck(res.data.result);
           if (_this.hostRepostatusCheck(res.data.result)) {
-            setTimeout(function () {
+            _this.repoInfoTimeout = setTimeout(function () {
               _this.getHostList();
             }, configs.taskProgressUpdateInterval);
           }
@@ -864,16 +866,26 @@ export default {
       });
     }
   },
+  created() {
+    // 防止页面刷新后query参数丢失，将任务ID存储在内存中
+    if (localStorage.getItem('taskId')) {
+      this.taskId = localStorage.getItem('taskId')
+    }
+    this.taskId = this.$route.params.taskId || this.taskId
+    localStorage.setItem('taskId', this.taskId)
+  },
   mounted: function () {
     this.getInitalData();
   },
   beforeDestroy() {
     // 离开页面前，若当前存在轮询，清除轮询
-    if (this.progressUpdateCaller || this.CveScanStatueTimeout) {
+    if (this.progressUpdateCaller || this.CveScanStatueTimeout || this.repoInfoTimeout) {
       clearInterval(this.progressUpdateCaller);
       clearInterval(this.CveScanStatueTimeout);
+      clearInterval(this.repoInfoTimeout);
       this.progressUpdateCaller = null;
       this.CveScanStatueTimeout = null;
+      this.repoInfoTimeout = null;
     }
   }
 };
