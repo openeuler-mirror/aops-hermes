@@ -745,13 +745,21 @@ export default {
           _this.scanStatusData = res.data.result || {};
           if (_this.standalone) {
             _this.scanningHostIds = _this.getScanningHostAll(res.data.result);
+            // 第一次判断是否有正在扫描的主机
             if (_this.scanningHostIds.length > 0) {
-            _this.scanStatueAllTimeout = setTimeout(function () {
-              _this.getScanStatusAll(_this.scanningHostIds);
-            }, configs.scanProgressInterval);
+              if (_this.scanningHostIds.length > 0) {
+                // 第二次判断是否进入轮询查询扫描状态
+                _this.scanStatueAllTimeout = setTimeout(function () {
+                  _this.getScanStatusAll(_this.scanningHostIds);
+                }, configs.scanProgressInterval);
+              } else {
+                // 扫描结束后刷新界面
+                _this.handleRefresh();
+                _this.scanStatusloading = false;
+              }
             } else {
+              // 第一次判断是否有正在扫描的主机，若没有则退出查询
               _this.scanStatusloading = false;
-              _this.handleRefresh();
             }
           }
         })
