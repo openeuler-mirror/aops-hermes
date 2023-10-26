@@ -759,6 +759,7 @@ export default {
               }
             } else {
               // 第一次判断是否有正在扫描的主机，若没有则退出查询
+              _this.getHostListAll();
               _this.scanStatusloading = false;
             }
           }
