@@ -519,9 +519,9 @@ export default {
 
       const _this = this;
       if (this.taskType === 'cve fix') {
-          // if (this.cveLiIsEmpty()) {
-          //   return;
-          // }
+          if (this.cveLiIsEmpty()) {
+            return;
+          }
           if (this.innerCveList.length !== 0) {
             const cveListparam = this.cveList.map((cve) => {
               return {
@@ -627,6 +627,9 @@ export default {
 
       if (this.taskType === 'cve rollback') {
         // 根据主机数据获取类型，自行或cve下的主机数据或者使用外部输入的主机数据更行talbe数据
+        if (this.cveLiIsEmpty()) {
+          return;
+        }
         if (this.innerCveList.length !== 0) {
           const cveListparam = this.cveList.map((cve) => {
             return {
@@ -663,9 +666,6 @@ export default {
           case hostListTypes[0]:
           // hostListType为byLoading
           _this.hostUnderCveLoading = true;
-          // if (this.cveLiIsEmpty()) {
-          //   return;
-          // }
           getHostUnderMultipleCVE(this.fixParams)
             .then(function (res) {
               // hostlists are contained in cveMap
