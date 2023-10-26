@@ -21,7 +21,7 @@
       <div v-else class="editable-cell-text-wrapper">
         <div class="editable-content">
           <!-- <a-input :type="formkey === 'password' ? 'password' : 'text'" v-model="value" /> -->
-          <span v-if="formkey === 'password' || formkey === 'ssh_pkey'">{{ countStar(form[formkey]) }}</span>
+          <span v-if="formkey === 'password' || formkey === 'ssh_pkey'">{{ countStar() }}</span>
           <span v-else>{{ value || ' ' }}</span>
         </div>
         <a-icon type="edit" class="editable-cell-icon" @click="edit" />
@@ -40,9 +40,27 @@ export default {
     formkey: {
       default: '',
       type: String
+    },
+    record: {
+      default: null,
+      type: Object
     }
   },
   data() {
+    const validatePassword = (rule, value, callback) => {
+      if (!this.record.ssh_pkey && (value.length === 0 || value.split(' ').join('').length === 0)) {
+        callback(new Error('password和ssh_pkey不能都为空!'));
+      } else {
+        callback();
+      }
+    };
+    const validateSshpkey = (rule, value, callback) => {
+      if (!this.record.password && (value.length === 0 || value.split(' ').join('').length === 0)) {
+        callback(new Error('password和ssh_pkey不能都为空!'));
+      } else {
+        callback();
+      }
+    };
     const validateUser = (rule, value, callback) => {
       if (value.length === 0 || value.split(' ').join('').length === 0) {
         callback(new Error('ssh_user不能为空!'));
@@ -90,14 +108,14 @@ export default {
       cb();
     };
     return {
-      value: this.text,
+      value: this.text === 'undefined' ? '' : this.text,
       editable: false,
       rules: {
         host_ip: [{ required: true, pattern: /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/, message: '请输入IP地址在 0.0.0.0~255.255.255.255 区间内', trigger: 'change' }],
         ssh_port: [{required: true, message: '请输入端口'}, {validator: checkSSHPort}],
         ssh_user: [{ validator: validateUser, trigger: 'change' }],
-        password: [{ required: true, message: 'password不能为空', trigger: 'change' }],
-        ssh_pkey: [{ required: true, message: 'ssh_pkey不能为空', trigger: 'change' }],
+        password: [{ validator: validatePassword, trigger: 'change' }],
+        ssh_pkey: [{ validator: validateSshpkey, trigger: 'change' }],
         host_name: [{ validator: checkNameInput, trigger: 'change' }],
         host_group_name: [{ required: true, message: 'host_group_name不能为空', trigger: 'change' }],
         management: [{ validator: checkmanagement, trigger: 'change' }]
@@ -106,11 +124,7 @@ export default {
   },
   methods: {
     countStar(num) {
-      let str = ''
-      for (let i = 0; i < num.length; i++) {
-        str += '*'
-      }
-      return str
+      return '**********'
     },
     handleChange(e) {
       const value = e.target.value;
@@ -152,7 +166,7 @@ export default {
   created() {
   },
   beforeDestroy() {
-    document.removeEventListener('mouseup', this.handleClickOutside)
+    document.removeEventListener('mouseup', this.handleClickOutside);
   },
   mounted() {
     document.addEventListener('mouseup', this.handleClickOutside)

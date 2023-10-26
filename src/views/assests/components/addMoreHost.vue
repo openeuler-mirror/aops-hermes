@@ -31,6 +31,7 @@
             <editable-cell
               ref="host_ip"
               formkey="host_ip"
+              :record="record"
               :text="String(text)"
               @unSubmit="unSubmit()"
               @allowSub="allowSub()"
@@ -40,6 +41,7 @@
             <editable-cell
               ref="ssh_port"
               formkey="ssh_port"
+              :record="record"
               :text="String(text)"
               @unSubmit="unSubmit()"
               @allowSub="allowSub()"
@@ -49,6 +51,7 @@
             <editable-cell
               ref="ssh_user"
               formkey="ssh_user"
+              :record="record"
               :text="String(text)"
               @unSubmit="unSubmit()"
               @allowSub="allowSub()"
@@ -58,6 +61,7 @@
             <editable-cell
               ref="password"
               formkey="password"
+              :record="record"
               :text="String(text)"
               @unSubmit="unSubmit()"
               @allowSub="allowSub()"
@@ -67,6 +71,7 @@
             <editable-cell
               ref="ssh_pkey"
               formkey="ssh_pkey"
+              :record="record"
               :text="String(text)"
               @unSubmit="unSubmit()"
               @allowSub="allowSub()"
@@ -76,6 +81,7 @@
             <editable-cell
               ref="host_name"
               formkey="host_name"
+              :record="record"
               :text="String(text)"
               @unSubmit="unSubmit()"
               @allowSub="allowSub()"
@@ -85,6 +91,7 @@
             <editable-cell
               ref="host_group_name"
               formkey="host_group_name"
+              :record="record"
               :text="String(text)"
               @unSubmit="unSubmit()"
               @allowSub="allowSub()"
@@ -94,6 +101,7 @@
             <editable-cell
               ref="management"
               formkey="management"
+              :record="record"
               :text="String(text)"
               @unSubmit="unSubmit()"
               @allowSub="allowSub()"
@@ -350,7 +358,7 @@ export default {
           const result = XLSX.utils.sheet_to_json(worksheet); // 将数据json数据格式
           result.forEach((item) => {
             const arr = Object.keys(item)
-            if (!arr.includes('host_ip') || !arr.includes('ssh_port') || !arr.includes('ssh_user') || !arr.includes('password') || !arr.includes('ssh_pkey') || !arr.includes('host_name') || !arr.includes('host_group_name') || !arr.includes('management')) {
+            if (!arr.includes('host_ip') || !arr.includes('ssh_port') || !arr.includes('ssh_user') || (!arr.includes('password') && !arr.includes('ssh_pkey')) || !arr.includes('host_name') || !arr.includes('host_group_name') || !arr.includes('management')) {
               this.removeFile(file);
               this.dataAllow = false;
             }
