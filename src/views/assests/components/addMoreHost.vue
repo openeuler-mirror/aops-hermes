@@ -395,6 +395,12 @@ export default {
         item.management = Boolean(item.management)
         item.password = String(item.password)
         item.ssh_pkey = String(item.ssh_pkey)
+        if (item.password === 'undefined') {
+          item.password = ''
+        }
+        if (item.ssh_pkey === 'undefined') {
+          item.ssh_pkey = ''
+        }
         delete item.key;
         delete item.editable;
         delete item.result;
