@@ -12,7 +12,7 @@
               <div slot="message">
                 <span>{{ `已选择` + selectedRowKeys.length + `项` }}</span>
                 <a
-                v-if="selectedRowKeys.length > 0"
+                  v-if="selectedRowKeys.length > 0"
                   @click="deleteConfigBash(selectedRowKeys, selectedRows)">
                   批量删除
                 </a>
@@ -33,9 +33,9 @@
           </a-col>
         </a-row>
         <a-table
-        rowKey="filePath"
-        :columns="columns"
-        :data-source="tableData"
+          rowKey="filePath"
+          :columns="columns"
+          :data-source="tableData"
           :pagination="pagination"
           :row-selection="rowSelection"
           @change="handleTableChange"
@@ -48,12 +48,12 @@
             <a-divider type="vertical" />
             <a @click="showConfigChange(record)">配置变更日志</a>
             <a-divider type="vertical" />
-            <a @click="showEditDrawer(record)">编辑配置&emsp;&emsp;</a>
+            <a @click="showEditDrawer(record)">编辑配置</a>
             <a-divider type="vertical" />
             <a-popconfirm
-            title="你确定删除这行配置吗?"
-            ok-text="确认"
-            cancel-text="取消"
+              title="你确定删除这行配置吗?"
+              ok-text="确认"
+              cancel-text="取消"
               @confirm="deleteConfig(record)">
               <a-icon slot="icon" type="close-circle" style="color: red" />
               <a>删除</a>
@@ -61,10 +61,10 @@
           </span>
         </a-table>
         <a-drawer
-        title="配置文件内容"
-        :width="720"
-        placement="right"
-        :visible="configContentVisible"
+          title="配置文件内容"
+          :width="720"
+          placement="right"
+          :visible="configContentVisible"
           :body-style="{paddingBottom: '80px'}"
           @close="closeConfigContent">
           <a-descriptions :column="1" layout="horizontal">
@@ -81,10 +81,10 @@
           </a-descriptions>
         </a-drawer>
         <a-drawer
-        title="配置日志"
-        :width="1080"
-        placement="right"
-        :visible="configChangeVisible"
+          title="配置日志"
+          :width="1080"
+          placement="right"
+          :visible="configChangeVisible"
           :body-style="{paddingBottom: '80px'}"
           @close="closeConfigChange">
           <a-spin :spinning="logIsLoading">
@@ -103,8 +103,8 @@
                 </div>
                 <p class="pLog">变更历史：</p>
                 <a-table
-                rowKey="changeId"
-                :columns="confChangeColumns"
+                  rowKey="changeId"
+                  :columns="confChangeColumns"
                   :data-source="manageConfChange[0].changeLog"
                   :expandIconAsCell="false"
                   :expandIconColumnIndex="4"
@@ -125,11 +125,11 @@
       </div>
     </a-card>
     <domain-selection-modal
-    :showDomainSelection="choiceDomainNameModalVisible"
+      :showDomainSelection="choiceDomainNameModalVisible"
       @cancel="handleDomainSelectCancel" />
     <add-configuration-drawer
-    :isEdit="true"
-    :visibleControl="editConfVisible"
+      :isEdit="true"
+      :visibleControl="editConfVisible"
       :domainName="domainName"
       :editFilePath="editFilePath"
       @ok="onEditConfsOk"
@@ -225,18 +225,24 @@ export default {
         {
           dataIndex: 'filePath',
           key: 'filePath',
-          title: '配置文件'
+          title: '配置文件',
+          width: '20%'
         },
         {
           key: 'contents',
           title: '配置详情',
-          scopedSlots: {customRender: 'contents'}
+          scopedSlots: {customRender: 'contents'},
+          width: '50%',
+          ellipsis: true,
+          customRender: (text, record) => <a-tooltip placement="topLeft"
+                                                     title={record.contents}>{record.contents}</a-tooltip>
         },
         {
           key: 'operation',
           title: '操作',
           scopedSlots: {customRender: 'action'},
-          width: 240
+          width: '30%',
+          align: 'center'
         }
       ];
     },
