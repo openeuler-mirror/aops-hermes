@@ -5,7 +5,8 @@ const api = {
   getManagementConf: '/management/getManagementConf', // 读取业务域配置信息
   queryManageConfChange: '/management/queryManageConfChange', // 读取业务域配置日志信息
   deleteManagementConf: '/management/deleteManagementConf', // 删除业务域配置
-  querySupportedConfs: '/confs/querySupportedConfs' // 查询可供选择的配置文件列表
+  querySupportedConfs: '/confs/querySupportedConfs', // 查询可供选择的配置文件列表
+  uploadManagementConf: '/management/uploadManagementConf' // 从本地导入文件 新增/更新配置
 };
 
 export default api;
@@ -57,5 +58,14 @@ export function querySupportedConfs(parameter) {
     data: {
       domainName: parameter
     }
+  });
+}
+
+export function uploadManagementConf(file) {
+  return request({
+    url: api.uploadManagementConf,
+    method: 'post',
+    data: file,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   });
 }
