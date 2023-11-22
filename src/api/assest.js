@@ -57,8 +57,7 @@ export function downLoadtemplate() {
   return request({
     url: api.downLoadtemplate,
     method: 'get',
-    params: {
-    }
+    params: {}
   });
 }
 
@@ -76,7 +75,7 @@ export function addMoreHost(params) {
   return request({
     url: api.addMoreHost,
     method: 'post',
-    data: { host_list: params }
+    data: {host_list: params}
     // headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   });
 }
@@ -94,7 +93,7 @@ export function hostInfo(parameter) {
 // 获取指定主机的基本信息，并以map形式返回。需要特别的代码结构配合使用;
 export function hostBasicInfo(list, key) {
   var hostList = [];
-  list.forEach(function(item) {
+  list.forEach(function (item) {
     hostList.push(item[key || 'host_id']);
   });
   return request({
@@ -104,9 +103,9 @@ export function hostBasicInfo(list, key) {
       host_list: hostList,
       basic: true
     }
-  }).then(function(res) {
+  }).then(function (res) {
     var map = {};
-    res.data.host_infos.forEach(function(host) {
+    res.data.host_infos.forEach(function (host) {
       map[host.host_id] = host;
     });
     return map;
@@ -118,15 +117,15 @@ export function addHost(parameter) {
     url: api.addHost,
     method: 'post',
     data: {
-          host_name: parameter.host_name,
-          host_group_name: parameter.host_group_name,
-          host_ip: parameter.host_ip,
-          ssh_port: parameter.ssh_port,
-          management: parameter.management,
-          ssh_user: parameter.ssh_user,
-          password: parameter.password === undefined ? '' : parameter.password,
-          ssh_pkey: parameter.ssh_pkey === undefined ? '' : parameter.ssh_pkey
-        }
+      host_name: parameter.host_name,
+      host_group_name: parameter.host_group_name,
+      host_ip: parameter.host_ip,
+      ssh_port: parameter.ssh_port,
+      management: parameter.management,
+      ssh_user: parameter.ssh_user,
+      password: parameter.password === undefined ? '' : parameter.password,
+      ssh_pkey: parameter.ssh_pkey === undefined ? '' : parameter.ssh_pkey
+    }
   });
 }
 
@@ -136,15 +135,15 @@ export function editHost(parameter, id) {
     url: api.editHost,
     method: 'post',
     data: {
-          host_id: Number(id),
-          host_name: parameter.host_name,
-          host_group_name: parameter.host_group_name,
-          ssh_port: parameter.ssh_port,
-          management: parameter.management,
-          ssh_user: parameter.ssh_user,
-          password: parameter.password,
-          ssh_pkey: parameter.ssh_pkey
-        }
+      host_id: Number(id),
+      host_name: parameter.host_name,
+      host_group_name: parameter.host_group_name,
+      ssh_port: parameter.ssh_port,
+      management: parameter.management,
+      ssh_user: parameter.ssh_user,
+      password: parameter.password,
+      ssh_pkey: parameter.ssh_pkey
+    }
   });
 }
 
@@ -257,7 +256,7 @@ export function getHostDetail(hostId, isBasicInfo = false) {
   });
 }
 
-export function getHostMetrics (parameter) {
+export function getHostMetrics(parameter) {
   return request({
     url: api.getHostMetrics,
     method: 'get',
@@ -267,7 +266,7 @@ export function getHostMetrics (parameter) {
   });
 }
 
-export function getMetricDetails (parameter) {
+export function getMetricDetails(parameter) {
   return request({
     url: api.getMetricDetails,
     method: 'post',
@@ -278,7 +277,7 @@ export function getMetricDetails (parameter) {
   });
 }
 
-export function getMetricData (parameter) {
+export function getMetricData(parameter) {
   return request({
     url: api.getMetricData,
     method: 'post',

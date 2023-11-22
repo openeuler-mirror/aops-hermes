@@ -5,24 +5,24 @@
 import axios from 'axios';
 import store from '@/store';
 import notification from 'ant-design-vue/es/notification';
-import { VueAxios } from './axios';
+import {VueAxios} from './axios';
 
 // 全局声明缓存变量
 var timestamp1;
 var isRefreshing = false;
 
-let subscribers = []
+let subscribers = [];
 // 刷新 token 后, 将缓存的接口重新请求一次
 function onAccessTokenFetched(newToken) {
   subscribers.forEach((callback) => {
-    callback(newToken)
-  })
+    callback(newToken);
+  });
   // 清空缓存接口
-  subscribers = []
+  subscribers = [];
 }
 // 添加缓存接口
 function addSubscriber(callback) {
-  subscribers.push(callback)
+  subscribers.push(callback);
 }
 
 const errorMsgs = {
@@ -37,7 +37,7 @@ const request = axios.create({
 });
 
 // 异常拦截处理器
-const errorHandler = error => {
+const errorHandler = (error) => {
   if (error.response) {
     const data = error.response.data;
     // 从 localstorage 获取 token
@@ -73,26 +73,30 @@ const errorHandler = error => {
 };
 
 // request interceptor
-request.interceptors.request.use(config => {
+request.interceptors.request.use((config) => {
   // 如果 token 存在
   // 让每个请求携带自定义 token 请根据实际情况自行修改
   if (localStorage.getItem('Access-Token')) {
-    const token = localStorage.getItem('Access-Token')
+    const token = localStorage.getItem('Access-Token');
     config.headers['Access-Token'] = token;
-    localStorage.setItem('aops_token', token)
-    const userName = localStorage.getItem('user_name')
+    localStorage.setItem('aops_token', token);
+    const userName = localStorage.getItem('user_name');
     userName && localStorage.setItem('user_name', userName);
   }
-  if (config.url === '/vulnerability/cve/advisory/upload' || config.url === '/vulnerability/cve/unaffected/upload' || config.url === '/management/uploadManagementConf') {
-    config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+  if (
+    config.url === '/vulnerability/cve/advisory/upload' ||
+    config.url === '/vulnerability/cve/unaffected/upload' ||
+    config.url === '/management/uploadManagementConf'
+  ) {
+    config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
   } else {
-    config.headers['Content-Type'] = 'application/json'
+    config.headers['Content-Type'] = 'application/json';
   }
   return config;
 }, errorHandler);
 
 // response interceptor
-request.interceptors.response.use(response => {
+request.interceptors.response.use((response) => {
   // 这对业务域相关接口返回体做特殊处理，后续需要统一
   const code = response.data.code || response.status;
   // 不处理所有2xx的状态码
@@ -107,12 +111,15 @@ request.interceptors.response.use(response => {
             description: response.data.message
           });
           setTimeout(() => {
-            store.dispatch('Logout').then(() => {
-              window.location.reload();
-            }).catch((err) => {
-              this.$message.error(err.response.message)
-            })
-          }, 1000)
+            store
+              .dispatch('Logout')
+              .then(() => {
+                window.location.reload();
+              })
+              .catch((err) => {
+                this.$message.error(err.response.message);
+              });
+          }, 1000);
         }
         break;
       case '1207':
@@ -123,35 +130,41 @@ request.interceptors.response.use(response => {
             description: response.data.message
           });
           setTimeout(() => {
-            store.dispatch('Logout').then(() => {
-              isRefreshing = false
-              window.location.reload();
-            }).catch((err) => {
-              isRefreshing = false
-              this.$message.error(err.response.message)
-            })
-          }, 1000)
+            store
+              .dispatch('Logout')
+              .then(() => {
+                isRefreshing = false;
+                window.location.reload();
+              })
+              .catch((err) => {
+                isRefreshing = false;
+                this.$message.error(err.response.message);
+              });
+          }, 1000);
         } else {
           if (!isRefreshing) {
-            isRefreshing = true
-            store.dispatch('RefreshToken').then(() => {
-              // 再发请求
-              isRefreshing = false
-              onAccessTokenFetched(localStorage.getItem('Access-Token'))
-            }).catch(() => {
-              isRefreshing = false;
-              window.location.reload();
-            })
+            isRefreshing = true;
+            store
+              .dispatch('RefreshToken')
+              .then(() => {
+                // 再发请求
+                isRefreshing = false;
+                onAccessTokenFetched(localStorage.getItem('Access-Token'));
+              })
+              .catch(() => {
+                isRefreshing = false;
+                window.location.reload();
+              });
           }
         }
         const retryRequest = new Promise((resolve) => {
           addSubscriber((newToken) => {
             response.config.headers['Access-Token'] = newToken;
-            response.config.url = response.config.url.replace(response.config.baseURL, '')
-            resolve(request(response.config))
-          })
-        })
-        return retryRequest
+            response.config.url = response.config.url.replace(response.config.baseURL, '');
+            resolve(request(response.config));
+          });
+        });
+        return retryRequest;
       default:
         err = new Error(response.data.message);
         err.data = response.data.data;
@@ -183,4 +196,4 @@ const installer = {
 
 export default request;
 
-export { installer as VueAxios, request as axios };
+export {installer as VueAxios, request as axios};

@@ -28,11 +28,11 @@ const abnormalAlert = {
       return new Promise((resolve, reject) => {
         commit('SET_COUNT_LOADING', true);
         getAlertCount()
-          .then(res => {
+          .then((res) => {
             commit('SET_COUNT', res.data.count);
             resolve();
           })
-          .catch(err => {
+          .catch((err) => {
             reject(err);
           })
           .finally(() => {
@@ -44,19 +44,19 @@ const abnormalAlert = {
       return new Promise((resolve, reject) => {
         commit('SET_ALERT_INFO_RESULT_LOADING', true);
         getAlertInfoResult({})
-          .then(res => {
+          .then((res) => {
             let tempArr = [];
             tempArr =
-              res.data.results
-                && res.data.results.map((item, idx) => {
-                  item.key = idx;
-                  item.order = idx;
-                  return item;
-                });
+              res.data.results &&
+              res.data.results.map((item, idx) => {
+                item.key = idx;
+                item.order = idx;
+                return item;
+              });
             commit('SET_ALERT_INFO_RESULT', tempArr);
             resolve();
           })
-          .catch(err => {
+          .catch((err) => {
             reject(err);
           })
           .finally(() => {

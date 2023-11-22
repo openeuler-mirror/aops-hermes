@@ -1,5 +1,5 @@
 <template>
-  <div id="alertInfoDrawer" style="width: 100%;overflow: auto;">
+  <div id="alertInfoDrawer" style="width: 100%; overflow: auto">
     <p>共获取到 {{ alertInfoResult.length }} 条告警信息</p>
     <a-table
       :rowKey="(record, index) => index"
@@ -18,7 +18,7 @@ import {getAlertInfoResult} from '@/api/check';
 const defaultPagination = {
   current: 1,
   pageSize: 10,
-  showTotal: total => `总计 ${total} 项`,
+  showTotal: (total) => `总计 ${total} 项`,
   showSizeChanger: true,
   showQuickJumper: true,
   size: 'small',
@@ -74,11 +74,11 @@ export default {
         per_page: pagination.pageSize,
         direction: direction
       })
-        .then(res => {
+        .then((res) => {
           that.alertInfoResult = res.data.results;
           that.pagination.total = res.data.total_count;
         })
-        .catch(err => {
+        .catch((err) => {
           that.$message.error(err.response.message);
         })
         .finally(() => {

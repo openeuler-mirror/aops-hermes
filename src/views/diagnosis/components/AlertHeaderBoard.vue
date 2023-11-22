@@ -90,10 +90,10 @@ export default {
   },
   computed: {
     ...mapState({
-      alertCount: state => state.abnormalAlert.alertCount,
-      countIsLoading: state => state.abnormalAlert.alertCountLoading,
-      alertInfoResult: state => state.abnormalAlert.alertInfoResult,
-      alertInfoLoading: state => state.abnormalAlert.alertInfoResultLoading
+      alertCount: (state) => state.abnormalAlert.alertCount,
+      countIsLoading: (state) => state.abnormalAlert.alertCountLoading,
+      alertInfoResult: (state) => state.abnormalAlert.alertInfoResult,
+      alertInfoLoading: (state) => state.abnormalAlert.alertInfoResultLoading
     }),
     alertInfoColumns() {
       return [
@@ -101,7 +101,7 @@ export default {
           dataIndex: 'order',
           title: '排名',
           align: 'center',
-          customRender: text => {
+          customRender: (text) => {
             if (text < 1) {
               return <a-tag class="result-tag hight-light">{text + 1}</a-tag>;
             } else {

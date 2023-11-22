@@ -6,9 +6,7 @@
           <a-col>
             <h3 class="workFlow-title">
               工作流
-              <description-tips>
-                基于应用创建而来，执行后再启动定时诊断，异常结果显示在告警界面。
-              </description-tips>
+              <description-tips> 基于应用创建而来，执行后再启动定时诊断，异常结果显示在告警界面。 </description-tips>
             </h3>
           </a-col>
         </a-row>
@@ -17,11 +15,7 @@
             <span>共获取到&nbsp;{{ pagination.total }}&nbsp;条工作流信息</span>
           </a-col>
           <a-col>
-            <a-button
-            type="primary"
-            @click="refreshWorkFlow"
-            :loading="tableIsLoading"
-              ref="tableRefresh">
+            <a-button type="primary" @click="refreshWorkFlow" :loading="tableIsLoading" ref="tableRefresh">
               <a-icon type="reload"></a-icon>
               刷新
             </a-button>
@@ -31,23 +25,25 @@
           <a-row class="aops-table-control-row">
             <a-col>
               <a-table
-              class="workflow-table"
-              :columns="columns"
-              :pagination="pagination"
+                class="workflow-table"
+                :columns="columns"
+                :pagination="pagination"
                 :data-source="workFlowList"
                 @change="handleWorkFlowTableChange"
                 :loading="tableIsLoading"
-                :locale="{emptyText: getEmpty}">
+                :locale="{emptyText: getEmpty}"
+              >
                 <span slot="workflow_name" slot-scope="workflow_name, record">
                   <router-link
-                  :title="workflow_name"
-                  :to="{
+                    :title="workflow_name"
+                    :to="{
                       path: `/diagnosis/workflow/${record.workflow_id}`
-                    }">{{ workflow_name }}</router-link>
+                    }"
+                    >{{ workflow_name }}</router-link
+                  >
                 </span>
                 <span slot="description" slot-scope="description">
-                  <CutText class="bgcTooltip" placement="topLeft" :text="description" :length="30">
-                  </CutText>
+                  <CutText class="bgcTooltip" placement="topLeft" :text="description" :length="30"> </CutText>
                 </span>
                 <span slot="status" slot-scope="status" class="status">
                   <a-badge :status="statusColorMap[status]"></a-badge>
@@ -55,24 +51,23 @@
                 </span>
                 <span slot="operation" slot-scope="operation, record">
                   <a
-                  class="operation"
-                  @click="executeWorkFlow(operation, record)"
-                    :disabled="record.status === 'running'">执行
+                    class="operation"
+                    @click="executeWorkFlow(operation, record)"
+                    :disabled="record.status === 'running'"
+                    >执行
                   </a>
                   <a-divider type="vertical" />
-                  <a
-                  class="operation"
-                  @click="suspendWorkFlow(operation, record)"
-                    :disabled="record.status === 'hold'">
+                  <a class="operation" @click="suspendWorkFlow(operation, record)" :disabled="record.status === 'hold'">
                     暂停
                   </a>
                   <a-divider type="vertical" />
                   <a-popconfirm
-                  title="你确定删除这个工作流吗?"
-                  ok-text="确认"
-                  cancel-text="取消"
+                    title="你确定删除这个工作流吗?"
+                    ok-text="确认"
+                    cancel-text="取消"
                     @confirm="deleteWorkFlow(operation, record)"
-                    :disabled="record.status === 'running'">
+                    :disabled="record.status === 'running'"
+                  >
                     <a class="operation" :disabled="record.status === 'running'">删除</a>
                   </a-popconfirm>
                   <a-divider type="vertical" />
@@ -86,20 +81,14 @@
       <a-card :bordered="false" class="aops-appList aops-theme">
         <h3 class="application-title">
           应用
-          <description-tips>
-            将诊断逻辑进行封装，是工作流的“模板”。
-          </description-tips>
+          <description-tips> 将诊断逻辑进行封装，是工作流的“模板”。 </description-tips>
         </h3>
-        <a-row type="flex" justify="space-between" style="margin-bottom: 10px;">
+        <a-row type="flex" justify="space-between" style="margin-bottom: 10px">
           <a-col>
             <span>共获取到&nbsp;{{ appListPagination.total }}&nbsp;个应用信息</span>
           </a-col>
           <a-col>
-            <a-button
-            type="primary"
-            @click="refreshAppList"
-            :loading="appIsLoading"
-              ref="appRefresh">
+            <a-button type="primary" @click="refreshAppList" :loading="appIsLoading" ref="appRefresh">
               <a-icon type="reload"></a-icon>
               刷新
             </a-button>
@@ -140,9 +129,7 @@
                   <div class="appBottom">
                     <!-- 描述 -->
                     <div class="description">
-                      <div class="description-name">
-                        描述：
-                      </div>
+                      <div class="description-name">描述：</div>
                       <div class="description-detail">
                         <span :title="app.description">{{ app.description }}</span>
                       </div>
@@ -154,8 +141,8 @@
           </a-row>
         </a-spin>
         <a-pagination
-        :current="appListPagination.page"
-        :pageSize="appListPagination.perPage"
+          :current="appListPagination.page"
+          :pageSize="appListPagination.perPage"
           :total="appListPagination.total"
           :pageSizeOptions="['8', '15', '20']"
           size="small"
@@ -163,7 +150,8 @@
           show-quick-jumper
           class="pagination"
           @change="onAppPageChange"
-          @showSizeChange="onAppSizeChange" />
+          @showSizeChange="onAppSizeChange"
+        />
       </a-card>
     </div>
   </my-page-header-wrapper>

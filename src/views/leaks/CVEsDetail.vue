@@ -32,11 +32,7 @@
                 个
               </span>
               <span v-else>无</span>
-              <a-drawer
-              title="关联CVE"
-              :visible="relatedCveDrawerVisble"
-                @close="relatedCveDrawerClose"
-                width="400">
+              <a-drawer title="关联CVE" :visible="relatedCveDrawerVisble" @close="relatedCveDrawerClose" width="400">
                 <table class="drawer-cve-table">
                   <th>序号</th>
                   <th>cve名称</th>
@@ -53,12 +49,16 @@
           <h4>cve描述：</h4>
           <p class="detail-description">{{ detail.description }}</p>
           <h4>影响产品：</h4>
-          <div style="width: 600px;">
+          <div style="width: 600px">
             <a-table
-            :columns="columns"
-            :data-source="productData"
-            :rowKey="(record, index) => { return index }"
-            :pagination="false"
+              :columns="columns"
+              :data-source="productData"
+              :rowKey="
+                (record, index) => {
+                  return index;
+                }
+              "
+              :pagination="false"
             >
             </a-table>
           </div>
@@ -68,12 +68,13 @@
     <a-card :bordered="false" class="aops-theme">
       <h1>受影响主机</h1>
       <host-table
-      :cveList="[detail]"
-      :inputList="hostList"
-      :inputLoading="hostIsLoading"
-      :cveId="detail.cve_id"
-      @getTableData="getHostData"
-      :paginationTotal="paginationTotal" />
+        :cveList="[detail]"
+        :inputList="hostList"
+        :inputLoading="hostIsLoading"
+        :cveId="detail.cve_id"
+        @getTableData="getHostData"
+        :paginationTotal="paginationTotal"
+      />
     </a-card>
   </page-header-wrapper>
 </template>
@@ -183,9 +184,9 @@ export default {
         .then(function (res) {
           _this.hostList = res.data.result || [];
           _this.hostList.forEach((item) => {
-            item.hp_status = item.hp_status ? item.hp_status : '——'
-            item.fixStatus = item.hotpatch ? `是(${item.hp_status})` : '否'
-          })
+            item.hp_status = item.hp_status ? item.hp_status : '——';
+            item.fixStatus = item.hotpatch ? `是(${item.hp_status})` : '否';
+          });
           _this.paginationTotal = res.data.total_count || (res.data.total_count === 0 ? 0 : undefined);
         })
         .catch(function (err) {

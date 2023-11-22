@@ -21,26 +21,27 @@
             <div>创建时间：{{ dateFormat('YYYY-mm-dd HH:MM:SS', workflow.create_time * 1000) }}</div>
             <div class="control-btns">
               <a-button
-              type="primary"
-              @click="execute"
-              :loading="excuteLoading"
-                :disabled="workflow.status === 'running'">
+                type="primary"
+                @click="execute"
+                :loading="excuteLoading"
+                :disabled="workflow.status === 'running'"
+              >
                 执行
               </a-button>
-              <a-button @click="stop" :loading="stopLoading" :disabled="workflow.status === 'hold'">
-                暂停
-              </a-button>
+              <a-button @click="stop" :loading="stopLoading" :disabled="workflow.status === 'hold'"> 暂停 </a-button>
               <a-popconfirm
-              title="确定删除本工作流吗?"
-              placement="topRight"
-              ok-text="确认"
-              cancel-text="取消"
+                title="确定删除本工作流吗?"
+                placement="topRight"
+                ok-text="确认"
+                cancel-text="取消"
                 @confirm="deleteWorkflow"
-                :disabled="workflow.status === 'running'">
+                :disabled="workflow.status === 'running'"
+              >
                 <a-button
-                type="danger"
-                :ghost="workflow.status !== 'running'"
-                  :disabled="workflow.status === 'running'">
+                  type="danger"
+                  :ghost="workflow.status !== 'running'"
+                  :disabled="workflow.status === 'running'"
+                >
                   删除
                 </a-button>
               </a-popconfirm>
@@ -49,32 +50,30 @@
         </a-row>
         <a-row class="tab-container">
           <a-tabs :default-active-key="key" @change="callback">
-            <a-tab-pane v-for="item in detailMap" :key="item" :tab="detailStatusMap[item]">
-            </a-tab-pane>
+            <a-tab-pane v-for="item in detailMap" :key="item" :tab="detailStatusMap[item]"> </a-tab-pane>
           </a-tabs>
         </a-row>
       </a-card>
       <a-card v-show="key == 'singlecheck'" :bordered="false" class="aops-theme">
         <div class="tableWidth">
           <a-table
-          rowKey="host_ip"
-          :columns="hostcheckColums"
-          :data-source="singlecheck"
+            rowKey="host_ip"
+            :columns="hostcheckColums"
+            :data-source="singlecheck"
             :pagination="pagination"
             :loading="tableIsLoading"
-            :expandedRowKeys.sync="expandedRowKeys">
+            :expandedRowKeys.sync="expandedRowKeys"
+          >
             <p slot="expandedRowRender" slot-scope="value" style="margin: 0">
               <a-table
-              rowKey="single"
-              :columns="singlecheckColumns"
-              :data-source="value.model"
+                rowKey="single"
+                :columns="singlecheckColumns"
+                :data-source="value.model"
                 :scroll="{y: 240}"
-                :pagination="false">
+                :pagination="false"
+              >
                 <template slot="action" slot-scope="record">
-                  <a
-                  slot="action"
-                  href="javascript:;"
-                    @click="showModal(record, 'singlecheck')">修改</a>
+                  <a slot="action" href="javascript:;" @click="showModal(record, 'singlecheck')">修改</a>
                 </template>
               </a-table>
             </p>
@@ -83,11 +82,12 @@
       </a-card>
       <a-card v-show="key == 'multicheck'" :bordered="false" class="aops-theme">
         <a-table
-        :columns="multicheckColumns"
-        :data-source="multicheck"
-        rowKey="host_id"
+          :columns="multicheckColumns"
+          :data-source="multicheck"
+          rowKey="host_id"
           :pagination="pagination"
-          :loading="tableIsLoading">
+          :loading="tableIsLoading"
+        >
           <template slot="action" slot-scope="record">
             <a slot="action" href="javascript:;" @click="showModal(record, 'multicheck')">修改</a>
           </template>
@@ -96,11 +96,12 @@
       <a-card v-show="key == 'diag'" :bordered="false" class="aops-theme">
         <div class="tableWidth">
           <a-table
-          :columns="diagColumns"
-          rowKey="model_name"
-          :data-source="diag"
+            :columns="diagColumns"
+            rowKey="model_name"
+            :data-source="diag"
             :pagination="false"
-            :loading="tableIsLoading">
+            :loading="tableIsLoading"
+          >
             <template slot="action" slot-scope="record">
               <a slot="action" href="javascript:;" @click="showModal(record, 'diag')">修改</a>
             </template>
@@ -108,12 +109,13 @@
         </div>
       </a-card>
       <UpdateModel
-      :workflow="workflow"
-      :updateTarget="updateTarget"
-      :visible="visible"
+        :workflow="workflow"
+        :updateTarget="updateTarget"
+        :visible="visible"
         @getWorkflowDatails="getWorkflowDatails"
         @changeVisible="changeVisible"
-        ref="updateModel">
+        ref="updateModel"
+      >
       </UpdateModel>
     </div>
   </my-page-header-wrapper>

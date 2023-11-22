@@ -159,19 +159,19 @@ export default {
   },
   computed: {
     diffLeft() {
-      return this.diff.filter(part => part.added !== true);
+      return this.diff.filter((part) => part.added !== true);
     },
     diffRight() {
-      return this.diff.filter(part => part.removed !== true);
+      return this.diff.filter((part) => part.removed !== true);
     },
     diffLeft2() {
-      return this.diffByLine.filter(part => part.added !== true);
+      return this.diffByLine.filter((part) => part.added !== true);
     },
     diffRight2() {
-      return this.diffByLine.filter(part => part.removed !== true);
+      return this.diffByLine.filter((part) => part.removed !== true);
     },
     diffPartList() {
-      return this.diffByLine.map(part => {
+      return this.diffByLine.map((part) => {
         return {
           ...part,
           value: part.value.replace(/\n$/, '')
@@ -226,7 +226,7 @@ export default {
       return '';
     }
   },
-  mounted: function() {
+  mounted: function () {
     // console.log(Diff)
     this.diff = Diff.diffChars(this.testConf1, this.testConf2);
     // console.log(this.diff)

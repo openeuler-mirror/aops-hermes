@@ -7,11 +7,13 @@
         <span>共有业务域{{ domainData.length }}个</span>
       </div>
       <div>
-        <a-list :loading="domainLoading" :data-source="cardListData"
-          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}">
+        <a-list
+          :loading="domainLoading"
+          :data-source="cardListData"
+          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}"
+        >
           <a-list-item slot="renderItem" slot-scope="domain, index">
-            <a-card :bodyStyle="{padding: 0}" :bordered="false"
-              :class="index !== 0 ? 'aops-theme-incard' : ''">
+            <a-card :bodyStyle="{padding: 0}" :bordered="false" :class="index !== 0 ? 'aops-theme-incard' : ''">
               <div class="aops-card-body">
                 <router-link :to="`${domain.domainName || ''}`">
                   <div class="aops-card-content">
@@ -22,18 +24,17 @@
                   <a-row type="flex" justify="space-between">
                     <a-col>priority</a-col>
                     <a-col>
-                      <router-link
-                        :to="`/configuration/transcation-domain-configurations/${domain.domainName}`">
+                      <router-link :to="`/configuration/transcation-domain-configurations/${domain.domainName}`">
                         查看域内配置
                       </router-link>
                       <a-divider type="vertical" />
                       <a-dropdown>
-                        <a class="ant-dropdown-link" @click="e => e.preventDefault()"> 更多 <a-icon
-                            type="down" /> </a>
+                        <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
+                          更多 <a-icon type="down" />
+                        </a>
                         <a-menu slot="overlay">
                           <a-menu-item>
-                            <a href="javascript:;"
-                              @click="showAddHostDrawer(domain.domainName)">添加主机</a>
+                            <a href="javascript:;" @click="showAddHostDrawer(domain.domainName)">添加主机</a>
                           </a-menu-item>
                           <a-menu-item>
                             <a href="javascript:;" @click="delDomain(domain.domainName)">删除</a>

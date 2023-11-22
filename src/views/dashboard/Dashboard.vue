@@ -2,7 +2,7 @@
   <my-page-header-wrapper>
     <a-row type="flex" :gutter="20">
       <a-col :xs="24" :md="12" :xl="8">
-        <a-card :bordered="false" class="aops-theme" style="margin-bottom:20px;">
+        <a-card :bordered="false" class="aops-theme" style="margin-bottom: 20px">
           <div class="dash-card-small">
             <a-row type="flex" justify="space-between" align="middle">
               <a-col>
@@ -23,7 +23,7 @@
             </a-row>
           </div>
         </a-card>
-        <a-card :bordered="false" class="aops-theme" style="margin-bottom:20px;">
+        <a-card :bordered="false" class="aops-theme" style="margin-bottom: 20px">
           <div class="dash-card-small">
             <a-row type="flex" justify="space-between" align="middle">
               <a-col>
@@ -46,7 +46,7 @@
         </a-card>
       </a-col>
       <a-col :xs="24" :md="12" :xl="8">
-        <a-card :bordered="false" class="aops-theme" style="margin-bottom:20px;">
+        <a-card :bordered="false" class="aops-theme" style="margin-bottom: 20px">
           <div class="dash-card-small dash-sync-card">
             <a-row type="flex" justify="center" align="middle">
               <a-col span="12" class="progress-container">
@@ -83,7 +83,7 @@
         </a-card>
       </a-col>
       <a-col :xs="24" :md="24" :xl="8">
-        <a-card :bordered="false" class="aops-theme" style="margin-bottom:20px;">
+        <a-card :bordered="false" class="aops-theme" style="margin-bottom: 20px">
           <div class="cve-card">
             <h3>CVE风险</h3>
             <v-chart :forceFit="true" :height="120" :data="cveOverview" :scale="cveScale" :padding="[0, 60, 0, 0]">
@@ -144,12 +144,12 @@ export default {
     CheckResultExpanded,
     AlertHeaderBoard
   },
-  mounted: function() {
+  mounted: function () {
     this.getHostCount();
     store.dispatch('updateCount');
     //  this.getResultCountTopTen()
     //  this.getResultList()
-     this.getCveOverview()
+    this.getCveOverview();
   },
   data() {
     return {
@@ -172,7 +172,7 @@ export default {
   },
   computed: {
     ...mapState({
-      alertCount: state => state.abnormalAlert.alertCount
+      alertCount: (state) => state.abnormalAlert.alertCount
     }),
     columnsReulst() {
       return [
@@ -202,7 +202,7 @@ export default {
         {
           dataIndex: 'count',
           title: '异常数',
-          customRender: count => <span class="result-count">{count}</span>
+          customRender: (count) => <span class="result-count">{count}</span>
         }
       ];
     }
@@ -211,10 +211,10 @@ export default {
     getHostCount() {
       var that = this;
       hostCount()
-        .then(function(res) {
+        .then(function (res) {
           that.hostCount = res.data.host_count;
         })
-        .catch(function(err) {
+        .catch(function (err) {
           that.$message.error(err.response.message);
         });
     },
@@ -222,10 +222,10 @@ export default {
       var that = this;
       this.countTopLoading = true;
       getResultCountTopTen()
-        .then(function(res) {
+        .then(function (res) {
           that.resultCountList = res.data.results;
         })
-        .catch(function(err) {
+        .catch(function (err) {
           that.$message.error(err.response.message);
         })
         .finally(() => {
@@ -235,17 +235,17 @@ export default {
     getResultList() {
       var that = this;
       getResult({perPage: 5})
-        .then(function(res) {
+        .then(function (res) {
           that.resultList = res.data.check_result
-            ? res.data.check_result.map(result => {
-              return {
-                ...result,
-                key: `${result.host_id}+${result.check_item}+${result.start}+${result.end}`
-              };
-            })
+            ? res.data.check_result.map((result) => {
+                return {
+                  ...result,
+                  key: `${result.host_id}+${result.check_item}+${result.start}+${result.end}`
+                };
+              })
             : [];
         })
-        .catch(function(err) {
+        .catch(function (err) {
           that.$message.error(err.response.message);
         });
     },
@@ -253,9 +253,9 @@ export default {
       const _this = this;
       this.cveOverviewLoading = true;
       getCveOverview()
-        .then(function(res) {
+        .then(function (res) {
           const arr = [];
-          cveTypeList.forEach(type => {
+          cveTypeList.forEach((type) => {
             arr.push({
               item: type.typeName,
               count: res.data.result[type.typeValue] || 0,
@@ -264,10 +264,10 @@ export default {
           });
           _this.drawPie(arr);
         })
-        .catch(function(err) {
+        .catch(function (err) {
           _this.$message.error(err.response.message);
         })
-        .finally(function() {
+        .finally(function () {
           _this.cveOverviewLoading = false;
         });
     },

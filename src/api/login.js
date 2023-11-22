@@ -29,14 +29,14 @@ export function register(parameter) {
  * @param {*} parameter
  * @returns
  */
-export function refreshTokenFn (parameter) {
+export function refreshTokenFn(parameter) {
   return request({
     url: userApi.RefreshToken,
     method: 'post',
     data: {
       refresh_token: parameter
     }
-  })
+  });
 }
 
 export function bindAccount(parameter) {
@@ -55,8 +55,7 @@ export function codeCheck(params) {
   return request({
     url: userApi.codeCheck + params,
     method: 'get',
-    params: {
-    }
+    params: {}
   });
 }
 
@@ -64,8 +63,7 @@ export function LoginInGitee() {
   return request({
     url: userApi.LoginInGitee,
     method: 'get',
-    params: {
-    }
+    params: {}
   });
 }
 

@@ -95,7 +95,7 @@ export default {
     }
   },
   watch: {
-    hostId: function() {
+    hostId: function () {
       this.hostInfo = [];
       this.getHostInfo();
     }
@@ -110,13 +110,13 @@ export default {
       hostInfo({
         host_list: [this.hostId]
       })
-        .then(function(res) {
+        .then(function (res) {
           _this.hostInfo = (res.data.host_infos && res.data.host_infos[0]) || {};
         })
-        .catch(function(err) {
+        .catch(function (err) {
           _this.$message.error(err.response.msg);
         })
-        .finally(function() {
+        .finally(function () {
           _this.hostInfoLoading = false;
         });
     }

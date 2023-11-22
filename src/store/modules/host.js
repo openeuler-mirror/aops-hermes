@@ -7,7 +7,7 @@ const host = {
     SET_HOSTINFO: (state, hostInfo) => {
       state.hostInfo = hostInfo;
     },
-    RESET_HOSTINFO: state => {
+    RESET_HOSTINFO: (state) => {
       state.hostInfo = {};
     }
   },

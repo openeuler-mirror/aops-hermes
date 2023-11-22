@@ -6,36 +6,31 @@ const managementConfInfos = [
     id: 1,
     name: 'configuration 202108121234',
     filePath: 'vim /user/local/nginx/conf/nginx.comf',
-    contents:
-      ''
+    contents: ''
   },
   {
     id: 2,
     name: 'configuration 15',
     filePath: 'vim /etc/firewalld/firewalld.conf',
-    contents:
-      ''
+    contents: ''
   },
   {
     id: 3,
     name: 'configuration 01',
     filePath: '/etc/hostname',
-    contents:
-      ''
+    contents: ''
   },
   {
     id: 4,
     name: 'configuration 03',
     filePath: 'vim /user/local/nagios/etc/nrpe.cfg',
-    contents:
-      ''
+    contents: ''
   },
   {
     id: 5,
     name: 'configuration 12',
     filePath: 'vim /etc/sysconfig/network-scripts/ifcfg-eth0',
-    contents:
-      ''
+    contents: ''
   }
 ];
 
@@ -43,8 +38,7 @@ const managementConfChangeList = [
   {
     managemengConfId: 1,
     managementConfname: 'configuration 202108121234',
-    expectedContents:
-      '',
+    expectedContents: '',
     filePath: 'vim /user/local/nginx/conf/nginx.comf',
     changeLog: [
       {
@@ -84,18 +78,23 @@ const managementConfChangeList = [
 ];
 
 const addManagementConf = (options) => {
-  const body = getBody(options)
+  const body = getBody(options);
 
   if (!body.domainName || !body.configList) {
-    return builder({ 'msg': '缺少必要参数' }, '缺少参数', 410)
+    return builder({msg: '缺少必要参数'}, '缺少参数', 410);
   }
 
-  return builder({
-    'msg': Mock.mock('success')
-  }, '添加成功', 200, { 'Custom-Header': Mock.mock('@guid') })
-}
+  return builder(
+    {
+      msg: Mock.mock('success')
+    },
+    '添加成功',
+    200,
+    {'Custom-Header': Mock.mock('@guid')}
+  );
+};
 
-const getManagementConf = options => {
+const getManagementConf = (options) => {
   const body = getBody(options);
 
   if (body.uid !== '123') {
@@ -115,7 +114,7 @@ const getManagementConf = options => {
   );
 };
 
-const queryManageConfChange = options => {
+const queryManageConfChange = (options) => {
   return builder(
     {
       msg: Mock.mock('success'),
@@ -127,7 +126,7 @@ const queryManageConfChange = options => {
   );
 };
 
-const deleteManagementConf = options => {
+const deleteManagementConf = (options) => {
   return builder(
     {
       msg: Mock.mock('success')
@@ -138,7 +137,7 @@ const deleteManagementConf = options => {
   );
 };
 
-Mock.mock(/\/management\/addManagementConf/, 'post', addManagementConf)
+Mock.mock(/\/management\/addManagementConf/, 'post', addManagementConf);
 Mock.mock(/\/management\/getManagementConf/, 'get', getManagementConf);
 Mock.mock(/\/management\/queryManageConfChange/, 'get', queryManageConfChange);
 Mock.mock(/\/management\/deleteManagementConf/, 'delete', deleteManagementConf);

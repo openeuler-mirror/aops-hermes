@@ -34,7 +34,7 @@ export default {
     };
   },
   watch: {
-    text: function(val) {
+    text: function (val) {
       this.output = this.cutoff(this.text, this.length);
     }
   },
@@ -44,7 +44,7 @@ export default {
       const list = this.text.replace(/^(\s|{)+|(\s|})+$/g, '').split(',');
       let tmpArr = [];
       const result = [];
-      list.map(item => {
+      list.map((item) => {
         tmpArr = item.split('=');
         tmpArr[1] = tmpArr[1].substring(1, tmpArr[1].length - 1);
         result.push(tmpArr.join(': '));

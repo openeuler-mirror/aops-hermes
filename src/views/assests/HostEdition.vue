@@ -2,21 +2,23 @@
   <page-header-wrapper :breadcrumb="breadcrumb">
     <div>
       <a-card :bordered="false" class="aops-theme">
-        <a-form
-        @submit="handleAddHost"
-        :form="form"
-        :label-col="{span: 5}"
-          :wrapper-col="{span: 10}">
+        <a-form @submit="handleAddHost" :form="form" :label-col="{span: 5}" :wrapper-col="{span: 10}">
           <a-form-item label="主机名称">
             <a-input
-            :maxLength="50"
-             v-decorator="[
+              :maxLength="50"
+              v-decorator="[
                 'host_name',
-                {rules: [{ required: true, message: '请输入主机名称'}, {validator: checkNameInput, validateTrigger: 'blur'}]},
+                {
+                  rules: [
+                    {required: true, message: '请输入主机名称'},
+                    {validator: checkNameInput, validateTrigger: 'blur'}
+                  ]
+                }
               ]"
-              placeholder="请输入主机名称,50个字符以内">
+              placeholder="请输入主机名称,50个字符以内"
+            >
               <a-tooltip slot="suffix" title="最大长度50个字符，首尾不能为空格，不允许全空格">
-                <a-icon type="info-circle" style="color: rgba(0,0,0,.45)" />
+                <a-icon type="info-circle" style="color: rgba(0, 0, 0, 0.45)" />
               </a-tooltip>
             </a-input>
           </a-form-item>
@@ -26,12 +28,14 @@
                 <a-select
                   v-decorator="['host_group_name', {rules: [{required: true, message: '请选择所属主机组'}]}]"
                   placeholder="请选择"
-                  :not-found-content="hostGroupIsLoading ? undefined : null">
+                  :not-found-content="hostGroupIsLoading ? undefined : null"
+                >
                   <a-spin v-if="hostGroupIsLoading" slot="notFoundContent" size="small" />
                   <a-select-option
-                  v-for="hostGroup in hostGroupList"
+                    v-for="hostGroup in hostGroupList"
                     :key="hostGroup.host_group_name"
-                    :value="hostGroup.host_group_name">
+                    :value="hostGroup.host_group_name"
+                  >
                     {{ hostGroup.host_group_name }}
                   </a-select-option>
                 </a-select>
@@ -45,8 +49,8 @@
           </a-form-item>
           <a-form-item label="IP地址">
             <a-input
-            :disabled="pageType === 'edit'"
-            v-decorator="[
+              :disabled="pageType === 'edit'"
+              v-decorator="[
                 'host_ip',
                 {
                   rules: [
@@ -58,49 +62,43 @@
                   ]
                 }
               ]"
-              placeholder="请输入有效ip地址，e.g. 192.168.0.1" />
+              placeholder="请输入有效ip地址，e.g. 192.168.0.1"
+            />
           </a-form-item>
           <a-form-item label="SSH登录端口">
             <a-input-number
-            :min="0"
-            :max="65535"
-            @change="handlePortChange"
-            v-decorator="[
+              :min="0"
+              :max="65535"
+              @change="handlePortChange"
+              v-decorator="[
                 'ssh_port',
                 {initialValue: 22, rules: [{required: true, message: '请输入 0~65535 内正整数'}]}
               ]"
-              placeholder="请输入" />
+              placeholder="请输入"
+            />
           </a-form-item>
           <a-form-item label="管理/监控节点">
-            <a-radio-group
-            name="managementGroup"
-              v-decorator="['management', {initialValue: true}]">
+            <a-radio-group name="managementGroup" v-decorator="['management', {initialValue: true}]">
               <a-radio :value="true">管理节点</a-radio>
               <a-radio :value="false">监控节点</a-radio>
             </a-radio-group>
           </a-form-item>
           <a-form-item label="主机用户名">
             <a-input
-            @change="handleUserChange"
-            :maxLength="32"
-            v-decorator="[
-                'ssh_user',
-                {rules: [{required: true, message: '请输入主机用户名'}]}
-              ]"
-              placeholder="请输入主机用户名">
+              @change="handleUserChange"
+              :maxLength="32"
+              v-decorator="['ssh_user', {rules: [{required: true, message: '请输入主机用户名'}]}]"
+              placeholder="请输入主机用户名"
+            >
               <a-tooltip slot="suffix" title="登录主机时使用的用户名">
-                <a-icon type="info-circle" style="color: rgba(0,0,0,.45)" />
+                <a-icon type="info-circle" style="color: rgba(0, 0, 0, 0.45)" />
               </a-tooltip>
             </a-input>
           </a-form-item>
           <a-form-item label="认证方式">
             <a-radio-group name="identificationGroup" v-model="identificaWay" :default-value="1" @change="onChange">
-              <a-radio :value="1">
-                主机登录密码
-              </a-radio>
-              <a-radio :value="2">
-                主机登录密钥
-              </a-radio>
+              <a-radio :value="1"> 主机登录密码 </a-radio>
+              <a-radio :value="2"> 主机登录密钥 </a-radio>
             </a-radio-group>
           </a-form-item>
           <a-form-item>
@@ -108,39 +106,50 @@
               <span v-if="identificaWay === 1">主机登录密码</span>
               <span v-else>
                 <span>主机登录密钥</span>
-                <description-tips style="margin-left: 3px;margin-right: 1px;">
-                  id_rsa
-                </description-tips>
+                <description-tips style="margin-left: 3px; margin-right: 1px"> id_rsa </description-tips>
               </span>
             </template>
-            <a-input-password v-if="identificaWay === 1"
-            v-decorator="[
+            <a-input-password
+              v-if="identificaWay === 1"
+              v-decorator="[
                 'password',
                 {rules: [{required: pageType === 'create' ? true : requiredRules, message: '请输入主机登录密码'}]}
               ]"
-              :placeholder="pageType === 'create' ? '请设置主机登录密码' : '请输入主机登录密码, 若未修改主机用户名或端口可以为空'"></a-input-password>
-            <a-textarea :rows="4" v-else
+              :placeholder="
+                pageType === 'create' ? '请设置主机登录密码' : '请输入主机登录密码, 若未修改主机用户名或端口可以为空'
+              "
+            ></a-input-password>
+            <a-textarea
+              :rows="4"
+              v-else
               :maxLength="4096"
               v-decorator="[
                 'ssh_pkey',
                 {rules: [{required: pageType === 'create' ? true : requiredRules, message: '请输入主机登录密钥'}]}
               ]"
-              :placeholder="pageType === 'create' ? '请设置主机登录密钥' : '请输入主机登录密钥, 若未修改主机用户名或端口可以为空'"></a-textarea>
+              :placeholder="
+                pageType === 'create' ? '请设置主机登录密钥' : '请输入主机登录密钥, 若未修改主机用户名或端口可以为空'
+              "
+            ></a-textarea>
           </a-form-item>
           <a-form-item :wrapper-col="{span: 10, offset: 5}">
             <a-button @click="handleCancel">取消</a-button>
             <a-button
-            v-if="pageType === 'create'"
-            htmlType="submit"
-            type="primary"
+              v-if="pageType === 'create'"
+              htmlType="submit"
+              type="primary"
               :loading="submitLoading"
-              style="margin-left: 8px">添加</a-button>
+              style="margin-left: 8px"
+              >添加</a-button
+            >
             <a-button
-            v-if="pageType === 'edit'"
-            htmlType="submit"
-            type="primary"
+              v-if="pageType === 'edit'"
+              htmlType="submit"
+              type="primary"
               :loading="submitLoading"
-              style="margin-left: 8px">修改</a-button>
+              style="margin-left: 8px"
+              >修改</a-button
+            >
           </a-form-item>
         </a-form>
       </a-card>
@@ -205,7 +214,7 @@ export default {
     },
     requiredRules() {
       // 当前为修改页面，只要端口号或主机用户名有一个改变时，密码为必须项
-      return this.UserRequired || this.PortRequired
+      return this.UserRequired || this.PortRequired;
     },
     ...mapState({
       hostInfo: (state) => state.host.hostInfo
@@ -229,12 +238,12 @@ export default {
     },
     handleUserChange(value) {
       if (this.pageType === 'edit') {
-        value.target.value === this.basicHostInfo.ssh_user ? this.UserRequired = false : this.UserRequired = true
+        value.target.value === this.basicHostInfo.ssh_user ? (this.UserRequired = false) : (this.UserRequired = true);
       }
     },
     handlePortChange(value) {
       if (this.pageType === 'edit') {
-        value === this.basicHostInfo.ssh_port ? this.PortRequired = false : this.PortRequired = true
+        value === this.basicHostInfo.ssh_port ? (this.PortRequired = false) : (this.PortRequired = true);
       }
     },
     // 获取主机组列表数据
@@ -265,20 +274,20 @@ export default {
         if (!err) {
           this.submitLoading = true;
           if (this.pageType === 'edit') {
-            delete values.host_ip
+            delete values.host_ip;
             const tableParams = JSON.parse(JSON.stringify(values));
             for (const key in tableParams) {
-             if (tableParams[key] === this.basicHostInfo[key]) {
-               delete tableParams[key] //  删除未修改数据
-             }
-             if (key === 'password' || key === 'ssh_pkey') {
-               if (tableParams[key].length === 0) {
-                 delete tableParams[key] //  password或密钥为空不传
-               }
-             }
+              if (tableParams[key] === this.basicHostInfo[key]) {
+                delete tableParams[key]; //  删除未修改数据
+              }
+              if (key === 'password' || key === 'ssh_pkey') {
+                if (tableParams[key].length === 0) {
+                  delete tableParams[key]; //  password或密钥为空不传
+                }
+              }
             }
             if (JSON.stringify(tableParams) === '{}') {
-              this.$message.info('未存在修改数据!')
+              this.$message.info('未存在修改数据!');
               this.submitLoading = false;
             } else {
               editHost(tableParams, this.hostId)
@@ -296,17 +305,17 @@ export default {
             }
           } else {
             addHost(values)
-            .then(function (res) {
-              _this.$message.success(res.message);
-              store.dispatch('resetHostInfo');
-              router.push('/assests/hosts-management');
-            })
-            .catch(function (err) {
-              _this.$message.error(err.response.message);
-            })
-            .finally(function () {
-              _this.submitLoading = false;
-            });
+              .then(function (res) {
+                _this.$message.success(res.message);
+                store.dispatch('resetHostInfo');
+                router.push('/assests/hosts-management');
+              })
+              .catch(function (err) {
+                _this.$message.error(err.response.message);
+              })
+              .finally(function () {
+                _this.submitLoading = false;
+              });
           }
         }
       });
@@ -411,7 +420,7 @@ export default {
   mounted: function () {
     this.getHostGroupList();
     if (this.pageType === 'edit') {
-      this.getHostInfo()
+      this.getHostInfo();
     }
   }
 };

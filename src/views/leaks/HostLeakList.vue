@@ -3,29 +3,23 @@
     <a-card :bordered="false" class="aops-theme">
       <h3 class="card-title">
         主机列表
-        <a-icon
-        :type="expandedStatus[0] ? 'caret-up' : 'caret-down'"
-          @click="setExpandStatus(0, !expandedStatus[0])" />
+        <a-icon :type="expandedStatus[0] ? 'caret-up' : 'caret-down'" @click="setExpandStatus(0, !expandedStatus[0])" />
       </h3>
       <host-table standalone v-show="expandedStatus[0]" :repoListProps="repoList" />
     </a-card>
     <a-card :bordered="false" class="aops-theme" style="margin-top: 20px">
       <h3>
         CVE REPO
-        <a-icon
-        :type="expandedStatus[1] ? 'caret-up' : 'caret-down'"
-          @click="setExpandStatus(1, !expandedStatus[1])" />
+        <a-icon :type="expandedStatus[1] ? 'caret-up' : 'caret-down'" @click="setExpandStatus(1, !expandedStatus[1])" />
       </h3>
       <div class="host-leaks-repo-list" v-show="expandedStatus[1]">
         <a-list
-        :loading="repoLoading"
-        :data-source="repoListData"
-          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}">
+          :loading="repoLoading"
+          :data-source="repoListData"
+          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}"
+        >
           <a-list-item slot="renderItem" slot-scope="repo, index">
-            <a-card
-            :bodyStyle="{padding: 0}"
-            :bordered="false"
-              :class="index !== 0 ? 'aops-theme-incard' : ''">
+            <a-card :bodyStyle="{padding: 0}" :bordered="false" :class="index !== 0 ? 'aops-theme-incard' : ''">
               <div class="aops-card-body">
                 <div class="aops-card-content" @click="checkRepoOpen(repo)">
                   <h3>{{ repo.repo_name }}</h3>
@@ -37,15 +31,12 @@
                       <a @click="handleDeleteRepo(repo)">删除</a>
                       <a-divider type="vertical" />
                       <a-dropdown>
-                        <a class="ant-dropdown-link" @click="e => e.preventDefault()"> 更多 <a-icon
-                            type="down" /> </a>
+                        <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
+                          更多 <a-icon type="down" />
+                        </a>
                         <a-menu slot="overlay">
-                          <a-menu-item key="1" disabled>
-                            导出
-                          </a-menu-item>
-                          <a-menu-item key="2" disabled>
-                            编辑
-                          </a-menu-item>
+                          <a-menu-item key="1" disabled> 导出 </a-menu-item>
+                          <a-menu-item key="2" disabled> 编辑 </a-menu-item>
                         </a-menu>
                       </a-dropdown>
                     </a-col>
@@ -59,10 +50,7 @@
         <a-row type="flex" justify="center" v-show="showNumber < repoList.length + 1">
           <a-col><a-button @click="showMore">加载更多</a-button></a-col>
         </a-row>
-        <check-repo-modal
-        :visible="checkRepoVisible"
-        :detailProps="checkRepo"
-          @close="checkRepoClose" />
+        <check-repo-modal :visible="checkRepoVisible" :detailProps="checkRepo" @close="checkRepoClose" />
       </div>
     </a-card>
   </page-header-wrapper>

@@ -3,7 +3,6 @@ import {hostBasicInfo} from '@/api/assest';
 import qs from 'qs';
 
 const api = {
-
   /*
    * API for the first phase of Aops.
    * haven't been used, may be deleted later.
@@ -79,8 +78,8 @@ export function getResult({timeRange, checkItems, hostList, value, sort, directi
       page: page || 1, // 当前的⻚码
       per_page: perPage || 10 // 每⻚的数量，最⼤为50
     }
-  }).then(function(res) {
-    return hostBasicInfo(res.data.check_result).then(function(hostMap) {
+  }).then(function (res) {
+    return hostBasicInfo(res.data.check_result).then(function (hostMap) {
       setHostInfo(res.data.check_result, hostMap);
       return res;
     });
@@ -148,8 +147,8 @@ export function getResultCount({hostList, sort, direction, page, perPage}) {
       page: page || 1, // 当前的⻚码
       per_page: perPage || 10 // 每⻚的数量，最⼤为50
     }
-  }).then(function(res) {
-    return hostBasicInfo(res.data.results).then(function(hostMap) {
+  }).then(function (res) {
+    return hostBasicInfo(res.data.results).then(function (hostMap) {
       setHostInfo(res.data.results, hostMap);
       return res;
     });
@@ -167,8 +166,8 @@ export function getResultCountTopTen() {
       page: 1,
       per_page: 10
     }
-  }).then(function(res) {
-    return hostBasicInfo(res.data.results).then(function(hostMap) {
+  }).then(function (res) {
+    return hostBasicInfo(res.data.results).then(function (hostMap) {
       setHostInfo(res.data.results, hostMap);
       return res;
     });
@@ -176,7 +175,7 @@ export function getResultCountTopTen() {
 }
 // 获取主机信息
 export function setHostInfo(dataList, hostMap) {
-  dataList.forEach(function(item, index) {
+  dataList.forEach(function (item, index) {
     var host = hostMap[item.host_id];
     if (host) {
       item.hostName = host.host_name;
@@ -351,7 +350,7 @@ export function getAlertRecordResult(parameter) {
      * }
      */
     paramsSerializer: {
-      serialize: params => {
+      serialize: (params) => {
         return qs.stringify(params, {indices: false});
       }
     }

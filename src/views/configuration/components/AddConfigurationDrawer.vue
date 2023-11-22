@@ -6,25 +6,39 @@
         <a-button type="primary">新增配置</a-button>
       </slot>
     </div>
-    <a-drawer :title="isEdit ? '编辑配置' : '新增配置'" :width="720"
-              :visible="isEdit ? visibleControl : visible" :body-style="{paddingBottom: '80px'}"
-              @close="handleCancel">
+    <a-drawer
+      :title="isEdit ? '编辑配置' : '新增配置'"
+      :width="720"
+      :visible="isEdit ? visibleControl : visible"
+      :body-style="{paddingBottom: '80px'}"
+      @close="handleCancel"
+    >
       <a-form :form="form" :label-col="{span: 5}" :wrapper-col="{span: 18}">
         <a-form-item label="所属业务域">
           <a-input disabled v-decorator="['domainName', {initialValue: domainName}]" />
         </a-form-item>
         <div class="conf-form-item" v-for="(key, index) in formList" :key="key">
           <span v-if="!isEdit">
-            <a-icon class="dynamic-delete-button" type="minus-circle-o"
-                    @click="removeConfForm(index)" v-if="formList.length > 1" />
+            <a-icon
+              class="dynamic-delete-button"
+              type="minus-circle-o"
+              @click="removeConfForm(index)"
+              v-if="formList.length > 1"
+            />
             新增配置{{ index + 1 }}
           </span>
           <a-form-item label="配置路径">
             <a-select
               v-decorator="[`confFiles[${key}].filePath`, {rules: [{required: true, message: '请输入配置路径'}]}]"
-              placeholder="请选择配置路径" :disabled="isEdit" show-search @change="value => {
-                pathSelectionChange(key,value)
-              }">
+              placeholder="请选择配置路径"
+              :disabled="isEdit"
+              show-search
+              @change="
+                (value) => {
+                  pathSelectionChange(key, value);
+                }
+              "
+            >
               <a-select-option v-for="item in supportedConfList" :value="item" :key="item">
                 {{ item }}
               </a-select-option>
@@ -32,46 +46,61 @@
           </a-form-item>
           <a-form-item>
             <span slot="label">
-              <a-tooltip title="配置来源三选一，推荐使用手动输入"
-                         v-if="editFilePath!== '/etc/pam.d' && tempPath[key] !== '/etc/pam.d'">
+              <a-tooltip
+                title="配置来源三选一，推荐使用手动输入"
+                v-if="editFilePath !== '/etc/pam.d' && tempPath[key] !== '/etc/pam.d'"
+              >
                 <a-icon type="question-circle-o" />
               </a-tooltip>
               &nbsp;配置来源
             </span>
-            <a-select :value="formSelections[key]" placeholder="请选择来源" @change="
-                value => {
+            <a-select
+              :value="formSelections[key]"
+              placeholder="请选择来源"
+              @change="
+                (value) => {
                   formSelectionChange(key, value);
                 }
-              ">
-              <a-select-option value="manuel" v-if="editFilePath!== '/etc/pam.d' && tempPath[key] !== '/etc/pam.d'">
+              "
+            >
+              <a-select-option value="manuel" v-if="editFilePath !== '/etc/pam.d' && tempPath[key] !== '/etc/pam.d'">
                 手动输入
               </a-select-option>
               <a-select-option value="auto">从主机导入</a-select-option>
-              <a-select-option value="file" v-if="editFilePath!== '/etc/pam.d' && tempPath[key] !== '/etc/pam.d'">
+              <a-select-option value="file" v-if="editFilePath !== '/etc/pam.d' && tempPath[key] !== '/etc/pam.d'">
                 从本地导入
               </a-select-option>
             </a-select>
           </a-form-item>
           <a-form-item label="配置内容" v-if="formSelections[key] === 'manuel'">
-            <a-textarea placeholder="请输入配置内容" :rows="8"
-                        v-decorator="[`confFiles[${key}].contents`, {rules: [{required: true, message: '请输入内容'}]}]" />
+            <a-textarea
+              placeholder="请输入配置内容"
+              :rows="8"
+              v-decorator="[`confFiles[${key}].contents`, {rules: [{required: true, message: '请输入内容'}]}]"
+            />
           </a-form-item>
           <a-form-item label="选择主机" v-else-if="formSelections[key] === 'auto'">
-            <a-select placeholder="请选择文件所在主机"
-                      v-decorator="[`confFiles[${key}].hostId`, {rules: [{required: true, message: '请选择主机'}]}]">
+            <a-select
+              placeholder="请选择文件所在主机"
+              v-decorator="[`confFiles[${key}].hostId`, {rules: [{required: true, message: '请选择主机'}]}]"
+            >
               <a-spin v-if="hostListLoading" slot="notFoundContent" size="small" />
               <a-select-option v-for="host in hostList" :value="host.hostId" :key="host.hostId">
                 {{ host.ip }}
               </a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item label="选择文件" html-for={null} v-else-if="formSelections[key] === 'file'">
-            <a-upload :file-list="fileDataList" :remove="removeFile" :before-upload="preUpload"
-                      v-decorator="['file',{rules: [{required: true, message: '请选择文件'}]}]">
-              <div style="display:flex;">
+          <a-form-item label="选择文件" html-for="{null}" v-else-if="formSelections[key] === 'file'">
+            <a-upload
+              :file-list="fileDataList"
+              :remove="removeFile"
+              :before-upload="preUpload"
+              v-decorator="['file', {rules: [{required: true, message: '请选择文件'}]}]"
+            >
+              <div style="display: flex">
                 <div style="flex">
                   <a-button>
-                    <a-icon type="upload"/>
+                    <a-icon type="upload" />
                     选择文件
                   </a-button>
                 </div>
@@ -141,7 +170,7 @@ export default {
       supportedConfList: [],
       fileDataList: [],
       tempPath: {0: ''} // 配置路径值
-    }
+    };
   },
   watch: {
     visibleControl: function () {
@@ -150,7 +179,7 @@ export default {
         this.getHostList();
         this.resetData();
         if (this.editFilePath === '/etc/pam.d') {
-          this.formSelections = {0: 'auto'}
+          this.formSelections = {0: 'auto'};
         }
         setTimeout(function () {
           _this.form.setFieldsValue({confFiles: [{filePath: _this.editFilePath}]});
@@ -163,10 +192,11 @@ export default {
       const _this = this;
       querySupportedConfs(this.domainName)
         .then(function (res) {
-          _this.supportedConfList = res
-        }).catch(function (err) {
-        _this.$message.error(err);
-      })
+          _this.supportedConfList = res;
+        })
+        .catch(function (err) {
+          _this.$message.error(err);
+        });
     },
     addConfForm() {
       this.formKey += 1;
@@ -189,7 +219,7 @@ export default {
       temp[key] = value;
       this.tempPath = Object.assign({}, temp);
       if (this.tempPath[key] === '/etc/pam.d') {
-        this.formSelections[key] = 'auto'
+        this.formSelections[key] = 'auto';
       }
     },
     resetData() {
@@ -197,13 +227,13 @@ export default {
       this.formKey = 0;
       this.formList = [0];
       this.formSelections = {0: 'manuel'};
-      this.fileDataList = []
+      this.fileDataList = [];
       this.tempPath = {0: ''};
     },
     showModal() {
       this.resetData();
       this.getHostList();
-      this.querySupportedConfs()
+      this.querySupportedConfs();
       this.visible = true;
     },
     handleCancel() {
@@ -212,60 +242,66 @@ export default {
     },
     // 上传文件 添加配置
     uploadManagementConf(formData) {
-      const _this = this
-      uploadManagementConf(formData).then((res) => {
-        if (res.code === 200) {
-          _this.$message.success(res.msg)
-        } else if (res.code === 206) {
-          _this.$message.warning(res.msg)
-        }
-        _this.visible = false
-        _this.$emit('ok')
-      }).catch(function (err) {
-        _this.$message.error(err.response.message || err.response.data.detail || err.response.data.msg);
-      }).finally(function () {
-        _this.submitIsLoading = false
-      })
+      const _this = this;
+      uploadManagementConf(formData)
+        .then((res) => {
+          if (res.code === 200) {
+            _this.$message.success(res.msg);
+          } else if (res.code === 206) {
+            _this.$message.warning(res.msg);
+          }
+          _this.visible = false;
+          _this.$emit('ok');
+        })
+        .catch(function (err) {
+          _this.$message.error(err.response.message || err.response.data.detail || err.response.data.msg);
+        })
+        .finally(function () {
+          _this.submitIsLoading = false;
+        });
     },
     // 添加配置
     addManagementConf(params) {
-      const _this = this
-      addManagementConf(params).then(function (res) {
-        if (res.code === 200) {
-          _this.$message.success(res.msg)
-        } else if (res.code === 206) {
-          _this.$message.warning(res.msg)
-        }
-        _this.visible = false
-        _this.$emit('ok')
-      }).catch(function (err) {
-        _this.$message.error(err.response.message || err.response.data.detail || err.response.data.msg);
-      }).finally(function () {
-        _this.submitIsLoading = false
-      })
+      const _this = this;
+      addManagementConf(params)
+        .then(function (res) {
+          if (res.code === 200) {
+            _this.$message.success(res.msg);
+          } else if (res.code === 206) {
+            _this.$message.warning(res.msg);
+          }
+          _this.visible = false;
+          _this.$emit('ok');
+        })
+        .catch(function (err) {
+          _this.$message.error(err.response.message || err.response.data.detail || err.response.data.msg);
+        })
+        .finally(function () {
+          _this.submitIsLoading = false;
+        });
     },
     handleOk() {
       this.form.validateFields((err, values) => {
         if (!err) {
           if (this.formSelections[0] === 'file') {
-            const formData = new FormData()
-            formData.append('filePath', values.confFiles[0].filePath)
-            formData.append('domainName', this.domainName)
+            const formData = new FormData();
+            formData.append('filePath', values.confFiles[0].filePath);
+            formData.append('domainName', this.domainName);
             this.fileDataList.forEach((file) => {
               formData.append('file', file);
-            })
-            this.submitIsLoading = true
-            this.uploadManagementConf(formData)
+            });
+            this.submitIsLoading = true;
+            this.uploadManagementConf(formData);
           } else {
             const params = {
               domainName: this.domainName,
               confFiles: values.confFiles.filter((conf) => conf)
-            }
-            this.submitIsLoading = true
-            this.addManagementConf(params)
+            };
+            this.submitIsLoading = true;
+            this.addManagementConf(params);
           }
         }
-      })
+      });
     },
     getHostList() {
       const _this = this;

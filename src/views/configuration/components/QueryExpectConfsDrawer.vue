@@ -67,19 +67,19 @@ export default {
         domainName: _this.domainName,
         hostIds: [{hostId: host.hostId}]
       })
-        .then(res => {
+        .then((res) => {
           _this.collapseData = res.result.expectedConfsData[0].confBaseInfos;
           _this.collapseIsLoading = false;
         })
-        .catch(err => {
+        .catch((err) => {
           _this.$message.error(err.response.message);
           _this.collapseIsLoading = false;
         });
     }
   },
-  mounted: function() {
+  mounted: function () {
     const _this = this;
-    this.onload(function(params) {
+    this.onload(function (params) {
       _this.host = params;
     });
     this.getExpectedConfs(this.host);

@@ -6,24 +6,37 @@
       <a-row>
         <a-card :bordered="false" class="aops-theme alert-record-card">
           <h2>告警记录</h2>
-          <div style="display:flex;justify-content:space-between;">
-            <p style="margin-bottom:10px;font-size:17px;font-weight:600;">
+          <div style="display: flex; justify-content: space-between">
+            <p style="margin-bottom: 10px; font-size: 17px; font-weight: 600">
               共获取到 {{ alertRecordData.length }} 条记录
             </p>
-            <div style="margin-bottom:10px;">
+            <div style="margin-bottom: 10px">
               <a-button type="primary" :loading="buttonLoading" @click="getAlertRecordResult">
                 刷新<a-icon type="reload" />
               </a-button>
             </div>
           </div>
-          <a-table rowKey="alert_id" :columns="alertRecordColumns" :data-source="alertRecordData"
-            :pagination="pagination" :loading="alertRecordLoading" @change="handleTableChange"
-            class="alert-record-table">
+          <a-table
+            rowKey="alert_id"
+            :columns="alertRecordColumns"
+            :data-source="alertRecordData"
+            :pagination="pagination"
+            :loading="alertRecordLoading"
+            @change="handleTableChange"
+            class="alert-record-table"
+          >
             <span slot="operation" slot-scope="text, record">
-              <a-popconfirm title="确认后,该告警将不再提示" ok-text="确定" cancel-text="取消"
-                @confirm="confirmAlert(record.alert_id)">
-                <img slot="icon" src="~@/assets/alertConfirmIcon.png"
-                  style="width:16px;position:absolute;top:5px;" />
+              <a-popconfirm
+                title="确认后,该告警将不再提示"
+                ok-text="确定"
+                cancel-text="取消"
+                @confirm="confirmAlert(record.alert_id)"
+              >
+                <img
+                  slot="icon"
+                  src="~@/assets/alertConfirmIcon.png"
+                  style="width: 16px; position: absolute; top: 5px"
+                />
                 <a>确认</a>
               </a-popconfirm>
               <a-divider type="vertical" />

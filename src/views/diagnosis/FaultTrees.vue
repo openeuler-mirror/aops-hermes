@@ -1,7 +1,7 @@
 <template>
   <my-page-header-wrapper>
     <a-card :bordered="false" class="aops-theme">
-      <div style="height: 110px;position: relative;">
+      <div style="height: 110px; position: relative">
         <img class="avatar-img" src="~@/assets/dtree-icon.png" />
         <div class="content-div">
           <div class="title">
@@ -16,8 +16,12 @@
           <a-row type="flex" align="middle">
             <a-col>
               <div class="btn-box">
-                <a-popconfirm title="您确定要删除该故障树吗?" ok-text="确认" cancel-text="取消"
-                  @confirm="deletediagtree(faultTree.tree_name)">
+                <a-popconfirm
+                  title="您确定要删除该故障树吗?"
+                  ok-text="确认"
+                  cancel-text="取消"
+                  @confirm="deletediagtree(faultTree.tree_name)"
+                >
                   <a href="javascript:;">删除</a>
                 </a-popconfirm>
               </div>
@@ -28,8 +32,7 @@
                   <a-button type="primary"> 故障诊断<a-icon type="plus" /> </a-button>
                 </template>
                 <template slot="drawerView">
-                  <add-fault-diagnosis :saveSuccess="addFaultDiagnosisSuccess"
-                    :faultTreeList="treeDataAll" />
+                  <add-fault-diagnosis :saveSuccess="addFaultDiagnosisSuccess" :faultTreeList="treeDataAll" />
                 </template>
               </drawer-view>
             </a-col>
@@ -41,7 +44,7 @@
           <fault-tree :treeData="faultTree.tree_content || {}" :treeDataLoading="treeDataLoading" />
         </a-tab-pane>
         <a-tab-pane key="2" tab="文件" force-render>
-          <a-card style="white-space: pre-wrap;">
+          <a-card style="white-space: pre-wrap">
             <div>{{ faultTree.tree_content }}</div>
           </a-card>
         </a-tab-pane>

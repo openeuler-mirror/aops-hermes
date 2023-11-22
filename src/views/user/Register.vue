@@ -2,13 +2,7 @@
 <template>
   <div class="main">
     <a-form id="formRegister" class="user-layout-login" ref="formRegister" :form="form" @submit="handleSubmit">
-      <a-alert
-        v-if="isLoginError"
-        type="error"
-        showIcon
-        style="margin-bottom: 24px;"
-        message="注册失败"
-      />
+      <a-alert v-if="isLoginError" type="error" showIcon style="margin-bottom: 24px" message="注册失败" />
       <a-form-item>
         <a-input
           size="large"
@@ -76,7 +70,7 @@
         </a-input>
       </a-form-item>
 
-      <a-form-item style="margin-top:24px">
+      <a-form-item style="margin-top: 24px">
         <a-button
           size="large"
           htmlType="submit"
@@ -86,7 +80,7 @@
           >{{ $t('user.register.register') }}</a-button
         >
       </a-form-item>
-      <a-form-item style="margin-top:24px">
+      <a-form-item style="margin-top: 24px">
         <div class="jump_login">
           <span>已有账号? </span>
           <span class="spin_top_jump" @click="goLogin">返回登录</span>
@@ -113,12 +107,11 @@ export default {
       }
     };
   },
-  created() {
-  },
+  created() {},
   methods: {
     ...mapActions(['Login', 'Logout']),
     goLogin() {
-      this.$router.push('/user/login')
+      this.$router.push('/user/login');
     },
     handleConfirmBlur(e) {
       const value = e.target.value;
@@ -132,7 +125,7 @@ export default {
       } else {
         const form = this.form;
         if (value && this.confirmDirty) {
-          form.validateFields(['confirm'], { force: true });
+          form.validateFields(['confirm'], {force: true});
         }
         callback();
       }
@@ -183,39 +176,39 @@ export default {
       } = this;
 
       state.loginBtn = true;
-        // 注册
-        validateFields({force: true}, (err, values) => {
-          if (!err) {
-            const loginParams = {...values};
-            delete loginParams.username;
-            loginParams.username = values.username;
-            loginParams.password = values.password;
-            loginParams.email = values.email;
-            register(loginParams)
-              .then(res => {
-                this.form.resetFields();
-                this.$message.success('注册成功!');
-                setTimeout(() => {
-                  this.$router.push('/user/login');
-                }, 1000)
-              })
-              .catch(err => {
-                if (err.response.code === '1102') {
-                  // 绑定重复账号，给予提示
-                  this.$message.error('注册账号已存在!')
-                } else {
-                  this.requestFailed(err);
-                }
-              })
-              .finally(() => {
-                state.loginBtn = false;
-              });
-          } else {
-            setTimeout(() => {
+      // 注册
+      validateFields({force: true}, (err, values) => {
+        if (!err) {
+          const loginParams = {...values};
+          delete loginParams.username;
+          loginParams.username = values.username;
+          loginParams.password = values.password;
+          loginParams.email = values.email;
+          register(loginParams)
+            .then((res) => {
+              this.form.resetFields();
+              this.$message.success('注册成功!');
+              setTimeout(() => {
+                this.$router.push('/user/login');
+              }, 1000);
+            })
+            .catch((err) => {
+              if (err.response.code === '1102') {
+                // 绑定重复账号，给予提示
+                this.$message.error('注册账号已存在!');
+              } else {
+                this.requestFailed(err);
+              }
+            })
+            .finally(() => {
               state.loginBtn = false;
-            }, 600);
-          }
-        });
+            });
+        } else {
+          setTimeout(() => {
+            state.loginBtn = false;
+          }, 600);
+        }
+      });
     },
     requestFailed(e) {
       this.isLoginError = true;
@@ -232,87 +225,87 @@ export default {
 <style lang="less" scoped>
 .main {
   .user-layout-login {
-  label {
-    font-size: 14px;
-  }
-
-  .jump_login {
-    text-align: right;
-    margin-top: -20px;
-    .spin_top_jump {
-      color:#005980;
-      cursor:pointer;
+    label {
+      font-size: 14px;
     }
-  }
 
-  .register-button {
-    padding: 0 15px;
-    font-size: 16px;
-    height: 40px;
-    width: 100%;
-    background: #0d9e6e;
-    border-color: #0d9e6e;
-    color: #fff;
-  }
-
-  .getCaptcha {
-    display: block;
-    width: 100%;
-    height: 40px;
-  }
-
-  .forge-password {
-    font-size: 14px;
-  }
-
-  button.login-button {
-    padding: 0 15px;
-    font-size: 16px;
-    height: 40px;
-    width: 100%;
-  }
-
-  .user-login-other {
-    text-align: left;
-    margin-top: 24px;
-    line-height: 22px;
-
-    .item-icon {
-      font-size: 24px;
-      color: rgba(0, 0, 0, 0.2);
-      margin-left: 16px;
-      vertical-align: middle;
-      cursor: pointer;
-      transition: color 0.3s;
-
-      &:hover {
-        color: #1890ff;
+    .jump_login {
+      text-align: right;
+      margin-top: -20px;
+      .spin_top_jump {
+        color: #005980;
+        cursor: pointer;
       }
     }
 
-    .register {
-      float: right;
+    .register-button {
+      padding: 0 15px;
+      font-size: 16px;
+      height: 40px;
+      width: 100%;
+      background: #0d9e6e;
+      border-color: #0d9e6e;
+      color: #fff;
     }
-  }
 
-  .login-button {
-    background: #002fa7;
-    border-color: #002fa7;
-    color: #fff;
-  }
+    .getCaptcha {
+      display: block;
+      width: 100%;
+      height: 40px;
+    }
 
-  /deep/ .ant-input {
-    border: 0 !important;
-    border-bottom: 1px solid #ccc !important;
-  }
+    .forge-password {
+      font-size: 14px;
+    }
 
-  /deep/ .ant-tabs-ink-bar {
-    background: #002fa7;
-  }
+    button.login-button {
+      padding: 0 15px;
+      font-size: 16px;
+      height: 40px;
+      width: 100%;
+    }
 
-  /deep/ .ant-tabs-nav .ant-tabs-tab-active {
-    color: #002fa7;
-  }
+    .user-login-other {
+      text-align: left;
+      margin-top: 24px;
+      line-height: 22px;
+
+      .item-icon {
+        font-size: 24px;
+        color: rgba(0, 0, 0, 0.2);
+        margin-left: 16px;
+        vertical-align: middle;
+        cursor: pointer;
+        transition: color 0.3s;
+
+        &:hover {
+          color: #1890ff;
+        }
+      }
+
+      .register {
+        float: right;
+      }
+    }
+
+    .login-button {
+      background: #002fa7;
+      border-color: #002fa7;
+      color: #fff;
+    }
+
+    /deep/ .ant-input {
+      border: 0 !important;
+      border-bottom: 1px solid #ccc !important;
+    }
+
+    /deep/ .ant-tabs-ink-bar {
+      background: #002fa7;
+    }
+
+    /deep/ .ant-tabs-nav .ant-tabs-tab-active {
+      color: #002fa7;
+    }
   }
 }
 </style>

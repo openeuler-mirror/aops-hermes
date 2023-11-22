@@ -1,5 +1,5 @@
 <template>
-  <div class="exceptionInfo" style="width: 100%;height: 100%;">
+  <div class="exceptionInfo" style="width: 100%; height: 100%">
     <a-table
       :rowKey="(record, index) => index"
       :columns="columns"
@@ -139,14 +139,14 @@ export default {
       getAlertDetail({
         alert_id: this.alertId
       })
-        .then(res => {
+        .then((res) => {
           for (const key in res.data.result) {
             const tempObj = res.data.result[key];
             tempObj.key = key;
             that.data.push(tempObj);
           }
         })
-        .catch(err => {
+        .catch((err) => {
           that.$message.error(err.response.data);
         })
         .finally(() => {

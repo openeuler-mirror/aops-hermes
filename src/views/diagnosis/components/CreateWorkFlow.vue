@@ -5,18 +5,20 @@
         <span class="ant-form-text"> 应用名称：{{ appInfo.app_name }} </span>
         是否推荐:
         <a-switch
-        :disabled="true"
-        checked-children="开"
-        un-checked-children="关"
-          v-decorator="['recommmand', {rules: [{required: true, messip: '是否推荐'}]}]" />
+          :disabled="true"
+          checked-children="开"
+          un-checked-children="关"
+          v-decorator="['recommmand', {rules: [{required: true, messip: '是否推荐'}]}]"
+        />
         <a-form-item class="a-form-item">
           工作流名称：
           <a-input
-          placeholder="请输入工作流名称，50个字符以内"
-          v-decorator="[
+            placeholder="请输入工作流名称，50个字符以内"
+            v-decorator="[
               'workflow_name',
               {rules: [{required: true, message: '请输入工作流名称'}, {validator: checkWorkflowName}]}
-            ]" />
+            ]"
+          />
         </a-form-item>
       </a-col>
     </a-row>
@@ -25,12 +27,13 @@
         <a-form-item>
           工作流描述：
           <a-textarea
-          placeholder="请输入工作流描述，100个字符以内"
-          :rows="2"
-          v-decorator="[
+            placeholder="请输入工作流描述，100个字符以内"
+            :rows="2"
+            v-decorator="[
               'description',
               {rules: [{required: true, message: '请输入工作流描述'}, {validator: checkWorkflowDesc}]}
-            ]" />
+            ]"
+          />
         </a-form-item>
       </a-col>
       <a-col :span="26">
@@ -38,11 +41,11 @@
           主机组：
           <div class="selectHostGroup">
             <a-select
-            v-decorator="[
+              v-decorator="[
                 'selectHostGroup',
                 {
                   rules: [{required: true, message: '请选择主机组'}],
-                  getValueFromEvent: e => this.onSelectedChange(e)
+                  getValueFromEvent: (e) => this.onSelectedChange(e)
                 }
               ]"
               show-search
@@ -70,13 +73,15 @@
           show-search
           :filter-option="transferFilterOption"
           @selectChange="handleSelectChange"
-          @change="handleTransferChange">
+          @change="handleTransferChange"
+        >
           <template
-          slot="children"
-          slot-scope="{
+            slot="children"
+            slot-scope="{
               props: {direction, filteredItems, selectedKeys, disabled: listDisabled},
               on: {itemSelectAll, itemSelect}
-            }">
+            }"
+          >
             <a-table
               :row-selection="getRowSelection({disabled: listDisabled, selectedKeys, itemSelectAll, itemSelect})"
               :columns="direction === 'left' ? leftColumns : rightColumns"
@@ -92,7 +97,8 @@
                     }
                   }
                 })
-              " />
+              "
+            />
           </template>
         </a-transfer>
       </a-form-item>
@@ -287,11 +293,13 @@ export default {
       };
     },
     replaceTransferSearchPlaceHolder() {
-      var list = document.getElementsByClassName('create-work-flow')[0].getElementsByClassName('ant-transfer-list-search')
-      var array = Array.from(list)
+      var list = document
+        .getElementsByClassName('create-work-flow')[0]
+        .getElementsByClassName('ant-transfer-list-search');
+      var array = Array.from(list);
       array.forEach((item) => {
         item.setAttribute('placeholder', '搜索主机名');
-      })
+      });
     },
     checkWorkflowName(rule, value, cb) {
       if (value && value.length > 50) {

@@ -20,20 +20,25 @@
         <a-col>
           <drawer-view title="新建异常检测规则">
             <template slot="click">
-              <a-button type="primary">
-                新建规则
-              </a-button>
+              <a-button type="primary"> 新建规则 </a-button>
             </template>
             <template slot="drawerView">
-              <add-abnormal-check-rule-drawer
-                :addSuccess="handleAddSuccess"></add-abnormal-check-rule-drawer>
+              <add-abnormal-check-rule-drawer :addSuccess="handleAddSuccess"></add-abnormal-check-rule-drawer>
             </template>
           </drawer-view>
         </a-col>
       </a-row>
-      <a-table rowKey="check_item" :columns="columns" :data-source="ruleList"
-        :pagination="pagination" :row-selection="rowSelection" @change="handleTableChange"
-        :loading="tableIsLoading" :expandIconAsCell="false" :expandIconColumnIndex="2">
+      <a-table
+        rowKey="check_item"
+        :columns="columns"
+        :data-source="ruleList"
+        :pagination="pagination"
+        :row-selection="rowSelection"
+        @change="handleTableChange"
+        :loading="tableIsLoading"
+        :expandIconAsCell="false"
+        :expandIconColumnIndex="2"
+      >
         <span slot="index" slot-scope="text, record, index">
           {{ index + firstIndex }}
         </span>
@@ -43,8 +48,7 @@
         <span slot="action" slot-scope="rule">
           <a href="#" @click="handleDelete([rule.check_item])">删除</a>
         </span>
-        <div slot="expandedRowRender" slot-scope="result"
-          style="width: 100%;margin: 1px;padding-left: 50px;">
+        <div slot="expandedRowRender" slot-scope="result" style="width: 100%; margin: 1px; padding-left: 50px">
           <check-result-expanded :dataSource="result.data_list"></check-result-expanded>
         </div>
       </a-table>

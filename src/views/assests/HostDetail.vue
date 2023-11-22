@@ -5,9 +5,10 @@
         <a-tab-pane key="1" tab="概览">
           <a-card class="aops-theme">
             <HostBasicInfo
-            :basicHostInfo="basicHostInfo"
-            :basicInfo="basicInfo"
-              :isLoading="basicHostInfoIsLoading || basicInfoIsLoading">
+              :basicHostInfo="basicHostInfo"
+              :basicInfo="basicInfo"
+              :isLoading="basicHostInfoIsLoading || basicInfoIsLoading"
+            >
             </HostBasicInfo>
           </a-card>
         </a-tab-pane>
@@ -54,7 +55,7 @@ export default {
       getHostDetail(This.hostId, true)
         .then(function (res) {
           _this.basicHostInfo = res.data.host_infos[0];
-          console.log(_this.basicHostInfo)
+          console.log(_this.basicHostInfo);
           _this.scene = This.basicHostInfo.scene;
         })
         .catch(function (err) {
@@ -69,7 +70,7 @@ export default {
           _this.basicInfo = res.data.host_infos[0];
         })
         .catch(function (err) {
-          console.log(err.response)
+          console.log(err.response);
           _this.$message.error(err.response.message);
         })
         .finally(() => {

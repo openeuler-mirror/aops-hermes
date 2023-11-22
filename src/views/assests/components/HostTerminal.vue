@@ -144,11 +144,10 @@ export default {
       };
     }
   },
-  created() {
-  },
+  created() {},
   mounted() {
     this.initTerm();
-    this.initSocket()
+    this.initSocket();
 
     this.onTerminalResize();
     this.onTerminalKeyPress();

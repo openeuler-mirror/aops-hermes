@@ -43,7 +43,9 @@ export default {
   },
   methods: {
     toSupprotFile() {
-      window.open('https://docs.openeuler.org/zh/docs/22.03_LTS_SP1/docs/Releasenotes/%E6%B3%95%E5%BE%8B%E5%A3%B0%E6%98%8E.html');
+      window.open(
+        'https://docs.openeuler.org/zh/docs/22.03_LTS_SP1/docs/Releasenotes/%E6%B3%95%E5%BE%8B%E5%A3%B0%E6%98%8E.html'
+      );
     }
   },
   computed: {
@@ -54,7 +56,7 @@ export default {
       };
     },
     ...mapState({
-      userName: state => state.user.name
+      userName: (state) => state.user.name
     })
   },
   mounted() {}

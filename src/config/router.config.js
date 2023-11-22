@@ -3,11 +3,10 @@ import {UserLayout, BasicLayout} from '@/vendor/ant-design-pro/layouts';
 
 const RouteView = {
   name: 'RouteView',
-  render: h => h('router-view')
+  render: (h) => h('router-view')
 };
 
 const routeMap = {
-
   /**
    *  @title: 路由名称。通过i18nRender转换成不同语种
    *  @path: 路由链接
@@ -743,8 +742,8 @@ export const asyncRouterMap = [
                       breadcrumbName:
                         routeMap.configuration.children.TranscationDomainView.children.TranscationDomainManagement
                           .title,
-                      path:
-                        routeMap.configuration.children.TranscationDomainView.children.TranscationDomainManagement.path
+                      path: routeMap.configuration.children.TranscationDomainView.children.TranscationDomainManagement
+                        .path
                     }
                   ]
                 }
@@ -770,8 +769,8 @@ export const asyncRouterMap = [
                       breadcrumbName:
                         routeMap.configuration.children.TranscationDomainView.children.TranscationDomainManagement
                           .title,
-                      path:
-                        routeMap.configuration.children.TranscationDomainView.children.TranscationDomainManagement.path
+                      path: routeMap.configuration.children.TranscationDomainView.children.TranscationDomainManagement
+                        .path
                     },
                     {
                       breadcrumbName:

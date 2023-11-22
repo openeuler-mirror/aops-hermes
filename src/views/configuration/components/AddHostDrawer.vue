@@ -1,26 +1,44 @@
 <!-- eslint-disable vue/max-attributes-per-line -->
 <template>
-  <a-form :form="form" :label-col="{span: 5}" :wrapper-col="{span: 12}" :confirm-loading="isLoading"
-    @submit="handleSubmit">
+  <a-form
+    :form="form"
+    :label-col="{span: 5}"
+    :wrapper-col="{span: 12}"
+    :confirm-loading="isLoading"
+    @submit="handleSubmit"
+  >
     <a-form-item label="归属业务域">
-      <a-input :disabled="true"
-        v-decorator="['domainName', {rules: [{required: true, message: '请填写归属业务域!'}]}]" />
+      <a-input
+        :disabled="true"
+        v-decorator="['domainName', {rules: [{required: true, message: '请填写归属业务域!'}]}]"
+      />
     </a-form-item>
     <a-form-item label="选择要添加的主机"> </a-form-item>
     <div>
-      <a-transfer :rowKey="host => host.host_id" :data-source="hostListTransfer"
-        :target-keys="targetKeys" :show-search="showSearch"
+      <a-transfer
+        :rowKey="(host) => host.host_id"
+        :data-source="hostListTransfer"
+        :target-keys="targetKeys"
+        :show-search="showSearch"
         :filter-option="(inputValue, item) => item.host_name.indexOf(inputValue) !== -1"
-        :show-select-all="false" @change="onChange">
-        <template slot="children" slot-scope="{
+        :show-select-all="false"
+        @change="onChange"
+      >
+        <template
+          slot="children"
+          slot-scope="{
             props: {direction, filteredItems, selectedKeys, disabled: listDisabled},
             on: {itemSelectAll, itemSelect}
-          }">
-          <a-table :row-key="rowKey"
+          }"
+        >
+          <a-table
+            :row-key="rowKey"
             :row-selection="getRowSelection({disabled: listDisabled, selectedKeys, itemSelectAll, itemSelect})"
             :columns="direction === 'left' ? leftColumns : rightColumns"
-            :data-source="filteredItems" size="small"
-            :style="{pointerEvents: listDisabled ? 'none' : null}" :custom-row="
+            :data-source="filteredItems"
+            size="small"
+            :style="{pointerEvents: listDisabled ? 'none' : null}"
+            :custom-row="
               ({key, disabled: itemDisabled}) => ({
                 on: {
                   click: () => {
@@ -29,7 +47,8 @@
                   }
                 }
               })
-            " />
+            "
+          />
         </template>
       </a-transfer>
     </div>
@@ -150,7 +169,7 @@ export default {
           }
           newTargetKeys.forEach(function (hostId) {
             const matchedHost = _this.hostListAll.filter((host) => host.host_id === hostId)[0] || {};
-            console.log(matchedHost)
+            console.log(matchedHost);
             hostInfos.push({
               // 只传hostId
               hostId: hostId,

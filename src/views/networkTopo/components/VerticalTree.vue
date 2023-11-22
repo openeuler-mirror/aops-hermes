@@ -67,7 +67,7 @@ export default {
       if (!this.selectedNodeId) {
         return;
       }
-      const highLightNodeList = this.tree.findAll('node', node => {
+      const highLightNodeList = this.tree.findAll('node', (node) => {
         return node.get('model').id === this.selectedNodeId;
       });
       this.selectedNodeChache = highLightNodeList[0];
@@ -77,15 +77,15 @@ export default {
     setUXEvent() {
       const _this = this;
       // hover
-      this.tree.on('node:mouseenter', function(evt) {
+      this.tree.on('node:mouseenter', function (evt) {
         const node = evt.item;
         _this.tree.setItemState(node, 'hoverFocus', true);
       });
-      this.tree.on('node:mouseleave', function(evt) {
+      this.tree.on('node:mouseleave', function (evt) {
         const node = evt.item;
         _this.tree.setItemState(node, 'hoverFocus', false);
       });
-      this.tree.on('node:click', function(evt) {
+      this.tree.on('node:click', function (evt) {
         const node = evt.item;
         const nodeId = node.getModel().id;
         _this.$emit('treeNodeClicked', nodeId);
@@ -170,7 +170,7 @@ export default {
       }
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.initializingTree();
     this.drawTree();
   }

@@ -32,7 +32,7 @@ export default {
     };
   },
   watch: {
-    text: function(val) {
+    text: function (val) {
       this.output = this.cutoff(this.text, this.length);
     }
   },

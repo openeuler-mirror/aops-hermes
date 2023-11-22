@@ -1,13 +1,13 @@
 <template>
   <my-page-header-wrapper>
     <a-card :bordered="false" class="aops-theme">
-      <div style="height: 110px;position: relative;">
+      <div style="height: 110px; position: relative">
         <img class="avatar-img" src="~@/assets/dtree-icon.png" />
         <div class="content-div">
           <div class="title">
             <span style="padding-right: 5px">报告ID：{{ reportData.report_id }}</span>
           </div>
-          <div style="height: 60px;line-height: 28px">
+          <div style="height: 60px; line-height: 28px">
             <a-row>
               <a-col :span="10">
                 主机名称：
@@ -22,11 +22,10 @@
       </div>
       <a-tabs default-active-key="1" style="min-height: 350px">
         <a-tab-pane key="1" tab="树图">
-          <fault-tree :treeData="reportData.report || {}" :treeDataLoading="reportLoading"
-            :highLightError="true" />
+          <fault-tree :treeData="reportData.report || {}" :treeDataLoading="reportLoading" :highLightError="true" />
         </a-tab-pane>
         <a-tab-pane key="2" tab="文件" force-render>
-          <a-card style="white-space: pre-wrap;">
+          <a-card style="white-space: pre-wrap">
             <div>{{ reportData.report }}</div>
           </a-card>
         </a-tab-pane>

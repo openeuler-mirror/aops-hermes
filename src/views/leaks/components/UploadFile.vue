@@ -5,29 +5,30 @@
     <a-modal title="上传文件" :visible="visible" :footer="null" @cancel="closeModal">
       <div>
         <a-upload :file-list="fileDataList" :remove="removeFile" :before-upload="preUpload">
-          <div style="display:flex;">
+          <div style="display: flex">
             <div style="flex">
               <a-button> <a-icon type="upload" /> 选择文件 </a-button>
             </div>
-            <div style="margin-left: 35px;margin-top: 3px;font-size:15px;">
+            <div style="margin-left: 35px; margin-top: 3px; font-size: 15px">
               <p>支持类型: xml、zip</p>
               <p>文件需小于20M、压缩包内文件数小于100</p>
             </div>
           </div>
         </a-upload>
       </div>
-      <div style="margin-top: 14px;font-size: 15px;">
+      <div style="margin-top: 14px; font-size: 15px">
         <a-radio-group name="radioGroup" v-model="value" :default-value="2" @change="onChange">
-          <a-radio :value="1">
-            不受影响
-          </a-radio>
-          <a-radio :value="2">
-            受影响
-          </a-radio>
+          <a-radio :value="1"> 不受影响 </a-radio>
+          <a-radio :value="2"> 受影响 </a-radio>
         </a-radio-group>
       </div>
-      <a-button type="primary" :disabled="fileDataList.length === 0" :loading="uploading"
-        style="margin-top: 16px;width: 111px;" @click="goUpload">
+      <a-button
+        type="primary"
+        :disabled="fileDataList.length === 0"
+        :loading="uploading"
+        style="margin-top: 16px; width: 111px"
+        @click="goUpload"
+      >
         {{ uploading ? '上传中' : '开始上传' }}
       </a-button>
     </a-modal>

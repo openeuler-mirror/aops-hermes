@@ -67,7 +67,7 @@ export default {
         content: this.$t('layouts.usermenu.dialog.content'),
         onOk: () => {
           return this.$store.dispatch('Logout').then(() => {
-            this.$message.info('退出登录!')
+            this.$message.info('退出登录!');
             this.$router.push({name: 'login'});
           });
         },

@@ -4,32 +4,46 @@
       <div class="header">
         <h4 v-show="graphIsDoingLayout">图形布局中，请稍等 <a-spin size="small" /></h4>
         <div class="level-controller">
-          <div :class="`level-controller-btn${level.type === visibleLevel ? ' active' : ''}`"
-            v-for="(level, idx) in levelOrders" :key="idx" @click="changeLevel(level.type)">
-            <img :src="level.src" alt="" style="width:18px;vertical-align:middle;" /><span
-              style="margin-left:5px;">{{
+          <div
+            :class="`level-controller-btn${level.type === visibleLevel ? ' active' : ''}`"
+            v-for="(level, idx) in levelOrders"
+            :key="idx"
+            @click="changeLevel(level.type)"
+          >
+            <img :src="level.src" alt="" style="width: 18px; vertical-align: middle" /><span style="margin-left: 5px">{{
               level.text
             }}</span>
           </div>
-          <div><a-icon type="switcher" :rotate="90" style="margin-bottom:15px;" /> 层级</div>
+          <div><a-icon type="switcher" :rotate="90" style="margin-bottom: 15px" /> 层级</div>
         </div>
       </div>
       <a-spin :spinning="dataLoading" size="large">
         <div v-for="(level, idx) in levelOrders" :key="idx">
-          <node-graph-container v-show="level.type === visibleLevel"
-            :isShow="level.type === visibleLevel" :containerId="`graph-container-${level.type}`"
+          <node-graph-container
+            v-show="level.type === visibleLevel"
+            :isShow="level.type === visibleLevel"
+            :containerId="`graph-container-${level.type}`"
             :entitiesData="{
               nodes: entitiesListByLevel[level.type],
               edges: edgesListByLevel[level.type]
-            }" :dataReady="dataReady" :selectedEntityId="selectedNodeId"
-            :linkMap="edgesMapByLevel[level.type]" @nodeClicked="nodeClicked"
-            @addResizeFunction="addResizeFunction" @showVerticalMap="showVerticalMap" />
+            }"
+            :dataReady="dataReady"
+            :selectedEntityId="selectedNodeId"
+            :linkMap="edgesMapByLevel[level.type]"
+            @nodeClicked="nodeClicked"
+            @addResizeFunction="addResizeFunction"
+            @showVerticalMap="showVerticalMap"
+          />
         </div>
       </a-spin>
     </a-card>
-    <vertical-map-drawer :selectedNodeId="selectedEntityId" :treeData="verticalTreeData"
-      :visible="verticalDrawerVisible" @close="handleVerticalDrawerClose"
-      @treeNodeClicked="treeNodeClicked" />
+    <vertical-map-drawer
+      :selectedNodeId="selectedEntityId"
+      :treeData="verticalTreeData"
+      :visible="verticalDrawerVisible"
+      @close="handleVerticalDrawerClose"
+      @treeNodeClicked="treeNodeClicked"
+    />
   </page-header-wrapper>
 </template>
 

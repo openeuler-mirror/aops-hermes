@@ -2,10 +2,11 @@
   <div class="hostbox">
     <div class="mesinfo">
       <a-row
-      v-if="standalone && scanningHostIds.length > 0 && scanStatusloading"
-      type="flex"
+        v-if="standalone && scanningHostIds.length > 0 && scanStatusloading"
+        type="flex"
         justify="end"
-        align="middle">
+        align="middle"
+      >
         <a-icon type="loading" />
         <p class="scan-result-message">{{ `目前有${scanningHostIds.length}台机器正在扫描` }}</p>
       </a-row>
@@ -13,17 +14,25 @@
     <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
       <a-col v-if="!standalone">
         <a-radio-group default-value="a" button-style="solid" @change="handleFixChange">
-          <a-radio-button value="a">
-            未修复
-          </a-radio-button>
-          <a-radio-button value="b">
-            已修复
-          </a-radio-button>
+          <a-radio-button value="a"> 未修复 </a-radio-button>
+          <a-radio-button value="b"> 已修复 </a-radio-button>
         </a-radio-group>
-        <a-input-search placeholder="按主机名搜索" v-model="hostSearch" @change="searchChange" style="width: 200px;margin-left: 10px;" @search="onSearch" />
+        <a-input-search
+          placeholder="按主机名搜索"
+          v-model="hostSearch"
+          @change="searchChange"
+          style="width: 200px; margin-left: 10px"
+          @search="onSearch"
+        />
       </a-col>
       <a-col v-else>
-        <a-input-search placeholder="按主机名搜索" v-model="hostSearch" @change="searchChange" style="width: 200px" @search="onSearch" />
+        <a-input-search
+          placeholder="按主机名搜索"
+          v-model="hostSearch"
+          @change="searchChange"
+          style="width: 200px"
+          @search="onSearch"
+        />
       </a-col>
       <a-col>
         <a-row type="flex" :gutter="6">
@@ -44,28 +53,28 @@
           </a-col> -->
           <a-col v-if="standalone && selectedRowKeys.length > 0">
             <create-repair-task-drawer
-            taskType="repo set"
-            dataType="selected"
+              taskType="repo set"
+              dataType="selected"
               hostListType="bySelection"
               :hostList="selectedRowsAll"
               :repoList="repoListProps"
               @createSuccess="handleTaskCreateSuccess"
-              @getAllHost="getAllHost" />
+              @getAllHost="getAllHost"
+            />
           </a-col>
           <a-col v-if="standalone && selectedRowKeys.length === 0">
             <create-repair-task-drawer
-            taskType="repo set"
-            dataType="all"
-            hostListType="bySelection"
+              taskType="repo set"
+              dataType="all"
+              hostListType="bySelection"
               :hostList="hostListAll"
               :repoList="repoListProps"
               @createSuccess="handleTaskCreateSuccess"
-              @getAllHost="getAllHost" />
+              @getAllHost="getAllHost"
+            />
           </a-col>
           <a-col v-if="standalone && selectedRowKeys.length !== 0">
-            <a-button @click="handleScan" type="primary" :loading="scanloading">
-              漏洞扫描
-            </a-button>
+            <a-button @click="handleScan" type="primary" :loading="scanloading"> 漏洞扫描 </a-button>
           </a-col>
           <a-col v-if="standalone && selectedRowKeys.length === 0">
             <a-button @click="handleScanAll" :loading="scanloading" type="primary">漏洞扫描</a-button>
@@ -75,12 +84,13 @@
           </a-col>
           <a-col v-if="!standalone && !fixed && selectedRowKeys.length === 0">
             <create-repair-task-drawer
-            text="生成修复任务"
-            taskType="cve fix"
-            :fixed="fixed"
-            :cveListProps="cveList"
-            hostListType="byLoading"
-            @createSuccess="handleTaskCreateSuccess" />
+              text="生成修复任务"
+              taskType="cve fix"
+              :fixed="fixed"
+              :cveListProps="cveList"
+              hostListType="byLoading"
+              @createSuccess="handleTaskCreateSuccess"
+            />
           </a-col>
           <a-col v-if="!standalone && !fixed && selectedRowKeys.length !== 0">
             <create-repair-task-drawer
@@ -89,7 +99,8 @@
               :cveListProps="cveList"
               hostListType="bySelection"
               :hostList="selectedRowsAll"
-              @createSuccess="handleTaskCreateSuccess" />
+              @createSuccess="handleTaskCreateSuccess"
+            />
           </a-col>
           <a-col v-if="!standalone && fixed && selectedRowKeys.length === 0">
             <create-repair-task-drawer
@@ -98,7 +109,8 @@
               :fixed="fixed"
               :cveListProps="cveList"
               hostListType="byLoading"
-              @createSuccess="handleTaskCreateSuccess" />
+              @createSuccess="handleTaskCreateSuccess"
+            />
           </a-col>
           <a-col v-if="!standalone && fixed && selectedRowKeys.length !== 0">
             <create-repair-task-drawer
@@ -107,7 +119,8 @@
               :cveListProps="cveList"
               hostListType="bySelection"
               :hostList="selectedRowsAll"
-              @createSuccess="handleTaskCreateSuccess" />
+              @createSuccess="handleTaskCreateSuccess"
+            />
           </a-col>
           <a-col v-if="standalone">
             <a-button @click="handleRefresh">
@@ -130,9 +143,11 @@
       :loading="standalone ? hostTableIsLoading : inputLoading"
     >
       <router-link
-      :to="{path: `/leaks/host-leak-list/${record.host_id}`}"
-      slot="host_name"
-      slot-scope="host_name, record">{{ host_name }}</router-link>
+        :to="{path: `/leaks/host-leak-list/${record.host_id}`}"
+        slot="host_name"
+        slot-scope="host_name, record"
+        >{{ host_name }}</router-link
+      >
       <div slot="last_scan" slot-scope="last_scan">
         {{ last_scan }}
         <!-- {{ record.last_scan === null ? '未扫描' : record.last_scan }} -->
@@ -146,16 +161,21 @@
       </div>
       <div v-if="!standalone" slot="expandedRowRender" slot-scope="record" style="margin: 0">
         <a-table
-              :row-key="innerrecord => fixed ? record.host_id + innerrecord.installed_rpm : record.host_id + innerrecord.available_rpm + innerrecord.installed_rpm"
-              :columns="fixed ? ainnerColumns : innerColumns"
-              :data-source="record.rpms || []"
-              :rowSelection="innerRowSelection"
-              :pagination="false">
-              <a
-               slot="hosts"
-               slot-scope="hosts, innerrecord"
-               @click="showHostListUnderCve(record, innerrecord)">{{ hosts }}</a>
-            </a-table>
+          :row-key="
+            (innerrecord) =>
+              fixed
+                ? record.host_id + innerrecord.installed_rpm
+                : record.host_id + innerrecord.available_rpm + innerrecord.installed_rpm
+          "
+          :columns="fixed ? ainnerColumns : innerColumns"
+          :data-source="record.rpms || []"
+          :rowSelection="innerRowSelection"
+          :pagination="false"
+        >
+          <a slot="hosts" slot-scope="hosts, innerrecord" @click="showHostListUnderCve(record, innerrecord)">{{
+            hosts
+          }}</a>
+        </a-table>
       </div>
     </a-table>
     <host-in-cve-rpm
@@ -163,7 +183,8 @@
       @close="closeHostListUnderCve"
       :propAvailablerpm="propAvailablerpm"
       :propInstalledrpm="propInstalledrpm"
-      :cveId="hostListOfCveId" />
+      :cveId="hostListOfCveId"
+    />
   </div>
 </template>
 
@@ -175,7 +196,15 @@
 
 import CreateRepairTaskDrawer from './CreateRepairTaskDrawer';
 import HostInCveRpm from './HostInCveRpm';
-import {getHostLeakList, scanHost, getHostScanStatus, getRepoList, getCveExport, getCveUnfixRpm, getCveFixRpm} from '@/api/leaks';
+import {
+  getHostLeakList,
+  scanHost,
+  getHostScanStatus,
+  getRepoList,
+  getCveExport,
+  getCveUnfixRpm,
+  getCveFixRpm
+} from '@/api/leaks';
 import {hostGroupList} from '@/api/assest';
 import {getSelectedRow} from '../utils/getSelectedRow';
 import {downloadBlobFile} from '@/views/utils/downloadBlobFile';
@@ -419,11 +448,11 @@ export default {
   },
   watch: {
     paginationTotal() {
-      this.$set(this.pagination, 'total', this.paginationTotal)
+      this.$set(this.pagination, 'total', this.paginationTotal);
     },
     inputList: {
-      handler (newVal, oldval) {
-        this.propData = newVal
+      handler(newVal, oldval) {
+        this.propData = newVal;
       },
       deep: true,
       immediate: true
@@ -466,21 +495,21 @@ export default {
   methods: {
     checkCondition() {
       this.$nextTick(() => {
-        const contain = document.querySelector('.standtable')
+        const contain = document.querySelector('.standtable');
         if (contain) {
-          const elements1 = contain.querySelectorAll('.ant-table-row-expand-icon-cell')
-          const elements2 = contain.querySelectorAll('.ant-table-expand-icon-th')
+          const elements1 = contain.querySelectorAll('.ant-table-row-expand-icon-cell');
+          const elements2 = contain.querySelectorAll('.ant-table-expand-icon-th');
           if (this.standalone) {
-            elements1.forEach(el => {
-              el.style.width = '0'
-              el.style.border = '0 !important'
-              el.style.display = 'none'
-            })
-            elements2.forEach(el => {
-              el.style.width = '0'
-              el.style.border = '0 !important'
-              el.style.display = 'none'
-            })
+            elements1.forEach((el) => {
+              el.style.width = '0';
+              el.style.border = '0 !important';
+              el.style.display = 'none';
+            });
+            elements2.forEach((el) => {
+              el.style.width = '0';
+              el.style.border = '0 !important';
+              el.style.display = 'none';
+            });
           }
         }
       });
@@ -491,54 +520,54 @@ export default {
     showHostListUnderCve(params, innerparams) {
       this.hostListUnderCveVisible = true;
       this.hostListOfCveId = this.cveId;
-      this.propAvailablerpm = innerparams.available_rpm
-      this.propInstalledrpm = innerparams.installed_rpm
+      this.propAvailablerpm = innerparams.available_rpm;
+      this.propInstalledrpm = innerparams.installed_rpm;
     },
     innerOnSelectChange(selectedRowKeys, selectedRows) {
       this.innerselectedRowKeys = selectedRowKeys;
     },
     expand(expanded, record) {
       if (expanded && !this.standalone) {
-        const _this = this
+        const _this = this;
         const Params = {
           cve_id: this.cveId,
           host_ids: [record.host_id]
-        }
+        };
         if (this.fixed) {
           getCveFixRpm(Params)
-          .then(function (res) {
-            const target = _this.propData.find(item => item.host_id === record.host_id)
-            target.rpms = res.data
-            target.rpms.forEach((item) => {
-              _this.$set(item, 'host_id', record.host_id)
+            .then(function (res) {
+              const target = _this.propData.find((item) => item.host_id === record.host_id);
+              target.rpms = res.data;
+              target.rpms.forEach((item) => {
+                _this.$set(item, 'host_id', record.host_id);
+              });
+              // 数据更新后给表格重新赋值
+              _this.propData = JSON.parse(JSON.stringify(_this.propData));
             })
-            // 数据更新后给表格重新赋值
-            _this.propData = JSON.parse(JSON.stringify(_this.propData))
-          })
-          .catch(function (err) {
-            _this.$message.error(err.response.message);
-          })
-          .finally(function () {
-            _this.tableIsLoading = false;
-          });
+            .catch(function (err) {
+              _this.$message.error(err.response.message);
+            })
+            .finally(function () {
+              _this.tableIsLoading = false;
+            });
         } else {
-        getCveUnfixRpm(Params)
-          .then(function (res) {
-            const target = _this.propData.find(item => item.host_id === record.host_id)
-            target.rpms = res.data
-            target.rpms.forEach((item) => {
-              _this.$set(item, 'host_id', record.host_id)
+          getCveUnfixRpm(Params)
+            .then(function (res) {
+              const target = _this.propData.find((item) => item.host_id === record.host_id);
+              target.rpms = res.data;
+              target.rpms.forEach((item) => {
+                _this.$set(item, 'host_id', record.host_id);
+              });
+              // 数据更新后给表格重新赋值
+              _this.propData = JSON.parse(JSON.stringify(_this.propData));
             })
-            // 数据更新后给表格重新赋值
-            _this.propData = JSON.parse(JSON.stringify(_this.propData))
-          })
-          .catch(function (err) {
-            _this.$message.error(err.response.message);
-          })
-          .finally(function () {
-            _this.tableIsLoading = false;
-          });
-      }
+            .catch(function (err) {
+              _this.$message.error(err.response.message);
+            })
+            .finally(function () {
+              _this.tableIsLoading = false;
+            });
+        }
       }
     },
     searchChange() {
@@ -565,14 +594,14 @@ export default {
     },
     handleFixChange(e) {
       if (e.target.value === 'a') {
-        this.hotpatchContent = '支持热补丁'
+        this.hotpatchContent = '支持热补丁';
         this.fixed = false;
       } else {
-        this.hotpatchContent = '热补丁修复'
+        this.hotpatchContent = '热补丁修复';
         this.fixed = true;
       }
-      this.expandedRowKeys = []
-      this.selectedRowKeys = []
+      this.expandedRowKeys = [];
+      this.selectedRowKeys = [];
       // 切换修复状态后重新请求受影响主机列表
       this.handleReset();
     },
@@ -595,33 +624,33 @@ export default {
       }
     },
     assignFiltersFixStatus(fixStatus) {
-      this.filters.hotpatch = []
-      this.filters.hp_status = []
-      fixStatus.forEach(value => {
+      this.filters.hotpatch = [];
+      this.filters.hp_status = [];
+      fixStatus.forEach((value) => {
         if (value === 1) {
           if (!this.filters.hotpatch.includes(1)) {
-            this.filters.hotpatch.push(1)
+            this.filters.hotpatch.push(1);
           }
-          this.filters.hp_status.push('ACCEPTED')
+          this.filters.hp_status.push('ACCEPTED');
         }
         if (value === 2) {
           if (!this.filters.hotpatch.includes(1)) {
-            this.filters.hotpatch.push(1)
+            this.filters.hotpatch.push(1);
           }
-          this.filters.hp_status.push('ACTIVED')
+          this.filters.hp_status.push('ACTIVED');
         }
         if (value === 0) {
-          this.filters.hotpatch.push(0)
+          this.filters.hotpatch.push(0);
         }
-      })
+      });
     },
     handleTableChange(pagination, filters, sorter) {
       // 存储翻页状态
       this.pagination = pagination;
-      this.expandedRowKeys = []
+      this.expandedRowKeys = [];
       this.filters = Object.assign({}, this.filters, filters);
       if (this.filters['fixStatus'] != null) {
-        this.assignFiltersFixStatus(this.filters['fixStatus'])
+        this.assignFiltersFixStatus(this.filters['fixStatus']);
       }
       this.sorter = sorter;
       // 排序、筛选、分页时，重新请求主机列表
@@ -767,8 +796,7 @@ export default {
         .catch(function (err) {
           _this.$message.error(err.response.message);
         })
-        .finally(function () {
-        });
+        .finally(function () {});
     },
     // 返回扫描状态的主机
     getScanningHost(scanMap, hostList) {
@@ -862,8 +890,8 @@ export default {
             _this.checkCondition();
           });
           _this.hostTableData.forEach((item) => {
-            item.cve_num = `${item.unfixed_cve_num}/${item.fixed_cve_num}`
-          })
+            item.cve_num = `${item.unfixed_cve_num}/${item.fixed_cve_num}`;
+          });
           _this.pagination = {
             ..._this.pagination,
             current: pagination.current,
@@ -916,7 +944,7 @@ export default {
         this.getHostListAll();
       }
       // 重新请求数据后重置列表
-      this.expandedRowKeys = []
+      this.expandedRowKeys = [];
     },
     handleTaskCreateSuccess() {
       this.handleRefresh();

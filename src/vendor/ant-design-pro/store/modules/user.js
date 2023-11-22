@@ -4,8 +4,8 @@
 
 // import storage from 'store';
 // import cookie from 'js-cookie';
-import { login, refreshTokenFn } from '@/api/login';
-import { ACCESS_TOKEN, REFRESH_TOKIN } from '@/vendor/ant-design-pro/store/mutation-types';
+import {login, refreshTokenFn} from '@/api/login';
+import {ACCESS_TOKEN, REFRESH_TOKIN} from '@/vendor/ant-design-pro/store/mutation-types';
 
 const user = {
   state: {
@@ -23,9 +23,9 @@ const user = {
       state.token = token;
     },
     SET_RETOKEN: (state, refreshToken) => {
-      state.refreshToken = refreshToken
+      state.refreshToken = refreshToken;
     },
-    SET_NAME: (state, { name, welcome }) => {
+    SET_NAME: (state, {name, welcome}) => {
       state.name = name;
       state.welcome = welcome;
     },
@@ -42,10 +42,10 @@ const user = {
 
   actions: {
     // 用本地账号登
-    Login({ commit }, userInfo) {
+    Login({commit}, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo)
-          .then(response => {
+          .then((response) => {
             if (response.code !== '200') {
               reject(response.message);
             }
@@ -54,28 +54,28 @@ const user = {
             localStorage.setItem(REFRESH_TOKIN, result.data.refresh_token);
             localStorage.setItem('user_name', userInfo.username);
             commit('SET_TOKEN', result.data.token);
-            commit('SET_RETOKEN', result.data.refresh_token)
-            commit('SET_NAME', { name: userInfo.username });
+            commit('SET_RETOKEN', result.data.refresh_token);
+            commit('SET_NAME', {name: userInfo.username});
             resolve();
           })
-          .catch(error => {
+          .catch((error) => {
             reject(error);
           });
       });
     },
 
     // 用gitee账号登陆
-    LoginInGitee({ commit }, params) {
+    LoginInGitee({commit}, params) {
       localStorage.setItem(ACCESS_TOKEN, params.token);
-      localStorage.setItem(REFRESH_TOKIN, params.refresh_token)
+      localStorage.setItem(REFRESH_TOKIN, params.refresh_token);
       localStorage.setItem('user_name', params.username);
       commit('SET_TOKEN', params.token);
-      commit('SET_RETOKEN', params.refresh_token)
-      commit('SET_NAME', { name: params.username });
+      commit('SET_RETOKEN', params.refresh_token);
+      commit('SET_NAME', {name: params.username});
     },
 
     // 获取用户信息
-    GetInfo({ commit }) {
+    GetInfo({commit}) {
       return new Promise((resolve, reject) => {
         try {
           // 暂时还没有userInfo的接口，跳过，使用空数据
@@ -84,7 +84,7 @@ const user = {
           const roleObj = {};
 
           userInfo.role = roleObj;
-          const response = { result: userInfo };
+          const response = {result: userInfo};
           const result = response.result;
 
           commit('SET_ROLES', [1]);
@@ -98,21 +98,21 @@ const user = {
     },
 
     // 此action设置登录返回的用户名
-    setUserName({ commit }, userName) {
-      commit('SET_NAME', { name: userName });
+    setUserName({commit}, userName) {
+      commit('SET_NAME', {name: userName});
     },
 
     // 登出
-    Logout({ commit, state }) {
+    Logout({commit, state}) {
       // return new Promise((resolve, reject) => {
       //   logout()
       //     .then(() => {
-            commit('SET_TOKEN', '');
-            commit('SET_ROLES', []);
-            commit('SET_RETOKEN', '');
-            localStorage.removeItem(ACCESS_TOKEN);
-            localStorage.removeItem(REFRESH_TOKIN);
-            localStorage.removeItem('user_name');
+      commit('SET_TOKEN', '');
+      commit('SET_ROLES', []);
+      commit('SET_RETOKEN', '');
+      localStorage.removeItem(ACCESS_TOKEN);
+      localStorage.removeItem(REFRESH_TOKIN);
+      localStorage.removeItem('user_name');
       //       resolve();
       //     })
       //     .catch(error => {
@@ -123,44 +123,46 @@ const user = {
     },
 
     // 刷新token
-    RefreshToken({ commit, state }) {
+    RefreshToken({commit, state}) {
       return new Promise((resolve, reject) => {
-        const refreshToken = localStorage.getItem('Refresh-Token')
-        refreshTokenFn(refreshToken).then((res) => {
-          if (res.code === '200') {
-            localStorage.removeItem(ACCESS_TOKEN);
-            localStorage.removeItem(REFRESH_TOKIN);
-            console.log(res.data.token)
-            console.log(res.data.refresh_token)
-            localStorage.setItem(ACCESS_TOKEN, res.data.token);
-            localStorage.setItem(REFRESH_TOKIN, res.data.refresh_token)
-            commit('SET_TOKEN', res.data.token)
-            commit('SET_RETOKEN', res.data.refresh_token)
-            resolve()
-          } else if (res.code === '1207') {
-            // 若返回1207则refresh_token也过期，直接退出到登录页
-            // return new Promise((resolve, reject) => {
-            //   logout()
-            //     .then(() => {
-                  commit('SET_TOKEN', '');
-                  commit('SET_ROLES', []);
-                  commit('SET_RETOKEN', '');
-                  localStorage.removeItem(ACCESS_TOKEN);
-                  localStorage.removeItem(REFRESH_TOKIN);
-                  localStorage.removeItem('user_name');
-            //       resolve();
-            //     })
-            //     .catch(error => {
-            //       reject(error);
-            //     })
-            //     .finally(() => { });
-            // });
-          }
-        }).catch((err) => {
-          reject(err)
-        }).finally(() => {
-        })
-      })
+        const refreshToken = localStorage.getItem('Refresh-Token');
+        refreshTokenFn(refreshToken)
+          .then((res) => {
+            if (res.code === '200') {
+              localStorage.removeItem(ACCESS_TOKEN);
+              localStorage.removeItem(REFRESH_TOKIN);
+              console.log(res.data.token);
+              console.log(res.data.refresh_token);
+              localStorage.setItem(ACCESS_TOKEN, res.data.token);
+              localStorage.setItem(REFRESH_TOKIN, res.data.refresh_token);
+              commit('SET_TOKEN', res.data.token);
+              commit('SET_RETOKEN', res.data.refresh_token);
+              resolve();
+            } else if (res.code === '1207') {
+              // 若返回1207则refresh_token也过期，直接退出到登录页
+              // return new Promise((resolve, reject) => {
+              //   logout()
+              //     .then(() => {
+              commit('SET_TOKEN', '');
+              commit('SET_ROLES', []);
+              commit('SET_RETOKEN', '');
+              localStorage.removeItem(ACCESS_TOKEN);
+              localStorage.removeItem(REFRESH_TOKIN);
+              localStorage.removeItem('user_name');
+              //       resolve();
+              //     })
+              //     .catch(error => {
+              //       reject(error);
+              //     })
+              //     .finally(() => { });
+              // });
+            }
+          })
+          .catch((err) => {
+            reject(err);
+          })
+          .finally(() => {});
+      });
     }
   }
 };

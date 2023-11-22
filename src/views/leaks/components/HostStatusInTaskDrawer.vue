@@ -1,8 +1,20 @@
 <!-- eslint-disable vue/max-attributes-per-line -->
 <template>
-  <a-drawer :title="this.propType === 'rpm' ? 'CVE-主机列表' : 'RPM-主机列表'" closable :visible="visible" width="600" @close="handleClose">
-    <a-table rowKey="host_id" :columns="this.propType === 'rpm' ? columns : rpmColumns" :data-source="tableData" :pagination="false"
-      :loading="tableIsLoading" bordered>
+  <a-drawer
+    :title="this.propType === 'rpm' ? 'CVE-主机列表' : 'RPM-主机列表'"
+    closable
+    :visible="visible"
+    width="600"
+    @close="handleClose"
+  >
+    <a-table
+      rowKey="host_id"
+      :columns="this.propType === 'rpm' ? columns : rpmColumns"
+      :data-source="tableData"
+      :pagination="false"
+      :loading="tableIsLoading"
+      bordered
+    >
       <div slot="status" slot-scope="status">
         <span>
           <a-badge :status="statusValueMap[status]" />
@@ -142,26 +154,26 @@ export default {
               _this.tableIsLoading = false;
             });
         } else {
-            getCveRpmHostUnderLeak({
-              task_id: this.taskId,
-              cve_id: this.cveId,
-              installed_rpm: this.rpmrecord.installed_rpm,
-              available_rpm: this.rpmrecord.available_rpm
-            })
-              .then(function (res) {
-                _this.tableData = res.data || [];
-                _this.tableData = _this.tableData.map((row, idx) => {
-                  const tempObj = row;
-                  tempObj.index = idx + 1;
-                  return tempObj;
-                });
-              })
-              .catch(function (err) {
-                _this.$message.error(err.response.message);
-              })
-              .finally(function () {
-                _this.tableIsLoading = false;
+          getCveRpmHostUnderLeak({
+            task_id: this.taskId,
+            cve_id: this.cveId,
+            installed_rpm: this.rpmrecord.installed_rpm,
+            available_rpm: this.rpmrecord.available_rpm
+          })
+            .then(function (res) {
+              _this.tableData = res.data || [];
+              _this.tableData = _this.tableData.map((row, idx) => {
+                const tempObj = row;
+                tempObj.index = idx + 1;
+                return tempObj;
               });
+            })
+            .catch(function (err) {
+              _this.$message.error(err.response.message);
+            })
+            .finally(function () {
+              _this.tableIsLoading = false;
+            });
         }
       }
     }

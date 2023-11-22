@@ -3,17 +3,13 @@
     <slot name="button">
       <a-button type="primary">解密密钥</a-button>
     </slot>
-    <a-modal
-    title="输入解密密钥"
-    :visible="visible"
-    :confirm-loading="isLoading"
-     @ok="handleOk"
-      @cancel="handleCancel">
+    <a-modal title="输入解密密钥" :visible="visible" :confirm-loading="isLoading" @ok="handleOk" @cancel="handleCancel">
       <a-form :form="form" :label-col="{span: 5}" :wrapper-col="{span: 16}">
         <a-form-item label="解密密钥">
           <a-input-password
-          placeholder="请输入密钥"
-            v-decorator="['key', {rules: [{required: true, message: '请输入密钥'}, {validator: passwordCheck}]}]">
+            placeholder="请输入密钥"
+            v-decorator="['key', {rules: [{required: true, message: '请输入密钥'}, {validator: passwordCheck}]}]"
+          >
           </a-input-password>
         </a-form-item>
       </a-form>

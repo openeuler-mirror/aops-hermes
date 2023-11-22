@@ -1,6 +1,7 @@
 <template>
   <div>
-    <a-button size="small" class="divbtn">选择文件
+    <a-button size="small" class="divbtn"
+      >选择文件
       <input type="file" name="file" @change="getFile" :id="uid" class="uploader" />
     </a-button>
     <span class="innerText">{{ fileName }}</span>
@@ -9,7 +10,6 @@
 </template>
 
 <script>
-
 /**
  * Component for repo file uplod
  */
@@ -49,7 +49,7 @@ export default {
           }
           const reader = new FileReader();
           file && reader.readAsText(file);
-          reader.onload = function(e) {
+          reader.onload = function (e) {
             try {
               const content = e.target.result;
               _this.$emit('load', content);
@@ -76,12 +76,16 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.divbtn{
+.divbtn {
   position: relative;
   margin-right: 10px;
 }
-.uploader{
-  position: absolute; top: 0; left: 0; opacity: 0; cursor: pointer;
+.uploader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
 }
 .error-msg {
   position: absolute;

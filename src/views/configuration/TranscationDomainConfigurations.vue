@@ -11,9 +11,7 @@
             <a-alert type="info" show-icon>
               <div slot="message">
                 <span>{{ `已选择` + selectedRowKeys.length + `项` }}</span>
-                <a
-                  v-if="selectedRowKeys.length > 0"
-                  @click="deleteConfigBash(selectedRowKeys, selectedRows)">
+                <a v-if="selectedRowKeys.length > 0" @click="deleteConfigBash(selectedRowKeys, selectedRows)">
                   批量删除
                 </a>
               </div>
@@ -39,7 +37,8 @@
           :pagination="pagination"
           :row-selection="rowSelection"
           @change="handleTableChange"
-          :loading="tableIsLoading">
+          :loading="tableIsLoading"
+        >
           <span slot="contents" slot-scope="record">
             <div class="oneRow">{{ record.contents }}</div>
           </span>
@@ -54,7 +53,8 @@
               title="你确定删除这行配置吗?"
               ok-text="确认"
               cancel-text="取消"
-              @confirm="deleteConfig(record)">
+              @confirm="deleteConfig(record)"
+            >
               <a-icon slot="icon" type="close-circle" style="color: red" />
               <a>删除</a>
             </a-popconfirm>
@@ -66,7 +66,8 @@
           placement="right"
           :visible="configContentVisible"
           :body-style="{paddingBottom: '80px'}"
-          @close="closeConfigContent">
+          @close="closeConfigContent"
+        >
           <a-descriptions :column="1" layout="horizontal">
             <a-descriptions-item label="配置文件">
               {{ configContent.filePath }}
@@ -86,7 +87,8 @@
           placement="right"
           :visible="configChangeVisible"
           :body-style="{paddingBottom: '80px'}"
-          @close="closeConfigChange">
+          @close="closeConfigChange"
+        >
           <a-spin :spinning="logIsLoading">
             <a-descriptions :column="1" layout="horizontal">
               <a-descriptions-item label="所属业务域">
@@ -108,9 +110,10 @@
                   :data-source="manageConfChange[0].changeLog"
                   :expandIconAsCell="false"
                   :expandIconColumnIndex="4"
-                  :expandIcon="props => this.customExpandIcon(props)"
+                  :expandIcon="(props) => this.customExpandIcon(props)"
                   :pagination="false"
-                  bordered>
+                  bordered
+                >
                   <div slot="expandedRowRender" slot-scope="record" style="margin: 0">
                     <p>preValue:</p>
                     {{ record.preValue }}
@@ -124,16 +127,15 @@
         </a-drawer>
       </div>
     </a-card>
-    <domain-selection-modal
-      :showDomainSelection="choiceDomainNameModalVisible"
-      @cancel="handleDomainSelectCancel" />
+    <domain-selection-modal :showDomainSelection="choiceDomainNameModalVisible" @cancel="handleDomainSelectCancel" />
     <add-configuration-drawer
       :isEdit="true"
       :visibleControl="editConfVisible"
       :domainName="domainName"
       :editFilePath="editFilePath"
       @ok="onEditConfsOk"
-      @cancel="onEditConfsCancel" />
+      @cancel="onEditConfsCancel"
+    />
   </page-header-wrapper>
 </template>
 
@@ -234,8 +236,11 @@ export default {
           scopedSlots: {customRender: 'contents'},
           width: '50%',
           ellipsis: true,
-          customRender: (text, record) => <a-tooltip placement="topLeft"
-                                                     title={record.contents}>{record.contents}</a-tooltip>
+          customRender: (text, record) => (
+            <a-tooltip placement="topLeft" title={record.contents}>
+              {record.contents}
+            </a-tooltip>
+          )
         },
         {
           key: 'operation',

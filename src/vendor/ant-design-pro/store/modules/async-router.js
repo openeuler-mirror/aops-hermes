@@ -20,11 +20,11 @@ const permission = {
       return new Promise((resolve, reject) => {
         const {token} = data;
         generatorDynamicRouter(token)
-          .then(routers => {
+          .then((routers) => {
             commit('SET_ROUTERS', routers);
             resolve();
           })
-          .catch(err => reject(err));
+          .catch((err) => reject(err));
       });
     }
   }

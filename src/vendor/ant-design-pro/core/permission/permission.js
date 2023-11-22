@@ -24,15 +24,15 @@ function plugin(Vue) {
       $auth: {
         get() {
           const _this = this;
-          return permissions => {
+          return (permissions) => {
             const [permission, action] = permissions.split('.');
             const permissionList = _this.$store.getters.roles.permissions;
             return (
               permissionList
-                .find(val => {
+                .find((val) => {
                   return val.permissionId === permission;
                 })
-                .actionList.findIndex(val => {
+                .actionList.findIndex((val) => {
                   return val === action;
                 }) > -1
             );
@@ -45,10 +45,10 @@ function plugin(Vue) {
     Object.defineProperties(Vue.prototype, {
       $enum: {
         get() {
-          return val => {
+          return (val) => {
             let result = PERMISSION_ENUM;
             val &&
-              val.split('.').forEach(v => {
+              val.split('.').forEach((v) => {
                 result = (result && result[v]) || null;
               });
             return result;

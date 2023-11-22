@@ -178,7 +178,7 @@ const appInfo = {};
 const workFlowList = [];
 const workFlowDetail = {};
 
-const getFaultDiagnosis = options => {
+const getFaultDiagnosis = (options) => {
   const body = getBody(options);
 
   if (body.uid !== '123') {
@@ -197,7 +197,7 @@ const getFaultDiagnosis = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const getDiagTree = options => {
+const getDiagTree = (options) => {
   const body = getBody(options);
 
   if (body.uid !== '123') {
@@ -216,7 +216,7 @@ const getDiagTree = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const getDiagProgress = options => {
+const getDiagProgress = (options) => {
   const body = getBody(options);
 
   if (body.uid !== '123') {
@@ -233,7 +233,7 @@ const getDiagProgress = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const delDiagReport = options => {
+const delDiagReport = (options) => {
   const body = getBody(options);
 
   if (body.uid !== '123') {
@@ -249,7 +249,7 @@ const delDiagReport = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const delDiagTree = options => {
+const delDiagTree = (options) => {
   const body = getBody(options);
 
   if (body.uid !== '123') {
@@ -265,7 +265,7 @@ const delDiagTree = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const executeDiag = options => {
+const executeDiag = (options) => {
   const body = getBody(options);
 
   if (body.uid !== '123') {
@@ -282,7 +282,7 @@ const executeDiag = options => {
   );
 };
 
-const importDiagTree = options => {
+const importDiagTree = (options) => {
   const body = getBody(options);
   diagTreeData.splice(1, 0, {
     tree_name: body.tree_name,
@@ -302,7 +302,7 @@ const importDiagTree = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const importCheckRule = options => {
+const importCheckRule = (options) => {
   return builder(
     {
       msg: Mock.mock('success')
@@ -312,7 +312,7 @@ const importCheckRule = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const getcheckresult = options => {
+const getcheckresult = (options) => {
   const body = getBody(options);
 
   if (body.uid !== '123') {
@@ -331,7 +331,7 @@ const getcheckresult = options => {
 };
 
 // 获取工作流列表
-const getWorkFlowList = options => {
+const getWorkFlowList = (options) => {
   return builder(
     {
       msg: Mock.mock('success'),
@@ -344,7 +344,7 @@ const getWorkFlowList = options => {
   );
 };
 
-const getWorkflowDatails = options => {
+const getWorkflowDatails = (options) => {
   return builder(
     {
       msg: Mock.mock('success'),
@@ -356,7 +356,7 @@ const getWorkflowDatails = options => {
   );
 };
 
-const updateWorkflow = options => {
+const updateWorkflow = (options) => {
   return builder(
     {
       msg: Mock.mock('success')
@@ -366,7 +366,7 @@ const updateWorkflow = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const executeWorkflow = options => {
+const executeWorkflow = (options) => {
   return builder(
     {
       msg: Mock.mock('success')
@@ -376,7 +376,7 @@ const executeWorkflow = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const stopWorkflow = options => {
+const stopWorkflow = (options) => {
   return builder(
     {
       msg: Mock.mock('success')
@@ -386,7 +386,7 @@ const stopWorkflow = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const deleteWorkflow = options => {
+const deleteWorkflow = (options) => {
   return builder(
     {
       msg: Mock.mock('success')
@@ -397,7 +397,7 @@ const deleteWorkflow = options => {
   );
 };
 // 获取应用列表
-const getAppList = options => {
+const getAppList = (options) => {
   const body = getQueryParameters(options);
   const {page, per_page: perPage} = body;
   const appListStart = [];
@@ -430,7 +430,7 @@ const getAppList = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const getWorkflowAppExtraInfo = options => {
+const getWorkflowAppExtraInfo = (options) => {
   return builder(
     {
       msg: Mock.mock('success'),
@@ -442,7 +442,7 @@ const getWorkflowAppExtraInfo = options => {
   );
 };
 // 新增应用（暂未开发）
-const addApp = options => {
+const addApp = (options) => {
   return builder(
     {
       msg: Mock.mock('success')
@@ -453,7 +453,7 @@ const addApp = options => {
   );
 };
 
-const getModuleList = options => {
+const getModuleList = (options) => {
   return builder(
     {
       msg: Mock.mock('success'),

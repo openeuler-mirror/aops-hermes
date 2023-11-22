@@ -6,22 +6,31 @@
         <a-button type="primary">添加主机组</a-button>
       </slot>
     </div>
-    <a-modal title="添加主机组" :visible="visible" :confirm-loading="isLoading" @ok="handleOk"
-      @cancel="handleCancel">
+    <a-modal title="添加主机组" :visible="visible" :confirm-loading="isLoading" @ok="handleOk" @cancel="handleCancel">
       <a-form :form="form" :label-col="{span: 5}" :wrapper-col="{span: 16}">
         <a-form-item label="主机组名称">
-          <a-input :maxLength="50" placeholder="请输入主机组名称，50个字符以内"
-            v-decorator="['name', {rules: [{required: true, message: '请输入名称'}, {validator: checkHostGroupName}]}]">
-            <a-tooltip slot="suffix" title="最大长度50个字符，由数字、小写字母、英文下划线_组成。以小写字母开头，且结尾不能是英文下划线_">
-              <a-icon type="info-circle" style="color: rgba(0,0,0,.45)" />
+          <a-input
+            :maxLength="50"
+            placeholder="请输入主机组名称，50个字符以内"
+            v-decorator="['name', {rules: [{required: true, message: '请输入名称'}, {validator: checkHostGroupName}]}]"
+          >
+            <a-tooltip
+              slot="suffix"
+              title="最大长度50个字符，由数字、小写字母、英文下划线_组成。以小写字母开头，且结尾不能是英文下划线_"
+            >
+              <a-icon type="info-circle" style="color: rgba(0, 0, 0, 0.45)" />
             </a-tooltip>
           </a-input>
         </a-form-item>
         <a-form-item label="主机组描述">
-          <a-textarea placeholder="请输入描述，60个字符以内" :rows="4" v-decorator="[
+          <a-textarea
+            placeholder="请输入描述，60个字符以内"
+            :rows="4"
+            v-decorator="[
               'description',
               {rules: [{required: true, message: '请输人描述'}, {validator: checkHostGroupdesc}]}
-            ]" />
+            ]"
+          />
         </a-form-item>
       </a-form>
     </a-modal>
