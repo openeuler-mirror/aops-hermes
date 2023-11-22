@@ -28,15 +28,10 @@
               </p>
             </a-col>
             <a-col span="8">
-              <a-button
-              type="primary"
-              @click="sacnHost"
-                :loading="scanloading || scanStatus === 3">
+              <a-button type="primary" @click="sacnHost" :loading="scanloading || scanStatus === 3">
                 {{ scanStatus === 3 ? '扫描中' : '漏洞扫描' }}
               </a-button>
-              <a-button type="primary" @click="handleExport" style="margin-left: 20px;">
-                导出cve信息
-              </a-button>
+              <a-button type="primary" @click="handleExport" style="margin-left: 20px"> 导出cve信息 </a-button>
             </a-col>
             <a-col span="8">
               <p>{{ `不受影响的CVE数量： ${detail.unaffected_cve_num}` }}</p>
@@ -59,7 +54,8 @@
         :paginationTotal="paginationTotal"
         @getCveAll="getCveAllList"
         :cveAllIsLoadingProp="cveAllIsLoading"
-        :cveAllListProp="cveAllList" />
+        :cveAllListProp="cveAllList"
+      />
     </a-card>
   </page-header-wrapper>
 </template>
@@ -169,9 +165,9 @@ export default {
         .then(function (res) {
           _this.cveList = res.data.result;
           _this.cveList.forEach((item) => {
-            item.hp_status = item.hp_status ? item.hp_status : '——'
-            item.fixStatus = item.hotpatch ? `是(${item.hp_status})` : '否'
-          })
+            item.hp_status = item.hp_status ? item.hp_status : '——';
+            item.fixStatus = item.hotpatch ? `是(${item.hp_status})` : '否';
+          });
           _this.paginationTotal = res.data.total_count || (res.data.total_count === 0 ? 0 : undefined);
         })
         .catch(function (err) {
@@ -199,7 +195,7 @@ export default {
         });
     },
     updataCveAllList(val) {
-      this.cveAllList = val
+      this.cveAllList = val;
     },
     handleStatusUpdated(data) {
       this.getCVEList(this.hostId, data);

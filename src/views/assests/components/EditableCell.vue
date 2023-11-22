@@ -1,21 +1,17 @@
 <template>
   <div class="editable-cell" ref="childitem">
-    <a-form-model
-      ref="ruleForm"
-      :model="form"
-      :rules="rules"
-    >
+    <a-form-model ref="ruleForm" :model="form" :rules="rules">
       <div v-if="editable" class="editable-cell-input-wrapper">
         <a-form-model-item :prop="formkey">
           <!-- 当formkey为密码时，使用密码框组件 -->
-          <a-input-password v-if="formkey === 'password' || formkey === 'ssh_pkey'" @change="handleChange" @pressEnter="check" v-model="form[formkey]" />
-          <a-input v-else @change="handleChange" @pressEnter="check" v-model="form[formkey]" />
-          <a-icon
-            style="top: -7px;"
-            type="check"
-            class="editable-cell-icon-check"
-            @click="check"
+          <a-input-password
+            v-if="formkey === 'password' || formkey === 'ssh_pkey'"
+            @change="handleChange"
+            @pressEnter="check"
+            v-model="form[formkey]"
           />
+          <a-input v-else @change="handleChange" @pressEnter="check" v-model="form[formkey]" />
+          <a-icon style="top: -7px" type="check" class="editable-cell-icon-check" @click="check" />
         </a-form-model-item>
       </div>
       <div v-else class="editable-cell-text-wrapper">
@@ -111,20 +107,27 @@ export default {
       value: this.text === 'undefined' ? '' : this.text,
       editable: false,
       rules: {
-        host_ip: [{ required: true, pattern: /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/, message: '请输入IP地址在 0.0.0.0~255.255.255.255 区间内', trigger: 'change' }],
+        host_ip: [
+          {
+            required: true,
+            pattern: /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/,
+            message: '请输入IP地址在 0.0.0.0~255.255.255.255 区间内',
+            trigger: 'change'
+          }
+        ],
         ssh_port: [{required: true, message: '请输入端口'}, {validator: checkSSHPort}],
-        ssh_user: [{ validator: validateUser, trigger: 'change' }],
-        password: [{ validator: validatePassword, trigger: 'change' }],
-        ssh_pkey: [{ validator: validateSshpkey, trigger: 'change' }],
-        host_name: [{ validator: checkNameInput, trigger: 'change' }],
-        host_group_name: [{ required: true, message: 'host_group_name不能为空', trigger: 'change' }],
-        management: [{ validator: checkmanagement, trigger: 'change' }]
+        ssh_user: [{validator: validateUser, trigger: 'change'}],
+        password: [{validator: validatePassword, trigger: 'change'}],
+        ssh_pkey: [{validator: validateSshpkey, trigger: 'change'}],
+        host_name: [{validator: checkNameInput, trigger: 'change'}],
+        host_group_name: [{required: true, message: 'host_group_name不能为空', trigger: 'change'}],
+        management: [{validator: checkmanagement, trigger: 'change'}]
       }
     };
   },
   methods: {
     countStar(num) {
-      return '**********'
+      return '**********';
     },
     handleChange(e) {
       const value = e.target.value;
@@ -135,12 +138,12 @@ export default {
       this.check();
     },
     check() {
-      this.$refs.ruleForm.validate(valid => {
+      this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           if (this.editable) {
             // 判断当前状态，只对处于修改状态的组件执行此操作，节省性能
             this.editable = false;
-            this.$emit('allowSub')
+            this.$emit('allowSub');
             this.$emit('change', this.value);
           }
         } else {
@@ -149,36 +152,35 @@ export default {
       });
     },
     edit() {
-      this.$emit('unSubmit')
+      this.$emit('unSubmit');
       this.editable = true;
     },
     handleClickOutside(event) {
-    // 鼠标监听事件
-      const target = event.target
-      const wrapper = this.$refs.childitem
+      // 鼠标监听事件
+      const target = event.target;
+      const wrapper = this.$refs.childitem;
       // 判断点击的区域是否是当前组件的区域
       if (!wrapper.contains(target)) {
         // 当点击组件之外时 执行校验操作
-        this.check()
+        this.check();
       }
     }
   },
-  created() {
-  },
+  created() {},
   beforeDestroy() {
     document.removeEventListener('mouseup', this.handleClickOutside);
   },
   mounted() {
-    document.addEventListener('mouseup', this.handleClickOutside)
+    document.addEventListener('mouseup', this.handleClickOutside);
   },
   computed: {
-    form () {
-      const params = {}
-      params[this.formkey] = this.value
-      return params
+    form() {
+      const params = {};
+      params[this.formkey] = this.value;
+      return params;
     }
   }
-}
+};
 </script>
 <style>
 .editable-content {

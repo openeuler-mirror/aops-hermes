@@ -16,9 +16,7 @@
         <a-row type="flex" justify="end">
           <drawer-view title="创建工作流" :body-style="{paddingBottom: '80px'}">
             <template slot="click">
-              <a-button type="primary">
-                创建工作流
-              </a-button>
+              <a-button type="primary"> 创建工作流 </a-button>
             </template>
             <template slot="drawerView">
               <create-work-flow :appInfo="appInfo"></create-work-flow>

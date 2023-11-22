@@ -48,10 +48,10 @@ export default {
         this.tree.fitView();
       }
 
-      this.tree.on('collapse-text:click', function(e) {
+      this.tree.on('collapse-text:click', function (e) {
         _this.handleCollapse(e);
       });
-      this.tree.on('collapse-back:click', function(e) {
+      this.tree.on('collapse-back:click', function (e) {
         _this.handleCollapse(e);
       });
     }
@@ -74,7 +74,7 @@ export default {
       this.tree.setItemState(item, 'collapse', nodeModel.collapsed);
     }
   },
-  mounted: function() {
+  mounted: function () {
     G6.registerNode('treeNode', {
       draw: (cfg, group) => {
         const rootNode = cfg.id === '0';
@@ -204,7 +204,7 @@ export default {
       setState(name, value, item) {
         if (name === 'collapse') {
           const group = item.getContainer();
-          const collapseText = group.find(e => e.get('name') === 'collapse-text');
+          const collapseText = group.find((e) => e.get('name') === 'collapse-text');
           if (collapseText) {
             if (!value) {
               collapseText.attr({
@@ -237,11 +237,11 @@ export default {
       offsetX: 10,
       offsetY: 10,
       itemTypes: ['node'],
-      getContent: e => {
+      getContent: (e) => {
         const model = e.item.getModel();
         return model.description || '';
       },
-      shouldBegin: e => {
+      shouldBegin: (e) => {
         const model = e.item.getModel();
         return !!model.description;
       }
@@ -258,7 +258,7 @@ export default {
       layout: {
         type: 'compactBox',
         direction: 'LR',
-        getWidth: node => {
+        getWidth: (node) => {
           return G6.Util.getTextSize(node.label, 16)[0] * 3;
         },
         getVGap: () => {

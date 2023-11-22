@@ -1,8 +1,14 @@
 <!-- eslint-disable vue/max-attributes-per-line -->
 <template>
   <a-drawer title="RPM-主机列表" closable :visible="visible" width="600" @close="handleClose">
-    <a-table rowKey="host_id" :columns="columns" :data-source="tableData" :pagination="false"
-      :loading="tableIsLoading" bordered>
+    <a-table
+      rowKey="host_id"
+      :columns="columns"
+      :data-source="tableData"
+      :pagination="false"
+      :loading="tableIsLoading"
+      bordered
+    >
     </a-table>
   </a-drawer>
 </template>
@@ -84,7 +90,7 @@ export default {
           available_rpm: this.propAvailablerpm,
           installed_rpm: this.propInstalledrpm,
           direction: 'asc'
-        }
+        };
         getRpmUnderCve(params)
           .then(function (res) {
             _this.tableData = res.data.result;

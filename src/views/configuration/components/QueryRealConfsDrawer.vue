@@ -5,10 +5,7 @@
       <div>主机：{{ host.hostId }}</div>
       <div>IP地址：{{ host.ip }}</div>
       <a-collapse>
-        <a-collapse-panel
-        v-for="item in confs"
-        :key="item.filePath"
-          :header="`配置项：${item.filePath}`">
+        <a-collapse-panel v-for="item in confs" :key="item.filePath" :header="`配置项：${item.filePath}`">
           <div class="conf-description">
             <a-descriptions title="属性" :column="2">
               <a-descriptions-item label="fileAttr">
@@ -37,9 +34,7 @@
                 <div class="ant-descriptions-title">文本内容：</div>
               </a-col>
               <a-col v-if="item.syncStatus === 'NOT SYNC'">
-                <a-button type="primary" @click="showCompareDrawer(item)">
-                  差异对比
-                </a-button>
+                <a-button type="primary" @click="showCompareDrawer(item)"> 差异对比 </a-button>
               </a-col>
             </a-row>
             <div class="text-container">
@@ -60,10 +55,7 @@
     <div class="conf-section">
       <h1>主机缺失配置</h1>
       <a-collapse>
-        <a-collapse-panel
-        v-for="item in confsNotInHost"
-        :key="item.filePath"
-          :header="`配置项：${item.filePath}`">
+        <a-collapse-panel v-for="item in confsNotInHost" :key="item.filePath" :header="`配置项：${item.filePath}`">
           <div class="conf-content">
             <a-row type="flex" justify="space-between" class="conf-content-header">
               <a-col>

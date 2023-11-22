@@ -11,17 +11,14 @@
             <a-alert type="info" show-icon>
               <div slot="message">
                 <span>{{ `已选择` + selectedRowKeys.length + `项` }}</span>
-                <a
-                v-if="selectedRowKeys.length > 0"
-                  @click="deleteHostBash(selectedRowKeys, selectedRows)">批量删除</a>
+                <a v-if="selectedRowKeys.length > 0" @click="deleteHostBash(selectedRowKeys, selectedRows)">批量删除</a>
               </div>
             </a-alert>
           </a-col>
           <a-col>
             <a-row type="flex" :gutter="16">
               <a-col>
-                <a-button type="primary" @click="showAddHostDrawer"> <a-icon type="plus" />添加主机
-                </a-button>
+                <a-button type="primary" @click="showAddHostDrawer"> <a-icon type="plus" />添加主机 </a-button>
               </a-col>
               <a-col>
                 <a-button @click="syncConf(selectedRowKeys, selectedRows)" :disabled="!selectedRowKeys.length > 0">
@@ -59,7 +56,8 @@
           :data-source="tableData"
           :row-selection="rowSelection"
           :loading="tableIsLoading"
-          :pagination="false">
+          :pagination="false"
+        >
           <!------------暂不做同步---------------
           <span slot="filterIcon">
             同步状态
@@ -72,23 +70,25 @@
             </div>
             <div v-else>
               <a-icon
-              v-if="statusInfo.syncStatus === statusEnum.sync"
-              type="check-circle"
+                v-if="statusInfo.syncStatus === statusEnum.sync"
+                type="check-circle"
                 theme="twoTone"
-                two-tone-color="#52c41a" />
+                two-tone-color="#52c41a"
+              />
               <a-icon
-              v-if="statusInfo.syncStatus === statusEnum.notSync"
-              type="close-circle"
+                v-if="statusInfo.syncStatus === statusEnum.notSync"
+                type="close-circle"
                 theme="twoTone"
-                two-tone-color="#f00" />
+                two-tone-color="#f00"
+              />
               <a-icon
-              v-if="statusInfo.syncStatus === statusEnum.notFound"
-              type="question-circle"
+                v-if="statusInfo.syncStatus === statusEnum.notFound"
+                type="question-circle"
                 theme="twoTone"
-                two-tone-color="#ccc" />
+                two-tone-color="#ccc"
+              />
               {{ statusTitleEnum[statusInfo.syncStatus] }}
-              <span
-                v-if="statusInfo.syncStatus === statusEnum.notSync">{{ `${statusInfo.count}条` }}</span>
+              <span v-if="statusInfo.syncStatus === statusEnum.notSync">{{ `${statusInfo.count}条` }}</span>
             </div>
           </template>
           <span slot="action" slot-scope="record">
@@ -112,10 +112,11 @@
             <a-divider type="vertical" />
             ------------------------------------->
             <a-popconfirm
-            title="你确定要从当前业务域中删除这台主机吗?"
-            ok-text="确认"
-            cancel-text="取消"
-              @confirm="deleteDomainHost(record)">
+              title="你确定要从当前业务域中删除这台主机吗?"
+              ok-text="确认"
+              cancel-text="取消"
+              @confirm="deleteDomainHost(record)"
+            >
               <a>删除</a>
             </a-popconfirm>
           </span>
@@ -131,23 +132,23 @@
     <!--主机当前配置抽屉-->
     <drawer-view ref="queryRealConfsDrawer" :bodyStyle="{paddingBottom: '80px'}">
       <template slot="drawerView">
-        <query-real-confs-drawer
-        :confsOfDomain="confsOfDomain"
-          :confsOfDomainLoading="confsOfDomainLoading" />
+        <query-real-confs-drawer :confsOfDomain="confsOfDomain" :confsOfDomainLoading="confsOfDomainLoading" />
       </template>
     </drawer-view>
     <!--状态详情抽屉-->
     <drawer-view
-    title="状态详情"
-    ref="domainStatusDrawer"
-    :hasButtonOnBottom="false"
-      :bodyStyle="{paddingBottom: '80px'}">
+      title="状态详情"
+      ref="domainStatusDrawer"
+      :hasButtonOnBottom="false"
+      :bodyStyle="{paddingBottom: '80px'}"
+    >
       <template slot="drawerView">
         <get-domain-status-drawer
-        :tableData="tableData"
-        :domainStatusIsLoading="domainStatusIsLoading"
-        :domainName="domainName"
-        @getDomainStatus="getDomainStatus"/>
+          :tableData="tableData"
+          :domainStatusIsLoading="domainStatusIsLoading"
+          :domainName="domainName"
+          @getDomainStatus="getDomainStatus"
+        />
       </template>
     </drawer-view>
   </my-page-header-wrapper>
@@ -243,7 +244,7 @@ export default {
         const matchedStatusHost = this.statusData.filter((item) => item.hostId === hostTemp.hostId)[0] || {};
         hostTemp.syncStatusList = matchedStatusHost.syncStatus || [];
         hostTemp.syncStatusInfo = getStatusInfoFromAllConfs(hostTemp.syncStatusList);
-        console.log(hostTemp)
+        console.log(hostTemp);
         return hostTemp;
       });
     }
@@ -372,19 +373,19 @@ export default {
       this.handleSyncConf(rows, true);
     },
     handleSyncConf(selectedRows, isBash) {
-      const syncList = []
+      const syncList = [];
       selectedRows.forEach(function (item) {
-        const syncConfigs = []
+        const syncConfigs = [];
         item.syncStatusList.forEach((val) => {
           if (val.isSynced === 'NOT SYNCHRONIZE') {
-            syncConfigs.push(val.file_path)
+            syncConfigs.push(val.file_path);
           }
-        })
+        });
         const host = {
-          'hostId': item.hostId,
-          'syncConfigs': syncConfigs
-        }
-        syncList.push(host)
+          hostId: item.hostId,
+          syncConfigs: syncConfigs
+        };
+        syncList.push(host);
       });
       const _this = this;
       return new Promise((resolve, reject) => {
@@ -393,25 +394,25 @@ export default {
           syncList: syncList
         })
           .then((res) => {
-            let msg = ''
+            let msg = '';
             for (const item of res) {
-              const hostId = item.hostId
-              let success = ''
-              let fail = ''
-              const syncResult = item.syncResult
+              const hostId = item.hostId;
+              let success = '';
+              let fail = '';
+              const syncResult = item.syncResult;
               for (const val of syncResult) {
                 if (val.result === 'SUCCESS') {
-                  success += val.filePath + ';' + '\xa0\xa0'
+                  success += val.filePath + ';' + '\xa0\xa0';
                 } else {
-                  fail += val.filePath + ';' + '\xa0\xa0'
+                  fail += val.filePath + ';' + '\xa0\xa0';
                 }
               }
               if (success.length === 0 && fail.length !== 0) {
-                msg += '主机' + hostId + '\xa0\xa0\xa0' + '同步失败：' + fail
+                msg += '主机' + hostId + '\xa0\xa0\xa0' + '同步失败：' + fail;
               } else if (success.length !== 0 && fail.length === 0) {
-                msg += '主机' + hostId + '\xa0\xa0\xa0' + '同步成功：' + success
+                msg += '主机' + hostId + '\xa0\xa0\xa0' + '同步成功：' + success;
               } else if (success.length !== 0 && fail.length !== 0) {
-                msg += '主机' + hostId + '\xa0\xa0\xa0' + '同步成功：' + success + '\xa0\xa0\xa0' + '同步失败：' + fail
+                msg += '主机' + hostId + '\xa0\xa0\xa0' + '同步成功：' + success + '\xa0\xa0\xa0' + '同步失败：' + fail;
               }
             }
             if (msg.includes('同步失败') && msg.includes('同步成功')) {

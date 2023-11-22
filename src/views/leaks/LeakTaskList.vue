@@ -20,10 +20,7 @@
           </a-col>
           <a-row type="flex" :gutter="6">
             <a-col>
-              <a-button
-              type="primary"
-              :disabled="selectedRowKeys.length < 1"
-                @click="deleteHostBash">
+              <a-button type="primary" :disabled="selectedRowKeys.length < 1" @click="deleteHostBash">
                 批量删除
               </a-button>
             </a-col>
@@ -36,52 +33,42 @@
           :pagination="pagination"
           :row-selection="rowSelection"
           @change="handleTableChange"
-          :loading="tableIsLoading">
-          <a
-          @click="jumptoDetail(record)"
-          slot="taskName"
-            slot-scope="taskName, record">{{ taskName }}</a>
+          :loading="tableIsLoading"
+        >
+          <a @click="jumptoDetail(record)" slot="taskName" slot-scope="taskName, record">{{ taskName }}</a>
           <span slot="desc" slot-scope="text">
             <cut-text :text="text" :length="20" />
           </span>
           <div slot="statuses" slot-scope="statuses">
-            <span><a-icon type="check-circle" class="color-check-circle" />{{
-                    statuses && statuses['succeed']
-                  }}
-            </span>
-            <span><a-icon type="close-circle" class="color-close-circle" />{{
-                    statuses && statuses['fail']
-                  }}
-            </span>
+            <span><a-icon type="check-circle" class="color-check-circle" />{{ statuses && statuses['succeed'] }} </span>
+            <span><a-icon type="close-circle" class="color-close-circle" />{{ statuses && statuses['fail'] }} </span>
             <span>
-              <a-icon
-              v-if="statuses && statuses['running']"
-              type="loading"
-                class="color-running-circle" />
+              <a-icon v-if="statuses && statuses['running']" type="loading" class="color-running-circle" />
               <a-icon v-else type="loading-3-quarters" />
               {{ statuses && statuses['running'] }}
             </span>
-            <span><a-icon type="question-circle" class="color-standby-circle" />{{
-                    statuses && statuses['unknown']
-                  }}
+            <span
+              ><a-icon type="question-circle" class="color-standby-circle" />{{ statuses && statuses['unknown'] }}
             </span>
           </div>
           <span slot="action" slot-scope="action, record">
             <a-divider type="vertical" />
             <a-popconfirm
-            title="你确定执行这个任务吗?"
-            ok-text="确认"
-            cancel-text="取消"
-              @confirm="executeTask(record.task_id)">
+              title="你确定执行这个任务吗?"
+              ok-text="确认"
+              cancel-text="取消"
+              @confirm="executeTask(record.task_id)"
+            >
               <a-icon slot="icon" type="play-circle" style="color: #002fa7" />
               <a>执行</a>
             </a-popconfirm>
             <a-divider type="vertical" />
             <a-popconfirm
-            title="你确定删除这个任务吗?"
-            ok-text="确定"
-            cancel-text="取消"
-              @confirm="deleteTask([record.task_id])">
+              title="你确定删除这个任务吗?"
+              ok-text="确定"
+              cancel-text="取消"
+              @confirm="deleteTask([record.task_id])"
+            >
               <a-icon slot="icon" type="close-circle" style="color: red" />
               <a>删除</a>
             </a-popconfirm>
@@ -239,7 +226,7 @@ export default {
         query: {
           task_id: value.task_id
         }
-      })
+      });
     },
     checkStatus(data, tasktype) {
       for (const key in data) {

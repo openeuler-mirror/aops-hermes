@@ -16,12 +16,13 @@
           <a-row type="flex" :gutter="16">
             <a-col>
               <a-range-picker
-              v-model="customTime"
-              @ok="handleCustomTimeChange"
-              :show-time="{
-                  hideDisabledOptions: true,
+                v-model="customTime"
+                @ok="handleCustomTimeChange"
+                :show-time="{
+                  hideDisabledOptions: true
                 }"
-                format="YYYY-MM-DD HH:mm:ss" />
+                format="YYYY-MM-DD HH:mm:ss"
+              />
             </a-col>
             <a-col>
               <a-select style="width: 150px" defaultValue="0.5" @change="handleRefresh">
@@ -36,8 +37,7 @@
               </a-select>
             </a-col>
             <a-col>
-              <a-button type="primary" @click="addChartModalOpen">添加图表<a-icon
-                  type="plus-square" /></a-button>
+              <a-button type="primary" @click="addChartModalOpen">添加图表<a-icon type="plus-square" /></a-button>
             </a-col>
             <a-col>
               <a-button @click="handleRefresh"><a-icon type="redo" />刷新</a-button>
@@ -46,40 +46,28 @@
         </a-col>
       </a-row>
       <a-row style="margin-bottom: 20px" :gutter="20">
-        <a-col
-        class="chart-contianer-item"
-        :xl="12"
-        :lg="24"
-        :id="item"
-          v-for="item in selectedMetrics"
-          :key="item">
+        <a-col class="chart-contianer-item" :xl="12" :lg="24" :id="item" v-for="item in selectedMetrics" :key="item">
           <h3 style="text-align: center">
             <span>{{ item }}</span>
             <a-tooltip overlayClassName="desc-tooltip">
               <template slot="title"> 移除该图表 </template>
-              <a-icon
-              @click="handleChartRemove(item)"
-              type="delete"
-                style="margin-left: 5px; font-size: 14px" />
+              <a-icon @click="handleChartRemove(item)" type="delete" style="margin-left: 5px; font-size: 14px" />
             </a-tooltip>
           </h3>
         </a-col>
         <a-empty v-if="!selectedMetrics.length" :image="simpleImage" />
       </a-row>
     </a-card>
-    <a-modal
-      :visible="modalVisible"
-      title="添加图表"
-      @ok="confirmChartAdd"
-      @cancel="addChartModalClose">
+    <a-modal :visible="modalVisible" title="添加图表" @ok="confirmChartAdd" @cancel="addChartModalClose">
       <a-form :form="form">
         <a-form-item label="采集参数">
           <a-select
-          show-search
-          option-filter-prop="children"
-          :filter-option="handleFilterOption"
+            show-search
+            option-filter-prop="children"
+            :filter-option="handleFilterOption"
             v-decorator="['metric', {rules: [{required: true, message: '请选择采集参数 !'}]}]"
-            placeholder="请选择采集参数">
+            placeholder="请选择采集参数"
+          >
             <a-select-option :value="item" v-for="item in metrics" :key="item">
               {{ item }}
             </a-select-option>
@@ -147,7 +135,7 @@ export default {
         })
         .catch((err) => {
           if (err.response.code === '1108') {
-            _this.$message.info('暂无指标数据!')
+            _this.$message.info('暂无指标数据!');
           } else {
             _this.$message.error(err.response.message);
           }

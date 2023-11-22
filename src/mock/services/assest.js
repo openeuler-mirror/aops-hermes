@@ -106,10 +106,10 @@ const hostGroupInfos = [
   }
 ];
 
-const filterByName = a => b => {
+const filterByName = (a) => (b) => {
   return b.host_group_name.indexOf(a) > -1;
 };
-const getHostList = options => {
+const getHostList = (options) => {
   const body = getBody(options);
   let hosts;
   if (body.host_group_list && body.host_group_list.length > 0) {
@@ -275,7 +275,7 @@ const pluginMode3 = {
     }
   ]
 };
-const getHosts = options => {
+const getHosts = (options) => {
   const body = getBody(options);
 
   let hostsData;
@@ -299,7 +299,7 @@ const getHosts = options => {
   );
 };
 
-const getHostInfo = options => {
+const getHostInfo = (options) => {
   return builder(
     {
       msg: Mock.mock('success'),
@@ -313,7 +313,7 @@ const getHostInfo = options => {
   );
 };
 
-const addHost = options => {
+const addHost = (options) => {
   return builder(
     {
       msg: Mock.mock('success')
@@ -324,7 +324,7 @@ const addHost = options => {
   );
 };
 
-const deleteHost = options => {
+const deleteHost = (options) => {
   return builder(
     {
       msg: Mock.mock('success')
@@ -335,7 +335,7 @@ const deleteHost = options => {
   );
 };
 
-const getHostGroupList = options => {
+const getHostGroupList = (options) => {
   return builder(
     {
       msg: Mock.mock('success'),
@@ -349,7 +349,7 @@ const getHostGroupList = options => {
   );
 };
 
-const addHostGroup = options => {
+const addHostGroup = (options) => {
   const body = getBody(options);
 
   if (!body.host_group_name || !body.description) {
@@ -366,7 +366,7 @@ const addHostGroup = options => {
   );
 };
 
-const deleteHostGroup = options => {
+const deleteHostGroup = (options) => {
   return builder(
     {
       msg: Mock.mock('success')
@@ -378,7 +378,7 @@ const deleteHostGroup = options => {
 };
 
 // host detail plugin control
-const sceneGet = options => {
+const sceneGet = (options) => {
   return builder(
     {
       msg: Mock.mock('success'),
@@ -391,7 +391,7 @@ const sceneGet = options => {
   );
 };
 
-const pluginInfoGet = options => {
+const pluginInfoGet = (options) => {
   const pluginData = [];
   pluginData.push(pluginModel);
   pluginData.push(pluginMode2);
@@ -407,7 +407,7 @@ const pluginInfoGet = options => {
   );
 };
 
-const getHostInfoQuery = options => {
+const getHostInfoQuery = (options) => {
   return builder(
     {
       msg: Mock.mock('OperateSuccess'),
@@ -419,7 +419,7 @@ const getHostInfoQuery = options => {
   );
 };
 
-const setPlugin = options => {
+const setPlugin = (options) => {
   return builder(
     {
       failed_list: [1],
@@ -431,7 +431,7 @@ const setPlugin = options => {
   );
 };
 
-const setMetrix = options => {
+const setMetrix = (options) => {
   return builder(
     {
       resp: {
@@ -461,5 +461,5 @@ Mock.mock(/\/manage\/agent\/plugin\/info/, 'get', pluginInfoGet);
 // 获取主机列表
 Mock.mock(/\/manage\/host\/get/, 'post', getHostList);
 Mock.mock(/\/manage\/host\/get_host_group/, 'post', getHostGroupList);
-Mock.mock(/\/manage\/agent\/plugin\/set/, 'post', setPlugin)
-Mock.mock(/\/manage\/agent\/metric\/set/, 'post', setMetrix)
+Mock.mock(/\/manage\/agent\/plugin\/set/, 'post', setPlugin);
+Mock.mock(/\/manage\/agent\/metric\/set/, 'post', setMetrix);

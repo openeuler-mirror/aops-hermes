@@ -13,8 +13,7 @@
               <p class="theme-title">异常检测规则数量</p>
               <p class="theme-number">
                 <a-spin v-if="countIsLoading" />
-                <span
-                  v-else>{{ ruleCount.toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,') }}</span>
+                <span v-else>{{ ruleCount.toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,') }}</span>
               </p>
             </a-col>
           </a-row>
@@ -25,8 +24,7 @@
                   <div class="theme-button make-space">新建规则</div>
                 </template>
                 <template slot="drawerView">
-                  <add-abnormal-check-rule-drawer
-                    :addSuccess="handleAddRuleSuccess"></add-abnormal-check-rule-drawer>
+                  <add-abnormal-check-rule-drawer :addSuccess="handleAddRuleSuccess"></add-abnormal-check-rule-drawer>
                 </template>
               </drawer-view>
             </a-col>
@@ -43,9 +41,15 @@
           <h3>异常检测结果统计</h3>
           <div>
             <a-row type="flex" :gutter="12">
-              <a-table class="check-result-table" row-key="hostName" :columns="columnsReulst"
-                :data-source="resultCountList.slice(0, 5)" :bordered="false" :pagination="false"
-                :loading="countTopLoading" />
+              <a-table
+                class="check-result-table"
+                row-key="hostName"
+                :columns="columnsReulst"
+                :data-source="resultCountList.slice(0, 5)"
+                :bordered="false"
+                :pagination="false"
+                :loading="countTopLoading"
+              />
             </a-row>
           </div>
           <drawer-view title="异常检测结果统计">
@@ -65,34 +69,45 @@
         <a-col>
           <a-row type="flex" :gutter="10">
             <a-col>
-              <aops-range-picker :show-time="{format: 'HH:mm:ss'}" format="YYYY-MM-DD HH:mm:ss"
-                :placeholder="['开始时间', '结束时间']" @ok="timeRangeOk" @clear="timeRangeClear"
-                style="width: 380px" />
+              <aops-range-picker
+                :show-time="{format: 'HH:mm:ss'}"
+                format="YYYY-MM-DD HH:mm:ss"
+                :placeholder="['开始时间', '结束时间']"
+                @ok="timeRangeOk"
+                @clear="timeRangeClear"
+                style="width: 380px"
+              />
             </a-col>
           </a-row>
         </a-col>
         <a-col>
           <drawer-view title="新建故障诊断" :bodyStyle="{paddingBottom: '80px'}">
             <template slot="click">
-              <a-button type="primary" @click="setDiagnosisParams"> 故障诊断<a-icon type="plus" />
-              </a-button>
+              <a-button type="primary" @click="setDiagnosisParams"> 故障诊断<a-icon type="plus" /> </a-button>
             </template>
             <template slot="drawerView">
-              <add-fault-diagnosis :saveSuccess="addFaultDiagnosisSuccess"
+              <add-fault-diagnosis
+                :saveSuccess="addFaultDiagnosisSuccess"
                 :faultTreeList="treeDataAll"
-                :diagnosisParams="diagnosisParams"></add-fault-diagnosis>
+                :diagnosisParams="diagnosisParams"
+              ></add-fault-diagnosis>
             </template>
           </drawer-view>
         </a-col>
       </a-row>
-      <a-table :columns="columns" :data-source="resultList" :pagination="pagination"
-        @change="handleTableChange" :loading="tableIsLoading" :expandIconAsCell="false"
-        :expandIconColumnIndex="4">
+      <a-table
+        :columns="columns"
+        :data-source="resultList"
+        :pagination="pagination"
+        @change="handleTableChange"
+        :loading="tableIsLoading"
+        :expandIconAsCell="false"
+        :expandIconColumnIndex="4"
+      >
         <span slot="index" slot-scope="text, record, index">
           {{ index + firstIndex }}
         </span>
-        <div slot="expandedRowRender" slot-scope="result"
-          style="width: 100%;margin: 1px;padding-left: 50px;">
+        <div slot="expandedRowRender" slot-scope="result" style="width: 100%; margin: 1px; padding-left: 50px">
           <check-result-expanded :dataSource="result.data_list"></check-result-expanded>
         </div>
         <span slot="desc" slot-scope="text">

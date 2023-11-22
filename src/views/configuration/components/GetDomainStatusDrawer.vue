@@ -2,11 +2,11 @@
   <div>
     <a-row type="flex" justify="space-between">
       <a-col :span="22">
-        <div style="float: left;margin-bottom: 10px">
+        <div style="float: left; margin-bottom: 10px">
           <span>主机：{{ host.hostId }}</span>
           <span class="ip-left">{{ host.ip }}</span>
         </div>
-        <div style="float: right;margin-bottom: 10px">
+        <div style="float: right; margin-bottom: 10px">
           <a-popconfirm
             title="你确定要将当前业务域的配置同步到这台主机吗?"
             ok-text="确认"
@@ -58,7 +58,8 @@
               ok-text="确认"
               cancel-text="取消"
               @confirm="syncConfigConfirm(record)"
-              :disabled="record.isSynced !== 'NOT SYNCHRONIZE'">
+              :disabled="record.isSynced !== 'NOT SYNCHRONIZE'"
+            >
               <a-button type="link" :disabled="record.isSynced !== 'NOT SYNCHRONIZE'">同步</a-button>
             </a-popconfirm>
           </span>
@@ -122,7 +123,7 @@ export default {
   },
   computed: {
     syncStatusList() {
-      const matchedHost = this.tableData.filter(hostInfo => hostInfo.hostId === this.host.hostId)[0] || {};
+      const matchedHost = this.tableData.filter((hostInfo) => hostInfo.hostId === this.host.hostId)[0] || {};
       return matchedHost.syncStatusList || [];
     }
   },
@@ -135,7 +136,7 @@ export default {
           syncConfigs.push(obj.file_path);
         }
       }
-      this.syncConf(syncConfigs)
+      this.syncConf(syncConfigs);
     },
     cancel(e) {},
     syncConf(syncConfigs) {
@@ -144,31 +145,32 @@ export default {
         domainName: this.domainName,
         syncList: [
           {
-            'hostId': this.host.hostId,
-            'syncConfigs': syncConfigs
+            hostId: this.host.hostId,
+            syncConfigs: syncConfigs
           }
         ]
       })
         .then((res) => {
-          let message = ''
+          let message = '';
           for (const item of res) {
-            const hostId = item.hostId
-            let success = ''
-            let fail = ''
-            const syncResult = item.syncResult
+            const hostId = item.hostId;
+            let success = '';
+            let fail = '';
+            const syncResult = item.syncResult;
             for (const val of syncResult) {
               if (val.result === 'SUCCESS') {
-                success += val.filePath + ';' + '\xa0\xa0'
+                success += val.filePath + ';' + '\xa0\xa0';
               } else {
-                fail += val.filePath + ';' + '\xa0\xa0'
+                fail += val.filePath + ';' + '\xa0\xa0';
               }
             }
             if (success.length === 0 && fail.length !== 0) {
-              message += '主机' + hostId + '\xa0\xa0\xa0' + '同步失败：' + fail
+              message += '主机' + hostId + '\xa0\xa0\xa0' + '同步失败：' + fail;
             } else if (success.length !== 0 && fail.length === 0) {
-              message += '主机' + hostId + '\xa0\xa0\xa0' + '同步成功：' + success
+              message += '主机' + hostId + '\xa0\xa0\xa0' + '同步成功：' + success;
             } else if (success.length !== 0 && fail.length !== 0) {
-              message += '主机' + hostId + '\xa0\xa0\xa0' + '同步成功：' + success + '\xa0\xa0\xa0' + '同步失败：' + fail
+              message +=
+                '主机' + hostId + '\xa0\xa0\xa0' + '同步成功：' + success + '\xa0\xa0\xa0' + '同步失败：' + fail;
             }
           }
           if (message.includes('同步失败') && message.includes('同步成功')) {
@@ -187,12 +189,12 @@ export default {
     syncConfigConfirm(record) {
       const syncConfigs = [];
       syncConfigs.push(record.file_path);
-      this.syncConf(syncConfigs)
+      this.syncConf(syncConfigs);
     }
   },
-  mounted: function() {
+  mounted: function () {
     const _this = this;
-    this.onload(function(host) {
+    this.onload(function (host) {
       _this.host = host;
     });
   }

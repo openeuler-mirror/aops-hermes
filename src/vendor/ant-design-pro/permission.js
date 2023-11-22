@@ -19,7 +19,7 @@ router.beforeEach((to, from, next) => {
   to.meta && typeof to.meta.title !== 'undefined' && setDocumentTitle(`${i18nRender(to.meta.title)} - ${domTitle}`);
 
   // has token
-  const aToken = localStorage.getItem('Access-Token')
+  const aToken = localStorage.getItem('Access-Token');
   if (aToken && aToken !== 'undefined') {
     if (to.path === loginRoutePath) {
       next({path: defaultRoutePath});
@@ -32,14 +32,14 @@ router.beforeEach((to, from, next) => {
         // request login userInfo
         store
           .dispatch('GetInfo') // 因为这个接口目前还没有。getInfo内容被跳过了，返回空的结果
-          .then(res => {
+          .then((res) => {
             const roles = res.data && res.data.role;
             // generate dynamic router
             store.dispatch('GenerateRoutes', {roles}).then(() => {
               // 根据roles权限生成可访问的路由表
               // 动态添加可访问路由表
               // VueRouter@3.5.0+ New API
-              store.getters.addRouters.forEach(r => {
+              store.getters.addRouters.forEach((r) => {
                 router.addRoute(r);
               });
               // 请求带有 redirect 重定向时，登录自动重定向到该地址

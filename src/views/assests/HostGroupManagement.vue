@@ -10,18 +10,14 @@
                 <a-alert type="info" show-icon>
                   <div slot="message">
                     <span>{{ `已选择` + selectedRowKeys.length + `项` }}</span>
-                    <a
-                    v-if="selectedRowKeys.length > 0"
-                      @click="deleteHostBash(selectedRowKeys, selectedRowsAll)">
+                    <a v-if="selectedRowKeys.length > 0" @click="deleteHostBash(selectedRowKeys, selectedRowsAll)">
                       批量删除
                     </a>
                   </div>
                 </a-alert>
               </a-col>
               <a-col>
-                <a-button @click="handleReset">
-                  重置条件
-                </a-button>
+                <a-button @click="handleReset"> 重置条件 </a-button>
               </a-col>
             </a-row>
           </a-col>
@@ -52,7 +48,8 @@
           @change="handleTableChange"
           :loading="tableIsLoading"
           :expandIconColumnIndex="0"
-          @expend="aleret(1)">
+          @expend="aleret(1)"
+        >
           <span slot="action" slot-scope="record">
             <!------后续增加-----
             <span>编辑</span>
@@ -69,13 +66,15 @@
           placement="right"
           :visible="hostListVisible"
           :body-style="{paddingBottom: '80px'}"
-          @close="closeHostList">
+          @close="closeHostList"
+        >
           <a-table
             :rowKey="hostRowKey"
             :columns="hostListColumns"
             :data-source="this.hostListDataStore[this.hostGroupName] || []"
             :loading="hostListIsLoading ? true : false"
-            :pagination="false">
+            :pagination="false"
+          >
             <span slot="isManagement" slot-scope="isMana">{{ isMana ? '是' : '否' }}</span>
           </a-table>
         </a-drawer>
@@ -300,8 +299,7 @@ export default {
         this.$warning({
           title: '主机组内有主机时无法删除',
           okText: '确定',
-          onOk: function () {
-          }
+          onOk: function () {}
         });
         return;
       }

@@ -39,14 +39,14 @@ export function loadLanguageAsync(lang = defaultLang) {
     if (i18n.locale !== lang) {
       if (!loadedLanguages.includes(lang)) {
         return import(/* webpackChunkName: "lang-[request]" */ `./lang/${lang}`)
-          .then(msg => {
+          .then((msg) => {
             const locale = msg.data.default;
             i18n.setLocaleMessage(lang, locale);
             loadedLanguages.push(lang);
             moment.updateLocale(locale.momentName, locale.momentLocale);
             return setI18nLanguage(lang);
           })
-          .catch(err => reject(err));
+          .catch((err) => reject(err));
       }
       return resolve(setI18nLanguage(lang));
     }

@@ -1,12 +1,5 @@
 <template>
-  <a-modal
-    centered
-    title="查看REPO源"
-    :visible="visible"
-    :footer="null"
-    @cancel="handleCancel"
-    destroyOnClose
-  >
+  <a-modal centered title="查看REPO源" :visible="visible" :footer="null" @cancel="handleCancel" destroyOnClose>
     <a-form :label-col="{span: 5}" :wrapper-col="{span: 19}">
       <a-form-item label="REPO源名称">
         {{ detailProps.repo_name }}
@@ -22,7 +15,6 @@
 </template>
 
 <script>
-
 /**
  * 查看repo信息弹窗
  */

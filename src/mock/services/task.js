@@ -92,7 +92,7 @@ const templateMockData = [
   }
 ];
 
-const getTask = options => {
+const getTask = (options) => {
   const body = getBody(options);
 
   if (body.uid !== '123') {
@@ -111,7 +111,7 @@ const getTask = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const generateTask = options => {
+const generateTask = (options) => {
   const body = getBody(options);
 
   if (body.uid !== '123') {
@@ -127,7 +127,7 @@ const generateTask = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const deleteTask = options => {
+const deleteTask = (options) => {
   const body = getBody(options);
 
   if (body.uid !== '123') {
@@ -143,7 +143,7 @@ const deleteTask = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const executeTask = options => {
+const executeTask = (options) => {
   const body = getBody(options);
 
   if (body.uid !== '123') {
@@ -159,7 +159,7 @@ const executeTask = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const imporTemplate = options => {
+const imporTemplate = (options) => {
   const body = getBody(options);
 
   if (body.uid !== '123') {
@@ -175,7 +175,7 @@ const imporTemplate = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const getTemplate = options => {
+const getTemplate = (options) => {
   const body = getBody(options);
 
   if (body.uid !== '123') {
@@ -194,7 +194,7 @@ const getTemplate = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const deleteTemplate = options => {
+const deleteTemplate = (options) => {
   const body = getBody(options);
 
   if (body.uid !== '123') {

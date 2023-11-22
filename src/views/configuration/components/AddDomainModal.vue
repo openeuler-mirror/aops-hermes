@@ -47,16 +47,16 @@ export default {
           const _this = this;
           this.isLoading = true;
           addDomain(values)
-            .then(function(res) {
+            .then(function (res) {
               _this.$message.success(res.message);
               _this.onSuccess && _this.onSuccess();
               _this.visible = false;
               _this.form.resetFields();
             })
-            .catch(function(err) {
+            .catch(function (err) {
               _this.$message.error(err.response.message);
             })
-            .finally(function() {
+            .finally(function () {
               _this.isLoading = false;
             });
         }

@@ -3,48 +3,46 @@
     <slot name="button">
       <a-button type="primary">修改密码</a-button>
     </slot>
-    <a-modal
-    title="修改用户密码"
-    :visible="visible"
-    :confirm-loading="isLoading"
-     @ok="handleOk"
-      @cancel="handleCancel">
+    <a-modal title="修改用户密码" :visible="visible" :confirm-loading="isLoading" @ok="handleOk" @cancel="handleCancel">
       <a-form :form="form" :label-col="{span: 5}" :wrapper-col="{span: 16}">
         <a-form-item label="当前密码">
           <a-input-password
-          placeholder="密码长度6-20位, 包含字母和数字"
-          v-decorator="[
+            placeholder="密码长度6-20位, 包含字母和数字"
+            v-decorator="[
               'old_password',
               {
                 rules: [{required: true, message: '请输入当前密码!'}, {validator: validateToNextPassword}],
                 validateTrigger: 'blur'
               }
-            ]">
+            ]"
+          >
           </a-input-password>
         </a-form-item>
         <a-form-item label="新密码">
           <a-input-password
-          placeholder="新密码和当前密码不能相同"
-          v-decorator="[
+            placeholder="新密码和当前密码不能相同"
+            v-decorator="[
               'password',
               {
                 rules: [{required: true, message: '请输入新密码!'}, {validator: compareToFirstPassword}],
                 validateTrigger: 'blur'
               }
             ]"
-            @blur="handleConfirmBlur">
+            @blur="handleConfirmBlur"
+          >
           </a-input-password>
         </a-form-item>
         <a-form-item label="确认密码">
           <a-input-password
-          placeholder="确认密码和新密码保持一致"
-          v-decorator="[
+            placeholder="确认密码和新密码保持一致"
+            v-decorator="[
               'repassword',
               {
                 rules: [{required: true, message: '请输入新密码!'}, {validator: compareToNewPassword}],
                 validateTrigger: 'blur'
               }
-            ]">
+            ]"
+          >
           </a-input-password>
         </a-form-item>
       </a-form>

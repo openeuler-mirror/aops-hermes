@@ -24,7 +24,7 @@ export default {
     // 自定义面包屑内容
     breadcrumb() {
       if (this.$route.meta.diyBreadcrumb) {
-        const routes = this.$route.meta.diyBreadcrumb.map(route => {
+        const routes = this.$route.meta.diyBreadcrumb.map((route) => {
           return {
             path: route.path,
             breadcrumbName: i18nRender(route.breadcrumbName)

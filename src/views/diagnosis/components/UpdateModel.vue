@@ -2,31 +2,34 @@
 <template>
   <a-modal :visible="visible" title="修改模型" on-ok="handleOk" @cancel="handleCancel" :width="800">
     <template slot="footer">
-      <a-button key="back" @click="handleCancel">
-        取消
-      </a-button>
-      <a-button key="submit" type="primary" @click="handleOk" :loading="updateIsLoading">
-        应用
-      </a-button>
+      <a-button key="back" @click="handleCancel"> 取消 </a-button>
+      <a-button key="submit" type="primary" @click="handleOk" :loading="updateIsLoading"> 应用 </a-button>
     </template>
     <p>已取得模型总条数：{{ pagination.total }}</p>
     <div>
       <a href="javascript:;">{{ modelName ? '已选择' + modelName + '模型' : '未选择模型' }}</a>
     </div>
     <a-select style="width: 100px" :value="keywordType" @change="selectSearchType">
-      <a-select-option value="model_name">
-        模型名称
-      </a-select-option>
-      <a-select-option value="tag">
-        标签
-      </a-select-option>
+      <a-select-option value="model_name"> 模型名称 </a-select-option>
+      <a-select-option value="tag"> 标签 </a-select-option>
     </a-select>
-    <a-input-search placeholder="按关键字进行搜索" style="width: 200px; margin: 10px 0;" @search="onSearch"
-      :value="keyword" @change="onSearchChange" />
-    <a-table :columns="moduleListColumns" :data-source="moduleListInfo" rowKey="model_id"
+    <a-input-search
+      placeholder="按关键字进行搜索"
+      style="width: 200px; margin: 10px 0"
+      @search="onSearch"
+      :value="keyword"
+      @change="onSearchChange"
+    />
+    <a-table
+      :columns="moduleListColumns"
+      :data-source="moduleListInfo"
+      rowKey="model_id"
       :pagination="pagination"
       :row-selection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange, type: 'radio'}"
-      :loading="tableIsLoading" @change="handleTableChange" :scroll="{y: 280}">
+      :loading="tableIsLoading"
+      @change="handleTableChange"
+      :scroll="{y: 280}"
+    >
     </a-table>
   </a-modal>
 </template>

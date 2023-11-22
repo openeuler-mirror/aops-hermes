@@ -9,7 +9,6 @@
 </template>
 
 <script>
-
 /**
  * cve列表页
  */
@@ -27,7 +26,7 @@ export default {
   computed: {
     // 自定义面包屑
     breadcrumb() {
-      const routes = this.$route.meta.diyBreadcrumb.map(route => {
+      const routes = this.$route.meta.diyBreadcrumb.map((route) => {
         return {
           path: route.path,
           breadcrumbName: i18nRender(route.breadcrumbName)
@@ -47,12 +46,12 @@ export default {
     return {};
   },
   methods: {},
-  mounted: function() {}
+  mounted: function () {}
 };
 </script>
 
 <style lang="less" scoped>
-.cvebox{
+.cvebox {
   overflow: auto;
 }
 </style>

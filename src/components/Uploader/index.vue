@@ -67,7 +67,7 @@ export default {
           }
           const reader = new FileReader();
           reader.readAsText(file);
-          reader.onload = function(e) {
+          reader.onload = function (e) {
             try {
               let content = e.target.result;
               if (_this.toJSON) {
@@ -101,7 +101,7 @@ export default {
   },
   mounted() {
     const _this = this;
-    document.getElementById(this.uid).addEventListener('change', function() {
+    document.getElementById(this.uid).addEventListener('change', function () {
       _this.getFile();
     });
   }

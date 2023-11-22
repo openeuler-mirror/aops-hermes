@@ -6,8 +6,10 @@
           <a-col>
             <h3>
               诊断任务
-              <a-icon :type="expandedStatus[0] ? 'caret-up' : 'caret-down'"
-                @click="setExpandStatus(0, !expandedStatus[0])" />
+              <a-icon
+                :type="expandedStatus[0] ? 'caret-up' : 'caret-down'"
+                @click="setExpandStatus(0, !expandedStatus[0])"
+              />
             </h3>
           </a-col>
           <a-col>
@@ -18,8 +20,10 @@
                     <a-button type="primary"> 故障诊断<a-icon type="plus" /> </a-button>
                   </template>
                   <template slot="drawerView">
-                    <add-fault-diagnosis :saveSuccess="addFaultDiagnosisSuccess"
-                      :faultTreeList="treeData"></add-fault-diagnosis>
+                    <add-fault-diagnosis
+                      :saveSuccess="addFaultDiagnosisSuccess"
+                      :faultTreeList="treeData"
+                    ></add-fault-diagnosis>
                   </template>
                 </drawer-view>
               </a-col>
@@ -27,8 +31,14 @@
           </a-col>
         </a-row>
         <div v-show="expandedStatus[0]">
-          <a-table :rowKey="rowKey" :columns="columns" :data-source="taskList"
-            :pagination="pagination" @change="handleTableChange" :loading="tableIsLoading">
+          <a-table
+            :rowKey="rowKey"
+            :columns="columns"
+            :data-source="taskList"
+            :pagination="pagination"
+            @change="handleTableChange"
+            :loading="tableIsLoading"
+          >
             <span slot="action" slot-scope="record">
               <a @click="handleReportListOpen(record)">查看报告</a>
             </span>
@@ -39,12 +49,14 @@
     <a-card :bordered="false" class="aops-theme" style="margin-top: 20px">
       <h3>
         故障树
-        <a-icon :type="expandedStatus[1] ? 'caret-up' : 'caret-down'"
-          @click="setExpandStatus(1, !expandedStatus[1])" />
+        <a-icon :type="expandedStatus[1] ? 'caret-up' : 'caret-down'" @click="setExpandStatus(1, !expandedStatus[1])" />
       </h3>
       <div class="ant-pro-pages-list-applications-filterCardList" v-show="expandedStatus[1]">
-        <a-list :loading="loading" :data-source="treeData.slice(0, showIndex)"
-          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}">
+        <a-list
+          :loading="loading"
+          :data-source="treeData.slice(0, showIndex)"
+          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}"
+        >
           <a-list-item slot="renderItem" slot-scope="item">
             <template v-if="!item.tree_name">
               <drawer-view title="新增故障树">
@@ -57,30 +69,31 @@
               </drawer-view>
             </template>
             <template v-else>
-              <subject-card :linkTo="'/diagnosis/fault-trees/' + item.tree_name"
-                :itemLabel="item.tree_name" :itemContent="item.description"
-                :tagList="['3C', '故障重启', '硬件']">
+              <subject-card
+                :linkTo="'/diagnosis/fault-trees/' + item.tree_name"
+                :itemLabel="item.tree_name"
+                :itemContent="item.description"
+                :tagList="['3C', '故障重启', '硬件']"
+              >
                 <template #logoImg>
                   <img src="~@/assets/dtree-icon.png" />
                 </template>
                 <a-tooltip placement="bottom">
-                  <template slot="title">
-                    编辑
-                  </template>
+                  <template slot="title"> 编辑 </template>
                   <a-icon type="edit" />
                 </a-tooltip>
                 <a-tooltip placement="bottom">
-                  <template slot="title">
-                    导出
-                  </template>
+                  <template slot="title"> 导出 </template>
                   <a-icon type="download" />
                 </a-tooltip>
-                <a-popconfirm title="您确定要删除该故障树吗?" ok-text="确认" cancel-text="取消"
-                  @confirm="deletediagtree(item.tree_name)">
+                <a-popconfirm
+                  title="您确定要删除该故障树吗?"
+                  ok-text="确认"
+                  cancel-text="取消"
+                  @confirm="deletediagtree(item.tree_name)"
+                >
                   <a-tooltip placement="bottom">
-                    <template slot="title">
-                      删除
-                    </template>
+                    <template slot="title"> 删除 </template>
                     <a-icon type="delete" />
                   </a-tooltip>
                 </a-popconfirm>
@@ -93,16 +106,20 @@
         <a @click="showIndex = showIndex + 6">加载更多</a>
       </div>
     </a-card>
-    <a-drawer title="诊断报告列表" :width="800" :visible="reportListVisible"
-      @close="handleReportListClose">
+    <a-drawer title="诊断报告列表" :width="800" :visible="reportListVisible" @close="handleReportListClose">
       <div>
         {{ `已生成/总报告数：${taskProgressStatus.finished} / ${taskProgressStatus.total}` }}
       </div>
-      <a-table rowKey="report_id" :dataSource="reportList" :loading="reportListLoading"
-        :columns="reportListColumns" :pagination="reportListPagination" @change="reportListChange">
+      <a-table
+        rowKey="report_id"
+        :dataSource="reportList"
+        :loading="reportListLoading"
+        :columns="reportListColumns"
+        :pagination="reportListPagination"
+        @change="reportListChange"
+      >
         <span slot="check" slot-scope="report">
-          <router-link :to="{path: '/diagnosis/diag-report/' + report.report_id}"
-            target="_blank">查看</router-link>
+          <router-link :to="{path: '/diagnosis/diag-report/' + report.report_id}" target="_blank">查看</router-link>
           <a-divider type="vertical" />
           <a href="#" @click="diagnosisDelete(report)">删除</a>
         </span>

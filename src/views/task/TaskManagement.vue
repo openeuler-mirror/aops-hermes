@@ -6,8 +6,10 @@
         <div>
           <h3 class="card-title">
             部署任务列表
-            <a-icon :type="expandedStatus[0] ? 'caret-up' : 'caret-down'"
-              @click="setExpandStatus(0, !expandedStatus[0])" />
+            <a-icon
+              :type="expandedStatus[0] ? 'caret-up' : 'caret-down'"
+              @click="setExpandStatus(0, !expandedStatus[0])"
+            />
           </h3>
         </div>
         <div v-show="expandedStatus[0]">
@@ -23,12 +25,18 @@
                   </a-alert>
                 </a-col>
                 <a-col>
-                  <a-button :disabled="selectedRowKeys.length <= 0"
-                    @click="deleteTaskBash(selectedRowKeys, selectedRowsAll)">批量删除</a-button>
+                  <a-button
+                    :disabled="selectedRowKeys.length <= 0"
+                    @click="deleteTaskBash(selectedRowKeys, selectedRowsAll)"
+                    >批量删除</a-button
+                  >
                 </a-col>
                 <a-col>
-                  <a-button :disabled="selectedRowKeys.length <= 0"
-                    @click="executeTaskBash(selectedRowKeys, selectedRowsAll)">批量执行</a-button>
+                  <a-button
+                    :disabled="selectedRowKeys.length <= 0"
+                    @click="executeTaskBash(selectedRowKeys, selectedRowsAll)"
+                    >批量执行</a-button
+                  >
                 </a-col>
               </a-row>
             </a-col>
@@ -47,9 +55,15 @@
               </a-row>
             </a-col>
           </a-row>
-          <a-table :rowKey="rowKey" :columns="columns" :data-source="tableData"
-            :pagination="pagination" :row-selection="rowSelection" @change="handleTableChange"
-            :loading="tableIsLoading">
+          <a-table
+            :rowKey="rowKey"
+            :columns="columns"
+            :data-source="tableData"
+            :pagination="pagination"
+            :row-selection="rowSelection"
+            @change="handleTableChange"
+            :loading="tableIsLoading"
+          >
             <span slot="name" slot-scope="text">
               <cut-text :text="text" :length="20" />
             </span>
@@ -59,8 +73,12 @@
             <span slot="action" slot-scope="record">
               <a @click="executeTask(record)">执行</a>
               <a-divider type="vertical" />
-              <a-popconfirm title="你确定删除这个任务吗?" ok-text="确认" cancel-text="取消"
-                @confirm="deleteTask(record)">
+              <a-popconfirm
+                title="你确定删除这个任务吗?"
+                ok-text="确认"
+                cancel-text="取消"
+                @confirm="deleteTask(record)"
+              >
                 <a-icon slot="icon" type="close-circle" style="color: red" />
                 <a>删除</a>
               </a-popconfirm>
@@ -72,18 +90,19 @@
     <a-card :bordered="false" class="aops-theme" style="margin-top: 20px">
       <h3>
         Playbook模板
-        <a-icon :type="expandedStatus[1] ? 'caret-up' : 'caret-down'"
-          @click="setExpandStatus(1, !expandedStatus[1])" />
+        <a-icon :type="expandedStatus[1] ? 'caret-up' : 'caret-down'" @click="setExpandStatus(1, !expandedStatus[1])" />
       </h3>
       <div class="ant-pro-pages-list-applications-filterCardList" v-show="expandedStatus[1]">
-        <a-list :loading="templateIsLoading" :data-source="templateData.slice(0, showIndex)"
-          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}">
+        <a-list
+          :loading="templateIsLoading"
+          :data-source="templateData.slice(0, showIndex)"
+          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}"
+        >
           <a-list-item slot="renderItem" slot-scope="item">
             <template v-if="!item.template_name">
               <drawer-view title="新增playbook模板">
                 <template slot="click">
-                  <a-button class="new-btn" type="dashed"> <a-icon type="plus" />新增playbook模板
-                  </a-button>
+                  <a-button class="new-btn" type="dashed"> <a-icon type="plus" />新增playbook模板 </a-button>
                 </template>
                 <template slot="drawerView">
                   <add-template :saveSuccess="addTemplateSuccess"></add-template>
@@ -91,23 +110,26 @@
               </drawer-view>
             </template>
             <template v-else>
-              <subject-card :itemLabel="item.template_name" :itemContent="item.description"
-                :tagList="['安装', '用户管理', '加密']">
+              <subject-card
+                :itemLabel="item.template_name"
+                :itemContent="item.description"
+                :tagList="['安装', '用户管理', '加密']"
+              >
                 <template #logoImg>
                   <img class="avatar-img" src="~@/assets/playbook-icon.png" />
                 </template>
                 <a-tooltip placement="bottom">
-                  <template slot="title">
-                    编辑
-                  </template>
+                  <template slot="title"> 编辑 </template>
                   <a-icon type="edit" />
                 </a-tooltip>
-                <a-popconfirm title="您确定要删除该模板吗?" ok-text="确认" cancel-text="取消"
-                  @confirm="deleteTemplate(item.template_name)">
+                <a-popconfirm
+                  title="您确定要删除该模板吗?"
+                  ok-text="确认"
+                  cancel-text="取消"
+                  @confirm="deleteTemplate(item.template_name)"
+                >
                   <a-tooltip placement="bottom">
-                    <template slot="title">
-                      删除
-                    </template>
+                    <template slot="title"> 删除 </template>
                     <a-icon type="delete" />
                   </a-tooltip>
                 </a-popconfirm>

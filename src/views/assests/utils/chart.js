@@ -53,7 +53,8 @@ export default class HostChart {
     }
     this.chart.data(data);
     this.chart
-      .line().position('time*value')
+      .line()
+      .position('time*value')
       .color('metric', ['#3d5afe', '#424242', '#EC87E4', '#ff5722', '#00AAA9', '#ffa000', '#00b0ff', '#388e3c'])
       .tooltip('time*value*metric', (time, value, metric) => {
         return {

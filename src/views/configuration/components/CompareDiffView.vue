@@ -41,7 +41,7 @@ export default {
       return this.comparedConf.diffResult || [];
     },
     diffPartList() {
-      return this.diffByLine.map(part => {
+      return this.diffByLine.map((part) => {
         return part;
       });
     }

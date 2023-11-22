@@ -10,9 +10,7 @@
                 <a-alert type="info" show-icon>
                   <div slot="message">
                     <span>{{ `已选择` + selectedRowKeys.length + `项` }}</span>
-                    <a
-                    v-if="selectedRowKeys.length > 0"
-                      @click="deleteHostBash(selectedRowKeys, selectedRowsAll)">
+                    <a v-if="selectedRowKeys.length > 0" @click="deleteHostBash(selectedRowKeys, selectedRowsAll)">
                       批量删除
                     </a>
                   </div>
@@ -52,14 +50,17 @@
           :row-selection="rowSelection"
           @change="handleTableChange"
           :loading="tableIsLoading"
-          :locale="{emptyText: getEmpty}">
+          :locale="{emptyText: getEmpty}"
+        >
           <router-link
-          :to="{path: `/assests/host/detail/${record.host_id}`}"
-          slot="hostName"
-            slot-scope="hostName, record">{{ hostName }}</router-link>
+            :to="{path: `/assests/host/detail/${record.host_id}`}"
+            slot="hostName"
+            slot-scope="hostName, record"
+            >{{ hostName }}</router-link
+          >
           <span slot="isManagement" slot-scope="isMana">{{ isMana ? '是' : '否' }}</span>
           <span slot="statusItem" slot-scope="status">{{ hostStatusMap[status] }}</span>
-          <span slot="scene" slot-scope="scene">{{ scene ? ( scene === 'normal' ? '通用' : scene ) : '暂无' }}</span>
+          <span slot="scene" slot-scope="scene">{{ scene ? (scene === 'normal' ? '通用' : scene) : '暂无' }}</span>
           <span slot="action" slot-scope="record">
             <!-- <a @click="openDetail(record.host_id)">查看</a>
                 ----后续增加-----
@@ -67,7 +68,11 @@
                 <span>编辑</span>
                 ----------------
                 <a-divider type="vertical" /> -->
-            <router-link :to="{path: `hosts-management/host-edit`, query: { hostId:record.host_id ,pageType: 'edit' }}" @click="editHost(record)">编辑</router-link>
+            <router-link
+              :to="{path: `hosts-management/host-edit`, query: {hostId: record.host_id, pageType: 'edit'}}"
+              @click="editHost(record)"
+              >编辑</router-link
+            >
             <span> | </span>
             <a @click="deleteHost(record)">删除</a>
           </span>
@@ -92,12 +97,12 @@ import HostDetailDrawer from './components/HostDetailDrawer';
 import {hostList, deleteHost, hostGroupList} from '@/api/assest';
 
 const hostStatusMap = {
-  '0': '在线',
-  '1': '离线',
-  '2': '未确认',
-  '3': '在线',
-  '4': '在线',
-  '5': '未知'
+  0: '在线',
+  1: '离线',
+  2: '未确认',
+  3: '在线',
+  4: '在线',
+  5: '未知'
 };
 
 const defaultPagination = {
@@ -332,7 +337,7 @@ export default {
             } else {
               this.$message.success('删除成功');
             }
-            _this.pagination.current = 1
+            _this.pagination.current = 1;
             // 删除主机后重置当前分页为第一页
             _this.getHostList();
             // 重新请求主机列表

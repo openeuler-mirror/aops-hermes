@@ -112,7 +112,7 @@ export default {
       this.params = params;
       this.visible = true;
       // 通知注册了load事件的子组件
-      this.loads.forEach(function(load) {
+      this.loads.forEach(function (load) {
         typeof load === 'function' && load(params);
       });
     }

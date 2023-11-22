@@ -249,7 +249,7 @@ const expectedConfsData = [
     ]
   }
 ];
-const createDomain = options => {
+const createDomain = (options) => {
   return builder(
     {
       msg: Mock.mock('success')
@@ -259,7 +259,7 @@ const createDomain = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const getDomainData = options => {
+const getDomainData = (options) => {
   return builder(
     {
       msg: Mock.mock('success'),
@@ -270,7 +270,7 @@ const getDomainData = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const deleteDomain = options => {
+const deleteDomain = (options) => {
   return builder(
     {
       msg: Mock.mock('success'),
@@ -281,7 +281,7 @@ const deleteDomain = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const getDomainHostData = options => {
+const getDomainHostData = (options) => {
   return builder(
     {
       msg: Mock.mock('success'),
@@ -292,7 +292,7 @@ const getDomainHostData = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const getDomainStatus = options => {
+const getDomainStatus = (options) => {
   return builder(
     {
       msg: Mock.mock('success'),
@@ -303,7 +303,7 @@ const getDomainStatus = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const delHost = options => {
+const delHost = (options) => {
   return builder(
     {
       msg: Mock.mock('success')
@@ -313,7 +313,7 @@ const delHost = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const syncConf = options => {
+const syncConf = (options) => {
   return builder(
     {
       msg: Mock.mock('success'),
@@ -324,7 +324,7 @@ const syncConf = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const queryRealConfs = options => {
+const queryRealConfs = (options) => {
   return builder(
     {
       msg: Mock.mock('success'),
@@ -335,7 +335,7 @@ const queryRealConfs = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const queryExpectedConfs = options => {
+const queryExpectedConfs = (options) => {
   return builder(
     {
       msg: Mock.mock('success'),
@@ -346,7 +346,7 @@ const queryExpectedConfs = options => {
     {'Custom-Header': Mock.mock('@guid')}
   );
 };
-const addHost = options => {
+const addHost = (options) => {
   return builder(
     {
       msg: Mock.mock('success')
@@ -357,7 +357,7 @@ const addHost = options => {
   );
 };
 
-const addDomain = options => {
+const addDomain = (options) => {
   return builder(
     {
       msg: Mock.mock('success')

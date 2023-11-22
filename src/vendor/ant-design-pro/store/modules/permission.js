@@ -40,7 +40,7 @@ function hasRole(roles, route) {
 
 // eslint-disable-next-line
 function filterAsyncRouter(routerMap, roles) {
-  const accessedRouters = routerMap.filter(route => {
+  const accessedRouters = routerMap.filter((route) => {
     if (hasPermission(roles.permissionList, route)) {
       if (route.children && route.children.length) {
         route.children = filterAsyncRouter(route.children, roles);

@@ -3,26 +3,38 @@
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item label="起始日期">
-          <a-date-picker v-decorator="[
+          <a-date-picker
+            v-decorator="[
               'startTime',
               {
                 rules: [{required: true, message: '请选择起始日期'}, {validator: checkStartTime}]
               }
-            ]" style="width: 100%" :get-popup-container="trigger => trigger.parentNode" show-time
-            format="YYYY-MM-DD HH:mm:ss" :disabledDate="disabledDate" />
+            ]"
+            style="width: 100%"
+            :get-popup-container="(trigger) => trigger.parentNode"
+            show-time
+            format="YYYY-MM-DD HH:mm:ss"
+            :disabledDate="disabledDate"
+          />
         </a-form-item>
       </a-col>
     </a-row>
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item label="结束日期">
-          <a-date-picker v-decorator="[
+          <a-date-picker
+            v-decorator="[
               'endTime',
               {
                 rules: [{required: true, message: '请选择结束日期'}, {validator: checkEndTime}]
               }
-            ]" style="width: 100%" :get-popup-container="trigger => trigger.parentNode" show-time
-            format="YYYY-MM-DD HH:mm:ss" :disabledDate="disabledDate" />
+            ]"
+            style="width: 100%"
+            :get-popup-container="(trigger) => trigger.parentNode"
+            show-time
+            format="YYYY-MM-DD HH:mm:ss"
+            :disabledDate="disabledDate"
+          />
         </a-form-item>
       </a-col>
     </a-row>
@@ -35,7 +47,8 @@
               <a-icon type="question-circle-o" />
             </a-tooltip>
           </span>
-          <a-input v-decorator="[
+          <a-input
+            v-decorator="[
               'interval',
               {
                 rules: [
@@ -46,17 +59,25 @@
                   }
                 ]
               }
-            ]" placeholder="请输入区间间隔(单位：秒)" />
+            ]"
+            placeholder="请输入区间间隔(单位：秒)"
+          />
         </a-form-item>
       </a-col>
     </a-row>
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item label="所用故障树">
-          <a-select v-decorator="[
+          <a-select
+            v-decorator="[
               'tree_list',
               {rules: [{required: true, message: '请选择故障树'}, {validator: treeSelectCheck}]}
-            ]" mode="multiple" placeholder="请选择故障树" style="width: 100%" @change="handleChange">
+            ]"
+            mode="multiple"
+            placeholder="请选择故障树"
+            style="width: 100%"
+            @change="handleChange"
+          >
             <a-select-option v-for="item in filteredOptions" :key="item" :value="item">
               {{ item }}
             </a-select-option>
@@ -79,9 +100,13 @@
             placeholder="请输入需要诊断的主机，主机间用;号隔开"
           />
           -------->
-          <a-transfer :data-source="hostListAll" :titles="['源主机列表', '目标列表']"
-            :target-keys="targetKeys" :render="item => item.host_name"
-            @change="handleTransferChange" />
+          <a-transfer
+            :data-source="hostListAll"
+            :titles="['源主机列表', '目标列表']"
+            :target-keys="targetKeys"
+            :render="(item) => item.host_name"
+            @change="handleTransferChange"
+          />
         </a-form-item>
       </a-col>
     </a-row>

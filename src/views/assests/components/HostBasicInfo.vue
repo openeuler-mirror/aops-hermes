@@ -167,12 +167,12 @@
 import CutText from '@/components/CutText';
 
 const hostStatusMap = {
-  '0': '在线',
-  '1': '离线',
-  '2': '未确认',
-  '3': '扫描中',
-  '4': '已完成',
-  '5': '未知'
+  0: '在线',
+  1: '离线',
+  2: '未确认',
+  3: '扫描中',
+  4: '已完成',
+  5: '未知'
 };
 
 export default {
@@ -215,11 +215,11 @@ export default {
   },
   watch: {
     // 主机基本信息
-    basicHostInfo: function() {
+    basicHostInfo: function () {
       this.getHostDetail();
     },
     // 主机下资源信息
-    basicInfo: function() {
+    basicInfo: function () {
       this.getDetail();
     }
   },

@@ -15,7 +15,7 @@ export function getParentId(entity) {
     return null;
   }
   let tempId = null;
-  entity.dependingitems.forEach(function(item) {
+  entity.dependingitems.forEach(function (item) {
     if (tempId) {
       return;
     }
@@ -42,7 +42,7 @@ export function gerChildrenIds(entity) {
     return [];
   }
   const tempArr = [];
-  entity.dependeditems.forEach(function(item) {
+  entity.dependeditems.forEach(function (item) {
     // node runs on parent node
     if (item.relation_id === relationTypes.runsOn) {
       item.target && tempArr.push(item.target.entityid);
@@ -67,11 +67,11 @@ export function getRelatedEdges(entity) {
   }
   const tempArr = [];
   // 从当前节点触发的边
-  entity.dependingitems
-    && entity.dependingitems.forEach(function(item) {
+  entity.dependingitems &&
+    entity.dependingitems.forEach(function (item) {
       if (item.relation_id === relationTypes.connect) {
-        item.target
-          && tempArr.push({
+        item.target &&
+          tempArr.push({
             ...item,
             refTarget: item.target,
             // id、source、target是绘图工具需要的参数。
@@ -81,8 +81,8 @@ export function getRelatedEdges(entity) {
           });
       }
       if (item.relation_id === relationTypes.peer) {
-        item.target
-          && tempArr.push({
+        item.target &&
+          tempArr.push({
             ...item,
             refTarget: item.target,
             id: `peer$${entity.entityid}$${item.target.entityid}`,
@@ -93,11 +93,11 @@ export function getRelatedEdges(entity) {
       }
     });
   // 到达当前节点的边
-  entity.dependeditems
-    && entity.dependeditems.forEach(function(item) {
+  entity.dependeditems &&
+    entity.dependeditems.forEach(function (item) {
       if (item.relation_id === relationTypes.connect) {
-        item.target
-          && tempArr.push({
+        item.target &&
+          tempArr.push({
             ...item,
             refTarget: item.target,
             id: `connect$${item.target.entityid}$${entity.entityid}`,
@@ -120,7 +120,7 @@ export function getRelatedEdges(entity) {
 
 export function getRemoteNodeIds(startOfLinks = [], endOfLinks = [], linkMap = {}) {
   const outputArr = [];
-  startOfLinks.forEach(linkId => {
+  startOfLinks.forEach((linkId) => {
     linkMap[linkId] && outputArr.push(linkMap[linkId].target);
 
     /*
@@ -134,7 +134,7 @@ export function getRemoteNodeIds(startOfLinks = [], endOfLinks = [], linkMap = {
       }
     }
   });
-  endOfLinks.forEach(linkId => {
+  endOfLinks.forEach((linkId) => {
     linkMap[linkId] && outputArr.push(linkMap[linkId].source);
   });
   return outputArr;
@@ -172,19 +172,19 @@ export function getTreeData(rawTreeData) {
         rawTreeData.type === 'host'
           ? '/主机.png'
           : rawTreeData.type === 'container'
-            ? '/容器.png'
-            : rawTreeData.type === 'task'
-              ? '/进程.png'
-              : rawTreeData.type === 'tcp_link'
-                ? '/TCP连接.png'
-                : '/IPVS连接.png',
+          ? '/容器.png'
+          : rawTreeData.type === 'task'
+          ? '/进程.png'
+          : rawTreeData.type === 'tcp_link'
+          ? '/TCP连接.png'
+          : '/IPVS连接.png',
       width: 40,
       height: 40
     },
     attrs: rawTreeData.attrs
   };
   if (rawTreeData.children) {
-    tempNode.children = rawTreeData.children.map(child => {
+    tempNode.children = rawTreeData.children.map((child) => {
       return getTreeData(child);
     });
   }

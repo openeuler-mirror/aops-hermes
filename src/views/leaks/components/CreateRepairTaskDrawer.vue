@@ -11,28 +11,31 @@
       :visible="visible"
       :body-style="{paddingBottom: '80px'}"
       width="650"
-      destroyOnClose>
+      destroyOnClose
+    >
       <div class="create-task-contenxt">
         <a-form :form="form" :label-col="{span: 5}" :wrapper-col="{span: 16}">
           <a-form-item label="任务类型">{{ taskTypsEnum[taskType] }}</a-form-item>
           <a-form-item label="任务名称">
             <a-input
-            :maxLength="20"
-            v-decorator="[
+              :maxLength="20"
+              v-decorator="[
                 'task_name',
                 {rules: [{required: true, message: '请输入任务名称'}], initialValue: taskNameDefault}
               ]"
-              placeholder="请输入任务名称，20个字符以内" />
+              placeholder="请输入任务名称，20个字符以内"
+            />
           </a-form-item>
           <a-form-item label="任务描述">
             <a-textarea
-            :maxLength="50"
-            v-decorator="[
+              :maxLength="50"
+              v-decorator="[
                 'task_desc',
                 {rules: [{required: true, message: '请输入任务描述'}], initialValue: taskDescDefault}
               ]"
               :rows="4"
-              placeholder="请输入任务描述，50个字符以内" />
+              placeholder="请输入任务描述，50个字符以内"
+            />
           </a-form-item>
           <!-- <a-form-item label="自动重启" v-if="taskType === 'cve fix'">
             <a-switch :checked="isResetChecked" @click="handleResetChanage">
@@ -41,7 +44,7 @@
             </a-switch>
           </a-form-item> -->
           <a-form-item label="是否accept" v-if="taskType === 'cve fix'">
-            <description-tips v-if="taskType === 'cve fix'" style="margin-right: 6px;">
+            <description-tips v-if="taskType === 'cve fix'" style="margin-right: 6px">
               如使用热补丁修复，accept后会在重启时自动应用热补丁，不勾选则重启时失效
             </description-tips>
             <a-switch :checked="accepted" @click="handleAcceptedChanage">
@@ -50,8 +53,8 @@
             </a-switch>
           </a-form-item>
           <a-form-item label="冷补丁收编" v-if="taskType === 'cve fix'">
-            <description-tips v-if="taskType === 'cve fix'" style="margin-right: 6px;">
-              仅针对内核：应用热补丁后会同步安装最新冷补丁。<br>若收编失败会自动accept热补丁
+            <description-tips v-if="taskType === 'cve fix'" style="margin-right: 6px">
+              仅针对内核：应用热补丁后会同步安装最新冷补丁。<br />若收编失败会自动accept热补丁
             </description-tips>
             <a-switch :checked="takeover" @click="handleTakeoverChanage">
               <a-icon slot="checkedChildren" type="check" />
@@ -60,8 +63,9 @@
           </a-form-item>
           <a-form-item label="选择REPO" v-if="taskType === 'repo set'">
             <a-select
-            v-decorator="['repo', {rules: [{required: true, message: '请选择REPO'}]}]"
-              placeholder="请选择REPO">
+              v-decorator="['repo', {rules: [{required: true, message: '请选择REPO'}]}]"
+              placeholder="请选择REPO"
+            >
               <a-select-option v-for="repo in repoList" :value="repo.repo_name" :key="repo.repo_id">
                 {{ repo.repo_name }}
               </a-select-option>
@@ -70,20 +74,21 @@
         </a-form>
         <div v-if="taskType === 'cve fix' || taskType === 'cve rollback'">
           <a-table
-          rowKey="cve_id"
-          :columns="taskType === 'cve fix' ? tableColumns : rollbacktableColumns"
-          :data-source="cveList"
-            :pagination="false">
-            <span slot="customTitle" v-if="taskType === 'cve rollback'">{{ taskType === 'cve rollback' ? '热补丁修复' : '支持热补丁' }}
-              <description-tips>包
-                若支持热补丁，默认使用热补丁修复；
+            rowKey="cve_id"
+            :columns="taskType === 'cve fix' ? tableColumns : rollbacktableColumns"
+            :data-source="cveList"
+            :pagination="false"
+          >
+            <span slot="customTitle" v-if="taskType === 'cve rollback'"
+              >{{ taskType === 'cve rollback' ? '热补丁修复' : '支持热补丁' }}
+              <description-tips
+                >包 若支持热补丁，默认使用热补丁修复；
                 注意：由于一个软件包只能应用一个热补丁，热补丁修复时可能导致部分已修复cve重新生成
               </description-tips>
             </span>
-            <span slot="customName">主机
-              <description-tips v-if="taskType === 'cve fix'">
-                cve选中的修复方式对应的主机数量
-              </description-tips>
+            <span slot="customName"
+              >主机
+              <description-tips v-if="taskType === 'cve fix'"> cve选中的修复方式对应的主机数量 </description-tips>
             </span>
             <div slot="hostsList" slot-scope="hostsList">
               <a-spin v-if="hostUnderCveLoading" />
@@ -113,38 +118,45 @@
                     disabled: !it.hotpatch && taskType === 'cve rollback'
                   }
                 }),
-                onChange: function(selectedRowKeys, selectedRows){
+                onChange: function (selectedRowKeys, selectedRows) {
                   onSelectChange(selectedRowKeys, selectedRows, record.cve_id);
                 }
               }"
               :data-source="record.hostsList || []"
-              :pagination="false">
+              :pagination="false"
+            >
               <div slot="hotpatch" slot-scope="hotpatch">
                 <span v-if="taskType === 'cve fix'">
-                  <a-switch :defaultChecked="hotpatch" checked-children="是" un-checked-children="否"
-                  :disabled="!record.hotpatch || taskType === 'cve rollback'" style="margin-bottom:5px"
-                  @change="hotchange(record.cve_id)" />
+                  <a-switch
+                    :defaultChecked="hotpatch"
+                    checked-children="是"
+                    un-checked-children="否"
+                    :disabled="!record.hotpatch || taskType === 'cve rollback'"
+                    style="margin-bottom: 5px"
+                    @change="hotchange(record.cve_id)"
+                  />
                 </span>
                 <span v-else>
-                {{ hotpatch ? '是' : '否' }}
+                  {{ hotpatch ? '是' : '否' }}
                 </span>
               </div>
             </a-table>
           </a-table>
         </div>
-        <div v-if="taskType === 'repo set' && dataType === 'all'" style="margin-bottom: 4px;">
+        <div v-if="taskType === 'repo set' && dataType === 'all'" style="margin-bottom: 4px">
           根据筛选条件获取到以下主机：
         </div>
         <div v-if="taskType === 'repo set'">
           <a-table
-          rowKey="host_id"
-          :columns="tableColumnsRepo"
-          :data-source="hostList"
+            rowKey="host_id"
+            :columns="tableColumnsRepo"
+            :data-source="hostList"
             :rowSelection="repoRowSelection"
-            :pagination="false" />
+            :pagination="false"
+          />
         </div>
         <div
-        :style="{
+          :style="{
             position: 'absolute',
             right: 0,
             bottom: 0,
@@ -154,23 +166,24 @@
             background: '#fff',
             textAlign: 'right',
             zIndex: 1
-          }">
-          <a-button :style="{marginRight: '8px'}" @click="handleCancel">
-            取消
-          </a-button>
+          }"
+        >
+          <a-button :style="{marginRight: '8px'}" @click="handleCancel"> 取消 </a-button>
           <a-button
-          :style="{marginRight: '8px'}"
-          type="primary"
-          @click="handleSubmit(false)"
+            :style="{marginRight: '8px'}"
+            type="primary"
+            @click="handleSubmit(false)"
             :disabled="submitAndExecuteLoading || hostUnderCveLoading"
-            :loading="submitLoading">
+            :loading="submitLoading"
+          >
             创建
           </a-button>
           <a-button
-          type="primary"
-          @click="handleSubmit(true)"
+            type="primary"
+            @click="handleSubmit(true)"
             :disabled="submitLoading || hostUnderCveLoading"
-            :loading="submitAndExecuteLoading">
+            :loading="submitAndExecuteLoading"
+          >
             立即执行
           </a-button>
         </div>
@@ -180,7 +193,7 @@
       <div>
         <a-row type="flex" :gutter="12">
           <a-col>
-            <a-icon type="check-circle" style="font-size: 32px;color: #52c41a" />
+            <a-icon type="check-circle" style="font-size: 32px; color: #52c41a" />
           </a-col>
           <a-col>
             <h3>{{ jumpModalTitle || '成功' }}</h3>
@@ -191,9 +204,7 @@
           </a-col>
         </a-row>
         <a-row type="flex" justify="end">
-          <a-button type="primary" @click="jumpModalClose">
-            关闭
-          </a-button>
+          <a-button type="primary" @click="jumpModalClose"> 关闭 </a-button>
         </a-row>
       </div>
     </a-modal>
@@ -205,13 +216,7 @@
  * 新建修复任务/repo设置任务弹窗
  */
 
-import {
-  getHostUnderMultipleCVE,
-  generateTask,
-  executeTask,
-  generateRepoTask,
-  generateRollbackTask
-} from '@/api/leaks';
+import {getHostUnderMultipleCVE, generateTask, executeTask, generateRepoTask, generateRollbackTask} from '@/api/leaks';
 import DescriptionTips from '@/components/DescriptionTips';
 
 const taskTypes = ['cve fix', 'repo set', 'cve rollback'];
@@ -337,7 +342,7 @@ export default {
           dataIndex: 'hostsList',
           key: 'hostsList',
           // title: '主机',
-          slots: { title: 'customName' },
+          slots: {title: 'customName'},
           width: 150,
           scopedSlots: {customRender: 'hostsList'}
         }
@@ -377,7 +382,7 @@ export default {
         {
           dataIndex: 'hotpatch',
           key: 'hotpatch',
-          slots: { title: 'customTitle' },
+          slots: {title: 'customTitle'},
           scopedSlots: {customRender: 'hotpatch'}
         }
       ];
@@ -438,8 +443,7 @@ export default {
     }
   },
   watch: {},
-  created() {
-  },
+  created() {},
   methods: {
     jumpToPage() {
       clearTimeout(this.jumpModalInterval);
@@ -450,18 +454,18 @@ export default {
         query: {
           task_id: this.jumpTaskId
         }
-      })
+      });
     },
     handleCancel() {
       // 弹窗关闭事件
       this.$emit('close');
       // clear status
-      this.takeover = false
-      this.accepted = false
+      this.takeover = false;
+      this.accepted = false;
       this.visible = false;
       this.cveList = [];
-      this.fixParams = {}
-      this.hostListparams = []
+      this.fixParams = {};
+      this.hostListparams = [];
       this.form.resetFields();
     },
     // 判断cve修复任务时是否有选择cve
@@ -483,21 +487,21 @@ export default {
       this.cveList.forEach((item) => {
         if (item.cve_id === value) {
           item.hostsList.forEach((msg) => {
-           this.$set(msg, 'hotpatch', !msg.hotpatch)
-          })
+            this.$set(msg, 'hotpatch', !msg.hotpatch);
+          });
         }
-      })
+      });
     },
     findSameValues(array, key) {
       // 查找对象数组中是否有两个元素具有相同的某个值
       for (let i = 0; i < array.length; i++) {
         for (let j = i + 1; j < array.length; j++) {
           if (array[i][key] === array[j][key]) {
-            return [array[i], array[j]]
+            return [array[i], array[j]];
           }
         }
       }
-      return null
+      return null;
     },
     // 每次展开抽屉时触发，替代mounted
     handleOpen() {
@@ -519,72 +523,73 @@ export default {
 
       const _this = this;
       if (this.taskType === 'cve fix') {
-          if (this.cveLiIsEmpty()) {
-            return;
-          }
-          if (this.innerCveList.length !== 0) {
-            const cveListparam = this.cveList.map((cve) => {
-              return {
-                cve_id: cve.cve_id,
-                rpms: []
-              }
-            })
-            this.innerCveList.forEach(item => {
-              if (cveListparam.some(it => it.cve_id === item.cve_id)) {
-                const index = cveListparam.findIndex(id => id.cve_id === item.cve_id)
-                cveListparam.splice(index, 1)
-              }
-            })
-            // 去除两个数组中具有相同cve_id的重复的值
-            const uni = Array.from(new Set([...cveListparam, ...this.innerCveList]))
-            this.fixParams = {
-              cveList: uni,
-              fixed: this.fixed
+        if (this.cveLiIsEmpty()) {
+          return;
+        }
+        if (this.innerCveList.length !== 0) {
+          const cveListparam = this.cveList.map((cve) => {
+            return {
+              cve_id: cve.cve_id,
+              rpms: []
+            };
+          });
+          this.innerCveList.forEach((item) => {
+            if (cveListparam.some((it) => it.cve_id === item.cve_id)) {
+              const index = cveListparam.findIndex((id) => id.cve_id === item.cve_id);
+              cveListparam.splice(index, 1);
             }
-            // 取去重后两个数组的并集
-          } else {
-            const cveFixParams = this.cveList.map((cve) => {
-              return {
-                cve_id: cve.cve_id,
-                rpms: []
-              }
-            })
-            this.fixParams = {
-              cveList: cveFixParams,
-              fixed: this.fixed
-            }
-          }
-          switch (this.hostListType) {
-            case hostListTypes[0]:
-              _this.hostUnderCveLoading = true;
-              getHostUnderMultipleCVE(this.fixParams).then(function (res) {
-                 // hostlists are contained in cveMap
-                 const cveMap = res.data.result || {};
-                 const cveKey = Object.keys(cveMap)
-                 cveKey.forEach((item) => {
-                   if (!_this.cveList.some(it => it.cve_id === item)) {
-                     _this.cveList.push({
-                       cve_id: item,
-                       package: cveMap[item].package
-                     })
-                   }
-                 })
-                 _this.addHostListToCVEData(cveMap);
-               })
-               .catch(function (err) {
-                 _this.$message.error(err.response.message);
-               })
-               .finally(function () {
-                 _this.hostUnderCveLoading = false;
-               });
-               break;
-            case hostListTypes[1]:
+          });
+          // 去除两个数组中具有相同cve_id的重复的值
+          const uni = Array.from(new Set([...cveListparam, ...this.innerCveList]));
+          this.fixParams = {
+            cveList: uni,
+            fixed: this.fixed
+          };
+          // 取去重后两个数组的并集
+        } else {
+          const cveFixParams = this.cveList.map((cve) => {
+            return {
+              cve_id: cve.cve_id,
+              rpms: []
+            };
+          });
+          this.fixParams = {
+            cveList: cveFixParams,
+            fixed: this.fixed
+          };
+        }
+        switch (this.hostListType) {
+          case hostListTypes[0]:
+            _this.hostUnderCveLoading = true;
+            getHostUnderMultipleCVE(this.fixParams)
+              .then(function (res) {
+                // hostlists are contained in cveMap
+                const cveMap = res.data.result || {};
+                const cveKey = Object.keys(cveMap);
+                cveKey.forEach((item) => {
+                  if (!_this.cveList.some((it) => it.cve_id === item)) {
+                    _this.cveList.push({
+                      cve_id: item,
+                      package: cveMap[item].package
+                    });
+                  }
+                });
+                _this.addHostListToCVEData(cveMap);
+              })
+              .catch(function (err) {
+                _this.$message.error(err.response.message);
+              })
+              .finally(function () {
+                _this.hostUnderCveLoading = false;
+              });
+            break;
+          case hostListTypes[1]:
             // hostListType为bySelection cve详情下的受影响主机界面
             // if (this.cveLiIsEmpty()) {
             //   return;
             // }
             if (this.cveList.length === 0) {
-              this.cveList = this.innerCveList
+              this.cveList = this.innerCveList;
             }
             const tempObj1 = {};
             this.cveList.forEach((cve) => {
@@ -600,13 +605,13 @@ export default {
             });
             this.addHostListToCVEData(tempObj1);
             break;
-            case hostListTypes[2]:
+          case hostListTypes[2]:
             // hostListType为byOneHost 主机详情界面下的cve界面
             // if (this.cveLiIsEmpty()) {
             //   return;
             // }
             if (this.cveList.length === 0) {
-              this.cveList = this.innerCveList
+              this.cveList = this.innerCveList;
             }
             const tempObj2 = {};
             this.cveList.forEach((cve) => {
@@ -622,7 +627,7 @@ export default {
             });
             this.addHostListToCVEData(tempObj2);
             break;
-          }
+        }
       }
 
       if (this.taskType === 'cve rollback') {
@@ -635,150 +640,150 @@ export default {
             return {
               cve_id: cve.cve_id,
               rpms: []
+            };
+          });
+          this.innerCveList.forEach((item) => {
+            if (cveListparam.some((it) => it.cve_id === item.cve_id)) {
+              const index = cveListparam.findIndex((id) => id.cve_id === item.cve_id);
+              cveListparam.splice(index, 1);
             }
-          })
-          this.innerCveList.forEach(item => {
-            if (cveListparam.some(it => it.cve_id === item.cve_id)) {
-              const index = cveListparam.findIndex(id => id.cve_id === item.cve_id)
-              cveListparam.splice(index, 1)
-            }
-          })
+          });
           // 去除两个数组中具有相同cve_id的重复的值
-          const uni = Array.from(new Set([...cveListparam, ...this.innerCveList]))
+          const uni = Array.from(new Set([...cveListparam, ...this.innerCveList]));
           this.fixParams = {
             cveList: uni,
             fixed: this.fixed
-          }
+          };
           // 取去重后两个数组的并集
         } else {
           const cveFixParams = this.cveList.map((cve) => {
             return {
               cve_id: cve.cve_id,
               rpms: []
-            }
-          })
+            };
+          });
           this.fixParams = {
             cveList: cveFixParams,
             fixed: this.fixed
-          }
+          };
         }
         switch (this.hostListType) {
           case hostListTypes[0]:
-          // hostListType为byLoading
-          _this.hostUnderCveLoading = true;
-          getHostUnderMultipleCVE(this.fixParams)
-            .then(function (res) {
-              // hostlists are contained in cveMap
-              const cveMap = res.data.result || {};
-              const cveKey = Object.keys(cveMap)
-              cveKey.forEach((cve) => {
-                let existsHotpatch = false
-                if (!_this.cveList.some(it => it.cve_id === cve)) {
-                  _this.cveList.push({
-                    cve_id: cve,
-                    package: cveMap[cve].package
-                  })
-                }
-                cveMap[cve].hosts.forEach((host) => {
-                  if (host.hotpatch) {
-                    existsHotpatch = true
+            // hostListType为byLoading
+            _this.hostUnderCveLoading = true;
+            getHostUnderMultipleCVE(this.fixParams)
+              .then(function (res) {
+                // hostlists are contained in cveMap
+                const cveMap = res.data.result || {};
+                const cveKey = Object.keys(cveMap);
+                cveKey.forEach((cve) => {
+                  let existsHotpatch = false;
+                  if (!_this.cveList.some((it) => it.cve_id === cve)) {
+                    _this.cveList.push({
+                      cve_id: cve,
+                      package: cveMap[cve].package
+                    });
                   }
-                })
-                _this.cveList.forEach((cveinfo, index) => {
-                  if (cveinfo.cve_id === cve) {
-                    _this.cveList[index].hotpatch = existsHotpatch
-                  }
-                })
+                  cveMap[cve].hosts.forEach((host) => {
+                    if (host.hotpatch) {
+                      existsHotpatch = true;
+                    }
+                  });
+                  _this.cveList.forEach((cveinfo, index) => {
+                    if (cveinfo.cve_id === cve) {
+                      _this.cveList[index].hotpatch = existsHotpatch;
+                    }
+                  });
+                });
+                _this.addHostListToCVEData(cveMap);
               })
-              _this.addHostListToCVEData(cveMap);
-            })
-            .catch(function (err) {
-              _this.$message.error(err.response.message);
-            })
-            .finally(function () {
-              _this.hostUnderCveLoading = false;
-            });
-          break;
+              .catch(function (err) {
+                _this.$message.error(err.response.message);
+              })
+              .finally(function () {
+                _this.hostUnderCveLoading = false;
+              });
+            break;
           case hostListTypes[1]:
-          // hostListType为bySelection cve详情界面下的受影响主机界面
-          _this.hostUnderCveLoading = true;
-          _this.hostList.forEach(item => {
-            _this.hostListparams.push(item.host_id)
-          })
-          _this.$set(_this.fixParams, 'host_list', _this.hostListparams)
-          getHostUnderMultipleCVE(this.fixParams)
-            .then(function (res) {
-              // hostlists are contained in cveMap
-              const cveMap = res.data.result || {};
-              const cveKey = Object.keys(cveMap)
-              cveKey.forEach((cve) => {
-                let existsHotpatch = false
-                if (!_this.cveList.some(it => it.cve_id === cve)) {
-                  _this.cveList.push({
-                    cve_id: cve,
-                    package: cveMap[cve].package
-                  })
-                }
-                cveMap[cve].hosts.forEach((host) => {
-                  if (host.hotpatch) {
-                    existsHotpatch = true
-                  }
-                })
-                _this.cveList.forEach((cveinfo, index) => {
-                  if (cveinfo.cve_id === cve) {
-                    _this.cveList[index].hotpatch = existsHotpatch
-                  }
-                })
-              })
-              _this.addHostListToCVEData(cveMap);
-            })
-            .catch(function (err) {
-              _this.$message.error(err.response.message);
-            })
-            .finally(function () {
-              _this.hostUnderCveLoading = false;
+            // hostListType为bySelection cve详情界面下的受影响主机界面
+            _this.hostUnderCveLoading = true;
+            _this.hostList.forEach((item) => {
+              _this.hostListparams.push(item.host_id);
             });
-          break;
+            _this.$set(_this.fixParams, 'host_list', _this.hostListparams);
+            getHostUnderMultipleCVE(this.fixParams)
+              .then(function (res) {
+                // hostlists are contained in cveMap
+                const cveMap = res.data.result || {};
+                const cveKey = Object.keys(cveMap);
+                cveKey.forEach((cve) => {
+                  let existsHotpatch = false;
+                  if (!_this.cveList.some((it) => it.cve_id === cve)) {
+                    _this.cveList.push({
+                      cve_id: cve,
+                      package: cveMap[cve].package
+                    });
+                  }
+                  cveMap[cve].hosts.forEach((host) => {
+                    if (host.hotpatch) {
+                      existsHotpatch = true;
+                    }
+                  });
+                  _this.cveList.forEach((cveinfo, index) => {
+                    if (cveinfo.cve_id === cve) {
+                      _this.cveList[index].hotpatch = existsHotpatch;
+                    }
+                  });
+                });
+                _this.addHostListToCVEData(cveMap);
+              })
+              .catch(function (err) {
+                _this.$message.error(err.response.message);
+              })
+              .finally(function () {
+                _this.hostUnderCveLoading = false;
+              });
+            break;
           case hostListTypes[2]:
             // hostListType为byOneHost 主机详情界面下的cve界面
-          _this.hostList.forEach(item => {
-            _this.hostListparams.push(item.host_id)
-          })
-          _this.$set(_this.fixParams, 'host_list', _this.hostListparams)
-          _this.hostUnderCveLoading = true;
-          getHostUnderMultipleCVE(this.fixParams)
-            .then(function (res) {
-              // hostlists are contained in cveMap
-              const cveMap = res.data.result || {};
-              const cveKey = Object.keys(cveMap)
-              cveKey.forEach((cve) => {
-                let existsHotpatch = false
-                if (!_this.cveList.some(it => it.cve_id === cve)) {
-                  _this.cveList.push({
-                    cve_id: cve,
-                    package: cveMap[cve].package
-                  })
-                }
-                cveMap[cve].hosts.forEach((host) => {
-                  if (host.hotpatch) {
-                    existsHotpatch = true
-                  }
-                })
-                _this.cveList.forEach((cveinfo, index) => {
-                  if (cveinfo.cve_id === cve) {
-                    _this.cveList[index].hotpatch = existsHotpatch
-                  }
-                })
-              })
-              _this.addHostListToCVEData(cveMap);
-            })
-            .catch(function (err) {
-              _this.$message.error(err.response.message);
-            })
-            .finally(function () {
-              _this.hostUnderCveLoading = false;
+            _this.hostList.forEach((item) => {
+              _this.hostListparams.push(item.host_id);
             });
-          break;
+            _this.$set(_this.fixParams, 'host_list', _this.hostListparams);
+            _this.hostUnderCveLoading = true;
+            getHostUnderMultipleCVE(this.fixParams)
+              .then(function (res) {
+                // hostlists are contained in cveMap
+                const cveMap = res.data.result || {};
+                const cveKey = Object.keys(cveMap);
+                cveKey.forEach((cve) => {
+                  let existsHotpatch = false;
+                  if (!_this.cveList.some((it) => it.cve_id === cve)) {
+                    _this.cveList.push({
+                      cve_id: cve,
+                      package: cveMap[cve].package
+                    });
+                  }
+                  cveMap[cve].hosts.forEach((host) => {
+                    if (host.hotpatch) {
+                      existsHotpatch = true;
+                    }
+                  });
+                  _this.cveList.forEach((cveinfo, index) => {
+                    if (cveinfo.cve_id === cve) {
+                      _this.cveList[index].hotpatch = existsHotpatch;
+                    }
+                  });
+                });
+                _this.addHostListToCVEData(cveMap);
+              })
+              .catch(function (err) {
+                _this.$message.error(err.response.message);
+              })
+              .finally(function () {
+                _this.hostUnderCveLoading = false;
+              });
+            break;
         }
       }
     },
@@ -804,17 +809,17 @@ export default {
                     return {
                       cve_id: cveInfo.cve_id,
                       host_info: this.selectedRowsAllMaps[cveInfo.cve_id],
-                      rpms: this.fixParams.cveList.find(it => it.cve_id === cveInfo.cve_id).rpms || []
+                      rpms: this.fixParams.cveList.find((it) => it.cve_id === cveInfo.cve_id).rpms || []
                     };
                   })
                   .filter((item) => item.host_info && item.host_info.length > 0)
               };
-              params.info.forEach(item => {
-                item.host_info.forEach(it => {
-                  delete it.host_name
-                  delete it.host_ip
-                })
-              })
+              params.info.forEach((item) => {
+                item.host_info.forEach((it) => {
+                  delete it.host_name;
+                  delete it.host_ip;
+                });
+              });
               if (params.info.length === 0) {
                 this.$message.info('请至少选择一个cve下的一台主机进行修复!');
                 this.submitLoading = false;
@@ -882,34 +887,34 @@ export default {
               }
             case 'cve rollback':
               // prepare data
-              const cveRollback = Object()
+              const cveRollback = Object();
               this.cveList.forEach((cveInfo) => {
                 cveInfo.hostsList.forEach((host) => {
                   const cveRollbackInfo = {
                     cve_id: cveInfo.cve_id,
                     hotpatch: host.hotpatch
-                  }
+                  };
                   if (this.selectedRowKeyMaps[cveInfo.cve_id].includes(host.host_id)) {
-                  // 筛选出选中的某主机中的cve
+                    // 筛选出选中的某主机中的cve
                     if (cveRollback.hasOwnProperty(host.host_id)) {
-                      cveRollback[host.host_id].push(cveRollbackInfo)
+                      cveRollback[host.host_id].push(cveRollbackInfo);
                     } else {
-                      cveRollback[host.host_id] = [cveRollbackInfo]
+                      cveRollback[host.host_id] = [cveRollbackInfo];
                     }
                   }
-                })
-              })
-              const cveRoobackInfo = Object.keys(cveRollback).map(hostId => {
+                });
+              });
+              const cveRoobackInfo = Object.keys(cveRollback).map((hostId) => {
                 return {
                   host_id: Number(hostId),
                   cves: cveRollback[hostId]
-                }
-              })
+                };
+              });
               const rollParams = {
-                  task_name: values.task_name,
-                  description: values.task_desc,
-                  info: cveRoobackInfo
-              }
+                task_name: values.task_name,
+                description: values.task_desc,
+                info: cveRoobackInfo
+              };
               if (cveRoobackInfo.length === 0) {
                 this.$message.info('请至少选择一个cve下的一台主机进行回滚!');
                 this.submitLoading = false;
@@ -986,26 +991,28 @@ export default {
     // 工具方法，将主机信息更新进cve数据中
     getHostListUnderCve(val, key) {
       if (this.taskType === 'cve rollback') {
-        return val[key].hosts
+        return val[key].hosts;
       }
       if (this.taskType === 'cve fix') {
         if (this.hostListType === 'byLoading') {
-          return val[key].hosts
+          return val[key].hosts;
         } else {
-          return val[key]
+          return val[key];
         }
       }
     },
     addHostListToCVEData(cveMap) {
       this.cveList.forEach((cveInfo) => {
         // const hostListUnderCve = this.hostListType === 'byLoading' ? cveMap[cveInfo.cve_id].hosts : cveMap[cveInfo.cve_id];
-        const hostListUnderCve = this.getHostListUnderCve(cveMap, cveInfo.cve_id)
+        const hostListUnderCve = this.getHostListUnderCve(cveMap, cveInfo.cve_id);
         cveInfo.hostsList = hostListUnderCve || [];
         if (hostListUnderCve && hostListUnderCve.length > 0) {
           if (this.taskType === 'cve fix') {
             this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve.map((host) => host.host_id);
           } else if (this.taskType === 'cve rollback') {
-            this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve.filter((host) => host.hotpatch === true).map((host) => host.host_id);
+            this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve
+              .filter((host) => host.hotpatch === true)
+              .map((host) => host.host_id);
           }
           this.selectedRowsAllMaps[cveInfo.cve_id] = hostListUnderCve;
         } else {
@@ -1057,19 +1064,19 @@ export default {
       // this.taskNameDefault = `${this.taskType === 'cve fix' ? 'CVE修复任务' : 'REPO设置任务'}`;
       switch (this.taskType) {
         case 'cve fix':
-          this.taskNameDefault = 'CVE修复任务'
+          this.taskNameDefault = 'CVE修复任务';
           this.taskDescDefault = `修复以下${this.cveList.length}个CVE：${this.cveList
             .map((cve) => cve.cve_id)
             .join('、')}`;
           break;
         case 'cve rollback':
-          this.taskNameDefault = 'CVE回滚任务'
+          this.taskNameDefault = 'CVE回滚任务';
           this.taskDescDefault = `回滚以下${this.cveListProps.length}个CVE：${this.cveListProps
             .map((cve) => cve.cve_id)
             .join('、')}`;
           break;
         case 'repo set':
-          this.taskNameDefault = 'REPO设置任务'
+          this.taskNameDefault = 'REPO设置任务';
           this.taskDescDefault = `为以下${this.hostList.length}个主机设置Repo：${this.hostList
             .map((host) => host.host_name)
             .join('、')}`;

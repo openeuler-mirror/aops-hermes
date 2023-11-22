@@ -2,16 +2,21 @@
 <template>
   <a-form :form="form" layout="vertical" hide-required-mark>
     <a-form-item label="导入异常检测规则文件：">
-      <div style="border: 1px solid #ccc;border-radius: 3px;display: inline-block;cursor: pointer">
-        <uploader hidefocus toJSON uid="luleUploader" fileType="json"
-          v-decorator="['ruleList', {rules: [{required: true, message: '请上传符合json格式的文件'}]}]" />
+      <div style="border: 1px solid #ccc; border-radius: 3px; display: inline-block; cursor: pointer">
+        <uploader
+          hidefocus
+          toJSON
+          uid="luleUploader"
+          fileType="json"
+          v-decorator="['ruleList', {rules: [{required: true, message: '请上传符合json格式的文件'}]}]"
+        />
       </div>
-      <div style="padding-left: 15px;color: #999;display: inline-block">
-        支持文件扩展名：<span style="border-bottom: 1px solid;padding: 0 2px">.json</span> ...
+      <div style="padding-left: 15px; color: #999; display: inline-block">
+        支持文件扩展名：<span style="border-bottom: 1px solid; padding: 0 2px">.json</span> ...
       </div>
     </a-form-item>
-    <div style="line-height: 28px;color: #000">规则样例：</div>
-    <pre style="margin: 0;padding-top: 15px;border: 1px solid #ccc;background: #f5f5f5">
+    <div style="line-height: 28px; color: #000">规则样例：</div>
+    <pre style="margin: 0; padding-top: 15px; border: 1px solid #ccc; background: #f5f5f5">
       {
         "check_items": [{
           "check_item": "check_item1",

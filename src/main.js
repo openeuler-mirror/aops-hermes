@@ -14,7 +14,7 @@ import i18n from '@/vendor/ant-design-pro/locales';
 import {VueAxios} from '@/vendor/ant-design-pro/utils/request';
 import ProLayout, {PageHeaderWrapper} from '@ant-design-vue/pro-layout';
 import themePluginConfig from '@/vendor/ant-design-pro/config/themePluginConfig';
-import { FormModel } from 'ant-design-vue';
+import {FormModel} from 'ant-design-vue';
 
 // run mock. WARNING: `mockjs` NOT SUPPORT `IE` PLEASE DO NOT USE IN `production` ENV.
 import './mock';
@@ -43,5 +43,5 @@ new Vue({
   i18n,
   // init localstorage, vuex, Logo message
   created: bootstrap,
-  render: h => h(App)
+  render: (h) => h(App)
 }).$mount('#app');

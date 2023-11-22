@@ -1,9 +1,20 @@
 <!-- eslint-disable vue/max-attributes-per-line -->
 <template>
-  <div id="pageBox" style="width: 100%;height: 100%;overflow:hidden" @mousewheel="scrollEvent"
-    @DOMMouseScroll="scrollEvent">
-    <a-table rowKey="host_id" :bordered="true" :columns="columns" :data-source="hostList"
-      :loading="isLoading" :scroll="{y: scrollBoxHeight}" :pagination="false"></a-table>
+  <div
+    id="pageBox"
+    style="width: 100%; height: 100%; overflow: hidden"
+    @mousewheel="scrollEvent"
+    @DOMMouseScroll="scrollEvent"
+  >
+    <a-table
+      rowKey="host_id"
+      :bordered="true"
+      :columns="columns"
+      :data-source="hostList"
+      :loading="isLoading"
+      :scroll="{y: scrollBoxHeight}"
+      :pagination="false"
+    ></a-table>
     <div v-if="total === hostList.length" class="loadMsg">没有更多了...</div>
     <div v-else id="scrollDown">
       <div class="container">

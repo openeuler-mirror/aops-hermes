@@ -66,6 +66,6 @@ export function uploadManagementConf(file) {
     url: api.uploadManagementConf,
     method: 'post',
     data: file,
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
   });
 }

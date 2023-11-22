@@ -25,6 +25,6 @@ export function dateFormat(fmt, time) {
     }
     return fmt;
   } else {
-    return '未扫描'
+    return '未扫描';
   }
 }

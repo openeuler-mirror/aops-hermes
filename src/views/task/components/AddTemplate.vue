@@ -3,7 +3,9 @@
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item label="playbook名称">
-          <a-input placeholder="请输入playbook名称，不超过64个字符" v-decorator="[
+          <a-input
+            placeholder="请输入playbook名称，不超过64个字符"
+            v-decorator="[
               'template_name',
               {
                 rules: [
@@ -12,24 +14,31 @@
                   {validator: checkTemplateName}
                 ]
               }
-            ]" />
+            ]"
+          />
         </a-form-item>
       </a-col>
     </a-row>
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item label="导入playbook文件">
-          <uploader toJSON uid="treeUploader" fileType="yaml" v-decorator="[
+          <uploader
+            toJSON
+            uid="treeUploader"
+            fileType="yaml"
+            v-decorator="[
               'template_content',
               {rules: [{required: true, message: '请上传YAML类型文件，并确保格式符合要求'}]}
-            ]" />
+            ]"
+          />
         </a-form-item>
       </a-col>
     </a-row>
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item label="playbook描述">
-          <a-textarea v-decorator="[
+          <a-textarea
+            v-decorator="[
               'description',
               {
                 rules: [
@@ -38,7 +47,10 @@
                   {validator: checkTemplatedesc}
                 ]
               }
-            ]" :rows="4" placeholder="请输入playbook描述，不超过256个字符" />
+            ]"
+            :rows="4"
+            placeholder="请输入playbook描述，不超过256个字符"
+          />
         </a-form-item>
       </a-col>
     </a-row>

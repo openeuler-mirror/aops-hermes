@@ -75,7 +75,7 @@ export function deleteDomain(parameter) {
       domainName
     },
     paramsSerializer: {
-      serialize: params => {
+      serialize: (params) => {
         return qs.stringify(params, {indices: false});
       }
     }

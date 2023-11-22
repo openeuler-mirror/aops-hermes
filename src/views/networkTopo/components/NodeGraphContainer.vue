@@ -3,12 +3,12 @@
     <div :id="containerId" class="container" />
     <div class="controller">
       <a-row type="flex" justify="center">
-        <a-button @click="control('fitview')"><a-icon type="border-outer"/></a-button>
-        <a-button @click="control('zoomin')"><a-icon type="zoom-in"/></a-button>
-        <a-button @click="control('zoomout')"><a-icon type="zoom-out"/></a-button>
-        <a-button @click="control('focus')"><a-icon type="border-inner"/></a-button>
+        <a-button @click="control('fitview')"><a-icon type="border-outer" /></a-button>
+        <a-button @click="control('zoomin')"><a-icon type="zoom-in" /></a-button>
+        <a-button @click="control('zoomout')"><a-icon type="zoom-out" /></a-button>
+        <a-button @click="control('focus')"><a-icon type="border-inner" /></a-button>
         <a-button @click="control('showVerticalMap')" :disabled="!selectedNodeCache">
-          <a-icon type="branches"/>
+          <a-icon type="branches" />
         </a-button>
       </a-row>
     </div>
@@ -89,14 +89,14 @@ export default {
   },
   watch: {
     // 第一次加载时，需要准备好数据后触发绘图。
-    dataReady: function() {
+    dataReady: function () {
       const _this = this;
       if (!this.dataReady) return;
       if (!this.isShow) return;
       this.nodes = this.entitiesData.nodes || [];
       this.edges = this.entitiesData.edges || [];
       if (!this.initailized) {
-        setTimeout(function() {
+        setTimeout(function () {
           _this.initialGraph();
         }, 100);
       }
@@ -132,7 +132,7 @@ export default {
        * this.graph.fitView()
        * add default state to avoid edge state bug
        */
-      this.graph.getEdges().forEach(edge => {
+      this.graph.getEdges().forEach((edge) => {
         this.graph.setItemState(edge, 'defaultState', true);
       });
       this.setErrorStateForAllEntity();
@@ -154,22 +154,22 @@ export default {
       const endOfLinks = model.endOfLinks || [];
       const startOfLinks = model.startOfLinks || [];
       const links = startOfLinks.concat(endOfLinks);
-      const highLightEdgeList = this.graph.findAll('edge', edge => {
+      const highLightEdgeList = this.graph.findAll('edge', (edge) => {
         return links.indexOf(edge.get('model').id) > -1;
       });
       const nodes = getRemoteNodeIds(startOfLinks, endOfLinks, this.linkMap);
-      const highLightNodeList = this.graph.findAll('node', node => {
+      const highLightNodeList = this.graph.findAll('node', (node) => {
         return nodes.indexOf(node.get('model').id) > -1;
       });
 
-      highLightEdgeList.forEach(edge => {
+      highLightEdgeList.forEach((edge) => {
         if (!edge.hasState('error')) {
           this.graph.setItemState(edge, 'nodeClickSelectedHighLight', true);
         } else {
           this.graph.setItemState(edge, 'errorSelected', true);
         }
       });
-      highLightNodeList.forEach(node => {
+      highLightNodeList.forEach((node) => {
         if (!node.hasState('error')) {
           this.graph.setItemState(node, 'nodeClickSelectedRemote', true);
         }
@@ -184,7 +184,7 @@ export default {
         this.selectedNodeCache = null;
       }
       if (this.selectedLinkCache) {
-        this.selectedLinkCache.forEach(edge => {
+        this.selectedLinkCache.forEach((edge) => {
           this.graph.clearItemStates(edge, [
             'nodeClickSelectedHighLight',
             'edgeClickSelectedHighLight',
@@ -194,7 +194,7 @@ export default {
         this.selectedLinkCache = [];
       }
       if (this.selectedRemoteNodesCache) {
-        this.selectedRemoteNodesCache.forEach(node => {
+        this.selectedRemoteNodesCache.forEach((node) => {
           this.graph.clearItemStates(node, 'nodeClickSelectedRemote');
         });
         this.selectedRemoteNodesCache = [];
@@ -202,10 +202,10 @@ export default {
     },
     // 为错误状态的节点设置error状态（暂未使用，根据实际提供的数据情况修改）
     setErrorStateForAllEntity() {
-      const edgesWithError = this.graph.findAll('edge', edge => {
+      const edgesWithError = this.graph.findAll('edge', (edge) => {
         return edge.get('model').anomaly && edge.get('model').anomaly.status === 'ANOMALY_YES';
       });
-      edgesWithError.forEach(edge => {
+      edgesWithError.forEach((edge) => {
         this.graph.setItemState(edge, 'error', true);
       });
     },
@@ -357,53 +357,53 @@ export default {
         }
       });
       // 配置事件
-      this.graph.on('node:mouseenter', function(evt) {
+      this.graph.on('node:mouseenter', function (evt) {
         const node = evt.item;
         const model = node.getModel();
 
         const endOfLinks = model.endOfLinks || [];
         const startOfLinks = model.startOfLinks || [];
         const links = startOfLinks.concat(endOfLinks);
-        const highLightEdgeList = _this.graph.findAll('edge', edge => {
+        const highLightEdgeList = _this.graph.findAll('edge', (edge) => {
           return links.indexOf(edge.get('model').id) > -1;
         });
         const nodes = getRemoteNodeIds(startOfLinks, endOfLinks, _this.linkMap);
-        const highLightNodeList = _this.graph.findAll('node', node => {
+        const highLightNodeList = _this.graph.findAll('node', (node) => {
           return nodes.indexOf(node.get('model').id) > -1;
         });
 
-        highLightEdgeList.forEach(edge => {
+        highLightEdgeList.forEach((edge) => {
           _this.graph.setItemState(edge, 'hoverHighLight', true);
         });
         _this.graph.setItemState(node, 'hoverFocus', true);
-        highLightNodeList.forEach(node => {
+        highLightNodeList.forEach((node) => {
           _this.graph.setItemState(node, 'hoverRemote', true);
         });
       });
-      this.graph.on('node:mouseleave', function(evt) {
+      this.graph.on('node:mouseleave', function (evt) {
         const node = evt.item;
         const model = node.getModel();
         // set remote and link state
         const endOfLinks = model.endOfLinks || [];
         const startOfLinks = model.startOfLinks || [];
         const links = startOfLinks.concat(endOfLinks);
-        const highLightEdgeList = _this.graph.findAll('edge', edge => {
+        const highLightEdgeList = _this.graph.findAll('edge', (edge) => {
           return links.indexOf(edge.get('model').id) > -1;
         });
         const nodes = getRemoteNodeIds(startOfLinks, endOfLinks, _this.linkMap);
-        const highLightNodeList = _this.graph.findAll('node', node => {
+        const highLightNodeList = _this.graph.findAll('node', (node) => {
           return nodes.indexOf(node.get('model').id) > -1;
         });
 
-        highLightEdgeList.forEach(edge => {
+        highLightEdgeList.forEach((edge) => {
           _this.graph.setItemState(edge, 'hoverHighLight', false);
         });
         _this.graph.setItemState(node, 'hoverFocus', false);
-        highLightNodeList.forEach(node => {
+        highLightNodeList.forEach((node) => {
           _this.graph.setItemState(node, 'hoverRemote', false);
         });
       });
-      this.graph.on('edge:mouseenter', function(evt) {
+      this.graph.on('edge:mouseenter', function (evt) {
         const edge = evt.item;
         if (!edge.hasState('error')) {
           _this.graph.setItemState(edge, 'hoverHighLight', true);
@@ -411,11 +411,11 @@ export default {
           _this.graph.setItemState(edge, 'errorHover', true);
         }
       });
-      this.graph.on('edge:mouseleave', function(evt) {
+      this.graph.on('edge:mouseleave', function (evt) {
         const edge = evt.item;
         _this.graph.clearItemStates(edge, ['hoverHighLight', 'errorHover']);
       });
-      this.graph.on('edge:click', function(evt) {
+      this.graph.on('edge:click', function (evt) {
         const edge = evt.item;
         _this.$emit('edgeSelected', edge.getModel());
 
@@ -427,14 +427,14 @@ export default {
         }
         _this.selectedLinkCache = [edge];
       });
-      this.graph.on('node:click', function(evt) {
+      this.graph.on('node:click', function (evt) {
         const node = evt.item;
         const model = node.getModel();
         _this.displayInfo = model;
         _this.nodeClicked(_this.displayInfo);
         _this.highlightNodeWithConnections(node);
       });
-      this.graph.on('canvas:click', function() {
+      this.graph.on('canvas:click', function () {
         _this.clearSelectedStateByCache();
         _this.$emit('canvasClick');
       });
@@ -448,14 +448,14 @@ export default {
       this.graph.render();
       this.initailized = true;
       // 添加画布根据元素宽度自动适配的事件
-      this.$emit('addResizeFunction', function() {
+      this.$emit('addResizeFunction', function () {
         if (!_this.graph || _this.graph.get('destroyed')) return;
         if (!container || !container.clientWidth || !container.clientHeight) return;
         _this.graph.changeSize(container.clientWidth, container.clientHeight);
       });
     }
   },
-  mounted: function() {}
+  mounted: function () {}
 };
 </script>
 

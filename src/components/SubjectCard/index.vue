@@ -47,7 +47,7 @@ export default {
     }
   },
   methods: {
-    onClick: function() {
+    onClick: function () {
       router.push(this.linkTo);
     }
   }

@@ -24,23 +24,24 @@
     <div class="plugin-set">
       <span>插件运行信息</span>
       <a-space :size="8">
-        <a-button @click="clearModal()"
-          :disabled="changedPlugin.length === 0 && changedProbe.length === 0">
+        <a-button @click="clearModal()" :disabled="changedPlugin.length === 0 && changedProbe.length === 0">
           取消
         </a-button>
-        <a-button @click="saveModal()" type="primary"
+        <a-button
+          @click="saveModal()"
+          type="primary"
           :disabled="changedPlugin.length === 0 && changedProbe.length === 0"
-          :loading="saveLoading">保存</a-button>
+          :loading="saveLoading"
+          >保存</a-button
+        >
       </a-space>
     </div>
-    <a-table :columns="columns" :data-source="tableData" :scroll="{y: 400}" :loading="tableLoading"
-      :pagination="false">
+    <a-table :columns="columns" :data-source="tableData" :scroll="{y: 400}" :loading="tableLoading" :pagination="false">
       <span slot="plugin_name" slot-scope="plugin_name">
         <CutText :text="plugin_name"></CutText>
       </span>
       <span v-if="record.info.is_installed" slot="status" slot-scope="status, record">
-        <a-switch checked-children="on" un-checked-children="off" :checked="status"
-          @change="PluginStatuChange(record)">
+        <a-switch checked-children="on" un-checked-children="off" :checked="status" @change="PluginStatuChange(record)">
         </a-switch>
       </span>
       <span slot="resourceTitle">
@@ -52,22 +53,31 @@
           <a-icon type="question-circle" />
         </a-tooltip>
       </span>
-      <span v-if="record.info.status && record.info.is_installed" slot="resource"
-        slot-scope="resource, record">
+      <span v-if="record.info.status && record.info.is_installed" slot="resource" slot-scope="resource, record">
         <div v-for="(item, index) in resource" :key="index">
-          <span>{{ `${item.name}：` }}</span><br />
+          <span>{{ `${item.name}：` }}</span
+          ><br />
           <span>{{ `${item.current_value} / ${item.limit_value}` }}</span>
         </div>
       </span>
-      <span v-if="record.info.status && record.info.is_installed" slot="collect_items"
-        slot-scope="collect_items, record" class="probe">
+      <span
+        v-if="record.info.status && record.info.is_installed"
+        slot="collect_items"
+        slot-scope="collect_items, record"
+        class="probe"
+      >
         <div v-for="(item, index) in collect_items" :key="index" class="probe-item">
           <span>
             <CutText :text="item.probe_name"></CutText>
             :
           </span>
-          <a-radio-group class="probe-radio" size="small" v-model="item.probe_status"
-            @change="ProbeStatuChange(record, index)" button-style="solid">
+          <a-radio-group
+            class="probe-radio"
+            size="small"
+            v-model="item.probe_status"
+            @change="ProbeStatuChange(record, index)"
+            button-style="solid"
+          >
             <a-radio-button value="on"> on </a-radio-button>
             <a-radio-button value="off"> off </a-radio-button>
             <a-radio-button v-if="item.support_auto" value="auto"> auto </a-radio-button>
@@ -85,11 +95,11 @@
 import {sceneGet, pluginInfoGet, metricSet, pluginSet} from '@/api/assest';
 import CutText from '@/components/CutText';
 const sceneMap = {
-  'big_data': '大数据',
-  'web': 'web服务',
-  'edge': '边缘设备',
-  'cloud': '云服务',
-  'normal': '通用'
+  big_data: '大数据',
+  web: 'web服务',
+  edge: '边缘设备',
+  cloud: '云服务',
+  normal: '通用'
 };
 const columns = [
   {
@@ -239,7 +249,7 @@ export default {
         hostId: _this.hostId
       })
         .then(function (res) {
-          _this.scene = res.data.scene
+          _this.scene = res.data.scene;
           _this.$set(_this.sceneData, 'collect_items', res.data.collect_items);
           // 创建数组scenePropertys存储sceneData.collect_items的属性，即推荐开启的插件列表
           _this.scenePropertys = Object.keys(_this.sceneData.collect_items);
