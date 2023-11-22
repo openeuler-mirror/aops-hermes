@@ -164,7 +164,6 @@ export default {
         {
           dataIndex: 'task_name',
           title: '任务名称',
-          width: 160,
           scopedSlots: {customRender: 'taskName'}
         },
         {
@@ -175,8 +174,7 @@ export default {
         {
           dataIndex: 'host_num',
           title: '涉及主机个数',
-          sorter: true,
-          width: 130
+          sorter: true
         },
         {
           dataIndex: 'task_type',
@@ -201,19 +199,18 @@ export default {
         {
           dataIndex: 'statuses',
           title: '状态',
-          width: 140,
           scopedSlots: {customRender: 'statuses'}
         },
         {
           dataIndex: 'create_time',
           title: '任务生成时间',
-          width: 140,
           sorter: true,
           customRender: (time) => time && dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)
         },
         {
           dataIndex: 'operation',
           title: '操作',
+          width: '15%',
           scopedSlots: {customRender: 'action'}
         }
       ];
@@ -418,15 +415,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.leakbox {
-  overflow: auto;
-}
 .status-icon {
   margin: 0 2px;
 }
 .ant-table-wrapper {
   zoom: 1;
-  min-width: 1480px;
 }
 .color {
   &-check-circle {

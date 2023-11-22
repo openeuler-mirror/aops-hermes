@@ -25,8 +25,9 @@ function getGitHash() {
 }
 
 const serverMap = {
-  serverIpBase: 'http://127.0.0.1'
-}
+  // serverIpBase: 'http://127.0.0.1'
+  serverIpBase: 'http://172.168.61.81'
+};
 
 // vue.config.js
 const vueConfig = {
@@ -50,9 +51,9 @@ const vueConfig = {
     externals: {}
   },
 
-  chainWebpack: config => {
-    config.plugins.delete('prefetch')
-    config.plugins.delete('preload')
+  chainWebpack: (config) => {
+    config.plugins.delete('prefetch');
+    config.plugins.delete('preload');
 
     config.resolve.alias.set('@$', resolve('src'));
 
@@ -77,13 +78,6 @@ const vueConfig = {
     loaderOptions: {
       less: {
         modifyVars: {
-
-          /*
-           * less vars，customize ant design theme like this:
-           *
-           * 'primary-color': '#F5222D',
-           * 'link-color': '#F5222D',
-           */
           'border-radius-base': '2px'
         },
         // DO NOT REMOVE THIS LINE

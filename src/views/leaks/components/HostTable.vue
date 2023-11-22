@@ -48,9 +48,6 @@
       </a-col>
       <a-col>
         <a-row type="flex" :gutter="6">
-          <!-- <a-col>
-            <a-input-search placeholder="按主机名搜索" style="width: 200px" @search="onSearch" />
-          </a-col> -->
           <a-col v-if="standalone && selectedRowKeys.length > 0">
             <create-repair-task-drawer
               taskType="repo set"
@@ -70,7 +67,7 @@
               :hostList="hostListAll"
               :repoList="repoListProps"
               @createSuccess="handleTaskCreateSuccess"
-              @getAllHost="getAllHost"
+              @getAllHost="getHostListAll"
             />
           </a-col>
           <a-col v-if="standalone && selectedRowKeys.length !== 0">
@@ -460,6 +457,8 @@ export default {
   },
   data() {
     return {
+      // 漏洞扫描是否第一次运行，第一次扫描完成之后置为false
+      isFirstSacn: true,
       expandedRowKeys: [],
       innerselectedRowKeys: [],
       propData: this.inputList,
@@ -675,37 +674,36 @@ export default {
       getHostScanStatus({
         hostList: this.selectedRowKeys
       })
-        .then(function (res) {
-          const scanningHost = _this.getScanningHost(res.data.result, _this.selectedRowsAll);
+        .then((res) => {
+          const scanningHost = this.getScanningHost(res.data.result, this.selectedRowsAll);
           if (scanningHost.length > 0) {
-            _this.$warning({
+            this.$warning({
               title: '以下主机正在进行扫描，不能批量执行：',
               content: scanningHost.map((host) => host.host_name).join('、')
             });
           } else {
-            _this.$confirm({
+            this.$confirm({
               title: '确定扫描以下主机?',
-              content: _this.selectedRowsAll.map((host) => host.host_name).join('、'),
+              content: this.selectedRowsAll.map((host) => host.host_name).join('、'),
               okText: '确认',
               cancelText: '取消',
               icon: () => <a-icon type="exclamation-circle" />,
-              onOk: function () {
-                _this.scanloading = true;
-                const requestIds = _this.selectedRowKeys;
+              onOk: () => {
+                this.scanloading = true;
+                const requestIds = this.selectedRowKeys;
                 return scanHost({
                   hostList: requestIds,
                   filter: null
                 })
-                  .then(function (res) {
-                    _this.$message.success(res.message);
-                    _this.handleRefresh();
-                    _this.getScanStatusAll([]);
+                  .then((res) => {
+                    this.getScanStatusAll([]);
+                    this.$message.success(res.message);
                   })
-                  .catch(function (err) {
-                    _this.$message.error(err.response.message);
+                  .catch((err) => {
+                    this.$message.error(err.response.message);
                   })
-                  .finally(function () {
-                    _this.scanloading = false;
+                  .finally(() => {
+                    this.scanloading = false;
                   });
               }
             });
@@ -718,85 +716,78 @@ export default {
           _this.scanloading = false;
         });
     },
+    // 当没有选择具体主机，扫描全量主机
     handleScanAll() {
-      const _this = this;
       this.scanloading = true;
       getHostScanStatus({
         hostList: this.selectedRowKeys
       })
-        .then(function (res) {
-          if (_this.hasScanningHost(res.data.result)) {
-            _this.$warning({
+        .then((res) => {
+          if (this.hasScanningHost(res.data.result)) {
+            this.$warning({
               title: '有主机正在进行扫描，不能扫描全部主机！'
             });
           } else {
-            const hasFilter = _this.checkHasFilter(_this.filters);
-            _this.$confirm({
+            const hasFilter = this.checkHasFilter(this.filters);
+            this.$confirm({
               title: hasFilter ? '按当前筛选条件扫描主机？' : '确定扫描全部主机?',
               icon: () => <a-icon type="exclamation-circle" />,
-              onOk: function () {
-                _this.scanloading = true;
+              onOk: () => {
+                this.scanloading = true;
                 return scanHost({
                   hostList: [],
-                  filter: _this.filters
+                  filter: this.filters
                 })
-                  .then(function (res) {
-                    _this.$message.success(res.message);
-                    _this.handleRefresh();
-                    _this.getScanStatusAll([]);
+                  .then((res) => {
+                    this.$message.success(res.message);
+                    this.getScanStatusAll([]);
                   })
-                  .catch(function (err) {
-                    _this.$message.error(err.response.message);
+                  .catch((err) => {
+                    this.$message.error(err.response.message);
                   })
-                  .finally(function () {
-                    _this.scanloading = false;
+                  .finally(() => {
+                    this.scanloading = false;
                   });
               }
             });
           }
         })
-        .catch(function (err) {
-          _this.$message.error(err.response.message);
+        .catch((err) => {
+          this.$message.error(err.response.message);
         })
-        .finally(function () {
-          _this.scanloading = false;
+        .finally(() => {
+          this.scanloading = false;
         });
     },
     // 轮训检查主机扫描状态，当没有‘scanning’状态的主机后停止
     getScanStatusAll(hostList) {
-      const _this = this;
       this.scanStatusloading = true;
       clearTimeout(this.scanStatueAllTimeout);
       getHostScanStatus({
         hostList
       })
-        .then(function (res) {
-          _this.scanStatusData = res.data.result || {};
-          if (_this.standalone) {
-            _this.scanningHostIds = _this.getScanningHostAll(res.data.result);
-            // 第一次判断是否有正在扫描的主机
-            if (_this.scanningHostIds.length > 0) {
-              if (_this.scanningHostIds.length > 0) {
-                // 第二次判断是否进入轮询查询扫描状态
-                _this.scanStatueAllTimeout = setTimeout(function () {
-                  _this.getScanStatusAll(_this.scanningHostIds);
-                }, configs.scanProgressInterval);
-              } else {
-                // 扫描结束后刷新界面
-                _this.handleRefresh();
-                _this.scanStatusloading = false;
-              }
+        .then((res) => {
+          this.scanStatusData = res.data.result || {};
+          if (this.standalone) {
+            this.scanningHostIds = this.getScanningHostAll(res.data.result);
+            // 判断是否有正在扫描的主机
+            if (this.scanningHostIds.length > 0) {
+              this.scanStatueAllTimeout = setTimeout(() => {
+                this.getScanStatusAll(this.scanningHostIds);
+              }, configs.scanProgressInterval);
             } else {
-              // 第一次判断是否有正在扫描的主机，若没有则退出查询
-              _this.getHostListAll();
-              _this.scanStatusloading = false;
+              // 若没有则退出轮询 并刷新列表
+              if (!this.isFirstSacn) {
+                this.getHostList();
+              }
+              this.isFirstSacn = false;
+              this.scanStatusloading = false;
             }
           }
         })
-        .catch(function (err) {
-          _this.$message.error(err.response.message);
-        })
-        .finally(function () {});
+        .catch((err) => {
+          this.$message.error(err.response.message);
+        });
     },
     // 返回扫描状态的主机
     getScanningHost(scanMap, hostList) {
@@ -826,6 +817,7 @@ export default {
       }
       return false;
     },
+    // 刷新列表
     handleRefresh() {
       this.selectedRowKeys = [];
       this.selectedRows = [];
@@ -1028,8 +1020,5 @@ export default {
   font-weight: 400;
   font-size: 16px;
   margin: 0 6px;
-}
-.hostbox {
-  overflow: auto;
 }
 </style>

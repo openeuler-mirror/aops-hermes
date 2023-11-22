@@ -15,16 +15,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'generator-star-spacing': 'off',
     'no-mixed-operators': 0,
-    'vue/max-attributes-per-line': [
-      2,
-      {
-        singleline: 5,
-        multiline: {
-          max: 6,
-          allowFirstLine: true
-        }
-      }
-    ],
+    'vue/max-attributes-per-line': 0,
     'vue/attribute-hyphenation': 0,
     'vue/html-self-closing': 0,
     'vue/component-name-in-template-casing': 0,
@@ -64,7 +55,7 @@ module.exports = {
         tabWidth: 2,
         ignoreStrings: true
       }
-    ],
+    ]
     // 'max-lines-per-function': ['error', {max: 50}]
   },
   parserOptions: {
