@@ -146,7 +146,6 @@ export default {
       return [
         {
           dataIndex: 'host_name',
-          width: 200,
           key: 'host_name',
           title: '主机名称',
           scopedSlots: {customRender: 'hostName'},
@@ -155,13 +154,11 @@ export default {
         },
         {
           dataIndex: 'host_ip',
-          width: 200,
           key: 'host_ip',
           title: 'IP地址'
         },
         {
           dataIndex: 'host_group_name',
-          width: 200,
           key: 'host_group_name',
           title: '所属主机组',
           filteredValue: filters.host_group_name || null,
@@ -174,7 +171,6 @@ export default {
         },
         {
           dataIndex: 'management',
-          width: 200,
           key: 'management',
           title: '管理节点',
           filteredValue: filters.management || null,
@@ -193,21 +189,18 @@ export default {
         },
         {
           dataIndex: 'status',
-          width: 200,
           key: 'status',
           title: '运行状态',
           scopedSlots: {customRender: 'statusItem'}
         },
         {
           dataIndex: 'scene',
-          width: 200,
           key: 'scene',
           title: '场景',
           scopedSlots: {customRender: 'scene'}
         },
         {
           key: 'operation',
-          width: 150,
           title: '操作',
           scopedSlots: {customRender: 'action'}
         }
@@ -444,9 +437,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.hostbox {
-  overflow: auto;
-}
 .ant-lert {
   line-height: 14px;
 }

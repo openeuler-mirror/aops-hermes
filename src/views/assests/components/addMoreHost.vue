@@ -1,7 +1,7 @@
 <template>
   <div @click="showModal">
     <a-button type="primary">批量添加主机</a-button>
-    <a-modal title="添加主机" :visible="visible" :footer="null" @cancel="closeModal" width="1668px">
+    <a-modal title="添加主机" :visible="visible" :footer="null" @cancel="closeModal">
       <div class="upload_head">
         <a-upload :file-list="fileDataList" :remove="removeFile" :before-upload="preUpload">
           <div style="display: flex">

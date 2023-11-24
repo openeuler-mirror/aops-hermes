@@ -49,9 +49,3 @@ export default {
   mounted: function () {}
 };
 </script>
-
-<style lang="less" scoped>
-.cvebox {
-  overflow: auto;
-}
-</style>

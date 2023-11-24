@@ -442,8 +442,6 @@ export default {
       };
     }
   },
-  watch: {},
-  created() {},
   methods: {
     jumpToPage() {
       clearTimeout(this.jumpModalInterval);
@@ -503,6 +501,7 @@ export default {
       }
       return null;
     },
+
     // 每次展开抽屉时触发，替代mounted
     handleOpen() {
       // inital defualt data
@@ -514,10 +513,15 @@ export default {
       this.selectedRowsAllMaps = {};
       // 设置repo任务时，直接使用传入的host数据
       if (this.taskType === 'repo set') {
-        this.selectedRepoKeys = this.hostList.map((host) => host.host_id);
-        this.selectedRepoRows = this.hostList;
-        this.setDefaultInfo();
-        // 自动填写默认任务信息
+        if (this.hostList.length === 0) {
+          this.$emit('getAllHost');
+        }
+        setTimeout(() => {
+          this.selectedRepoKeys = this.hostList.map((host) => host.host_id);
+          this.selectedRepoRows = this.hostList;
+          // 自动填写默认任务信息
+          this.setDefaultInfo();
+        }, 200);
         return;
       }
 

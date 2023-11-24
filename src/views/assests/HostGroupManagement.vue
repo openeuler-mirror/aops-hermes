@@ -404,11 +404,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.aops-theme {
-  .hostgroupbox {
-    overflow: auto;
-  }
-}
 .ant-lert {
   line-height: 14px;
 }

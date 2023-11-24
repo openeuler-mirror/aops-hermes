@@ -246,8 +246,8 @@ import {i18nRender} from '@/vendor/ant-design-pro/locales';
 import {dateFormat} from '@/views/utils/Utils';
 import {
   getTaskInfo,
-  getCveUnderCveTask,
   getCveProgressUnderCveTask,
+  getCveUnderCveTask,
   getHostUnderRepoTask,
   executeTask,
   getTaskProgress,
@@ -345,7 +345,9 @@ export default {
       rollStatusTextMap,
       taskTypeMap,
       rowKeyMap,
-      statusValueMap
+      statusValueMap,
+      // rpm列表是否为展开状态
+      isRpmTableExtend: false
     };
   },
   computed: {
@@ -862,6 +864,8 @@ export default {
       });
     },
     onSearch(text) {
+      // 搜索后重新获取列表，关闭所有展开的列表
+      this.expandedRowKeys = [];
       this.pagination = defaultPagination;
       if (!this.filters) {
         this.filters = {};
