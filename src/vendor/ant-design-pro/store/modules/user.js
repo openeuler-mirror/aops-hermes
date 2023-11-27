@@ -131,8 +131,6 @@ const user = {
             if (res.code === '200') {
               localStorage.removeItem(ACCESS_TOKEN);
               localStorage.removeItem(REFRESH_TOKIN);
-              console.log(res.data.token);
-              console.log(res.data.refresh_token);
               localStorage.setItem(ACCESS_TOKEN, res.data.token);
               localStorage.setItem(REFRESH_TOKIN, res.data.refresh_token);
               commit('SET_TOKEN', res.data.token);
