@@ -55,7 +55,6 @@ export default {
       getHostDetail(This.hostId, true)
         .then(function (res) {
           _this.basicHostInfo = res.data.host_infos[0];
-          console.log(_this.basicHostInfo);
           _this.scene = This.basicHostInfo.scene;
         })
         .catch(function (err) {
@@ -70,7 +69,6 @@ export default {
           _this.basicInfo = res.data.host_infos[0];
         })
         .catch(function (err) {
-          console.log(err.response);
           _this.$message.error(err.response.message);
         })
         .finally(() => {

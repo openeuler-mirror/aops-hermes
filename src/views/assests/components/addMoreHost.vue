@@ -1,7 +1,7 @@
 <template>
   <div @click="showModal">
     <a-button type="primary">批量添加主机</a-button>
-    <a-modal title="添加主机" :visible="visible" :footer="null" @cancel="closeModal">
+    <a-modal title="添加主机" :visible="visible" :footer="null" @cancel="closeModal" width="80%">
       <div class="upload_head">
         <a-upload :file-list="fileDataList" :remove="removeFile" :before-upload="preUpload">
           <div style="display: flex">
@@ -22,7 +22,13 @@
         </div>
       </div>
       <div class="upload-content" v-if="tableVis">
-        <a-table :columns="columns" :data-source="tableData" :scroll="{y: 400}" bordered>
+        <a-table
+          :columns="columns"
+          :data-source="tableData"
+          :scroll="{y: 400}"
+          bordered
+          :expanded-row-keys.sync="expandedRowKeys"
+        >
           <template slot="host_ip" slot-scope="text, record">
             <editable-cell
               ref="host_ip"
@@ -168,6 +174,8 @@ export default {
   props: {},
   data() {
     return {
+      // 树形结构展开行绑定的值
+      expandedRowKeys: [],
       editNum: 0,
       dataAllow: true,
       count: '',
@@ -213,42 +221,36 @@ export default {
       return [
         {
           dataIndex: 'host_ip',
-          width: 150,
           key: 'host_ip',
           title: '主机IP',
           scopedSlots: {customRender: 'host_ip'}
         },
         {
           dataIndex: 'ssh_port',
-          width: 150,
           key: 'ssh_port',
           title: 'SSH登录端口',
           scopedSlots: {customRender: 'ssh_port'}
         },
         {
           dataIndex: 'ssh_user',
-          width: 150,
           key: 'ssh_user',
           title: '主机用户名',
           scopedSlots: {customRender: 'ssh_user'}
         },
         {
           dataIndex: 'password',
-          width: 200,
           key: 'password',
           title: '登录密码',
           scopedSlots: {customRender: 'password'}
         },
         {
           dataIndex: 'ssh_pkey',
-          width: 200,
           key: 'ssh_pkey',
           title: '登录密钥',
           scopedSlots: {customRender: 'ssh_pkey'}
         },
         {
           dataIndex: 'host_name',
-          width: 150,
           key: 'host_name',
           title: '主机名称',
           // customRender: (hostName) => String(hostName),
@@ -256,27 +258,23 @@ export default {
         },
         {
           dataIndex: 'host_group_name',
-          width: 150,
           key: 'host_group_name',
           title: '所属主机组',
           scopedSlots: {customRender: 'host_group_name'}
         },
         {
           dataIndex: 'management',
-          width: 150,
           key: 'management',
           title: '管理/监控节点',
           scopedSlots: {customRender: 'management'}
         },
         {
           title: '操作',
-          width: 100,
           dataIndex: 'operation',
           scopedSlots: {customRender: 'operation'}
         },
         {
           title: '添加结果',
-          width: 150,
           dataIndex: 'result',
           scopedSlots: {customRender: 'result'}
         }
@@ -350,6 +348,7 @@ export default {
       this.tableVis = false;
     },
     readFile(file) {
+      this.expandedRowKeys = [];
       // 文件读取
       return new Promise((resolve) => {
         const reader = new FileReader();
@@ -411,114 +410,113 @@ export default {
       });
     },
     goUpload() {
+      // 提交时将展开的列表合上
+      this.expandedRowKeys = [];
       const {fileDataList} = this;
       const formData = new FormData();
       fileDataList.forEach((file) => {
         formData.append('file', file);
       });
-      const tableParams = JSON.parse(JSON.stringify(this.tableData));
-      tableParams.forEach((item) => {
-        this.$set(item, 'host_name', String(item.host_name));
-        item.management = Boolean(item.management);
-        item.password = String(item.password);
-        item.ssh_pkey = String(item.ssh_pkey);
-        if (item.password === 'undefined') {
-          item.password = '';
-        }
-        if (item.ssh_pkey === 'undefined') {
-          item.ssh_pkey = '';
-        }
-        delete item.key;
-        delete item.editable;
-        delete item.result;
-        delete item.reason;
-      });
+      const tableParams = this.tableData.map((item) => ({
+        host_group_name: item.host_group_name,
+        host_ip: item.host_ip,
+        host_name: item.host_name,
+        management: item.management,
+        password: item.password,
+        ssh_pkey: item.ssh_pkey,
+        ssh_port: item.ssh_port,
+        ssh_user: item.ssh_user
+      }));
+
       this.uploading = true;
-      const _this = this;
       addMoreHost(tableParams)
-        .then(function (res) {
+        .then((res) => {
+          const successArr = [];
           if (res.code === '200') {
             // 全部添加成功
-            const successArr = [];
             res.data.forEach((item) => {
-              successArr.push(item.host_ip);
+              successArr.push(item.host_name);
             });
-            _this.tableData.forEach((item) => {
-              if (successArr.includes(item.host_ip)) {
+            this.tableData.forEach((item) => {
+              if (successArr.includes(item.host_name)) {
+                item.reason = '';
                 item.result = '添加成功';
               }
             });
-            _this.$message.success('全部主机添加成功!');
-            _this.$emit('addSuccess');
+            this.$message.success('全部主机添加成功!');
+            this.$emit('addSuccess');
           } else {
             // 部分添加成功
-            const successArr = [];
             const failData = {};
             res.data.forEach((item) => {
               if (item.result === 'succeed') {
-                successArr.push(item.host_ip);
+                successArr.push(item.host_name);
               } else {
-                failData[item.host_ip] = item.reason;
+                failData[item.host_name] = item.reason;
               }
             });
-            _this.tableData.forEach((item) => {
-              if (successArr.includes(item.host_ip)) {
+            this.tableData.forEach((item) => {
+              if (successArr.includes(item.host_name)) {
                 item.result = '添加成功';
               } else {
                 item.result = '添加失败';
               }
-              if (Object.keys(failData).includes(item.host_ip)) {
-                item.reason = failData[item.host_ip];
+              if (Object.keys(failData).includes(item.host_name)) {
+                item.reason = failData[item.host_name];
+              } else {
+                item.reason = '';
               }
             });
-            _this.$message.success('部分主机添加成功!');
-            _this.$emit('addSuccess');
+            // 当部分成功移除成功的主机
+
+            this.$message.success('部分主机添加成功!');
+            this.$emit('addSuccess');
+          }
+          this.tableData = this.tableData.filter((item) => !successArr.includes(item.host_name));
+          if (this.tableData.length === 0) {
+            this.visible = false;
           }
         })
-        .catch(function (err) {
+        .catch((err) => {
           if (err.response.code === '1801') {
             // 全部主机添加失败
             const errorList = [];
             const errorData = {};
             err.response.data.forEach((item) => {
-              errorList.push(item.host_ip);
-              errorData[item.host_ip] = item.reason;
+              errorList.push(item.host_name);
+              errorData[item.host_name] = item.reason;
             });
-            _this.tableData.forEach((item) => {
-              if (errorList.includes(item.host_ip)) {
+            this.tableData.forEach((item) => {
+              if (errorList.includes(item.host_name)) {
                 item.result = '添加失败';
               }
-              if (Object.keys(errorData).includes(item.host_ip)) {
-                item.reason = errorData[item.host_ip];
+              if (Object.keys(errorData).includes(item.host_name)) {
+                item.reason = errorData[item.host_name];
               }
             });
-            _this.$message.error('全部主机添加失败!');
+            this.$message.error('全部主机添加失败!');
           } else {
             if (err.response.code === '1000') {
               const errorList = [];
               const errorData = {};
               err.response.data.forEach((item) => {
-                errorList.push(item.host_ip);
-                errorData[item.host_ip] = item.reason;
+                errorList.push(item.host_name);
+                errorData[item.host_name] = item.reason;
               });
-              _this.tableData.forEach((item) => {
-                if (errorList.includes(item.host_ip)) {
+              this.tableData.forEach((item) => {
+                if (errorList.includes(item.host_name)) {
                   item.result = '添加失败';
                 }
-                if (Object.keys(errorData).includes(item.host_ip)) {
-                  item.reason = errorData[item.host_ip];
+                if (Object.keys(errorData).includes(item.host_name)) {
+                  item.reason = errorData[item.host_name];
                 }
               });
             }
-            _this.$message.error(err.response.message || err.response.data.detail);
+            this.$message.error(err.response.message || err.response.data.detail);
           }
         })
-        .finally(function () {
-          _this.uploading = false;
-          // _this.visible = false;
-          // _this.fileDataList = [];
-          // _this.tableData = [];
-          // _this.tableVis = false;
+        .finally(() => {
+          this.uploading = false;
         });
     }
   }
