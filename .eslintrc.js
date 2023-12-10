@@ -28,6 +28,8 @@ module.exports = {
     'vue/html-indent': 'off',
     'vue/no-parsing-error': 0,
     'no-tabs': 0,
+    'no-unused-vars': 0,
+    'no-useless-return': 0,
     quotes: [
       2,
       'single',

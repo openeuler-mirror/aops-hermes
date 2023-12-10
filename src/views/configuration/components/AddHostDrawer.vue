@@ -169,7 +169,6 @@ export default {
           }
           newTargetKeys.forEach(function (hostId) {
             const matchedHost = _this.hostListAll.filter((host) => host.host_id === hostId)[0] || {};
-            console.log(matchedHost);
             hostInfos.push({
               // 只传hostId
               hostId: hostId,

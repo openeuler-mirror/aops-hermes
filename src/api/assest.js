@@ -3,6 +3,7 @@ import request from '@/vendor/ant-design-pro/utils/request';
 const api = {
   downLoadtemplate: '/manage/host/file/template', // 批量上传主机模版下载
   hostList: '/manage/host/get', // 全量接口待确认
+  hostListWithStatus: '/manage/host/status/get', // 获取主机列表携带运行状态
   hostCount: '/manage/host/count', // 全量接口待确认
   hostInfo: '/manage/host/info/query',
   addHost: '/manage/host/add',
@@ -31,6 +32,16 @@ export default api;
 
 const directionMap = {ascend: 'asc', descend: 'desc'};
 const managementMap = {true: true, false: false};
+// 获取携带主机运行状态的host列表
+export function getHostListWithStatus(hostList) {
+  return request({
+    url: api.hostListWithStatus,
+    method: 'post',
+    data: {
+      host_list: hostList
+    }
+  });
+}
 
 // 主机管理
 export function hostList({tableInfo, ...parameter}) {

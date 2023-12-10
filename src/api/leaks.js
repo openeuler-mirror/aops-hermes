@@ -27,10 +27,11 @@ const api = {
   getTaskList: '/vulnerability/task/list/get',
   getTaskProgress: '/vulnerability/task/progress/get',
   getTaskInfo: '/vulnerability/task/info/get',
-  getCveUnderCveTask: '/vulnerability/task/cve/info/get',
-  getCveProgressUnderCveTask: '/vulnerability/task/cve/progress/get', // 文档里写的是GET方法
+  // getCveUnderCveTask: '/vulnerability/task/cve/info/get',
+  getCveProgressUnderCveTask: '/vulnerability/task/hotpatch-remove/progress/get', // 热补丁移除任务详情页面中，查看每一个cve修复进度
   getCveTaskResult: '/vulnerability/task/cve/result/get', // 不同cveid好像没什么区别
-  getHostOfCveInCveTask: '/vulnerability/task/cve/status/get',
+  getCveFixResult: '/vulnerability/task/cve-fix/result/get', // 不同cveid好像没什么区别
+  getHostOfCveInCveTask: '/vulnerability/task/hotpatch-remove/status/get',
   getHostUnderRepoTask: '/vulnerability/task/repo/info/get',
   getRepoTaskResult: '/vulnerability/task/repo/result/get',
   getPlaybook: '/vulnerability/task/playbook/get',
@@ -38,12 +39,22 @@ const api = {
   upload: '/vulnerability/cve/advisory/upload',
   reupload: '/vulnerability/cve/unaffected/upload',
   getCveExport: '/vulnerability/cve/info/export',
-  generateRollbackTask: '/vulnerability/task/cve-rollback/generate',
   getCveUnfixRpm: '/vulnerability/cve/unfixed/packages/get', // 查询cve未修复的rpm包
   getCveFixRpm: '/vulnerability/cve/fixed/packages/get', // 查询cve已修复的rpm包
   getRpmUnderCve: '/vulnerability/cve/packages/host/get', // 查询cve影响的rpm包的主机列表
   getCvefixLeakRpm: '/vulnerability/task/cve/rpm/get', // 修复任务详情中cve列表的二级package
-  getCveRpmHostUnderLeak: '/vulnerability/task/cve/rpm/host/get' // 查询修复任务下的cve影响的rpm包的主机列表
+  getCveRpmHostUnderLeak: '/vulnerability/task/cve/rpm/host/get', // 查询修复任务下的cve影响的rpm包的主机列表
+  getCveListInFixDetail: '/vulnerability/task/cve-fix/info/get', // 新接口取代api.getCveUnderCveTask 获取修复任务详情下的cve列表
+  getRpmListInFixDetail: '/vulnerability/task/cve-fix/rpm/get', // 新接口取代api.getCvefixLeakRpm，获取修复任务详情下指定主机和任务下的rpm列表
+  getCveFixReport: '/vulnerability/task/cve-fix/result/get', // 新接口取代api.getCveTaskResult ，获取修复任务的报告
+  getCveRollvackReport: ' /vulnerability/task/rollback/result/get', // 获取回滚任务报告
+  generateHotPathRemoveTask: '/vulnerability/task/hotpatch-remove/generate', // 新接口取代api.generateRollbackTask ，生成热补丁移除任务
+  getRpmListInRollbackDetail: '/vulnerability/task/rollback/rpm/get', // 获取回滚任务详情列表下的rpm信息
+  getCveListInRollbackDetail: '/vulnerability/task/rollback/cve-info/get', //  获取回滚任务详情下的列表信息
+  generateRollbackTask: '/vulnerability/task/cve-rollback/generate', // 生成回滚任务
+  getCveHotpatchRemoveDetail: '/vulnerability/task/hotpatch-remove/info/get', // 获取热补丁移除任务详情
+  getHotpatchRemoveTaskReport: '/vulnerability/task/hotpatch-remove/result/get', // 获取热补丁移除任务报告
+  getAllHostInDetail: '/vulnerability/task/host/get' // 获取详情页面下所有的hostid
 };
 
 const sorterMap = {
@@ -52,6 +63,146 @@ const sorterMap = {
 };
 
 export default api;
+
+export function getAllHostInDetail(taskId) {
+  return request({
+    url: api.getAllHostInDetail,
+    method: 'post',
+    data: {
+      task_id: taskId
+    }
+  });
+}
+
+export function getHotpatchRemoveTaskReport(taskId) {
+  return request({
+    url: api.getHotpatchRemoveTaskReport,
+    method: 'post',
+    data: {
+      task_id: taskId
+    }
+  });
+}
+
+export function getCveHotpatchRemoveDetail({tableInfo, ...params}) {
+  return request({
+    url: api.getCveHotpatchRemoveDetail,
+    method: 'post',
+    data: {
+      task_id: params.taskId,
+      direction: sorterMap[tableInfo.sorter.order],
+      filter: {
+        cve_id: tableInfo.filters.cveId,
+        status: tableInfo.filters.status
+      },
+      page: tableInfo.pagination.current,
+      per_page: tableInfo.pagination.pageSize
+    }
+  });
+}
+// 生成回滚任务
+export function generateRollbackTask(taskId) {
+  return request({
+    url: api.generateRollbackTask,
+    method: 'post',
+    data: {
+      fix_task_id: taskId
+    }
+  });
+}
+
+// 回滚任务详情下任务rpm信息
+export function getRpmListInRollbackDetail(params) {
+  return request({
+    url: api.getRpmListInRollbackDetail,
+    method: 'post',
+    data: {
+      task_id: params.taskId,
+      host_id: params.hostId
+    }
+  });
+}
+
+// 回滚任务详情下任务详情列表
+export function getCveListInRollbackDetail({tableInfo, ...params}) {
+  return request({
+    url: api.getCveListInRollbackDetail,
+    method: 'post',
+    data: {
+      task_id: params.taskId,
+      direction: sorterMap[tableInfo.sorter.order],
+      filter: {
+        status: tableInfo.filters.status
+      },
+      page: tableInfo.pagination.current,
+      per_page: tableInfo.pagination.pageSize
+    }
+  });
+}
+
+// 创建热补丁回退任务
+export function generateHotPatchRemoveTask(params) {
+  return request({
+    url: api.generateHotPathRemoveTask,
+    method: 'post',
+    data: {
+      task_name: params.taskName,
+      description: params.desc,
+      info: params.info || []
+    }
+  });
+}
+
+// 查询回滚任务报告
+export function getCveRollvackReport(taskId) {
+  return request({
+    url: api.getCveRollvackReport,
+    method: 'post',
+    data: {
+      task_id: taskId
+    }
+  });
+}
+
+// 查询修复任务报告
+export function getCveFixReport(taskId) {
+  return request({
+    url: api.getCveFixReport,
+    method: 'post',
+    data: {
+      task_id: taskId
+    }
+  });
+}
+
+// 修复任务详情下任务rpm信息
+export function getRpmListInFixDetail(params) {
+  return request({
+    url: api.getRpmListInFixDetail,
+    method: 'post',
+    data: {
+      task_id: params.taskId,
+      host_id: params.hostId
+    }
+  });
+}
+
+// 修复任务详情下任务详情列表
+export function getCveListInFixDetail({tableInfo, ...params}) {
+  return request({
+    url: api.getCveListInFixDetail,
+    method: 'post',
+    data: {
+      task_id: params.taskId,
+      direction: sorterMap[tableInfo.sorter.order],
+      filter: {
+        status: tableInfo.filters.status
+      },
+      page: tableInfo.pagination.current,
+      per_page: tableInfo.pagination.pageSize
+    }
+  });
+}
 
 export function getCveRpmHostUnderLeak(parameters) {
   return request({
@@ -116,17 +267,17 @@ export function getCveFixRpm(parameters) {
   });
 }
 
-export function generateRollbackTask(parameters) {
-  return request({
-    url: api.generateRollbackTask,
-    method: 'post',
-    data: {
-      task_name: parameters.task_name,
-      description: parameters.description,
-      info: parameters.info || []
-    }
-  });
-}
+// export function generateRollbackTask(parameters) {
+//   return request({
+//     url: api.generateRollbackTask,
+//     method: 'post',
+//     data: {
+//       task_name: parameters.task_name,
+//       description: parameters.description,
+//       info: parameters.info || []
+//     }
+//   });
+// }
 
 export function getCveExport(parameter) {
   return request({
@@ -431,25 +582,25 @@ export function getTaskInfo(parameters) {
   });
 }
 
-export function getCveUnderCveTask({tableInfo, ...parameters}) {
-  const reboot = tableInfo.filters.reboot && tableInfo.filters.reboot[0];
-  return request({
-    url: api.getCveUnderCveTask,
-    method: 'post',
-    data: {
-      task_id: parameters.taskId,
-      sort: tableInfo.sorter.field,
-      direction: sorterMap[tableInfo.sorter.order],
-      filter: {
-        cve_id: tableInfo.filters.cveId,
-        reboot: reboot === 'true' ? true : reboot === 'false' ? false : undefined,
-        status: tableInfo.filters.status
-      },
-      page: tableInfo.pagination.current,
-      per_page: tableInfo.pagination.pageSize
-    }
-  });
-}
+// export function getCveUnderCveTask({tableInfo, ...parameters}) {
+//   const reboot = tableInfo.filters.reboot && tableInfo.filters.reboot[0];
+//   return request({
+//     url: api.getCveUnderCveTask,
+//     method: 'post',
+//     data: {
+//       task_id: parameters.taskId,
+//       sort: tableInfo.sorter.field,
+//       direction: sorterMap[tableInfo.sorter.order],
+//       filter: {
+//         cve_id: tableInfo.filters.cveId,
+//         reboot: reboot === 'true' ? true : reboot === 'false' ? false : undefined,
+//         status: tableInfo.filters.status
+//       },
+//       page: tableInfo.pagination.current,
+//       per_page: tableInfo.pagination.pageSize
+//     }
+//   });
+// }
 
 export function getCveProgressUnderCveTask(parameters) {
   return request({
