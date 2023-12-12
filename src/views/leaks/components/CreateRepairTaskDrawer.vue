@@ -37,12 +37,6 @@
               placeholder="请输入任务描述，50个字符以内"
             />
           </a-form-item>
-          <!-- <a-form-item label="自动重启" v-if="taskType === 'cve fix'">
-            <a-switch :checked="isResetChecked" @click="handleResetChanage">
-              <a-icon slot="checkedChildren" type="check" />
-              <a-icon slot="unCheckedChildren" type="close" />
-            </a-switch>
-          </a-form-item> -->
           <a-form-item label="是否accept" v-if="taskType === 'cve fix'">
             <description-tips v-if="taskType === 'cve fix'" style="margin-right: 6px">
               如使用热补丁修复，accept后会在重启时自动应用热补丁，不勾选则重启时失效
@@ -72,19 +66,19 @@
             </a-select>
           </a-form-item>
         </a-form>
-        <div v-if="taskType === 'cve fix' || taskType === 'cve rollback'">
+        <div v-if="taskType === 'cve fix' || taskType === 'hotpatch remove'">
           <a-table
             rowKey="cve_id"
             :columns="taskType === 'cve fix' ? tableColumns : rollbacktableColumns"
             :data-source="cveList"
             :pagination="false"
           >
-            <span slot="customTitle" v-if="taskType === 'cve rollback'"
-              >{{ taskType === 'cve rollback' ? '热补丁修复' : '支持热补丁' }}
-              <description-tips
+            <span slot="customTitle" v-if="taskType === 'hotpatch remove'"
+              >{{ taskType === 'hotpatch remove' ? '热补丁修复' : '支持热补丁' }}
+              <!-- <description-tips
                 >包 若支持热补丁，默认使用热补丁修复；
                 注意：由于一个软件包只能应用一个热补丁，热补丁修复时可能导致部分已修复cve重新生成
-              </description-tips>
+              </description-tips> -->
             </span>
             <span slot="customName"
               >主机
@@ -115,7 +109,7 @@
                 selectedRowKeys: selectedRowKeyMaps[record.cve_id] || [],
                 getCheckboxProps: (it) => ({
                   props: {
-                    disabled: !it.hotpatch && taskType === 'cve rollback'
+                    disabled: !it.hotpatch && taskType === 'hotpatch remove'
                   }
                 }),
                 onChange: function (selectedRowKeys, selectedRows) {
@@ -131,7 +125,7 @@
                     :defaultChecked="hotpatch"
                     checked-children="是"
                     un-checked-children="否"
-                    :disabled="!record.hotpatch || taskType === 'cve rollback'"
+                    :disabled="!record.hotpatch || taskType === 'hotpatch remove'"
                     style="margin-bottom: 5px"
                     @change="hotchange(record.cve_id)"
                   />
@@ -197,8 +191,10 @@
           </a-col>
           <a-col>
             <h3>{{ jumpModalTitle || '成功' }}</h3>
-            <p>
-              <a @click="jumpToPage">点击跳转到该任务页面</a>
+            <p v-for="item in jumpTaskId" :key="item.task_id">
+              <a @click="jumpToPage(item)"
+                >点击跳转到{{ item.fix_way }}{{ taskType === 'cve fix' ? '修复' : '移除' }}任务页面</a
+              >
             </p>
             <p>{{ countDown }}秒后回到原页面</p>
           </a-col>
@@ -216,26 +212,30 @@
  * 新建修复任务/repo设置任务弹窗
  */
 
-import {getHostUnderMultipleCVE, generateTask, executeTask, generateRepoTask, generateRollbackTask} from '@/api/leaks';
+import {
+  getHostUnderMultipleCVE,
+  generateTask,
+  executeTask,
+  generateRepoTask,
+  generateHotPatchRemoveTask
+} from '@/api/leaks';
 import DescriptionTips from '@/components/DescriptionTips';
 
-const taskTypes = ['cve fix', 'repo set', 'cve rollback'];
+const taskTypes = ['cve fix', 'repo set', 'hotpatch remove'];
 const dataTypes = ['selected', 'all'];
 const taskTypsbutton = {
   'cve fix': '生成修复任务',
   'repo set': '设置REPO',
-  'cve rollback': '生成回滚任务'
+  'cve rollback': '生成回滚任务',
+  'hotpatch remove': '热补丁移除'
 };
 const taskTypsEnum = {
   'cve fix': 'cve修复',
   'repo set': 'repo设置',
-  'cve rollback': 'cve回滚(当前仅支持热补丁回滚)'
+  'cve rollback': '生成回滚任务(当前仅支持热补丁回滚)',
+  'hotpatch remove': '热补丁移除'
 };
 const hostListTypes = ['byLoading', 'bySelection', 'byOneHost'];
-// const restartTypesEnum = {
-//   true: '是',
-//   false: '否'
-// };
 
 export default {
   name: 'CreateRepairTaskDrawer',
@@ -321,7 +321,7 @@ export default {
       selectedRepoKeys: [],
       selectedRepoRows: [],
       // 创建完成后跳转控制
-      jumpTaskId: '',
+      jumpTaskId: [],
       jumpModalTitle: '',
       jumpModalVisible: false,
       countDown: 5,
@@ -364,21 +364,6 @@ export default {
           width: 150,
           scopedSlots: {customRender: 'hostsList'}
         },
-        // {
-        //   dataIndex: 'package',
-        //   key: 'package',
-        //   title: '修复软件包',
-        //   width: 140,
-        //   customRender: (_package) => _package === '' ? '—' : _package,
-        //   scopedSlots: {customRender: 'packages'}
-        // },
-        // {
-        //   dataIndex: 'reboot',
-        //   key: 'reboot',
-        //   width: 80,
-        //   title: <span>重启后生效</span>,
-        //   customRender: (reboot) => restartTypesEnum[reboot]
-        // },
         {
           dataIndex: 'hotpatch',
           key: 'hotpatch',
@@ -443,16 +428,26 @@ export default {
     }
   },
   methods: {
-    jumpToPage() {
+    // 跳转到任务详情界面
+    jumpToPage(task) {
       clearTimeout(this.jumpModalInterval);
       this.jumpModalVisible = false;
       this.$emit('createSuccess');
-      this.$router.push({
-        path: `/leaks/task/${this.taskType}/${this.jumpTaskId}`,
-        query: {
-          task_id: this.jumpTaskId
-        }
-      });
+      if (typeof task === 'string') {
+        this.$router.push({
+          path: `/leaks/task/${this.taskType}/${task}`,
+          query: {
+            task_id: task.task_id
+          }
+        });
+      } else {
+        this.$router.push({
+          path: `/leaks/task/${this.taskType}/${task.task_id}`,
+          query: {
+            task_id: task.task_id
+          }
+        });
+      }
     },
     handleCancel() {
       // 弹窗关闭事件
@@ -588,10 +583,6 @@ export default {
               });
             break;
           case hostListTypes[1]:
-            // hostListType为bySelection cve详情下的受影响主机界面
-            // if (this.cveLiIsEmpty()) {
-            //   return;
-            // }
             if (this.cveList.length === 0) {
               this.cveList = this.innerCveList;
             }
@@ -610,10 +601,6 @@ export default {
             this.addHostListToCVEData(tempObj1);
             break;
           case hostListTypes[2]:
-            // hostListType为byOneHost 主机详情界面下的cve界面
-            // if (this.cveLiIsEmpty()) {
-            //   return;
-            // }
             if (this.cveList.length === 0) {
               this.cveList = this.innerCveList;
             }
@@ -624,8 +611,6 @@ export default {
                   host_id: host.host_id,
                   host_name: host.host_name,
                   host_ip: host.host_ip
-                  // hotpatch: cve.hotpatch
-                  // 当传入hostList为主机列表下选择的cve列表时，选用cveList循环到当前cve的hotpatch
                 };
               });
             });
@@ -633,8 +618,7 @@ export default {
             break;
         }
       }
-
-      if (this.taskType === 'cve rollback') {
+      if (this.taskType === 'hotpatch remove') {
         // 根据主机数据获取类型，自行或cve下的主机数据或者使用外部输入的主机数据更行talbe数据
         if (this.cveLiIsEmpty()) {
           return;
@@ -802,7 +786,6 @@ export default {
           }
           switch (this.taskType) {
             case 'cve fix':
-              // prepare data
               const params = {
                 ...values,
                 takeover: this.takeover,
@@ -832,21 +815,22 @@ export default {
               } else {
                 // make request
                 generateTask(params)
-                  .then(function (res) {
-                    _this.$message.success(res.message);
+                  .then((res) => {
+                    this.$message.success(res.message);
                     if (excuteASAP) {
-                      _this.handleExcuteASAP(res.data.task_id, res.data);
+                      const task = res.data.filter((item) => item.fix_way === 'hotpatch');
+                      this.handleExcuteASAP(task[0].task_id, res.data);
                     } else {
-                      _this.visible = false;
-                      _this.handleGenerateSuccess(res.data, 'CVE修复', 'normal');
+                      this.visible = false;
+                      this.handleGenerateSuccess(res.data, 'CVE修复', 'normal');
                     }
                   })
-                  .catch(function (err) {
-                    _this.$message.error(err.response.message);
+                  .catch((err) => {
+                    this.$message.error(err.response.message);
                   })
-                  .finally(function () {
+                  .finally(() => {
                     if (!excuteASAP) {
-                      _this.submitLoading = false;
+                      this.submitLoading = false;
                     }
                   });
                 break;
@@ -889,14 +873,14 @@ export default {
                 this.submitAndExecuteLoading = false;
                 break;
               }
-            case 'cve rollback':
+            case 'hotpatch remove':
               // prepare data
               const cveRollback = Object();
               this.cveList.forEach((cveInfo) => {
                 cveInfo.hostsList.forEach((host) => {
                   const cveRollbackInfo = {
-                    cve_id: cveInfo.cve_id,
-                    hotpatch: host.hotpatch
+                    cve_id: cveInfo.cve_id
+                    // hotpatch: host.hotpatch
                   };
                   if (this.selectedRowKeyMaps[cveInfo.cve_id].includes(host.host_id)) {
                     // 筛选出选中的某主机中的cve
@@ -915,8 +899,8 @@ export default {
                 };
               });
               const rollParams = {
-                task_name: values.task_name,
-                description: values.task_desc,
+                taskName: values.task_name,
+                desc: values.task_desc,
                 info: cveRoobackInfo
               };
               if (cveRoobackInfo.length === 0) {
@@ -925,22 +909,22 @@ export default {
                 this.submitAndExecuteLoading = false;
                 break;
               } else {
-                generateRollbackTask(rollParams)
-                  .then(function (res) {
-                    _this.$message.success(res.message);
+                generateHotPatchRemoveTask(rollParams)
+                  .then((res) => {
+                    this.$message.success(res.message);
                     if (excuteASAP) {
-                      _this.handleExcuteASAP(res.data.task_id, res.data);
+                      this.handleExcuteASAP(res.data.task_id, res.data);
                     } else {
-                      _this.visible = false;
-                      _this.handleGenerateSuccess(res.data, 'CVE回滚', 'normal');
+                      this.visible = false;
+                      this.handleGenerateSuccess(res.data, 'CVE回滚', 'normal');
                     }
                   })
-                  .catch(function (err) {
-                    _this.$message.error(err.response.message);
+                  .catch((err) => {
+                    this.$message.error(err.response.message);
                   })
-                  .finally(function () {
+                  .finally(() => {
                     if (!excuteASAP) {
-                      _this.submitLoading = false;
+                      this.submitLoading = false;
                     }
                   });
                 break;
@@ -951,9 +935,8 @@ export default {
     },
     // 立即执行任务
     handleExcuteASAP(taskId, data) {
-      const _this = this;
       executeTask(taskId)
-        .then(function (res) {
+        .then((res) => {
           let text = '';
           switch (data.type) {
             case 'cve fix':
@@ -962,19 +945,19 @@ export default {
             case 'repo set':
               text = 'REPO设置';
               break;
-            case 'cve rollback':
+            case 'hotpatch remove':
               text = 'CVE回滚';
               break;
           }
 
-          _this.visible = false;
-          _this.handleGenerateSuccess(data, text, 'asap');
+          this.visible = false;
+          this.handleGenerateSuccess(data, text, 'asap');
         })
-        .catch(function (err) {
-          _this.$message.error(err.response.message);
+        .catch((err) => {
+          this.$message.error(err.response.message);
         })
-        .finally(function () {
-          _this.submitAndExecuteLoading = false;
+        .finally(() => {
+          this.submitAndExecuteLoading = false;
         });
     },
     handleResetChanage(checked) {
@@ -994,7 +977,7 @@ export default {
     },
     // 工具方法，将主机信息更新进cve数据中
     getHostListUnderCve(val, key) {
-      if (this.taskType === 'cve rollback') {
+      if (this.taskType === 'hotpatch remove') {
         return val[key].hosts;
       }
       if (this.taskType === 'cve fix') {
@@ -1007,13 +990,12 @@ export default {
     },
     addHostListToCVEData(cveMap) {
       this.cveList.forEach((cveInfo) => {
-        // const hostListUnderCve = this.hostListType === 'byLoading' ? cveMap[cveInfo.cve_id].hosts : cveMap[cveInfo.cve_id];
         const hostListUnderCve = this.getHostListUnderCve(cveMap, cveInfo.cve_id);
         cveInfo.hostsList = hostListUnderCve || [];
         if (hostListUnderCve && hostListUnderCve.length > 0) {
           if (this.taskType === 'cve fix') {
             this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve.map((host) => host.host_id);
-          } else if (this.taskType === 'cve rollback') {
+          } else if (this.taskType === 'hotpatch remove') {
             this.selectedRowKeyMaps[cveInfo.cve_id] = hostListUnderCve
               .filter((host) => host.hotpatch === true)
               .map((host) => host.host_id);
@@ -1036,8 +1018,7 @@ export default {
     },
     // 当创建任务成功或执行任务成功后，弹窗提示用户是否跳转
     handleGenerateSuccess(res, type, modalType) {
-      const _this = this;
-      this.jumpTaskId = res.task_id;
+      this.jumpTaskId = res;
       this.jumpModalVisible = true;
       let text = '';
       switch (modalType) {
@@ -1050,11 +1031,11 @@ export default {
       }
       this.jumpModalTitle = text;
       this.countDown = 5;
-      this.jumpModalInterval = setInterval(function () {
-        _this.countDown = _this.countDown - 1;
-        if (_this.countDown === 0) {
-          clearTimeout(_this.jumpModalInterval);
-          _this.jumpModalClose();
+      this.jumpModalInterval = setInterval(() => {
+        this.countDown = this.countDown - 1;
+        if (this.countDown === 0) {
+          clearTimeout(this.jumpModalInterval);
+          this.jumpModalClose();
         }
       }, 1000);
     },
@@ -1065,8 +1046,13 @@ export default {
     },
     // 自动填写任务信息
     setDefaultInfo() {
-      // this.taskNameDefault = `${this.taskType === 'cve fix' ? 'CVE修复任务' : 'REPO设置任务'}`;
       switch (this.taskType) {
+        case 'hotpatch remove':
+          this.taskNameDefault = '热补丁移除任务';
+          this.taskDescDefault = `移除以下${this.cveList.length}个CVE：${this.cveList
+            .map((cve) => cve.cve_id)
+            .join('、')}`;
+          break;
         case 'cve fix':
           this.taskNameDefault = 'CVE修复任务';
           this.taskDescDefault = `修复以下${this.cveList.length}个CVE：${this.cveList

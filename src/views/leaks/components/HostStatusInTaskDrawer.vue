@@ -30,7 +30,7 @@
  * 展示任务中各个主机状态的抽屉组件
  */
 
-import {getHostOfCveInCveTask, getCveRpmHostUnderLeak} from '@/api/leaks';
+import {getHostOfCveInCveTask} from '@/api/leaks';
 
 const fixStatusTextMap = {
   succeed: '已修复',
@@ -132,49 +132,25 @@ export default {
   watch: {
     visible() {
       if (this.visible) {
-        const _this = this;
         this.tableIsLoading = true;
-        if (this.propType === 'rpm') {
-          getHostOfCveInCveTask({
-            taskId: this.taskId,
-            cveList: [this.cveId]
-          })
-            .then(function (res) {
-              _this.tableData = (res.data.result && res.data.result[_this.cveId]) || [];
-              _this.tableData = _this.tableData.map((row, idx) => {
-                const tempObj = row;
-                tempObj.index = idx + 1;
-                return tempObj;
-              });
-            })
-            .catch(function (err) {
-              _this.$message.error(err.response.message);
-            })
-            .finally(function () {
-              _this.tableIsLoading = false;
+        getHostOfCveInCveTask({
+          taskId: this.taskId,
+          cveList: [this.cveId]
+        })
+          .then((res) => {
+            this.tableData = (res.data.result && res.data.result[this.cveId]) || [];
+            this.tableData = this.tableData.map((row, idx) => {
+              const tempObj = row;
+              tempObj.index = idx + 1;
+              return tempObj;
             });
-        } else {
-          getCveRpmHostUnderLeak({
-            task_id: this.taskId,
-            cve_id: this.cveId,
-            installed_rpm: this.rpmrecord.installed_rpm,
-            available_rpm: this.rpmrecord.available_rpm
           })
-            .then(function (res) {
-              _this.tableData = res.data || [];
-              _this.tableData = _this.tableData.map((row, idx) => {
-                const tempObj = row;
-                tempObj.index = idx + 1;
-                return tempObj;
-              });
-            })
-            .catch(function (err) {
-              _this.$message.error(err.response.message);
-            })
-            .finally(function () {
-              _this.tableIsLoading = false;
-            });
-        }
+          .catch((err) => {
+            this.$message.error(err.response.message);
+          })
+          .finally(() => {
+            this.tableIsLoading = false;
+          });
       }
     }
   },

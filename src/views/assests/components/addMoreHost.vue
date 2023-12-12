@@ -422,7 +422,7 @@ export default {
         host_ip: item.host_ip,
         host_name: item.host_name,
         management: item.management,
-        password: item.password,
+        password: item.password || '',
         ssh_pkey: item.ssh_pkey,
         ssh_port: item.ssh_port,
         ssh_user: item.ssh_user

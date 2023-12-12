@@ -244,7 +244,6 @@ export default {
         const matchedStatusHost = this.statusData.filter((item) => item.hostId === hostTemp.hostId)[0] || {};
         hostTemp.syncStatusList = matchedStatusHost.syncStatus || [];
         hostTemp.syncStatusInfo = getStatusInfoFromAllConfs(hostTemp.syncStatusList);
-        console.log(hostTemp);
         return hostTemp;
       });
     }

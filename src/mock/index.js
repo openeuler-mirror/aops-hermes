@@ -17,6 +17,7 @@ if (process.env.NODE_ENV !== 'production' || process.env.VUE_APP_PREVIEW === 'tr
   // require('./services/management')
   // require('./services/task')
   // require('./services/leaks')
+  // require('./services/leak');
 
   Mock.setup({
     timeout: 800 // setter delay time

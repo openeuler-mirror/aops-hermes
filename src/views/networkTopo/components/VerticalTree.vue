@@ -97,7 +97,6 @@ export default {
         getContent(e) {
           const outDiv = document.createElement('div');
           const msd = e.item.getModel();
-          console.log(msd);
           outDiv.style.width = 'fit-content';
           outDiv.innerHTML = `
              <h4>节点名称: ${e.item.getModel().name}</h4>

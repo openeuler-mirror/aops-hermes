@@ -5,7 +5,7 @@
         <a-radio-group v-if="!standalone" default-value="a" button-style="solid" @change="handleAffectChange">
           <a-radio-button value="a"> 未修复 </a-radio-button>
           <a-radio-button value="c"> 已修复 </a-radio-button>
-          <a-radio-button value="b"> 不受影响 </a-radio-button>
+          <!-- <a-radio-button value="b"> 不受影响 </a-radio-button> -->
         </a-radio-group>
         <a-radio-group v-else default-value="a" button-style="solid" @change="handleFixChange">
           <a-radio-button value="a"> 未修复 </a-radio-button>
@@ -40,8 +40,8 @@
           <div v-if="fixed || rollback">
             <a-col v-if="selectedRowKeys.length === 0">
               <create-repair-task-drawer
-                text="生成回滚任务"
-                taskType="cve rollback"
+                text="热补丁移除"
+                taskType="hotpatch remove"
                 :fixed="fixed"
                 :cveListProps="standalone ? cveAllList : cveAllListProp"
                 :innerCveList="innerCveList"
@@ -53,7 +53,7 @@
             </a-col>
             <a-col v-if="selectedRowKeys.length !== 0">
               <create-repair-task-drawer
-                taskType="cve rollback"
+                taskType="hotpatch remove"
                 :fixed="fixed"
                 :cveListProps="selectedRowsAll"
                 :innerCveList="innerCveList"
@@ -1223,9 +1223,8 @@ export default {
     this.innerCveList = [];
   },
   mounted() {
-    this.getCves().then(() => {
-      this.getCvesAll();
-    });
+    this.getCves();
+    this.getCvesAll();
   }
 };
 </script>

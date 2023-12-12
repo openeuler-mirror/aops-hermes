@@ -205,6 +205,7 @@ export default {
           dataIndex: 'create_time',
           title: '任务生成时间',
           sorter: true,
+          width: '8%',
           customRender: (time) => time && dateFormat('YYYY-mm-dd HH:MM:SS', time * 1000)
         },
         {
@@ -274,7 +275,6 @@ export default {
           return task.task_name;
         });
       this.$message.warning('部分任务正在运行中请稍后重试!');
-      console.log(runningTaskName);
     },
     deleteTask(taskList) {
       const _this = this;
