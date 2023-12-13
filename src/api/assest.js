@@ -55,6 +55,7 @@ export function hostList({tableInfo, ...parameter}) {
       ...parameter,
       host_group_list: tableInfo.filters.host_group_name || [],
       management,
+      search_key: tableInfo.filters.searchKey,
       sort: tableInfo.sorter.field,
       direction: directionMap[tableInfo.sorter.order],
       page: tableInfo.pagination.current,

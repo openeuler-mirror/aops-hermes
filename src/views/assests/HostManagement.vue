@@ -17,7 +17,8 @@
                 </a-alert>
               </a-col>
               <a-col>
-                <a-button @click="handleReset">重置条件</a-button>
+                <!-- <a-button @click="handleReset">重置条件</a-button> -->
+                <a-input-search placeholder="按主机名或主机ip搜索" style="width: 200px" @search="handleSearch" />
               </a-col>
             </a-row>
           </a-col>
@@ -59,26 +60,19 @@
             >{{ hostName }}</router-link
           >
           <span slot="isManagement" slot-scope="isMana">{{ isMana ? '是' : '否' }}</span>
-          <span slot="statusItem" slot-scope="status">{{ hostStatusMap[status] }}</span>
+          <span slot="statusItem" slot-scope="status">
+            <a-spin v-if="!status && status !== 0"></a-spin>
+            <span v-else>{{ hostStatusMap[status] }}</span>
+          </span>
           <span slot="scene" slot-scope="scene">{{ scene ? (scene === 'normal' ? '通用' : scene) : '暂无' }}</span>
           <span slot="action" slot-scope="record">
-            <!-- <a @click="openDetail(record.host_id)">查看</a>
-                ----后续增加-----
-                <a-divider type="vertical" />
-                <span>编辑</span>
-                ----------------
-                <a-divider type="vertical" /> -->
             <router-link
               :to="{path: `hosts-management/host-edit`, query: {hostId: record.host_id, pageType: 'edit'}}"
               @click="editHost(record)"
-              >编辑</router-link
-            >
-            <span> | </span>
-            <a @click="deleteHost(record)">删除</a>
+              >编辑
+            </router-link>
+            <a @click="deleteHost(record)" class="delete-button"> 删除</a>
           </span>
-          <!-- <div slot="expandedRowRender" style="margin: 0">
-            <host-terminal />
-          </div> -->
         </a-table>
       </div>
     </a-card>
@@ -94,7 +88,7 @@ import MyPageHeaderWrapper from '@/views/utils/MyPageHeaderWrapper';
 import {getSelectedRow} from '@/views/utils/getSelectedRow';
 import HostDetailDrawer from './components/HostDetailDrawer';
 // import HostTerminal from '@/views/assests/components/HostTerminal';
-import {hostList, deleteHost, hostGroupList} from '@/api/assest';
+import {hostList, deleteHost, hostGroupList, getHostListWithStatus} from '@/api/assest';
 
 const hostStatusMap = {
   0: '在线',
@@ -214,6 +208,9 @@ export default {
     }
   },
   methods: {
+    async getAllHostStatus() {
+      const res = await getHostListWithStatus();
+    },
     handleTableChange(pagination, filters, sorter) {
       // 存储翻页状态
       this.pagination = pagination;
@@ -230,14 +227,13 @@ export default {
       this.selectedRowsAll = getSelectedRow(selectedRowKeys, this.selectedRowsAll, this.tableData, 'host_id');
     },
     // 获取列表数据
-    getHostList() {
-      const _this = this;
+    async getHostList() {
       this.tableIsLoading = true;
       const pagination = this.pagination || {};
       const filters = this.filters || {};
       const sorter = this.sorter || {};
 
-      hostList({
+      const hostListRes = await hostList({
         tableInfo: {
           pagination: {
             current: pagination.current,
@@ -249,22 +245,28 @@ export default {
             order: sorter.order
           }
         }
-      })
-        .then(function (res) {
-          _this.tableData = res.data.host_infos || [];
-          _this.pagination = {
-            ..._this.pagination,
-            current: pagination.current,
-            pageSize: pagination.pageSize,
-            total: res.data.total_count || (res.data.total_count === 0 ? 0 : pagination.total)
-          };
-        })
-        .catch(function (err) {
-          _this.$message.error(err.response.message);
-        })
-        .finally(function () {
-          _this.tableIsLoading = false;
-        });
+      });
+      if (hostListRes) {
+        this.tableData = hostListRes.data.host_infos || [];
+        this.pagination = {
+          ...this.pagination,
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: hostListRes.data.total_count || (hostListRes.data.total_count === 0 ? 0 : pagination.total)
+        };
+        const hostIdList = this.tableData.map((item) => item.host_id);
+        this.tableIsLoading = false;
+        const res = await getHostListWithStatus(hostIdList);
+        if (res) {
+          this.tableData.forEach((item) => {
+            const s = res.data.find((s) => item.host_id === s.host_id);
+            if (s) {
+              item.status = s.status;
+            }
+          });
+          this.tableData = JSON.parse(JSON.stringify(this.tableData));
+        }
+      }
     },
     editHost(record) {
       this.$message.success('连接到主机' + record.host_ip);
@@ -383,6 +385,16 @@ export default {
         ),
         duration: 5
       });
+    },
+    handleSearch(text = '') {
+      this.pagination = defaultPagination;
+      this.sorter = null;
+      if (!this.filters) {
+        this.filters = {};
+      }
+      this.selectedRowKeys = [];
+      this.filters.searchKey = text !== '' ? text : undefined;
+      this.getHostList();
     },
     handleReset() {
       this.pagination = defaultPagination;
