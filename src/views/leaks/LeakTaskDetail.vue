@@ -111,7 +111,9 @@
           </a-row>
         </a-col>
         <a-col v-if="taskType === 'cve fix'">
-          <a-button type="primary" @click="generateRollbackTask">生成回滚任务</a-button>
+          <a-button type="primary" @click="generateRollbackTask" :loading="isRollBackButtonLoading"
+            >生成回滚任务</a-button
+          >
         </a-col>
       </a-row>
       <!-- 热补丁移除任务 -->
@@ -236,12 +238,13 @@ import {
   getTaskProgress,
   generateRollbackTask,
   getCveProgressUnderCveTask,
-  getAllHostInDetail
+  getAllHostInDetail,
+  getHostScanStatus
 } from '@/api/leaks';
 import configs from '@/config/defaultSettings';
 
 const taskTypeMap = {
-  'cve fix': '漏洞修复',
+  'cve fix': 'cve修复',
   'repo set': 'REPO设置',
   'cve rollback': 'cve回滚',
   'hotpatch remove': '热补丁移除'
@@ -307,6 +310,8 @@ export default {
   },
   data() {
     return {
+      // 生成回滚任务按钮是否loading
+      isRollBackButtonLoading: false,
       expandedRowKeys: [],
       rpmrecord: {},
       propType: '',
@@ -379,7 +384,7 @@ export default {
         {
           dataIndex: 'host_name',
           key: 'host_name',
-          title: '主机',
+          title: '主机名',
           scopedSlots: {customRender: 'hostName'}
         },
         {
@@ -391,7 +396,7 @@ export default {
         {
           dataIndex: 'cve_num',
           key: 'cve_num',
-          title: '修复的CVE',
+          title: 'CVE数量',
           scopedSlots: {customRender: 'cveNum'}
         },
         {
@@ -405,26 +410,27 @@ export default {
                   {text: '修复成功', value: 'succeed'},
                   {text: '待修复', value: 'fail'},
                   {text: '运行中', value: 'running'},
-                  {text: '未知', value: 'None'}
+                  {text: '未知', value: 'unknown'}
                 ]
               : [
                   {text: '回滚成功', value: 'succeed'},
                   {text: '待回滚', value: 'fail'},
                   {text: '运行中', value: 'running'},
-                  {text: '未知', value: 'None'}
+                  {text: '未知', value: 'unknown'}
                 ],
           filteredValue: filters.status || null,
           onFilter: (value, record) => record.status.includes(value)
         }
       ];
     },
+
     repoColumns() {
       let {filters} = this;
       filters = filters || {};
       return [
         {
           dataIndex: 'host_name',
-          title: '主机名称',
+          title: '主机名',
           scopedSlots: {customRender: 'host_name'}
         },
         {
@@ -452,27 +458,28 @@ export default {
     },
     // 展开后的列表列号
     innerColumns() {
+      const {taskType} = this;
       return [
         {
           dataIndex: 'installed_rpm',
           key: 'installed_rpm',
-          title: '受影响rpm'
+          title: taskType === 'cve fix' ? '受影响rpm' : '已安装rpm'
         },
         {
-          dataIndex: 'available_rpm',
-          key: 'available_rpm',
-          title: '待安装rpm',
-          scopedSlots: {customRender: 'available_rpm'}
+          dataIndex: taskType === 'cve fix' ? 'available_rpm' : 'target_rpm',
+          key: taskType === 'cve fix' ? 'available_rpm' : 'target_rpm',
+          title: taskType === 'cve fix' ? '待安装rpm' : '目标rpm',
+          scopedSlots: {customRender: 'rpm'}
         },
         {
           dataIndex: 'cves',
           key: 'cves',
-          title: '修复cve'
+          title: 'CVE'
         },
         {
           dataIndex: 'status',
           key: 'rpm_status',
-          title: '状态',
+          title: this.taskType === 'cve fix' ? '修复状态' : '回滚状态',
           scopedSlots: {customRender: 'status'},
           filter:
             this.taskType === 'cve fix'
@@ -480,13 +487,13 @@ export default {
                   {text: '修复成功', value: 'succeed'},
                   {text: '待修复', value: 'fail'},
                   {text: '运行中', value: 'running'},
-                  {text: '未知', value: 'None'}
+                  {text: '未知', value: 'unknown'}
                 ]
               : [
                   {text: '回滚成功', value: 'succeed'},
                   {text: '待回滚', value: 'fail'},
                   {text: '运行中', value: 'running'},
-                  {text: '未知', value: 'None'}
+                  {text: '未知', value: 'unknown'}
                 ]
         }
       ];
@@ -563,50 +570,43 @@ export default {
       clearInterval(this.jumpModalInterval);
       this.isRollbackModelvisible = false;
       this.$router.push({
-        path: `/leaks/task/${this.taskType}/${this.rollbackTaskId}`,
+        path: `/leaks/task/cve rollback/${this.rollbackTaskId}`,
         query: {
           task_id: this.rollbackTaskId
         }
       });
+      this.expandedRowKeys = [];
+      this.taskType = 'cve rollback';
       this.taskId = this.rollbackTaskId;
       localStorage.setItem('taskId', this.taskId);
       this.getInitalData();
     },
     async generateRollbackTask() {
+      this.isRollBackButtonLoading = true;
       if (this.detail.statuses['running'] > 0) {
         this.$warning({
           title: '有任务正在运行，不能回滚。'
         });
+        this.isRollBackButtonLoading = false;
         return;
       }
-      this.$confirm({
-        title: (
-          <p>
-            回滚后无法恢复
-            <br />
-            请确认回滚CVE修复任务：
-          </p>
-        ),
-        icon: () => <a-icon type="exclamation-circle" />,
-        onOk: async () => {
-          const res = await generateRollbackTask(this.taskId);
-          if (res) {
-            this.rollbackTaskId = res.data.task_id;
-            this.countDown = 5;
-            this.isRollbackModelvisible = true;
-            this.jumpModalInterval = setInterval(() => {
-              this.countDown = this.countDown - 1;
-              if (this.countDown === 0) {
-                clearInterval(this.jumpModalInterval);
-                this.isRollbackModelvisible = false;
-              }
-            }, 1000);
+      const res = await generateRollbackTask(this.taskId);
+      if (res) {
+        this.rollbackTaskId = res.data.task_id;
+        this.countDown = 5;
+        this.isRollbackModelvisible = true;
+        this.jumpModalInterval = setInterval(() => {
+          this.countDown = this.countDown - 1;
+          if (this.countDown === 0) {
+            clearInterval(this.jumpModalInterval);
+            this.isRollbackModelvisible = false;
           }
-        }
-      });
+        }, 1000);
+        this.isRollBackButtonLoading = false;
+      } else {
+      }
     },
     dateFormat,
-
     jumptoResult(value) {
       this.$router.push({
         path: `/leaks/task-report/${this.taskType}/${this.taskId}`,
@@ -633,7 +633,6 @@ export default {
       });
       return res || null;
     },
-
     // 展开详情列表
     async expand(expanded, record) {
       if (!expanded) return;
@@ -739,7 +738,7 @@ export default {
             current: pagination.current,
             pageSize: pagination.pageSize
           },
-          filters: filters,
+          filters,
           sorter: {
             field: sorter.field,
             order: sorter.order
@@ -770,7 +769,7 @@ export default {
       return res || null;
     },
     // 获取热补丁回退列表
-    async getCveListWithHotpathRemove() {
+    async getCveListWithHotpathRemove(needScan = false) {
       this.tableIsLoading = true;
       const pagination = this.pagination || {};
       const filters = this.filters || {};
@@ -800,12 +799,13 @@ export default {
         this.tableIsLoading = false;
         await this.updateCveProgress(
           this.taskId,
-          res.data.result.map((cve) => cve.cve_id)
+          res.data.result.map((cve) => cve.cve_id),
+          needScan
         );
       }
     },
-    // for cve task
-    async getCveList() {
+    // 获取cve列表（修复，回滚）
+    async getCveList(needScan = false) {
       this.tableIsLoading = true;
       const res = this.taskType === 'cve fix' ? await this.getCveListWithFix() : await this.getCveListWithRollback();
       if (res) {
@@ -814,34 +814,67 @@ export default {
           rpms: []
         }));
         this.reportvisible = this.getReportVisible(res.data.result);
-        this.expandedRowKeys = [];
+        // this.expandedRowKeys = [];
         this.pagination = {
           ...this.pagination,
           total: res.data.total_count || (res.data.total_count === 0 ? 0 : this.pagination.total)
         };
-        await this.updateHostProgress();
+        !this.reportvisible && (await this.updateHostProgress(needScan));
         this.tableIsLoading = false;
       }
     },
     // 修复，回滚任务running时刷新列表状态
-    async updateHostProgress() {
+    async updateHostProgress(needScan = false) {
       clearTimeout(this.CveScanStatueTimeout);
       const res = this.taskType === 'cve fix' ? await this.getCveListWithFix() : await this.getCveListWithRollback();
       const progressRes = res.data.result;
-      this.tableData = progressRes.map((item) => ({
-        ...item,
-        rpms: []
-      }));
+      progressRes.forEach((item) => {
+        const i = this.tableData.findIndex((t) => t.host_id === item.host_id);
+        if (i > -1 && this.tableData[i].status !== item.status) {
+          this.tableData[i].status = item.status;
+          if (this.expandedRowKeys.includes(this.tableData[i].host_id)) this.expand(true, this.tableData[i]);
+        }
+      });
+
       const list = progressRes.filter((item) => item.status === 'running');
       this.reportvisible = list.length === 0;
       if (list.length > 0) {
         this.CveScanStatueTimeout = setTimeout(() => {
-          this.updateHostProgress();
+          this.updateHostProgress(needScan);
         }, configs.taskProgressUpdateInterval);
+      } else {
+        needScan && (await this.sacnHostAfterExcute());
       }
     },
-    // 更新热补丁回退的执行进度
-    async updateCveProgress(taskId, cveList) {
+
+    // 在任务执行完成之后进行主机扫描
+    async sacnHostAfterExcute() {
+      const hostList = await this.getAllHostId();
+      const res = await getHostScanStatus({hostList});
+      if (!res) return;
+      const hostStatusList = res.data.result;
+      const needScanList = Object.keys(hostStatusList).map((h) => {
+        if (hostStatusList[h] !== 3 && hostList.includes(Number(h))) return Number(h);
+      });
+      this.scanLeakAfterExecuteTask(needScanList);
+    },
+    // 返回扫描状态的主机
+    getScanningHost(scanMap, hostList) {
+      const arr = [];
+      hostList.forEach((host) => {
+        if (scanMap[host.host_id] === 3) {
+          arr.push(host);
+        }
+      });
+      return arr;
+    },
+    /**
+     * 更新热补丁回退的执行进度
+     * @param {*} taskId 任务id
+     * @param {*} cveList cve 列表
+     * @param {*} needScan 是否需要扫描主机
+     */
+    async updateCveProgress(taskId, cveList, needScan = false) {
       clearTimeout(this.CveScanStatueTimeout);
       const processRes = await getCveProgressUnderCveTask({
         taskId,
@@ -852,8 +885,10 @@ export default {
       this.runningCveIds = this.getRunningCve(processRes.data.result);
       if (this.runningCveIds.length > 0) {
         this.CveScanStatueTimeout = setTimeout(() => {
-          this.updateCveProgress(taskId, cveList);
+          this.updateCveProgress(taskId, cveList, needScan);
         }, configs.taskProgressUpdateInterval);
+      } else {
+        needScan && (await this.sacnHostAfterExcute());
       }
     },
     // 将查询到的cve进度更新到表格数据中，用于数据展示
@@ -954,26 +989,23 @@ export default {
         title: `确定执行任务${this.detail.task_name}?`,
         icon: () => <a-icon type="exclamation-circle" />,
         okText: '执行',
-        onOk: () => {
-          return executeTask(this.taskId)
-            .then((res) => {
-              this.$message.success(res.message);
-              this.scanLeakAfterExecuteTask();
-              // 执行任务成功后刷新
-              setTimeout(() => {
-                this.getInitalData();
-                this.expandedRowKeys = [];
-              }, 3000);
-            })
-            .catch((err) => {
-              this.$message.error(err.response.message);
-            });
+        onOk: async () => {
+          const excuteRes = await executeTask(this.taskId);
+          if (excuteRes) {
+            // 获取详情任务所有处理的hostid列表
+            this.$message.success(excuteRes.message);
+            // 执行任务成功后刷新
+            setTimeout(() => {
+              this.getInitalData(true);
+              this.expandedRowKeys = [];
+            }, 3000);
+          }
         }
       });
     },
-    async scanLeakAfterExecuteTask() {
+    async scanLeakAfterExecuteTask(hostList) {
       await scanHost({
-        hostList: this.hostList,
+        hostList,
         filter: null
       });
     },
@@ -981,7 +1013,7 @@ export default {
     async getAllHostId() {
       const res = await getAllHostInDetail(this.taskId);
       if (res) {
-        this.hostList = res.data;
+        return res.data;
       }
     },
     showHostListUnderCve(type, record) {
@@ -992,16 +1024,17 @@ export default {
     closeHostListUnderCve() {
       this.hostListUnderCveVisible = false;
     },
-    getInitalData() {
+    /**
+     * isFresh 是第一次初始化还是后续的刷新数据
+     */
+    getInitalData(isFresh = false) {
       this.getInfo();
-      // 获取详情任务所有处理的hostid列表
-      this.getAllHostId();
       if (this.taskType === 'repo set') {
         this.getHostList();
       } else if (this.taskType === 'hotpatch remove') {
-        this.getCveListWithHotpathRemove();
+        this.getCveListWithHotpathRemove(isFresh);
       } else {
-        this.getCveList();
+        this.getCveList(isFresh);
       }
     },
 
@@ -1023,9 +1056,9 @@ export default {
       }
       if (this.taskType === 'cve fix' || this.taskType === 'cve rollback') {
         if (text !== '') {
-          this.filters.host_name = text;
+          this.filters.searchKey = text;
         } else {
-          this.filters.host_name = undefined;
+          this.filters.searchKey = undefined;
         }
         this.getCveList();
       } else {
@@ -1065,7 +1098,7 @@ export default {
     localStorage.setItem('taskId', this.taskId);
   },
   mounted() {
-    this.getInitalData();
+    this.getInitalData(false);
   },
   beforeDestroy() {
     // 离开页面前，若当前存在轮询，清除轮询

@@ -576,6 +576,10 @@ export const asyncRouterMap = [
                       path: routeMap.leaks.children.leakTaskView.children.leakTaskList.path
                     },
                     {
+                      breadcrumbName: routeMap.leaks.children.leakTaskView.children.leakTaskDetail.title,
+                      path: routeMap.leaks.children.leakTaskView.children.leakTaskDetail.path
+                    },
+                    {
                       breadcrumbName: routeMap.leaks.children.leakTaskView.children.taskResultReport.title,
                       path: routeMap.leaks.children.leakTaskView.children.taskResultReport.path
                     }

@@ -4,7 +4,7 @@
       {{ taskTypsbutton[taskType] }}
     </a-button>
     <a-drawer
-      :title="`生成任务${taskType === 'repo set' ? ' 设置REPO' : ''}`"
+      :title="taskTypsbutton[taskType]"
       closable
       @close="handleCancel"
       :get-container="false"
@@ -227,7 +227,7 @@ const taskTypsbutton = {
   'cve fix': '生成修复任务',
   'repo set': '设置REPO',
   'cve rollback': '生成回滚任务',
-  'hotpatch remove': '热补丁移除'
+  'hotpatch remove': '热补丁移除任务'
 };
 const taskTypsEnum = {
   'cve fix': 'cve修复',
@@ -814,25 +814,19 @@ export default {
                 break;
               } else {
                 // make request
-                generateTask(params)
-                  .then((res) => {
-                    this.$message.success(res.message);
-                    if (excuteASAP) {
-                      const task = res.data.filter((item) => item.fix_way === 'hotpatch');
-                      this.handleExcuteASAP(task[0].task_id, res.data);
-                    } else {
-                      this.visible = false;
-                      this.handleGenerateSuccess(res.data, 'CVE修复', 'normal');
-                    }
-                  })
-                  .catch((err) => {
-                    this.$message.error(err.response.message);
-                  })
-                  .finally(() => {
-                    if (!excuteASAP) {
-                      this.submitLoading = false;
-                    }
-                  });
+                generateTask(params).then((res) => {
+                  this.$message.success(res.message);
+                  if (excuteASAP) {
+                    // 如果同时存在冷热补丁两种任务，则选择热补丁任务立即执行，如果只有单个任务，则执行该任务
+                    const task =
+                      res.data.length > 1 ? res.data.filter((item) => item.fix_way === 'hotpatch') : res.data;
+                    this.handleExcuteASAP(task[0].task_id, res.data);
+                  } else {
+                    this.visible = false;
+                    this.handleGenerateSuccess(res.data, 'CVE修复', 'normal');
+                  }
+                });
+                this.submitLoading = false;
                 break;
               }
             case 'repo set':

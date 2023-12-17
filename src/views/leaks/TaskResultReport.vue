@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/max-attributes-per-line -->
 <template>
   <page-header-wrapper :breadcrumb="breadcrumb">
     <a-card :bordered="false" class="aops-theme">
@@ -30,7 +29,7 @@
                     {{ cveStatusTextMap[resultItem.status] }}
                   </a-descriptions-item>
                   <a-descriptions-item label="状态" v-if="resultItem.task_type === 'cve rollback'">
-                    {{ rollStatusTextMap[resultItem.status] }}
+                    {{ rollStatusTextMap[resultItem.task_result.result] }}
                   </a-descriptions-item>
                   <a-descriptions-item label="状态" v-if="resultItem.task_type === 'repo set'">
                     {{ repoStatusTextMap[resultItem.task_result.status] }}
@@ -39,8 +38,13 @@
                     {{ resultItem.task_result.repo }}
                   </a-descriptions-item>
                 </a-descriptions>
-                <p class="reuslt-item-title">检查项:</p>
-                <a-row>
+                <span class="reuslt-item-title">检查项:</span>
+                <span
+                  v-if="resultItem.task_result.check_items && resultItem.task_result.check_items.length === 0"
+                  style="margin-left: 10px"
+                  >无</span
+                >
+                <a-row v-else>
                   <a-col span="8">
                     <a-descriptions :column="{sm: 1}" bordered size="small">
                       <a-descriptions-item
@@ -79,33 +83,31 @@
                   </div>
                 </div>
                 <!-- 回滚任务 -->
-                <div v-if="taskType === 'cve rollback'" style="margin-left: 50px">
-                  <p class="reuslt-item-title" style="margin-top: 12px">RPM回滚情况:</p>
+                <div v-if="taskType === 'cve rollback'">
+                  <p class="reuslt-item-title" style="margin-top: 12px">RPM回滚详情:</p>
                   <a-collapse v-if="resultItem.task_result.rpms.length !== 0" :bordered="false">
                     <a-collapse-panel
                       v-for="(rpm, rkidx) in resultItem.task_result.rpms"
                       :key="rkidx"
-                      :header="`${rpm.installed_rpm}`"
+                      :header="`${rpm.cves}`"
                     >
-                      <div class="cve-item">
-                        <p class="reuslt-item-title">结果:</p>
-                        {{ rollStatusTextMap[rpm.result] }}
-                      </div>
-                      <div class="cve-item">
-                        <p class="reuslt-item-title" style="margin-top: 12px">Log:</p>
-                        <p class="result-log" v-html="logFormat(rpm.log)"></p>
-                      </div>
-                      <a-badge :status="statusResultValueMap[rpm.result]" slot="extra" />
+                      <p>
+                        <span class="title">已安装rpm:</span>
+                        <span> {{ rpm.installed_rpm }}</span>
+                      </p>
+                      <p>
+                        <span class="title">目标rpm:</span>
+                        <span> {{ rpm.target_rpm }}</span>
+                      </p>
+                      <a-badge :status="statusResultValueMap[resultItem.task_result.result]" slot="extra" />
                     </a-collapse-panel>
                   </a-collapse>
-                  <div v-else class="cve-item">
-                    <p class="reuslt-item-title" style="margin-top: 12px">Log:</p>
-                    <p class="result-log">{{ resultItem.log }}</p>
-                  </div>
+                  <p class="reuslt-item-title" style="margin-top: 16px">Log:</p>
+                  <p class="result-log" v-html="logFormat(resultItem.task_result.log)"></p>
                 </div>
                 <!-- 热补丁移除任务 -->
                 <div v-if="taskType === 'hotpatch remove'" style="margin-left: 50px">
-                  <p class="reuslt-item-title" style="margin-top: 12px">CVE修复情况:</p>
+                  <p class="reuslt-item-title" style="margin-top: 12px">热补丁移除情况:</p>
                   <a-collapse v-if="resultItem.task_result.cves.length !== 0" :bordered="false">
                     <a-collapse-panel
                       v-for="(cve, rkidx) in resultItem.task_result.cves"
@@ -113,7 +115,7 @@
                       :header="`${cve.cve_id}`"
                     >
                       <div class="cve-item">
-                        <p class="reuslt-item-title">结果: {{ statusResultTextMap[cve.result] }}</p>
+                        <p class="reuslt-item-title">结果: {{ removeStatusResult[cve.result] }}</p>
                       </div>
                       <div class="cve-item">
                         <p class="reuslt-item-title" style="margin-top: 12px">Log:</p>
@@ -132,7 +134,16 @@
                   <p class="reuslt-item-title" style="margin-top: 16px">Log:</p>
                   <p class="result-log">{{ resultItem.task_result.log }}</p>
                 </div>
-                <a-badge :status="statusValueMap[resultItem.status]" slot="extra" />
+                <a-badge
+                  :status="
+                    taskType === 'repo set'
+                      ? statusValueMap[resultItem.task_result.status]
+                      : taskType === 'cve fix' || taskType === 'hotpatch remove'
+                      ? statusValueMap[resultItem.status]
+                      : statusValueMap[resultItem.task_result.result]
+                  "
+                  slot="extra"
+                />
               </a-collapse-panel>
             </a-collapse>
           </div>
@@ -188,6 +199,13 @@ const statusResultTextMap = {
   unknown: '未知'
 };
 
+const removeStatusResult = {
+  succeed: '移除成功',
+  fail: '待移除',
+  running: '运行中',
+  unknown: '未知'
+};
+
 const statusResultValueMap = {
   succeed: 'success',
   unfixed: 'error',
@@ -210,6 +228,13 @@ export default {
         props: {
           routes,
           itemRender: ({route, params, routes, paths, h}) => {
+            if (route.path === '/leaks/task/:taskType/:taskId') {
+              const path = {
+                path: `/leaks/task/${this.$route.query.taskType}/${this.$route.query.taskId}`,
+                query: {taskId: this.$route.query.taskId}
+              };
+              return <router-link to={path}>{route.breadcrumbName}</router-link>;
+            }
             return <router-link to={route.path}>{route.breadcrumbName}</router-link>;
           }
         }
@@ -218,6 +243,7 @@ export default {
   },
   data() {
     return {
+      removeStatusResult,
       taskId: this.$route.query.taskId,
       taskType: this.$route.query.taskType,
       latestExecuteTime: this.$route.query.latestExecuteTime,
@@ -292,6 +318,10 @@ export default {
 .reuslt-item-title {
   font-weight: 500;
   color: rgba(0, 0, 0, 0.85);
+}
+.title {
+  font-weight: bold;
+  margin-right: 5px;
 }
 /deep/ .ant-descriptions-item {
   .ant-descriptions-item-label {

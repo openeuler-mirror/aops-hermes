@@ -44,15 +44,15 @@ const api = {
   getRpmUnderCve: '/vulnerability/cve/packages/host/get', // 查询cve影响的rpm包的主机列表
   getCvefixLeakRpm: '/vulnerability/task/cve/rpm/get', // 修复任务详情中cve列表的二级package
   getCveRpmHostUnderLeak: '/vulnerability/task/cve/rpm/host/get', // 查询修复任务下的cve影响的rpm包的主机列表
-  getCveListInFixDetail: '/vulnerability/task/cve-fix/info/get', // 新接口取代api.getCveUnderCveTask 获取修复任务详情下的cve列表
   getRpmListInFixDetail: '/vulnerability/task/cve-fix/rpm/get', // 新接口取代api.getCvefixLeakRpm，获取修复任务详情下指定主机和任务下的rpm列表
   getCveFixReport: '/vulnerability/task/cve-fix/result/get', // 新接口取代api.getCveTaskResult ，获取修复任务的报告
-  getCveRollvackReport: ' /vulnerability/task/rollback/result/get', // 获取回滚任务报告
+  getCveRollvackReport: '/vulnerability/task/cve-rollback/result/get', // 获取回滚任务报告
   generateHotPathRemoveTask: '/vulnerability/task/hotpatch-remove/generate', // 新接口取代api.generateRollbackTask ，生成热补丁移除任务
-  getRpmListInRollbackDetail: '/vulnerability/task/rollback/rpm/get', // 获取回滚任务详情列表下的rpm信息
-  getCveListInRollbackDetail: '/vulnerability/task/rollback/cve-info/get', //  获取回滚任务详情下的列表信息
+  getRpmListInRollbackDetail: '/vulnerability/task/cve-rollback/rpm/get', // 获取回滚任务详情列表下的rpm信息
   generateRollbackTask: '/vulnerability/task/cve-rollback/generate', // 生成回滚任务
+  getCveListInRollbackDetail: '/vulnerability/task/cve-rollback/info/get', //  获取回滚任务详情下的列表信息
   getCveHotpatchRemoveDetail: '/vulnerability/task/hotpatch-remove/info/get', // 获取热补丁移除任务详情
+  getCveListInFixDetail: '/vulnerability/task/cve-fix/info/get', // 新接口取代api.getCveUnderCveTask 获取修复任务详情下的cve列表
   getHotpatchRemoveTaskReport: '/vulnerability/task/hotpatch-remove/result/get', // 获取热补丁移除任务报告
   getAllHostInDetail: '/vulnerability/task/host/get' // 获取详情页面下所有的hostid
 };
@@ -132,6 +132,7 @@ export function getCveListInRollbackDetail({tableInfo, ...params}) {
       task_id: params.taskId,
       direction: sorterMap[tableInfo.sorter.order],
       filter: {
+        search_key: tableInfo.filters.searchKey,
         status: tableInfo.filters.status
       },
       page: tableInfo.pagination.current,
@@ -140,7 +141,7 @@ export function getCveListInRollbackDetail({tableInfo, ...params}) {
   });
 }
 
-// 创建热补丁回退任务
+// 创建热补丁移除任务
 export function generateHotPatchRemoveTask(params) {
   return request({
     url: api.generateHotPathRemoveTask,
@@ -196,6 +197,7 @@ export function getCveListInFixDetail({tableInfo, ...params}) {
       task_id: params.taskId,
       direction: sorterMap[tableInfo.sorter.order],
       filter: {
+        search_key: tableInfo.filters.searchKey,
         status: tableInfo.filters.status
       },
       page: tableInfo.pagination.current,
@@ -266,18 +268,6 @@ export function getCveFixRpm(parameters) {
     }
   });
 }
-
-// export function generateRollbackTask(parameters) {
-//   return request({
-//     url: api.generateRollbackTask,
-//     method: 'post',
-//     data: {
-//       task_name: parameters.task_name,
-//       description: parameters.description,
-//       info: parameters.info || []
-//     }
-//   });
-// }
 
 export function getCveExport(parameter) {
   return request({

@@ -49,38 +49,37 @@ export default {
     };
   },
   methods: {
-    fetchHostInfo(This) {
-      const _this = This;
-      This.basicHostInfoIsLoading = true;
-      getHostDetail(This.hostId, true)
-        .then(function (res) {
-          _this.basicHostInfo = res.data.host_infos[0];
-          _this.scene = This.basicHostInfo.scene;
+    fetchHostInfo() {
+      this.basicHostInfoIsLoading = true;
+      getHostDetail(Number(this.hostId), true)
+        .then((res) => {
+          this.basicHostInfo = res.data.host_infos[0];
+          this.scene = this.basicHostInfo.scene;
         })
-        .catch(function (err) {
-          _this.$message.error(err.response.message);
+        .catch((err) => {
+          this.$message.error(err.response.message);
         })
         .finally(() => {
-          _this.basicHostInfoIsLoading = false;
+          this.basicHostInfoIsLoading = false;
         });
-      This.basicInfoIsLoading = true;
-      getHostDetail(This.hostId, false)
-        .then(function (res) {
-          _this.basicInfo = res.data.host_infos[0];
+      this.basicInfoIsLoading = true;
+      getHostDetail(Number(this.hostId), false)
+        .then((res) => {
+          this.basicInfo = res.data.host_infos[0];
         })
-        .catch(function (err) {
-          _this.$message.error(err.response.message);
+        .catch((err) => {
+          this.$message.error(err.response.message);
         })
         .finally(() => {
-          _this.basicInfoIsLoading = false;
+          this.basicInfoIsLoading = false;
         });
     },
     reFetchHostInfo() {
-      this.$options.methods.fetchHostInfo(this);
+      this.fetchHostInfo();
     }
   },
-  mounted: function () {
-    this.$options.methods.fetchHostInfo(this);
+  mounted() {
+    this.fetchHostInfo();
   }
 };
 </script>

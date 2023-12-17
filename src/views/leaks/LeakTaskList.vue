@@ -193,6 +193,10 @@ export default {
             {
               text: 'cve rollback',
               value: 'cve rollback'
+            },
+            {
+              text: 'hotpatch remove',
+              value: 'hotpatch remove'
             }
           ]
         },
