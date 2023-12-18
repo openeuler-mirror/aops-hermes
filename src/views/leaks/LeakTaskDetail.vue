@@ -661,6 +661,8 @@ export default {
       // 出发排序、筛选、分页时，重新请求主机列表
       if (this.taskType === 'cve fix' || this.taskType === 'cve rollback') {
         this.getCveList();
+      } else if (this.taskType === 'hotpatch remove') {
+        this.getCveListWithHotpathRemove();
       } else {
         this.getHostList();
       }
