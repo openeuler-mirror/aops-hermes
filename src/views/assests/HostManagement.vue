@@ -18,7 +18,7 @@
               </a-col>
               <a-col>
                 <!-- <a-button @click="handleReset">重置条件</a-button> -->
-                <a-input-search placeholder="按主机名或主机ip搜索" style="width: 200px" @search="handleSearch" />
+                <a-input-search placeholder="按主机名或IP搜索" style="width: 200px" @search="handleSearch" />
               </a-col>
             </a-row>
           </a-col>
