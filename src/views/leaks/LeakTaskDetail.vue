@@ -103,7 +103,7 @@
           <a-row type="flex" :gutter="6">
             <a-col>
               <a-input-search
-                :placeholder="taskType === 'hotpatch remove' ? `按CVE ID搜索` : `按主机搜索`"
+                :placeholder="taskType === 'hotpatch remove' ? `按CVE ID搜索` : `按主机名或主机ip搜索`"
                 style="width: 200px"
                 @search="onSearch"
               />
