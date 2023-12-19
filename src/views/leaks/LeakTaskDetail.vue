@@ -105,6 +105,7 @@
               <a-input-search
                 :placeholder="taskType === 'hotpatch remove' ? `按CVE ID搜索` : `按主机名或IP搜索`"
                 style="width: 200px"
+                maxLength="20"
                 @search="onSearch"
               />
             </a-col>

@@ -170,6 +170,9 @@ request.interceptors.response.use((response) => {
           message: response.data.label,
           description: response.data.message
         });
+        return new Promise((resolve) => {
+          resolve(null);
+        });
       // err = new Error(response.data.message);
       // err.data = response.data.data;
       // err.response = response.data;
