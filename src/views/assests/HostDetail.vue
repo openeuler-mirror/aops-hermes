@@ -49,30 +49,20 @@ export default {
     };
   },
   methods: {
-    fetchHostInfo() {
+    async fetchHostInfo() {
       this.basicHostInfoIsLoading = true;
-      getHostDetail(Number(this.hostId), true)
-        .then((res) => {
-          this.basicHostInfo = res.data.host_infos[0];
-          this.scene = this.basicHostInfo.scene;
-        })
-        .catch((err) => {
-          this.$message.error(err.response.message);
-        })
-        .finally(() => {
-          this.basicHostInfoIsLoading = false;
-        });
       this.basicInfoIsLoading = true;
-      getHostDetail(Number(this.hostId), false)
-        .then((res) => {
-          this.basicInfo = res.data.host_infos[0];
-        })
-        .catch((err) => {
-          this.$message.error(err.response.message);
-        })
-        .finally(() => {
-          this.basicInfoIsLoading = false;
-        });
+      const basicHostRes = await getHostDetail(Number(this.hostId), true);
+      if (basicHostRes) {
+        this.basicHostInfo = basicHostRes.data.host_infos[0];
+        this.scene = this.basicHostInfo.scene;
+      }
+      const basicRes = await getHostDetail(Number(this.hostId), false);
+      if (basicRes) {
+        this.basicInfo = basicRes.data.host_infos[0];
+      }
+      this.basicInfoIsLoading = false;
+      this.basicHostInfoIsLoading = false;
     },
     reFetchHostInfo() {
       this.fetchHostInfo();

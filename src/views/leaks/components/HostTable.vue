@@ -960,8 +960,8 @@ export default {
     },
     getRepoList() {
       const _this = this;
-      getRepoList()
-        .then(function (res) {
+      getRepoList().then((res) => {
+        if (res) {
           const arr = (res.data.result || []).map((repo) => {
             return {
               text: repo.repo_name,
@@ -972,11 +972,9 @@ export default {
             text: '未设置',
             value: ''
           });
-          _this.repoFilterList = arr;
-        })
-        .catch(function (err) {
-          _this.$message.error(err.response.message);
-        });
+          this.repoFilterList = arr;
+        }
+      });
     },
     // 检查是否有筛选条件
     checkHasFilter(filters) {

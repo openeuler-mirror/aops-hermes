@@ -175,26 +175,21 @@ export default {
       this.getHostList(this.cve_id, data);
     },
     getHostList(cveId, data) {
-      const _this = this;
       this.hostIsLoading = true;
       getHostUnderCVE({
         ...data,
         cve_id: cveId
-      })
-        .then(function (res) {
-          _this.hostList = res.data.result || [];
-          _this.hostList.forEach((item) => {
+      }).then((res) => {
+        if (res) {
+          this.hostList = res.data.result || [];
+          this.hostList.forEach((item) => {
             item.hp_status = item.hp_status ? item.hp_status : '——';
             item.fixStatus = item.hotpatch ? `是(${item.hp_status})` : '否';
           });
-          _this.paginationTotal = res.data.total_count || (res.data.total_count === 0 ? 0 : undefined);
-        })
-        .catch(function (err) {
-          _this.$message.error(err.response.message);
-        })
-        .finally(function () {
-          _this.hostIsLoading = false;
-        });
+          this.paginationTotal = res.data.total_count || (res.data.total_count === 0 ? 0 : undefined);
+        }
+      });
+      this.hostIsLoading = false;
     },
     setStatus(status) {
       const _this = this;
