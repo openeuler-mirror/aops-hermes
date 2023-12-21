@@ -165,6 +165,12 @@ request.interceptors.response.use((response) => {
           });
         });
         return retryRequest;
+      case '1108':
+        notification.error({
+          message: '暂无指标数据！',
+          description: response.data.message
+        });
+        break;
       default:
         notification.error({
           message: response.data.label,

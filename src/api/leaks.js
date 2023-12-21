@@ -347,6 +347,7 @@ export function setCveStatus({cveList, status}) {
 }
 
 export function getHostUnderCVE({tableInfo, ...parameter}) {
+  const repoList = tableInfo.filters.repo ? tableInfo.filters.repo.map((v) => (v === '' ? null : v)) : null;
   return request({
     url: api.getHostUnderCVE,
     method: 'post',
@@ -358,7 +359,7 @@ export function getHostUnderCVE({tableInfo, ...parameter}) {
         fixed: tableInfo.fixed,
         host_name: tableInfo.filters.host_name === null ? undefined : tableInfo.filters.host_name,
         host_group: tableInfo.filters.host_group === null ? undefined : tableInfo.filters.host_group,
-        repo: tableInfo.filters.repo === null ? undefined : tableInfo.filters.repo,
+        repo: repoList === null ? undefined : repoList,
         last_scan: tableInfo.filters.last_scan
       },
       page: tableInfo.pagination.current,

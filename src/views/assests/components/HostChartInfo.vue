@@ -120,29 +120,20 @@ export default {
   methods: {
     // 获取指标项，一个指标项对应一个图表
     getHostMetrics() {
-      const _this = this;
-      _this.chartLoading = true;
+      this.chartLoading = true;
       getHostMetrics({
-        query_ip: _this.queryIp
-      })
-        .then((res) => {
-          _this.metrics = res.data.results;
-          if (_this.selectedMetrics.length < 1) {
-            _this.selectedMetrics = res.data.results.slice(0, 4);
-            storage.set('hostChartsSelectedMetrics', _this.selectedMetrics, 30 * 24 * 60 * 60 * 1000);
+        query_ip: this.queryIp
+      }).then((res) => {
+        if (res) {
+          this.metrics = res.data.results;
+          if (this.selectedMetrics.length < 1) {
+            this.selectedMetrics = res.data.results.slice(0, 4);
+            storage.set('hostChartsSelectedMetrics', this.selectedMetrics, 30 * 24 * 60 * 60 * 1000);
           }
-          _this.getMetricData();
-        })
-        .catch((err) => {
-          if (err.response.code === '1108') {
-            _this.$message.info('暂无指标数据!');
-          } else {
-            _this.$message.error(err.response.message);
-          }
-        })
-        .finally(() => {
-          _this.chartLoading = false;
-        });
+          this.getMetricData();
+        }
+        this.chartLoading = false;
+      });
     },
     // 获取各个指标项下的所有序列数据
     getMetricData() {

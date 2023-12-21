@@ -235,6 +235,7 @@ export default {
     getDetail() {
       let data = this.basicInfo;
       data = data.host_info;
+      this.basicInfo.status !== null && (this.status = this.basicInfo.status);
       for (const member in data.os) {
         this.os[member] = data.os[member] || '暂无';
       }
@@ -257,8 +258,7 @@ export default {
         this.detailIcon = 'up';
       }
     }
-  },
-  mounted() {}
+  }
 };
 </script>
 <style lang="less" scoped>

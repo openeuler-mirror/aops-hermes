@@ -105,7 +105,7 @@
               <a-input-search
                 :placeholder="taskType === 'hotpatch remove' ? `按CVE ID搜索` : `按主机名或IP搜索`"
                 style="width: 200px"
-                maxLength="20"
+                :maxLength="20"
                 @search="onSearch"
               />
             </a-col>
@@ -646,6 +646,7 @@ export default {
       this.tableIsLoading = false;
     },
     handleTableChange(pagination, filters, sorter) {
+      this.expandedRowKeys = [];
       // 存储翻页状态
       for (var key in filters) {
         if (filters[key] !== null) {
