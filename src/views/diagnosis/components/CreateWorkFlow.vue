@@ -120,7 +120,7 @@ const leftTableColumns = [
   },
   {
     title: 'ip地址',
-    dataIndex: 'public_ip'
+    dataIndex: 'host_ip'
   },
   {
     title: '场景',
