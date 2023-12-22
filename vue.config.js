@@ -26,8 +26,8 @@ function getGitHash() {
 
 const serverMap = {
   // serverIpBase: 'http://127.0.0.1'
-  // serverIpBase: 'http://172.168.61.81'
-  serverIpBase: 'http://172.168.235.132'
+  // serverIpBase: 'http://172.168.235.132'
+  serverIpBase: 'http://172.168.97.229'
 };
 
 // vue.config.js

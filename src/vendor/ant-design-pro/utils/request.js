@@ -101,7 +101,7 @@ request.interceptors.response.use((response) => {
   const code = response.data.code || response.status;
   // 不处理所有2xx的状态码
   if (!code.toString().match(/^2[0-9]{2,2}$/)) {
-    // let err = null;
+    let err = null;
     switch (code) {
       case '1201':
         if (!timestamp1 || timestamp1 + 1632252465 < new Date().getTime()) {
@@ -171,18 +171,16 @@ request.interceptors.response.use((response) => {
           description: response.data.message
         });
         break;
+      case '1000':
+        err = new Error(response.data.message);
+        err.data = response.data.data;
+        err.response = response.data;
+        throw err;
       default:
         notification.error({
           message: response.data.label,
           description: response.data.message
         });
-        return new Promise((resolve) => {
-          resolve(null);
-        });
-      // err = new Error(response.data.message);
-      // err.data = response.data.data;
-      // err.response = response.data;
-      // throw err;
     }
   }
   if (response.headers['content-type'] === 'application/octet-stream') {

@@ -316,6 +316,8 @@ export default {
     },
     showModal() {
       this.visible = true;
+      this.tableVis = false;
+      this.fileDataList = [];
     },
     closeModal() {
       this.visible = false;
@@ -468,7 +470,6 @@ export default {
               }
             });
             // 当部分成功移除成功的主机
-
             this.$message.success('部分主机添加成功!');
             this.$emit('addSuccess');
           }
