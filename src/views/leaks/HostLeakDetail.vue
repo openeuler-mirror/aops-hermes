@@ -36,6 +36,9 @@
             <a-col span="8">
               <p>{{ `不受影响的CVE数量： ${detail.unaffected_cve_num}` }}</p>
             </a-col>
+            <a-col span="8">
+              <p>{{ `重启后内核变更： ${detail.reboot ? '是' : '否'}` }}</p>
+            </a-col>
           </a-row>
         </div>
       </a-spin>

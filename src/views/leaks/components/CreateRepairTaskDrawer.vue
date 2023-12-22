@@ -55,6 +55,17 @@
               <a-icon slot="unCheckedChildren" type="close" />
             </a-switch>
           </a-form-item>
+          <div class="notice" v-if="taskType === 'cve fix'">
+            <a-popover placement="topLeft">
+              <template slot="content">
+                <p>1. 冷、热补丁将拆分成2个任务分别执行</p>
+                <p>2. 同一主机，热补丁任务需在冷补丁修复任务前执行</p>
+                <p>3. 冷补丁任务执行完毕后，需重启才能生效</p>
+              </template>
+              <span slot="title">注意事项：</span>
+              <span class="notice-container">注意事项 <a-icon type="question-circle" /></span>
+            </a-popover>
+          </div>
           <a-form-item label="选择REPO" v-if="taskType === 'repo set'">
             <a-select
               v-decorator="['repo', {rules: [{required: true, message: '请选择REPO'}]}]"
@@ -196,6 +207,7 @@
                 >点击跳转到{{ item.fix_way }}{{ taskType === 'cve fix' ? '修复' : '移除' }}任务页面</a
               >
             </p>
+            <p v-if="jumpTaskId.length > 1">只执行热补丁任务，冷补丁任务需手动执行</p>
             <p>{{ countDown }}秒后回到原页面</p>
           </a-col>
         </a-row>
@@ -1076,3 +1088,13 @@ export default {
   }
 };
 </script>
+
+<style scoped lang="less">
+.notice {
+  padding: 0 0 10px 40px;
+  cursor: pointer;
+  &-container {
+    font-size: 14px;
+  }
+}
+</style>
