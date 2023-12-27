@@ -207,7 +207,7 @@
                 >点击跳转到{{ item.fix_way }}{{ taskType === 'cve fix' ? '修复' : '移除' }}任务页面</a
               >
             </p>
-            <p v-if="jumpTaskId.length > 1">只执行热补丁任务，冷补丁任务需手动执行</p>
+            <p v-if="jumpTaskId.length > 1 && isExcuteASAP">只执行热补丁任务，冷补丁任务需手动执行</p>
             <p>{{ countDown }}秒后回到原页面</p>
           </a-col>
         </a-row>
@@ -307,6 +307,8 @@ export default {
   },
   data() {
     return {
+      // 是否立即执行
+      isExcuteASAP: false,
       hostListparams: [],
       fixParams: {},
       // 修复任务入参
@@ -788,6 +790,7 @@ export default {
       }
     },
     handleSubmit(excuteASAP = false) {
+      this.isExcuteASAP = excuteASAP;
       const _this = this;
       this.form.validateFields((err, values) => {
         if (!err) {
