@@ -124,7 +124,7 @@ export default {
       getHostMetrics({
         query_ip: this.queryIp
       }).then((res) => {
-        if (res) {
+        if (res.data) {
           this.metrics = res.data.results;
           if (this.selectedMetrics.length < 1) {
             this.selectedMetrics = res.data.results.slice(0, 4);

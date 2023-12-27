@@ -170,7 +170,12 @@
           </span>
         </div>
         <div v-if="['cve fix', 'cve rollback'].includes(taskType)" slot="expandedRowRender" slot-scope="record">
-          <a-table rowKey="id" :columns="innerColumns" :data-source="record.rpms || []" :pagination="false">
+          <a-table
+            :rowKey="(innerrecord) => innerrecord.installed_rpm + innerrecord[rpmTypeMap[taskType]]"
+            :columns="innerColumns"
+            :data-source="record.rpms || []"
+            :pagination="false"
+          >
             <div slot="status" slot-scope="status">
               <span>
                 <a-badge :status="statusValueMap[status]" />
@@ -183,6 +188,14 @@
                 }}
                 <a-icon v-if="statusValueMap[status] === 'processing'" type="loading" class="color-running-circle" />
               </span>
+            </div>
+            <div slot="cves" slot-scope="cves" class="cve-text">
+              <a-popover placement="topLeft">
+                <template slot="content">
+                  <p class="cve-text-pop">{{ cves }}</p>
+                </template>
+                {{ cves }}
+              </a-popover>
             </div>
           </a-table>
         </div>
@@ -255,6 +268,12 @@ const rowKeyMap = {
   'cve rollback': 'host_id',
   'repo set': 'host_id',
   'hotpatch remove': 'cve_id'
+};
+
+// rpm类型与任务类型映射关系
+const rpmTypeMap = {
+  'cve fix': 'available_rpm',
+  'cve rollback': 'target_rpm'
 };
 
 const cveStatusTextMap = {
@@ -345,10 +364,12 @@ export default {
       taskTypeMap,
       rowKeyMap,
       statusValueMap,
+      rpmTypeMap,
       // rpm列表是否为展开状态
       isRpmTableExtend: false,
       isRollbackModelvisible: false,
       countDown: 0,
+      // 创建的回滚任务id
       rollbackTaskId: '',
       jumpModalInterval: null,
       // 详情页面下要执行任务的所有主机
@@ -467,15 +488,16 @@ export default {
           title: taskType === 'cve fix' ? '受影响rpm' : '已安装rpm'
         },
         {
-          dataIndex: taskType === 'cve fix' ? 'available_rpm' : 'target_rpm',
-          key: taskType === 'cve fix' ? 'available_rpm' : 'target_rpm',
+          dataIndex: rpmTypeMap[taskType],
+          key: rpmTypeMap[taskType],
           title: taskType === 'cve fix' ? '待安装rpm' : '目标rpm',
           scopedSlots: {customRender: 'rpm'}
         },
         {
           dataIndex: 'cves',
           key: 'cves',
-          title: 'CVE'
+          title: 'CVE',
+          scopedSlots: {customRender: 'cves'}
         },
         {
           dataIndex: 'status',
@@ -1165,5 +1187,19 @@ export default {
   border: 1px solid #ddd;
   border-radius: 3px;
   padding: 4px 6px 20px;
+}
+.cve-text {
+  max-width: 300px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  &-pop {
+    max-width: 500px;
+    display: -webkit-box;
+    -webkit-line-clamp: 25;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 </style>
