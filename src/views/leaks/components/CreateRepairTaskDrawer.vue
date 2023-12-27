@@ -207,7 +207,9 @@
                 >点击跳转到{{ item.fix_way }}{{ taskType === 'cve fix' ? '修复' : '移除' }}任务页面</a
               >
             </p>
-            <p v-if="jumpTaskId.length > 1 && isExcuteASAP">只执行热补丁任务，冷补丁任务需手动执行</p>
+            <p v-if="jumpTaskId.length > 1">
+              {{ isExcuteASAP ? '已自动执行热补丁任务，冷补丁任务需手动执行' : '请优先执行热补丁任务' }}
+            </p>
             <p>{{ countDown }}秒后回到原页面</p>
           </a-col>
         </a-row>
