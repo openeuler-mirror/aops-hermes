@@ -79,43 +79,43 @@
           <a-col v-if="standalone">
             <a-button @click="handleExport" type="primary">导出</a-button>
           </a-col>
-          <a-col v-if="!standalone && !fixed && selectedRowKeys.length === 0">
+          <a-col v-if="isStandFixedSelected(standalone, !fixed, selectedRowKeys.length === 0)">
             <create-repair-task-drawer
               text="生成修复任务"
               taskType="cve fix"
               :fixed="fixed"
-              :cveListProps="cveList"
+              :cveListProps="propData.length !== 0 ? cveList : []"
               hostListType="byLoading"
               @createSuccess="handleTaskCreateSuccess"
             />
           </a-col>
-          <a-col v-if="!standalone && !fixed && selectedRowKeys.length !== 0">
+          <a-col v-if="isStandFixedSelected(standalone, !fixed, selectedRowKeys.length !== 0)">
             <create-repair-task-drawer
               taskType="cve fix"
               :fixed="fixed"
-              :cveListProps="cveList"
+              :cveListProps="propData.length !== 0 ? cveList : []"
               hostListType="bySelection"
               :hostList="selectedRowsAll"
               @createSuccess="handleTaskCreateSuccess"
             />
           </a-col>
-          <a-col v-if="!standalone && fixed && selectedRowKeys.length === 0">
+          <a-col v-if="isStandFixedSelected(standalone, fixed, selectedRowKeys.length !== 0)">
             <create-repair-task-drawer
-              text="生成回滚任务"
-              taskType="cve rollback"
+              taskType="hotpatch remove"
               :fixed="fixed"
-              :cveListProps="cveList"
+              :cveListProps="propData.length !== 0 ? cveList : []"
+              hostListType="bySelection"
+              :hostList="selectedRowsAll"
+              @createSuccess="handleTaskCreateSuccess"
+            />
+          </a-col>
+          <a-col v-if="isStandFixedSelected(standalone, fixed, selectedRowKeys.length === 0)">
+            <create-repair-task-drawer
+              text="热补丁移除任务"
+              taskType="hotpatch remove"
+              :fixed="fixed"
+              :cveListProps="propData.length !== 0 ? cveList : []"
               hostListType="byLoading"
-              @createSuccess="handleTaskCreateSuccess"
-            />
-          </a-col>
-          <a-col v-if="!standalone && fixed && selectedRowKeys.length !== 0">
-            <create-repair-task-drawer
-              taskType="cve rollback"
-              :fixed="fixed"
-              :cveListProps="cveList"
-              hostListType="bySelection"
-              :hostList="selectedRowsAll"
               @createSuccess="handleTaskCreateSuccess"
             />
           </a-col>
@@ -259,6 +259,9 @@ export default {
     }
   },
   computed: {
+    isStandFixedSelected() {
+      return (standalone, fixed, selected) => !standalone && fixed && selected;
+    },
     hostTableColumnsStandalone() {
       let {filters} = this;
       filters = filters || {};
