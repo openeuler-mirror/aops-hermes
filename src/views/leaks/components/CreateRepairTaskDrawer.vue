@@ -486,7 +486,7 @@ export default {
       if (this.taskType === 'cve fix') {
         this.$message.info('至少需要选择一个CVE才能进行修复!');
       } else {
-        this.$message.info('至少需要选择一个CVE才能进行回滚!');
+        this.$message.info('至少需要选择一个CVE才能进行移除!');
       }
       this.hostUnderCveLoading = false;
       return true;
@@ -515,6 +515,7 @@ export default {
 
     // 每次展开抽屉时触发，替代mounted
     handleOpen() {
+      console.log(111);
       // inital defualt data
       this.visible = true;
       this.cveList = this.cveListProps;
