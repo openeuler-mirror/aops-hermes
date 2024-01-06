@@ -111,7 +111,7 @@
           </a-col>
           <a-col v-if="isStandFixedSelected(standalone, fixed, selectedRowKeys.length === 0)">
             <create-repair-task-drawer
-              text="热补丁移除任务"
+              text="热补丁移除"
               taskType="hotpatch remove"
               :fixed="fixed"
               :cveListProps="propData.length !== 0 ? cveList : []"

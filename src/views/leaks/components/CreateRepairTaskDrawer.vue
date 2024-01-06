@@ -241,7 +241,7 @@ const taskTypsbutton = {
   'cve fix': '生成修复任务',
   'repo set': '设置REPO',
   'cve rollback': '生成回滚任务',
-  'hotpatch remove': '热补丁移除任务'
+  'hotpatch remove': '热补丁移除'
 };
 const taskTypsEnum = {
   'cve fix': 'cve修复',
