@@ -1061,7 +1061,7 @@ export default {
       switch (this.taskType) {
         case 'hotpatch remove':
           this.taskNameDefault = '热补丁移除任务';
-          this.taskDescDefault = `移除以下${this.cveList.length}个CVE：${this.cveList
+          this.taskDescDefault = `移除以下${this.cveList.length}个CVE对应的热补丁：${this.cveList
             .map((cve) => cve.cve_id)
             .join('、')}`;
           break;
