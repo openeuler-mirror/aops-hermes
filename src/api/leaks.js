@@ -676,7 +676,7 @@ export function getPlaybook({tableInfo, ...parameters}) {
   });
 }
 
-export function getRepoTemplate(parameters) {
+export function getRepoTemplate() {
   return request({
     url: api.getRepoTemplate,
     method: 'get'
