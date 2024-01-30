@@ -17,7 +17,7 @@
             <a-col :span="22">
               <a-table :columns="columns" :data-source="item.changeLog" :pagination="false">
                 <a slot="action" href="javascript:;">展开</a>
-                <template slot="expandedRowRender" slot-scope="record" style="margin: 0">
+                <template slot="expandedRowRender" slot-scope="record">
                   <p>preValue：</p>
                   <p>{{ record.preValue }}</p>
                   <p>postValue：</p>
