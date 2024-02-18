@@ -81,6 +81,7 @@
 </template>
 
 <script>
+import {beforeDestory} from 'vue';
 import store from '@/store';
 import router from '@/vendor/ant-design-pro/router';
 import AddMoreHost from './components/addMoreHost.vue';
@@ -129,7 +130,9 @@ export default {
       tableIsLoading: false,
       detailId: undefined,
       detailVisisble: false,
-      deleteHostTempInfo: {}
+      deleteHostTempInfo: {},
+      // 主机运行状态心跳定时器
+      statusTimer: null
     };
   },
   computed: {
@@ -254,10 +257,21 @@ export default {
           pageSize: pagination.pageSize,
           total: hostListRes.data.total_count || (hostListRes.data.total_count === 0 ? 0 : pagination.total)
         };
-        const hostIdList = this.tableData.map((item) => item.host_id);
         this.tableIsLoading = false;
-        const res = await getHostListWithStatus(hostIdList);
-        if (res) {
+        await this.hostStatusHeartBeat();
+        this.statusTimer = setInterval(async () => {
+          await this.hostStatusHeartBeat();
+        }, 30 * 1000);
+      }
+    },
+    /**
+     * 主机运行状态心跳检测
+     */
+    async hostStatusHeartBeat() {
+      const hostIdList = this.tableData.map((item) => item.host_id);
+      const res = await getHostListWithStatus(hostIdList);
+      if (res) {
+        this.tableData.forEach((item) => {
           this.tableData.forEach((item) => {
             const s = res.data.find((s) => item.host_id === s.host_id);
             if (s) {
@@ -265,7 +279,7 @@ export default {
             }
           });
           this.tableData = JSON.parse(JSON.stringify(this.tableData));
-        }
+        });
       }
     },
     editHost(record) {
@@ -444,6 +458,10 @@ export default {
   mounted: function () {
     this.getHostList();
     this.getGroupList();
+  },
+  beforeDestory() {
+    clearInterval(this.status.statusTimer);
+    this.statusTimer = null;
   }
 };
 </script>
