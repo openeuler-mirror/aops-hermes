@@ -48,8 +48,7 @@
           @change="handleTableChange"
           :loading="tableIsLoading"
           :expandIconColumnIndex="0"
-          @expend="aleret(1)"
-        >
+          @expend="aleret(1)">
           <span slot="action" slot-scope="record">
             <!------后续增加-----
             <span>编辑</span>
@@ -66,15 +65,13 @@
           placement="right"
           :visible="hostListVisible"
           :body-style="{paddingBottom: '80px'}"
-          @close="closeHostList"
-        >
+          @close="closeHostList">
           <a-table
             :rowKey="hostRowKey"
             :columns="hostListColumns"
             :data-source="this.hostListDataStore[this.hostGroupName] || []"
             :loading="hostListIsLoading ? true : false"
-            :pagination="false"
-          >
+            :pagination="false">
             <span slot="isManagement" slot-scope="isMana">{{ isMana ? '是' : '否' }}</span>
           </a-table>
         </a-drawer>
@@ -112,7 +109,7 @@ const hostListColumns = [
   {
     dataIndex: 'ssh_port',
     key: 'ssh_port',
-    title: 'SSH登录接口'
+    title: 'SSH登录端口'
   },
   {
     dataIndex: 'management',
@@ -404,6 +401,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.aops-theme {
+  .hostgroupbox {
+    overflow: auto;
+  }
+}
 .ant-lert {
   line-height: 14px;
 }

@@ -37,27 +37,25 @@
           :pagination="pagination"
           :row-selection="rowSelection"
           @change="handleTableChange"
-          :loading="tableIsLoading"
-        >
+          :loading="tableIsLoading">
           <span slot="contents" slot-scope="record">
             <div class="oneRow">{{ record.contents }}</div>
           </span>
           <span slot="action" slot-scope="record">
-            <a @click="showConfigContent(record)">查看配置文件</a>
+            <a @click="showConfigContent(record)">查看详情</a>
             <a-divider type="vertical" />
-            <a @click="showConfigChange(record)">配置变更日志</a>
-            <a-divider type="vertical" />
-            <a @click="showEditDrawer(record)">编辑配置</a>
+            <a @click="showEditDrawer(record)">编辑</a>
             <a-divider type="vertical" />
             <a-popconfirm
-              title="你确定删除这行配置吗?"
+              title="您确定删除该行配置吗?"
               ok-text="确认"
               cancel-text="取消"
-              @confirm="deleteConfig(record)"
-            >
+              @confirm="deleteConfig(record)">
               <a-icon slot="icon" type="close-circle" style="color: red" />
               <a>删除</a>
             </a-popconfirm>
+            <a-divider type="vertical" />
+            <a @click="showConfigChange(record)">变更日志</a>
           </span>
         </a-table>
         <a-drawer
@@ -66,8 +64,7 @@
           placement="right"
           :visible="configContentVisible"
           :body-style="{paddingBottom: '80px'}"
-          @close="closeConfigContent"
-        >
+          @close="closeConfigContent">
           <a-descriptions :column="1" layout="horizontal">
             <a-descriptions-item label="配置文件">
               {{ configContent.filePath }}
@@ -87,8 +84,7 @@
           placement="right"
           :visible="configChangeVisible"
           :body-style="{paddingBottom: '80px'}"
-          @close="closeConfigChange"
-        >
+          @close="closeConfigChange">
           <a-spin :spinning="logIsLoading">
             <a-descriptions :column="1" layout="horizontal">
               <a-descriptions-item label="所属业务域">
@@ -112,8 +108,7 @@
                   :expandIconColumnIndex="4"
                   :expandIcon="(props) => this.customExpandIcon(props)"
                   :pagination="false"
-                  bordered
-                >
+                  bordered>
                   <div slot="expandedRowRender" slot-scope="record" style="margin: 0">
                     <p>preValue:</p>
                     {{ record.preValue }}
@@ -134,8 +129,7 @@
       :domainName="domainName"
       :editFilePath="editFilePath"
       @ok="onEditConfsOk"
-      @cancel="onEditConfsCancel"
-    />
+      @cancel="onEditConfsCancel" />
   </page-header-wrapper>
 </template>
 

@@ -1,7 +1,12 @@
 <template>
   <div class="aops-add-domain" @click="showModal">
     <a-icon type="plus" />
-    <a-modal title="创建业务域" :visible="visible" :confirm-loading="isLoading" @ok="handleOk" @cancel="handleCancel">
+    <a-modal
+      title="创建业务域"
+      :visible="visible"
+      :confirm-loading="isLoading"
+      @ok="handleOk"
+      @cancel="handleCancel">
       <a-form :form="form" :label-col="{span: 5}" :wrapper-col="{span: 16}">
         <a-form-item label="业务域名称">
           <a-input
@@ -10,16 +15,14 @@
             v-decorator="[
               'domainName',
               {rules: [{required: true, message: '请输入业务域名称'}, {validator: checkDomainName}]}
-            ]"
-          >
+            ]">
           </a-input>
         </a-form-item>
         <a-form-item label="优先级">
           <a-input
             :disabled="true"
             placeholder="未开放设置"
-            v-decorator="['priority', {rules: [{required: false, message: '请输入优先级'}]}]"
-          >
+            v-decorator="['priority', {rules: [{required: false, message: '请输入优先级'}]}]">
           </a-input>
         </a-form-item>
       </a-form>
@@ -63,7 +66,7 @@ export default {
           domainInfo.push(values);
           createDomain(domainInfo)
             .then(function (res) {
-              _this.$message.success(res.message);
+              _this.$message.success(res.msg);
               _this.onSuccess && _this.onSuccess();
               _this.visible = false;
               _this.form.resetFields();

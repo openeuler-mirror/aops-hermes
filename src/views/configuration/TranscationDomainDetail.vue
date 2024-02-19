@@ -28,25 +28,6 @@
               <a-col>
                 <a-button @click="handleRefresh"> <a-icon type="redo" />刷新 </a-button>
               </a-col>
-              <!--------暂时没有其他功能--------
-              <a-col>
-                <a-button>
-                  <a-dropdown>
-                    <a class="ant-dropdown-link" @click="e => e.preventDefault()">
-                      更多操作 <a-icon type="down" />
-                    </a>
-                    <a-menu slot="overlay">
-                      <a-menu-item>
-                        <a>查看主机</a>
-                      </a-menu-item>
-                      <a-menu-item>
-                        <a>添加主机</a>
-                      </a-menu-item>
-                    </a-menu>
-                  </a-dropdown>
-                </a-button>
-              </a-col>
-              -------------------------------->
             </a-row>
           </a-col>
         </a-row>
@@ -56,68 +37,18 @@
           :data-source="tableData"
           :row-selection="rowSelection"
           :loading="tableIsLoading"
-          :pagination="false"
-        >
-          <!------------暂不做同步---------------
-          <span slot="filterIcon">
-            同步状态
-            <a-icon type="reload" @click="refreshDomainStatus()"/>
-          </span>
-          ------------------------------------->
-          <template slot="syncStatus" slot-scope="statusInfo">
-            <div v-if="domainStatusIsLoading">
-              <a-icon type="loading" />
-            </div>
-            <div v-else>
-              <a-icon
-                v-if="statusInfo.syncStatus === statusEnum.sync"
-                type="check-circle"
-                theme="twoTone"
-                two-tone-color="#52c41a"
-              />
-              <a-icon
-                v-if="statusInfo.syncStatus === statusEnum.notSync"
-                type="close-circle"
-                theme="twoTone"
-                two-tone-color="#f00"
-              />
-              <a-icon
-                v-if="statusInfo.syncStatus === statusEnum.notFound"
-                type="question-circle"
-                theme="twoTone"
-                two-tone-color="#ccc"
-              />
-              {{ statusTitleEnum[statusInfo.syncStatus] }}
-              <span v-if="statusInfo.syncStatus === statusEnum.notSync">{{ `${statusInfo.count}条` }}</span>
-            </div>
-          </template>
+          :pagination="false">
           <span slot="action" slot-scope="record">
             <a @click="showQueryRealConfsDrawer(record)">当前配置</a>
             <a-divider type="vertical" />
-            <!---- 只是没有这个功能---------
-            <a @click="showQueryExpectConfsDrawer(record)">配置日志</a>
-            <a-divider type="vertical" />
-            ----------------------------->
             <a @click="showDomainStatusDrawer(record)">状态详情</a>
             <a-divider type="vertical" />
-            <!-----------暂时不做同步功能----------
             <a-popconfirm
-              title="你确定要将当前业务域的配置同步到这台主机吗?"
+              title="您确定要从当前业务域中删除这台主机吗?"
               ok-text="确认"
               cancel-text="取消"
-              @confirm="handleOneHostSyncConf(record)"
-            >
-              <a href="#">同步</a>
-            </a-popconfirm>
-            <a-divider type="vertical" />
-            ------------------------------------->
-            <a-popconfirm
-              title="你确定要从当前业务域中删除这台主机吗?"
-              ok-text="确认"
-              cancel-text="取消"
-              @confirm="deleteDomainHost(record)"
-            >
-              <a>删除</a>
+              @confirm="deleteDomainHost(record)">
+                <a>删除</a>
             </a-popconfirm>
           </span>
         </a-table>
@@ -140,15 +71,11 @@
       title="状态详情"
       ref="domainStatusDrawer"
       :hasButtonOnBottom="false"
-      :bodyStyle="{paddingBottom: '80px'}"
-    >
+      :bodyStyle="{paddingBottom: '80px'}">
       <template slot="drawerView">
         <get-domain-status-drawer
-          :tableData="tableData"
           :domainStatusIsLoading="domainStatusIsLoading"
-          :domainName="domainName"
-          @getDomainStatus="getDomainStatus"
-        />
+          :domainName="domainName"/>
       </template>
     </drawer-view>
   </my-page-header-wrapper>
@@ -157,7 +84,7 @@
 <script>
 import MyPageHeaderWrapper from '@/views/utils/MyPageHeaderWrapper';
 
-import {domainHostList, deleteHost, domainStatus, syncConf} from '@/api/configuration';
+import {deleteHost, queryHostAndStatus, batchSyncConf} from '@/api/configuration';
 import {getManagementConf} from '@/api/management';
 
 import DrawerView from '@/views/utils/DrawerView';
@@ -167,12 +94,11 @@ import GetDomainStatusDrawer from '@/views/configuration/components/GetDomainSta
 import AddHostDrawer from '@/views/configuration/components/AddHostDrawer';
 
 import defaultSettings from '@/config/defaultSettings';
-import {STATUS_ENUM, getStatusInfoFromAllConfs} from './utils/statusCheckTools';
 
 const STATUS_TITLE_ENUM = {};
-STATUS_TITLE_ENUM[STATUS_ENUM.sync] = '已同步';
-STATUS_TITLE_ENUM[STATUS_ENUM.notSync] = '未同步';
-STATUS_TITLE_ENUM[STATUS_ENUM.notFound] = '未知状态';
+STATUS_TITLE_ENUM[0] = '未同步';
+STATUS_TITLE_ENUM[1] = '已同步';
+STATUS_TITLE_ENUM[2] = '未知状态';
 
 export default {
   name: 'TranscationDomainDetail',
@@ -186,17 +112,13 @@ export default {
   },
   data() {
     return {
-      rowKey: 'hostId',
+      rowKey: 'host_id',
       hostList: [],
-      statusData: [],
       selectedRowKeys: [],
       selectedRows: [],
       tableIsLoading: false,
       domainName: this.$route.params.domainName,
-      statusEnum: STATUS_ENUM,
-      statusTitleEnum: STATUS_TITLE_ENUM,
       domainStatusIsLoading: false,
-      hostStatusData: {a: 1},
       confsOfDomain: [],
       confsOfDomainLoading: false,
       setTimeoutKey_statusInterval: undefined
@@ -206,24 +128,19 @@ export default {
     columns() {
       return [
         {
-          dataIndex: 'ip',
-          key: 'ip',
+          dataIndex: 'host_ip',
+          key: 'host_ip',
           title: 'IP地址'
         },
         {
-          dataIndex: 'ipv6',
-          key: 'ipv6',
+          dataIndex: 'ipv4',
+          key: 'ipv4',
           title: 'IP协议'
         },
         {
-          dataIndex: 'syncStatusInfo',
-          key: 'syncStatusInfo',
-          title: '同步状态',
-          filterMultiple: false,
-          slots: {
-            // title: 'filterIcon' 暂不做同步
-          },
-          scopedSlots: {customRender: 'syncStatus'}
+          dataIndex: 'sync_status',
+          key: 'sync_status',
+          title: '同步状态'
         },
         {
           key: 'operation',
@@ -240,11 +157,9 @@ export default {
     },
     tableData() {
       return this.hostList.map((host) => {
-        const hostTemp = host;
-        const matchedStatusHost = this.statusData.filter((item) => item.hostId === hostTemp.hostId)[0] || {};
-        hostTemp.syncStatusList = matchedStatusHost.syncStatus || [];
-        hostTemp.syncStatusInfo = getStatusInfoFromAllConfs(hostTemp.syncStatusList);
-        return hostTemp;
+        host.ipv4 = 'ipv4'
+        host.sync_status = STATUS_TITLE_ENUM[host.sync_status]
+        return host;
       });
     }
   },
@@ -253,46 +168,22 @@ export default {
       this.selectedRowKeys = selectedRowKeys;
       this.selectedRows = selectedRows;
     },
-    // 获取业务域列表数据
-    getHostList(domainName) {
+    queryHostAndStatus(domainName) {
       const _this = this;
-      return new Promise(function (resolve, reject) {
-        _this.tableIsLoading = true;
-        domainHostList(domainName)
-          .then(function (res) {
-            _this.hostList = res;
-            resolve(res);
-          })
-          .catch(function (err) {
-            if (err.response.data.code !== 400) {
-              _this.$message.error(err.response.message || err.response.data.detail);
-            } else {
-              _this.hostList = [];
-            }
-            reject(err);
-          })
-          .finally(function () {
-            _this.tableIsLoading = false;
-          });
-      });
-    },
-    // 获取业务域主机同步状态
-    getDomainStatus() {
-      const _this = this;
-      this.domainStatusIsLoading = true;
-      domainStatus({
-        domainName: _this.domainName
-      })
+      _this.tableIsLoading = true;
+      queryHostAndStatus(domainName)
         .then(function (res) {
-          _this.statusData = res.hostStatus || [];
+          _this.hostList = res.data || [];
         })
         .catch(function (err) {
-          if (err.response.code !== '404') {
+          if (err.response.data.code !== 400) {
             _this.$message.error(err.response.message || err.response.data.detail);
+          } else {
+            _this.hostList = [];
           }
         })
         .finally(function () {
-          _this.domainStatusIsLoading = false;
+          _this.tableIsLoading = false;
         });
     },
     handleRefresh() {
@@ -314,36 +205,38 @@ export default {
         content: () =>
           selectedRows.map((row) => (
             <p>
-              <span>{row.ip}</span>
+              <span>{row.host_ip}</span>
             </p>
           )),
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '删除',
         onOk: function () {
-          return _this.handleDelete(selectedRows, true);
+          return _this.handleDelete(selectedRows);
         },
         onCancel() {}
       });
     },
-    handleDelete(hostInfos, isBash) {
+    handleDelete(hostInfos) {
       const _this = this;
       return new Promise((resolve, reject) => {
+        hostInfos.map((hostInfo) => {
+          hostInfo.hostId = hostInfo.host_id;
+          return hostInfo;
+        });
         deleteHost({
           domainName: _this.domainName,
           hostInfos: hostInfos
         })
           .then((res) => {
-            _this.$message.success(res.message);
+            _this.$message.success(res.msg);
             _this.getHostAndStatus();
-            if (isBash) {
-              _this.selectedRowKeys = [];
-              _this.selectedRows = [];
-            }
+            _this.selectedRowKeys = [];
+            _this.selectedRows = [];
             resolve();
           })
           .catch((err) => {
-            _this.$message.error(err.response.nsg);
+            _this.$message.error(err.response.message || err.response.data.detail || err.message);
             reject(err);
           });
       });
@@ -353,49 +246,31 @@ export default {
       this.$confirm({
         title: (
           <div>
-            <p>你确定要将当前业务域的配置同步到已选主机吗？</p>
+            <p>您确定要将当前业务域的配置同步到已选主机吗？</p>
           </div>
         ),
-        content: <span>同步后将配置无法恢复，但可从配置日志中查看记录,你还要继续吗?</span>,
+        content: <span>同步后将配置无法恢复，但可从配置日志中查看记录,您还要继续吗?</span>,
         icon: () => <a-icon type="exclamation-circle" />,
         okType: 'danger',
         okText: '继续同步',
         onOk: function () {
-          return _this.handleSyncConf(selectedRows, true);
+          return _this.handleSyncConf(selectedRows);
         },
         onCancel() {}
       });
     },
-    handleOneHostSyncConf(record) {
-      const rows = [];
-      rows.push(record);
-      this.handleSyncConf(rows, true);
-    },
-    handleSyncConf(selectedRows, isBash) {
-      const syncList = [];
+    handleSyncConf(selectedRows) {
+      const hostIds = [];
       selectedRows.forEach(function (item) {
-        const syncConfigs = [];
-        item.syncStatusList.forEach((val) => {
-          if (val.isSynced === 'NOT SYNCHRONIZE') {
-            syncConfigs.push(val.file_path);
-          }
-        });
-        const host = {
-          hostId: item.hostId,
-          syncConfigs: syncConfigs
-        };
-        syncList.push(host);
+        hostIds.push(item.host_id);
       });
       const _this = this;
       return new Promise((resolve, reject) => {
-        syncConf({
-          domainName: _this.domainName,
-          syncList: syncList
-        })
+        batchSyncConf(_this.domainName, hostIds)
           .then((res) => {
             let msg = '';
             for (const item of res) {
-              const hostId = item.hostId;
+              const hostId = item.host_id;
               let success = '';
               let fail = '';
               const syncResult = item.syncResult;
@@ -422,10 +297,8 @@ export default {
               _this.$message.success(msg);
             }
             _this.getHostAndStatus();
-            if (isBash) {
-              _this.selectedRowKeys = [];
-              _this.selectedRows = [];
-            }
+            _this.selectedRowKeys = [];
+            _this.selectedRows = [];
             resolve();
           })
           .catch((err) => {
@@ -438,13 +311,12 @@ export default {
       this.$refs.addHostDrawer.open(this.domainName);
     },
     showQueryRealConfsDrawer(host) {
+      host.hostId = host.host_id
+      host.ip = host.host_ip
       this.$refs.queryRealConfsDrawer.open({
         host,
         domainName: this.domainName
       });
-    },
-    showQueryExpectConfsDrawer(record) {
-      this.$refs.queryExpectConfsDrawer.open(record);
     },
     showDomainStatusDrawer(record) {
       this.$refs.domainStatusDrawer.open(record);
@@ -470,18 +342,28 @@ export default {
     },
     getHostAndStatus() {
       const _this = this;
-      this.getHostList(this.domainName)
-        .then(function () {
-          _this.getDomainStatus();
+      const domainName = this.domainName;
+      _this.tableIsLoading = true;
+      queryHostAndStatus(domainName)
+        .then(function (res) {
+          _this.hostList = res.data || [];
           // 启动循环更新Status
           clearInterval(_this.setTimeoutKey_statusInterval);
           _this.setTimeoutKey_statusInterval = setInterval(function () {
-            _this.getDomainStatus();
+            _this.queryHostAndStatus(domainName);
           }, defaultSettings.domainStatusRefreshInterval);
         })
-        .catch(function () {
+        .catch(function (err) {
+          if (err.response.data.code !== 400) {
+            _this.$message.error(err.response.message || err.response.data.detail);
+          } else {
+            _this.hostList = [];
+          }
           // 获取host出错（为空或报错，则清除轮训）
           clearInterval(_this.setTimeoutKey_statusInterval);
+        })
+        .finally(function () {
+          _this.tableIsLoading = false;
         });
     }
   },
