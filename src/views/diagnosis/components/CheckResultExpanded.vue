@@ -2,7 +2,8 @@
   <div style="margin-bottom: 10px">
     <div>数据项列表：</div>
     <div style="line-height: 18px" v-for="(data, index) in dataSource" :key="index">
-      <span v-for="(key, idx) in keyArray" :key="idx" v-if="!!data[key]">
+     <template v-for="(key, idx) in keyArray">
+      <span :key="idx" v-if="!!data[key]">
         <span v-if="idx > 0" style="padding: 0 8px; font-size: 18px; font-weight: lighter; color: #000">|</span>
         <span style="color: #333">{{ key }}<span style="padding: 0 3px">:</span></span>
         <span v-if="typeof data[key] === 'object'">
@@ -17,6 +18,7 @@
         </span>
         <span v-else style="border-bottom: 1px solid; padding: 0 2px; margin-right: 3px">{{ data[key] }}</span>
       </span>
+     <template>
     </div>
   </div>
 </template>
