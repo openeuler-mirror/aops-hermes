@@ -10,8 +10,10 @@ const api = {
   addHost: '/host/addHost', // 添加业务域主机
   domainStatus: '/confs/getDomainStatus', // 获取业务域主机同步状态
   syncConf: '/confs/syncConf', // 获取业务域主机同步状态
+  batchSyncConf: '/confs/batch/syncConf', // 将当前业务域的配置批量同步到各主机
   queryRealConfs: '/confs/queryRealConfs', // 获取主机当前配置
-  queryExpectedConfs: '/confs/queryExpectedConfs' // 获取主机配置日志
+  queryExpectedConfs: '/confs/queryExpectedConfs', // 获取主机配置日志
+  queryHostAndStatus: '/manage/host/sync/status/get' // 获取业务域下的主机及其同步状态
 };
 
 export default api;
@@ -48,12 +50,13 @@ export function addHost(domainName, hostInfos, ...parameter) {
   });
 }
 // 获取业务域主机同步状态
-export function domainStatus({domainName, ...parameter}) {
+export function domainStatus(domainName, hostIp) {
   return request({
     url: api.domainStatus,
     method: 'post',
     data: {
-      domainName
+      domainName: domainName,
+      ip: hostIp
     }
   });
 }
@@ -100,7 +103,8 @@ export function syncConf(parameter) {
     data: {
       domainName: parameter.domainName,
       syncList: parameter.syncList
-    }
+    },
+    timeout: 900000
   });
 }
 // 获取主机当前配置
@@ -121,6 +125,29 @@ export function queryExpectedConfs(domainName, hostIds, ...parameter) {
     method: 'get',
     data: {
       ...parameter,
+      domainName: domainName,
+      hostIds: hostIds
+    }
+  });
+}
+
+// 获取业务域下的主机及其同步状态
+export function queryHostAndStatus(domainName) {
+  return request({
+    url: api.queryHostAndStatus,
+    method: 'post',
+    data: {
+      domain_name: domainName
+    }
+  });
+}
+
+// 将当前业务域的配置批量同步到各主机
+export function batchSyncConf(domainName, hostIds) {
+  return request({
+    url: api.batchSyncConf,
+    method: 'put',
+    data: {
       domainName: domainName,
       hostIds: hostIds
     }

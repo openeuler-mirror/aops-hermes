@@ -139,8 +139,8 @@ export default {
           _this.confsOfHost = (res && res[0] && res[0].confBaseInfos) || [];
         })
         .catch((err) => {
-          if (err.response.code !== '400') {
-            _this.$message.error(err.response.message);
+          if (err.response.code !== '400' && err.code !== 'ERR_BAD_REQUEST') {
+            _this.$message.error(err.response.message || err.response.data.detail || err.message);
           }
         })
         .finally(() => {

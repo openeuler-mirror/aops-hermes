@@ -150,7 +150,7 @@ export default {
       this.$confirm({
         title: (
           <div>
-            <p>你确定要删除这个业务域吗？</p>
+            <p>您确定要删除这个业务域吗？</p>
           </div>
         ),
         content: <span>删除后业务域无法恢复</span>,
@@ -172,12 +172,12 @@ export default {
           domainNameArray
         })
           .then((res) => {
-            _this.$message.success(res.message);
+            _this.$message.success(res.msg);
             _this.getDomainList();
             resolve();
           })
           .catch((err) => {
-            _this.$message.error(err.response.message);
+            _this.$message.error(err.response.message || err.message);
             reject(err);
           });
       });

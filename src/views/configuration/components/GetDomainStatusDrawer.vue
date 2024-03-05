@@ -3,12 +3,12 @@
     <a-row type="flex" justify="space-between">
       <a-col :span="22">
         <div style="float: left; margin-bottom: 10px">
-          <span>主机：{{ host.hostId }}</span>
-          <span class="ip-left">{{ host.ip }}</span>
+          <span>主机：{{ host.host_id }}</span>
+          <span class="ip-left">{{ host.host_ip }}</span>
         </div>
         <div style="float: right; margin-bottom: 10px">
           <a-popconfirm
-            title="你确定要将当前业务域的配置同步到这台主机吗?"
+            title="您确定要将当前业务域的配置同步到这台主机吗?"
             ok-text="确认"
             cancel-text="取消"
             @confirm="confirm"
@@ -54,12 +54,11 @@
           </span>
           <span slot="action" slot-scope="record">
             <a-popconfirm
-              title="你确定要同步该配置到这台主机吗?"
+              title="您确定要同步该配置到这台主机吗?"
               ok-text="确认"
               cancel-text="取消"
               @confirm="syncConfigConfirm(record)"
-              :disabled="record.isSynced !== 'NOT SYNCHRONIZE'"
-            >
+              :disabled="record.isSynced !== 'NOT SYNCHRONIZE'">
               <a-button type="link" :disabled="record.isSynced !== 'NOT SYNCHRONIZE'">同步</a-button>
             </a-popconfirm>
           </span>
@@ -71,7 +70,7 @@
 
 <script>
 import {STATUS_ENUM} from '../utils/statusCheckTools';
-import {syncConf} from '@/api/configuration';
+import {domainStatus, syncConf} from '@/api/configuration';
 
 const STATUS_TITLE_ENUM = {};
 STATUS_TITLE_ENUM[STATUS_ENUM.sync] = '已同步';
@@ -102,16 +101,11 @@ export default {
         }
       ],
       statusEnum: STATUS_ENUM,
-      statusTitleEnum: STATUS_TITLE_ENUM
+      statusTitleEnum: STATUS_TITLE_ENUM,
+      statusData: []
     };
   },
   props: {
-    tableData: {
-      type: Array,
-      default: () => {
-        return [];
-      }
-    },
     domainStatusIsLoading: {
       type: Boolean,
       default: false
@@ -123,8 +117,7 @@ export default {
   },
   computed: {
     syncStatusList() {
-      const matchedHost = this.tableData.filter((hostInfo) => hostInfo.hostId === this.host.hostId)[0] || {};
-      return matchedHost.syncStatusList || [];
+      return this.statusData;
     }
   },
   methods: {
@@ -141,11 +134,15 @@ export default {
     cancel(e) {},
     syncConf(syncConfigs) {
       const _this = this;
+      if (syncConfigs.length === 0) {
+        _this.$message.error('没有需要同步的配置文件，无需同步！');
+        return;
+      }
       syncConf({
         domainName: this.domainName,
         syncList: [
           {
-            hostId: this.host.hostId,
+            hostId: this.host.host_id,
             syncConfigs: syncConfigs
           }
         ]
@@ -153,7 +150,7 @@ export default {
         .then((res) => {
           let message = '';
           for (const item of res) {
-            const hostId = item.hostId;
+            const hostId = item.host_id;
             let success = '';
             let fail = '';
             const syncResult = item.syncResult;
@@ -169,8 +166,7 @@ export default {
             } else if (success.length !== 0 && fail.length === 0) {
               message += '主机' + hostId + '\xa0\xa0\xa0' + '同步成功：' + success;
             } else if (success.length !== 0 && fail.length !== 0) {
-              message +=
-                '主机' + hostId + '\xa0\xa0\xa0' + '同步成功：' + success + '\xa0\xa0\xa0' + '同步失败：' + fail;
+              message += '主机' + hostId + '\xa0\xa0\xa0' + '同步成功：' + success + '\xa0\xa0\xa0' + '同步失败：' + fail;
             }
           }
           if (message.includes('同步失败') && message.includes('同步成功')) {
@@ -180,7 +176,7 @@ export default {
           } else {
             _this.$message.success(message);
           }
-          _this.$emit('getDomainStatus');
+          _this.getDomainStatus(this.host.host_ip);
         })
         .catch((err) => {
           _this.$message.error(err.response.message || err.response.data.detail || err.response.data.msg);
@@ -190,6 +186,23 @@ export default {
       const syncConfigs = [];
       syncConfigs.push(record.file_path);
       this.syncConf(syncConfigs);
+    },
+    // 获取业务域主机同步状态
+    getDomainStatus(hostIp) {
+      const _this = this;
+      this.domainStatusIsLoading = true;
+      domainStatus(_this.domainName, hostIp)
+        .then(function (res) {
+          _this.statusData = res.hostStatus[0].syncStatus || [];
+        })
+        .catch(function (err) {
+          if (err.response.code !== '404' && err.code !== 'ERR_BAD_REQUEST') {
+            _this.$message.error(err.response.message || err.response.data.detail || err.message);
+          }
+        })
+        .finally(function () {
+          _this.domainStatusIsLoading = false;
+        });
     }
   },
   mounted: function () {
@@ -197,6 +210,7 @@ export default {
     this.onload(function (host) {
       _this.host = host;
     });
+    this.getDomainStatus(_this.host.host_ip);
   }
 };
 </script>
