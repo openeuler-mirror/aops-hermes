@@ -18,7 +18,7 @@
         <a-tag v-for="tag in tagList" :key="tag">{{ tag }}</a-tag>
       </div>
     </div>
-    <template slot="actions" class="ant-card-actions">
+    <template slot="actions" >
       <slot />
     </template>
   </a-card>
