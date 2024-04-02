@@ -156,6 +156,14 @@ const vueConfig = {
           '^/api': ''
         }
       },
+      '/api/cobbler': {
+        target: 'http://127.0.0.1:11117',
+        ws: false,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      },
       '/api': {
         target: serverMap.serverIpBase + ':11111',
         ws: false,

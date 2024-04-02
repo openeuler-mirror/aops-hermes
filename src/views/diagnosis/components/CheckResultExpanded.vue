@@ -18,7 +18,7 @@
         </span>
         <span v-else style="border-bottom: 1px solid; padding: 0 2px; margin-right: 3px">{{ data[key] }}</span>
       </span>
-     <template>
+     </template>
     </div>
   </div>
 </template>

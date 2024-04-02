@@ -99,6 +99,72 @@ const routeMap = {
       }
     }
   },
+  cobblerManagement: {
+    title: 'menu.cobblerManagement',
+    path: '/cobblerManagement',
+    children: {
+      imageView: {
+        title: 'menu.cobblerManagement.images-management',
+        path: '/cobbler/images-management',
+        children: {
+          ImagesManagement: {
+            title: 'menu.cobblerManagement.images-management',
+            path: '/cobbler/images-management'
+          }
+        }
+      },
+      ksFileView: {
+        title: 'menu.cobblerManagement.kickstart-management',
+        path: '/cobbler/kickstart-management',
+        children: {
+          KickstartsManagement: {
+            title: 'menu.cobblerManagement.kickstart-management',
+            path: '/cobbler/kickstart-management'
+          },
+          CreateKickstart: {
+            title: 'menu.cobblerManagement.create-kickstart',
+            path: '/cobbler/kickstart-management/kickstart-create'
+          },
+          EditKickstart: {
+            title: 'menu.cobblerManagement.edit-kickstart',
+            path: '/cobbler/kickstart-management/kickstart-edit'
+          }
+        }
+      },
+      scriptView: {
+        title: 'menu.cobblerManagement.script-management',
+        path: '/cobbler/script-management',
+        children: {
+          ScriptManagement: {
+            title: 'menu.cobblerManagement.script-management',
+            path: '/cobbler/script-management'
+          }
+        }
+      },
+      cobblerHostView: {
+        title: 'menu.cobblerManagement.host-management',
+        path: '/cobbler/host-management',
+        children: {
+          HostManagement: {
+            title: 'menu.cobblerManagement.host-management',
+            path: '/cobbler/host-management'
+          },
+          CobblerCreateHost: {
+            title: 'menu.cobblerManagement.create-host',
+            path: '/cobbler/host-management/host-create'
+          },
+          CobblerEditHost: {
+            title: 'menu.cobblerManagement.edit-host',
+            path: '/cobbler/host-management/host-edit'
+          },
+          HostInfoManage: {
+            title: 'menu.cobblerManagement.manage-host',
+            path: '/cobbler/host-management/host-info-manage'
+          }
+        }
+      }
+    }
+  },
   task: {
     title: 'menu.task',
     path: '/task',
@@ -818,6 +884,307 @@ export const asyncRouterMap = [
                     {
                       breadcrumbName: routeMap.configuration.children.TranscationDomainConfigurationsDetail.title,
                       path: routeMap.configuration.children.TranscationDomainConfigurationsDetail.path
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        path: routeMap.cobblerManagement.path,
+        name: 'cobblerManagement',
+        redirect: '/cobbler/images-management',
+        component: RouteView,
+        meta: {
+          title: routeMap.cobblerManagement.title,
+          icon: 'robot',
+          permission: ['cobblerManagement']
+        },
+        children: [
+          {
+            path: routeMap.cobblerManagement.children.imageView.path,
+            name: 'imageView',
+            redirect: routeMap.cobblerManagement.children.imageView.children.ImagesManagement.path,
+            component: RouteView,
+            hideChildrenInMenu: true,
+            meta: {
+              title: routeMap.cobblerManagement.children.imageView.children.ImagesManagement.title,
+              permission: ['cobblerManagement']
+            },
+            children: [
+              {
+                path: routeMap.cobblerManagement.children.imageView.children.ImagesManagement.path,
+                name: 'ImagesManagement',
+                hidden: true,
+                component: () => import('@/views/cobbler/ImageManagement'),
+                meta: {
+                  title: routeMap.cobblerManagement.children.imageView.children.ImagesManagement.title,
+                  permission: ['cobblerManagement'],
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.title,
+                      path: routeMap.cobblerManagement.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.children.imageView.children.ImagesManagement.title,
+                      path: routeMap.cobblerManagement.children.imageView.children.ImagesManagement.path
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            path: routeMap.cobblerManagement.children.ksFileView.path,
+            name: 'ksFileView',
+            redirect: routeMap.cobblerManagement.children.ksFileView.children.KickstartsManagement.path,
+            component: RouteView,
+            hideChildrenInMenu: true,
+            meta: {
+              title: routeMap.cobblerManagement.children.ksFileView.children.KickstartsManagement.title,
+              permission: ['cobblerManagement']
+            },
+            children: [
+              {
+                path: routeMap.cobblerManagement.children.ksFileView.children.KickstartsManagement.path,
+                name: 'KickstartsManagement',
+                hidden: true,
+                component: () => import('@/views/cobbler/KickstartManagement'),
+                meta: {
+                  title: routeMap.cobblerManagement.children.ksFileView.children.KickstartsManagement.title,
+                  permission: ['cobblerManagement'],
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.title,
+                      path: routeMap.cobblerManagement.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.children.ksFileView.children.KickstartsManagement.title,
+                      path: routeMap.cobblerManagement.children.ksFileView.children.KickstartsManagement.path
+                    }
+                  ]
+                }
+              },
+              {
+                path: routeMap.cobblerManagement.children.ksFileView.children.CreateKickstart.path,
+                name: 'CreateKickstart',
+                hidden: true,
+                component: () => import('@/views/cobbler/KickstartEdition'),
+                meta: {
+                  title: routeMap.cobblerManagement.children.ksFileView.children.CreateKickstart.title,
+                  permission: ['cobblerManagement'],
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.title,
+                      path: routeMap.cobblerManagement.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.children.ksFileView.children.KickstartsManagement.title,
+                      path: routeMap.cobblerManagement.children.ksFileView.children.KickstartsManagement.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.children.ksFileView.children.CreateKickstart.title,
+                      path: routeMap.cobblerManagement.children.ksFileView.children.CreateKickstart.path
+                    }
+                  ]
+                }
+              },
+              {
+                path: routeMap.cobblerManagement.children.ksFileView.children.EditKickstart.path,
+                name: 'EditKickstart',
+                hidden: true,
+                component: () => import('@/views/cobbler/KickstartEdition'),
+                meta: {
+                  title: routeMap.cobblerManagement.children.ksFileView.children.EditKickstart.title,
+                  permission: ['cobblerManagement'],
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.title,
+                      path: routeMap.cobblerManagement.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.children.ksFileView.children.KickstartsManagement.title,
+                      path: routeMap.cobblerManagement.children.ksFileView.children.KickstartsManagement.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.children.ksFileView.children.EditKickstart.title,
+                      path: routeMap.cobblerManagement.children.ksFileView.children.EditKickstart.path
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            path: routeMap.cobblerManagement.children.scriptView.path,
+            name: 'scriptView',
+            redirect: routeMap.cobblerManagement.children.scriptView.children.ScriptManagement.path,
+            component: RouteView,
+            hideChildrenInMenu: true,
+            meta: {
+              title: routeMap.cobblerManagement.children.scriptView.children.ScriptManagement.title,
+              permission: ['cobblerManagement']
+            },
+            children: [
+              {
+                path: routeMap.cobblerManagement.children.scriptView.children.ScriptManagement.path,
+                name: 'ScriptManagement',
+                hidden: true,
+                component: () => import('@/views/cobbler/ScriptManagement'),
+                meta: {
+                  title: routeMap.cobblerManagement.children.scriptView.children.ScriptManagement.title,
+                  permission: ['cobblerManagement'],
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.title,
+                      path: routeMap.cobblerManagement.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.children.scriptView.children.ScriptManagement.title,
+                      path: routeMap.cobblerManagement.children.scriptView.children.ScriptManagement.path
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            path: routeMap.cobblerManagement.children.cobblerHostView.path,
+            name: 'cobblerHostView',
+            redirect: routeMap.cobblerManagement.children.cobblerHostView.children.HostManagement.path,
+            component: RouteView,
+            hideChildrenInMenu: true,
+            meta: {
+              title: routeMap.cobblerManagement.children.cobblerHostView.children.HostManagement.title,
+              permission: ['cobblerManagement']
+            },
+            children: [
+              {
+                path: routeMap.cobblerManagement.children.cobblerHostView.children.HostManagement.path,
+                name: 'HostManagement',
+                hidden: true,
+                component: () => import('@/views/cobbler/HostManagement.vue'),
+                meta: {
+                  title: routeMap.cobblerManagement.children.cobblerHostView.children.HostManagement.title,
+                  permission: ['cobblerManagement'],
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.title,
+                      path: routeMap.cobblerManagement.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.children.cobblerHostView.children.HostManagement.title,
+                      path: routeMap.cobblerManagement.children.cobblerHostView.children.HostManagement.path
+                    }
+                  ]
+                }
+              },
+              {
+                path: routeMap.cobblerManagement.children.cobblerHostView.children.CobblerCreateHost.path,
+                name: 'CobblerCreateHost',
+                hidden: true,
+                component: () => import('@/views/cobbler/HostEdition.vue'),
+                meta: {
+                  title: routeMap.cobblerManagement.children.cobblerHostView.children.CobblerCreateHost.title,
+                  permission: ['cobblerManagement'],
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.title,
+                      path: routeMap.cobblerManagement.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.children.cobblerHostView.children.HostManagement.title,
+                      path: routeMap.cobblerManagement.children.cobblerHostView.children.HostManagement.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.children.cobblerHostView.children.CobblerCreateHost.title,
+                      path: routeMap.cobblerManagement.children.cobblerHostView.children.CobblerCreateHost.path
+                    }
+                  ]
+                }
+              },
+              {
+                path: routeMap.cobblerManagement.children.cobblerHostView.children.CobblerEditHost.path,
+                name: 'CobblerEditHost',
+                hidden: true,
+                component: () => import('@/views/cobbler/HostEdition.vue'),
+                meta: {
+                  title: routeMap.cobblerManagement.children.cobblerHostView.children.CobblerEditHost.title,
+                  permission: ['cobblerManagement'],
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.title,
+                      path: routeMap.cobblerManagement.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.children.cobblerHostView.children.HostManagement.title,
+                      path: routeMap.cobblerManagement.children.cobblerHostView.children.HostManagement.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.children.cobblerHostView.children.CobblerEditHost.title,
+                      path: routeMap.cobblerManagement.children.cobblerHostView.children.CobblerEditHost.path
+                    }
+                  ]
+                }
+              },
+              {
+                path: routeMap.cobblerManagement.children.cobblerHostView.children.HostInfoManage.path,
+                name: 'HostInfoManage',
+                hidden: true,
+                component: () => import('@/views/cobbler/HostNanotube.vue'),
+                meta: {
+                  title: routeMap.cobblerManagement.children.cobblerHostView.children.HostInfoManage.title,
+                  permission: ['cobblerManagement'],
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: routeMap.index.title,
+                      path: routeMap.index.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.title,
+                      path: routeMap.cobblerManagement.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.children.cobblerHostView.children.HostManagement.title,
+                      path: routeMap.cobblerManagement.children.cobblerHostView.children.HostManagement.path
+                    },
+                    {
+                      breadcrumbName: routeMap.cobblerManagement.children.cobblerHostView.children.HostInfoManage.title,
+                      path: routeMap.cobblerManagement.children.cobblerHostView.children.HostInfoManage.path
                     }
                   ]
                 }
