@@ -86,7 +86,9 @@ request.interceptors.request.use((config) => {
   if (
     config.url === '/vulnerability/cve/advisory/upload' ||
     config.url === '/vulnerability/cve/unaffected/upload' ||
-    config.url === '/management/uploadManagementConf'
+    config.url === '/management/uploadManagementConf' ||
+    config.url === '/cobbler/uploadISO' ||
+    config.url === '/cobbler/uploadScript'
   ) {
     config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
   } else {
@@ -101,6 +103,10 @@ request.interceptors.response.use((response) => {
   const code = response.data.code || response.status;
   // 不处理所有2xx的状态码
   if (!code.toString().match(/^2[0-9]{2,2}$/)) {
+    // cobbler模块的接口和之前的接口返参不一致，所以cobbler模块的接口不用此校验规则
+    if (response.config.url.startsWith('/cobbler')) {
+      return;
+    }
     let err = null;
     switch (code) {
       case '1201':
