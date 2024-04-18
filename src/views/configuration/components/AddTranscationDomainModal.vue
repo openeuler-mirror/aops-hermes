@@ -62,11 +62,9 @@ export default {
           const _this = this;
           this.isLoading = true;
           values.priority = 0;
-          const domainInfo = [];
-          domainInfo.push(values);
-          createDomain(domainInfo)
+          createDomain(values)
             .then(function (res) {
-              _this.$message.success(res.msg);
+              _this.$message.success(res.message);
               _this.onSuccess && _this.onSuccess();
               _this.visible = false;
               _this.form.resetFields();

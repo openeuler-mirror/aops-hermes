@@ -149,7 +149,7 @@ export default {
       })
         .then((res) => {
           let message = '';
-          for (const item of res) {
+          for (const item of res.data) {
             const hostId = item.host_id;
             let success = '';
             let fail = '';
@@ -193,7 +193,7 @@ export default {
       this.domainStatusIsLoading = true;
       domainStatus(_this.domainName, hostIp)
         .then(function (res) {
-          _this.statusData = res.hostStatus[0].syncStatus || [];
+          _this.statusData = res.data.hostStatus[0].syncStatus || [];
         })
         .catch(function (err) {
           if (err.response.code !== '404' && err.code !== 'ERR_BAD_REQUEST') {

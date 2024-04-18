@@ -125,7 +125,7 @@ export default {
       domainList()
         .then(function (res) {
           // 特殊处理
-          _this.domainData = res || [];
+          _this.domainData = res.data || [];
         })
         .catch(function (err) {
           if (err.response.code === '400') return;
@@ -164,15 +164,13 @@ export default {
       });
     },
     handleDelDomain(domainName) {
-      const domainNameArray = [];
-      domainNameArray.push(domainName);
       const _this = this;
       return new Promise((resolve, reject) => {
         deleteDomain({
-          domainNameArray
+          domainName: domainName
         })
           .then((res) => {
-            _this.$message.success(res.msg);
+            _this.$message.success(res.message);
             _this.getDomainList();
             resolve();
           })

@@ -265,10 +265,10 @@ export default {
       const _this = this;
       addManagementConf(params)
         .then(function (res) {
-          if (res.code === 200) {
-            _this.$message.success(res.msg);
-          } else if (res.code === 206) {
-            _this.$message.warning(res.msg);
+          if (res.code === '200') {
+            _this.$message.success(res.message);
+          } else if (res.code === '206') {
+            _this.$message.warning(res.message);
           }
           _this.visible = false;
           _this.$emit('ok');
@@ -308,7 +308,7 @@ export default {
       this.hostListLoading = true;
       domainHostList(this.domainName)
         .then(function (res) {
-          _this.hostList = res;
+          _this.hostList = res.data;
         })
         .catch(function (err) {
           _this.$message.error(err.response.data.msg || err.response.data.detail);

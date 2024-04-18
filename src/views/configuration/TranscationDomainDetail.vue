@@ -220,16 +220,19 @@ export default {
     handleDelete(hostInfos) {
       const _this = this;
       return new Promise((resolve, reject) => {
+        const hostInfosList = []
         hostInfos.map((hostInfo) => {
-          hostInfo.hostId = hostInfo.host_id;
-          return hostInfo;
+          const newHostInfo = {}
+          newHostInfo.hostId = hostInfo.host_id;
+          hostInfosList.push(newHostInfo);
+          return hostInfosList;
         });
         deleteHost({
           domainName: _this.domainName,
-          hostInfos: hostInfos
+          hostInfos: hostInfosList
         })
           .then((res) => {
-            _this.$message.success(res.msg);
+            _this.$message.success(res.message);
             _this.getHostAndStatus();
             _this.selectedRowKeys = [];
             _this.selectedRows = [];
@@ -269,7 +272,7 @@ export default {
         batchSyncConf(_this.domainName, hostIds)
           .then((res) => {
             let msg = '';
-            for (const item of res) {
+            for (const item of res.data) {
               const hostId = item.host_id;
               let success = '';
               let fail = '';
@@ -328,7 +331,7 @@ export default {
         domainName
       })
         .then(function (res) {
-          _this.confsOfDomain = res.confFiles || [];
+          _this.confsOfDomain = res.data.confFiles || [];
         })
         .catch(function (err) {
           _this.$message.error(err.response.message);

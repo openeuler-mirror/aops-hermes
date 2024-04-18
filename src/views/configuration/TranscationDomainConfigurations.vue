@@ -307,7 +307,7 @@ export default {
         domainName: _this.domainName
       })
         .then(function (res) {
-          _this.tableData = res.confFiles;
+          _this.tableData = res.data.confFiles;
         })
         .catch(function (err) {
           _this.$message.error(err.response.message);
@@ -426,7 +426,7 @@ export default {
         confFiles: [{filePath: record.filePath.replace('openEuler:', '')}]
       })
         .then(function (res) {
-          _this.manageConfChange = res.confBaseInfos;
+          _this.manageConfChange = res.data.confBaseInfos;
         })
         .catch(function (err) {
           _this.$message.error(err.response.message);
