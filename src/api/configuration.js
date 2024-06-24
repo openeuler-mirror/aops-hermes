@@ -69,18 +69,12 @@ export function createDomain(domainInfo, ...parameter) {
   });
 }
 // 删除业务域
-export function deleteDomain(parameter) {
-  const domainName = parameter.domainNameArray;
+export function deleteDomain({domainName, ...parameter}) {
   return request({
     url: api.deleteDomain,
     method: 'delete',
-    params: {
-      domainName
-    },
-    paramsSerializer: {
-      serialize: (params) => {
-        return qs.stringify(params, {indices: false});
-      }
+    data: {
+      domainName: domainName
     }
   });
 }
