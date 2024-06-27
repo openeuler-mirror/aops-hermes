@@ -4,7 +4,7 @@
       <h1>主机当前配置</h1>
       <div>主机：{{ host.hostId }}</div>
       <div>IP地址：{{ host.ip }}</div>
-      <a-collapse>
+      <a-collapse @change="handlePanelChange">
         <a-collapse-panel v-for="item in confs" :key="item.filePath" :header="`配置项：${item.filePath}`">
           <div class="conf-description">
             <a-descriptions title="属性" :column="2">
@@ -40,6 +40,21 @@
             <div class="text-container">
               {{ item.confContents }}
             </div>
+          </div>
+          <div class="conf-trace">
+            <a-row type="flex" justify="space-between" class="conf-content-header">
+              <a-col>
+                <div class="ant-descriptions-title">操作记录：</div>
+              </a-col>
+            </a-row>
+            <div>当前显示{{ confTraceInfos.length }}条监控信息</div>
+            <a-table
+                :rowKey="rowKey"
+                :columns="columns"
+                :data-source="confTraceInfos"
+                :loading="isLoading"
+                :pagination="pagination"
+                @change="handlePanelChange"/>
           </div>
           <template slot="extra" v-if="item.syncStatus === 'NOT SYNC'">
             <a-icon type="close-circle" theme="twoTone" two-tone-color="#ff0000" />
@@ -81,21 +96,31 @@
 
 <script>
 import Vue from 'vue';
+import MyPageHeaderWrapper from '@/views/utils/MyPageHeaderWrapper';
 import {Collapse} from 'ant-design-vue';
 import CompareDiffView from './CompareDiffView';
 import {checkIsDiff} from '../utils/compareContent';
 
-import {queryRealConfs} from '@/api/configuration';
+import {queryConfTraceInfos, queryRealConfs} from '@/api/configuration';
+import {isArray} from 'ant-design-vue/lib/_util/vue-types/utils';
 Vue.use(Collapse);
 
 const Diff = require('diff');
 
+const defaultPagination = {
+    current: 1,
+    pageSize: 10,
+    showTotal: (total) => `总计 ${total} 项`,
+    showSizeChanger: true,
+    showQuickJumper: true
+};
 export default {
   name: 'QueryRealConfsDrawer',
   inject: ['onload'], // 来自祖辈们provide中声明的参数、方法
   components: {
     Collapse,
-    CompareDiffView
+    CompareDiffView,
+    MyPageHeaderWrapper
   },
   props: {
     confsOfDomain: {
@@ -113,10 +138,15 @@ export default {
       collapseIsLoading: false,
       confsOfHost: [],
       confs: [],
+      confTraceInfos: [],
       confsNotInHost: [],
       host: {},
       compareDrawerVisible: false,
-      comparedConf: {}
+      comparedConf: {},
+      pagination: defaultPagination,
+      isLoading: false,
+      rowKey: 'conf_name',
+      temp_conf: ''
     };
   },
   watch: {
@@ -128,6 +158,47 @@ export default {
     }
   },
   methods: {
+    handlePanelChange(row) {
+      if (Object.keys(row).length !== 0) {
+        if (isArray(row)) {
+          this.temp_conf = row[0]
+          this.handleConfTraceChange(row[0]);
+        } else {
+          const confName = this.temp_conf
+          this.pagination.current = row.current
+          this.pagination.pageSize = row.pageSize
+          this.handleConfTraceChange(confName);
+        }
+      }
+    },
+    handleConfTraceChange(confName) {
+      const _this = this
+      const pagination = this.pagination || {};
+      this.isLoading = true;
+      queryConfTraceInfos({
+        domainName: _this.domainName,
+        hostId: _this.host.hostId,
+        confName: confName,
+        page: pagination.current,
+        per_page: pagination.pageSize
+      })
+        .then((res) => {
+          _this.confTraceInfos = res.data.conf_trace_infos || [];
+          _this.totalCount = res.data.total_count
+          _this.pagination = {
+            ..._this.pagination,
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+            total: res.data.total_count || (res.data.total_count === 0 ? 0 : pagination.total)
+          };
+        })
+        .catch((err) => {
+          _this.$message.error(err.response.message || err.response.data.detail || err.message);
+        })
+        .finally(() => {
+          _this.isLoading = false;
+        });
+    },
     getRealConfsList(hostId) {
       const _this = this;
       _this.collapseIsLoading = true;
@@ -184,6 +255,35 @@ export default {
     },
     closeCompareDrawer() {
       this.compareDrawerVisible = false;
+    }
+  },
+  computed: {
+    columns() {
+      return [
+        {
+          dataIndex: 'create_time',
+          title: '时间',
+          width: '15%',
+          key: 'create_time',
+          align: 'left',
+          scopedSlots: {customRender: 'create_time'}
+        },
+        {
+          dataIndex: 'info',
+          title: '监控记录',
+          width: '15%',
+          key: 'info',
+          align: 'left',
+          scopedSlots: {customRender: 'info'}
+        },
+        {
+          dataIndex: 'ptrace',
+          title: '进程追溯',
+          width: '15%',
+          key: 'ptrace',
+          align: 'left'
+        }
+      ];
     }
   },
   mounted: function () {

@@ -1,5 +1,4 @@
 import request from '@/vendor/ant-design-pro/utils/request';
-import qs from 'qs';
 
 const api = {
   domainList: '/domain/queryDomain', // 获取域信息列表
@@ -13,7 +12,8 @@ const api = {
   batchSyncConf: '/confs/batch/syncConf', // 将当前业务域的配置批量同步到各主机
   queryRealConfs: '/confs/queryRealConfs', // 获取主机当前配置
   queryExpectedConfs: '/confs/queryExpectedConfs', // 获取主机配置日志
-  queryHostAndStatus: '/manage/host/sync/status/get' // 获取业务域下的主机及其同步状态
+  queryHostAndStatus: '/manage/host/sync/status/get', // 获取业务域下的主机及其同步状态
+  queryConfTraceInfos: '/conftrace/query' // 获取业务域下单个主机的单个配置文件监控记录
 };
 
 export default api;
@@ -144,6 +144,23 @@ export function batchSyncConf(domainName, hostIds) {
     data: {
       domainName: domainName,
       hostIds: hostIds
+    }
+  });
+}
+
+// 获取业务域下单个hostId的单个文件监控记录
+export function queryConfTraceInfos(parameter) {
+  return request({
+    url: api.queryConfTraceInfos,
+    method: 'post',
+    data: {
+      domain_name: parameter.domainName,
+      host_id: parameter.hostId,
+      conf_name: parameter.confName,
+      sort: 'create_time',
+      direction: 'desc',
+      page: parameter.page || 1,
+      per_page: parameter.per_page || 10
     }
   });
 }

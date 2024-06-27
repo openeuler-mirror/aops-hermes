@@ -105,7 +105,7 @@
                   :columns="confChangeColumns"
                   :data-source="manageConfChange[0].changeLog"
                   :expandIconAsCell="false"
-                  :expandIconColumnIndex="4"
+                  :expandIconColumnIndex="2"
                   :expandIcon="(props) => this.customExpandIcon(props)"
                   :pagination="false"
                   bordered>
@@ -247,14 +247,12 @@ export default {
     },
     confChangeColumns() {
       return [
-        {title: '变更ID', dataIndex: 'changeId', key: 'changeId'},
         {
           title: '变更时间',
           dataIndex: 'date',
           key: 'date',
           customRender: (text, record, index) => dateFormat('YYYY-mm-dd HH:MM:SS', text)
         },
-        {title: '变更人', dataIndex: 'author', key: 'author'},
         {title: '变更原因', dataIndex: 'changeReason', key: 'changeReason'},
         {title: '变更详情', dataIndex: '', key: 'x', align: 'center'}
       ];
