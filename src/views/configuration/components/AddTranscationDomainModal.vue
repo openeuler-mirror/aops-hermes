@@ -1,6 +1,6 @@
 <template>
   <div class="aops-add-domain" @click="showModal">
-    <a-icon type="plus" />
+    <a-button type="primary">创建业务域</a-button>
     <a-modal
       title="创建业务域"
       :visible="visible"
@@ -25,6 +25,12 @@
             v-decorator="['priority', {rules: [{required: false, message: '请输入优先级'}]}]">
           </a-input>
         </a-form-item>
+        <a-form-item label="监控开关">
+          <a-switch v-model="traceIsActive" @change="handleTraceSwitchChange" checked-children="on" un-checked-children="off" />
+        </a-form-item>
+        <a-form-item label="告警开关">
+          <a-switch v-model="warningIsActive" @change="handleWarningSwitchChange" checked-children="on" un-checked-children="off" />
+        </a-form-item>
       </a-form>
     </a-modal>
   </div>
@@ -45,6 +51,9 @@ export default {
     return {
       visible: false,
       isLoading: false,
+      traceIsActive: false,
+      warningIsActive: false,
+      text: 'ON',
       form: this.$form.createForm(this, {name: 'addHostGroup'})
     };
   },
@@ -62,6 +71,8 @@ export default {
           const _this = this;
           this.isLoading = true;
           values.priority = 0;
+          values.conf_change_flag = this.traceIsActive
+          values.report_flag = this.warningIsActive
           createDomain(values)
             .then(function (res) {
               _this.$message.success(res.message);
@@ -93,6 +104,22 @@ export default {
       }
       // 26个大小写字母。数字。下划线。底划线。小数点.
       cb();
+    },
+     handleTraceSwitchChange() {
+      this.traceIsActive = !this.traceIsActive;
+      if (this.traceIsActive) {
+        this.traceIsActive = false
+      } else {
+        this.traceIsActive = true
+      }
+    },
+    handleWarningSwitchChange() {
+      this.warningIsActive = !this.warningIsActive;
+      if (this.warningIsActive) {
+        this.warningIsActive = false
+      } else {
+        this.warningIsActive = true
+      }
     }
   }
 };

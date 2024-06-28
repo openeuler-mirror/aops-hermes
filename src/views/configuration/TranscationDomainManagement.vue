@@ -3,55 +3,44 @@
   <page-header-wrapper :breadcrumb="breadcrumb">
     <a-card :bordered="false" class="aops-theme">
       <div>
-        <h3 class="card-title">业务域列表</h3>
-        <span>共有业务域{{ domainData.length }}个</span>
+        <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
+          <a-col>
+            <h3 class="card-title">业务域列表</h3>
+            <span>共有业务域{{ domainData.length }}个</span>
+          </a-col>
+          <a-col>
+            <a-row type="flex" :gutter="70">
+              <a-col>
+                <add-transcation-domain-modal :onSuccess="handleAddSuccess"/>
+              </a-col>
+              <a-col>
+                <a-button @click="getDomainList"> <a-icon type="redo" />刷新 </a-button>
+              </a-col>
+            </a-row>
+          </a-col>
+        </a-row>
       </div>
       <div>
-        <a-list
+        <a-table
+          :rowKey="rowKey"
+          :columns="columns"
+          :data-source="domainData"
           :loading="domainLoading"
-          :data-source="cardListData"
-          :grid="{gutter: 24, xl: 3, lg: 3, md: 2, sm: 1, xs: 1}"
-        >
-          <a-list-item slot="renderItem" slot-scope="domain, index">
-            <a-card :bodyStyle="{padding: 0}" :bordered="false" :class="index !== 0 ? 'aops-theme-incard' : ''">
-              <div class="aops-card-body">
-                <router-link :to="`${domain.domainName || ''}`">
-                  <div class="aops-card-content">
-                    <h3>{{ `业务域 ${domain.domainName}` }}</h3>
-                  </div>
-                </router-link>
-                <div class="aops-card-bottom">
-                  <a-row type="flex" justify="space-between">
-                    <a-col>priority</a-col>
-                    <a-col>
-                      <router-link :to="`/configuration/transcation-domain-configurations/${domain.domainName}`">
-                        查看域内配置
-                      </router-link>
-                      <a-divider type="vertical" />
-                      <a-dropdown>
-                        <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
-                          更多 <a-icon type="down" />
-                        </a>
-                        <a-menu slot="overlay">
-                          <a-menu-item>
-                            <a href="javascript:;" @click="showAddHostDrawer(domain.domainName)">添加主机</a>
-                          </a-menu-item>
-                          <a-menu-item>
-                            <a href="javascript:;" @click="delDomain(domain.domainName)">删除</a>
-                          </a-menu-item>
-                        </a-menu>
-                      </a-dropdown>
-                    </a-col>
-                  </a-row>
-                </div>
-              </div>
-              <add-transcation-domain-modal :onSuccess="handleAddSuccess" v-if="index === 0" />
-            </a-card>
-          </a-list-item>
-        </a-list>
-        <a-row type="flex" justify="center" v-show="showNumber < domainData.length + 1">
-          <a-col><a-button @click="showMore">加载更多</a-button></a-col>
-        </a-row>
+          :pagination="false">
+          <span slot="action" slot-scope="domain">
+            <router-link :to="`${domain.domainName || ''}`">
+              业务域详情
+            </router-link>
+            <span> | </span>
+            <router-link :to="`/configuration/transcation-domain-configurations/${domain.domainName}`">
+              查看域内配置
+            </router-link>
+            <span> | </span>
+            <a @click="showAddHostDrawer(domain.domainName)">添加主机</a>
+            <span> | </span>
+            <a @click="delDomain(domain.domainName)">删除</a>
+          </span>
+        </a-table>
       </div>
     </a-card>
     <drawer-view title="添加主机" ref="addHostDrawer" :bodyStyle="{paddingBottom: '80px'}">
@@ -85,10 +74,27 @@ export default {
       domainData: [],
       showNumber: 6,
       domainLoading: false,
-      domainName: ''
+      domainName: '',
+      rowKey: 'domainName'
     };
   },
   computed: {
+    columns() {
+      return [
+        {
+          dataIndex: 'domainName',
+          width: '50%',
+          key: 'domainName',
+          title: '业务域名称'
+        },
+        {
+          key: 'operation',
+          width: '50%',
+          title: '操作',
+          scopedSlots: {customRender: 'action'}
+        }
+      ];
+    },
     // 自定义面包屑内容
     breadcrumb() {
       const routes = this.$route.meta.diyBreadcrumb.map((route) => {
