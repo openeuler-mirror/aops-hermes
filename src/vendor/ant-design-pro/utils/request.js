@@ -177,16 +177,11 @@ request.interceptors.response.use((response) => {
           description: response.data.message
         });
         break;
-      case '1000':
+      default:
         err = new Error(response.data.message);
         err.data = response.data.data;
         err.response = response.data;
         throw err;
-      default:
-        notification.error({
-          message: response.data.label,
-          description: response.data.message
-        });
     }
   }
   if (response.headers['content-type'] === 'application/octet-stream') {

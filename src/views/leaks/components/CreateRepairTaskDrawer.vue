@@ -246,7 +246,7 @@ const taskTypsbutton = {
 const taskTypsEnum = {
   'cve fix': 'cve修复',
   'repo set': 'repo设置',
-  'cve rollback': '生成回滚任务(当前仅支持热补丁回滚)',
+  'cve rollback': '回滚任务',
   'hotpatch remove': '热补丁移除'
 };
 const hostListTypes = ['byLoading', 'bySelection', 'byOneHost'];
@@ -916,7 +916,7 @@ export default {
                 info: cveRoobackInfo
               };
               if (cveRoobackInfo.length === 0) {
-                this.$message.info('请至少选择一个cve下的一台主机进行回滚!');
+                this.$message.info('请至少选择一个cve下的一台主机进行移除!');
                 this.submitLoading = false;
                 this.submitAndExecuteLoading = false;
                 break;
@@ -928,7 +928,7 @@ export default {
                       this.handleExcuteASAP(res.data.task_id, res.data);
                     } else {
                       this.visible = false;
-                      this.handleGenerateSuccess(res.data, 'CVE回滚', 'normal');
+                      this.handleGenerateSuccess(res.data, '热补丁移除', 'normal');
                     }
                   })
                   .catch((err) => {
