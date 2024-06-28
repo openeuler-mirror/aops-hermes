@@ -12,3 +12,12 @@ export function deepClone(arr: Array<any>) {
   }
   return clone
 }
+
+export function hasIntersection(arr1: string[], arr2: string[]) {
+  const set1 = new Set(arr1)
+  for (const item of arr2) {
+    if (set1.has(item))
+      return true
+  }
+  return false
+}

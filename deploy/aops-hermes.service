@@ -7,8 +7,8 @@ After=network.target remote-fs.target nss-lookup.target
 Type=forking
 PIDFile=/run/nginx.pid
 
-ExecStartPre=/usr/sbin/nginx -t -c /etc/nginx/aops-hermes-nginx.conf
-ExecStart=/usr/sbin/nginx -c /etc/nginx/aops-hermes-nginx.conf
+ExecStartPre=/usr/sbin/nginx -t -c /etc/nginx/nginx.conf
+ExecStart=/bin/systemctl restart nginx
 
 ExecReload=/bin/kill -s HUP $MAINPID
 

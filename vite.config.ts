@@ -42,12 +42,29 @@ export default () => {
       hmr: true,
       port: 8000,
       proxy: {
-        '/api': {
+        '/accounts': {
           target: 'http://localhost:11111',
           secure: false,
           changeOrigin: true,
           ws: false,
-          rewrite: (path: string) => path.replace(/^\/api/, ''),
+        },
+        '/hosts': {
+          target: 'http://localhost:11111',
+          secure: false,
+          changeOrigin: true,
+          ws: false,
+        },
+        '/distribute': {
+          target: 'http://localhost:11111',
+          secure: false,
+          changeOrigin: true,
+          ws: false,
+        },
+        '/vulnerabilities': {
+          target: 'http://localhost:11111',
+          secure: false,
+          changeOrigin: true,
+          ws: false,
         },
       },
     },
