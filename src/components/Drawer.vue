@@ -1,32 +1,29 @@
 <script lang="ts" setup>
 import { CloseOutlined } from '@ant-design/icons-vue'
-import { ref } from 'vue'
 
 withDefaults(
   defineProps<{
+    visible: boolean
     width?: number
     title?: string
   }>(),
-  {
-    width: 700,
-  },
+  { width: 700 },
 )
 
-const visible = ref(false)
-
-function open() {
-  visible.value = true
-}
+defineEmits(['update:visible'])
 </script>
 
 <template>
-  <span @click="open">
+  <span>
     <slot name="trigger" />
   </span>
-  <a-drawer v-model:open="visible" :title="title" :width="width" :closable="false" destroy-on-close>
+  <a-drawer :open="visible" :title="title" :width="width" :closable="false" destroy-on-close @close="$emit('update:visible', false)">
     <template #extra>
-      <CloseOutlined style="cursor: pointer" @click="visible = false" />
+      <CloseOutlined style="cursor: pointer" @click="$emit('update:visible', false)" />
     </template>
     <slot name="content" />
+    <template v-if="Object.keys($slots).includes('footer')" #footer>
+      <slot name="footer" />
+    </template>
   </a-drawer>
 </template>

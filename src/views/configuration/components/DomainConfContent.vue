@@ -2,12 +2,12 @@
 import type { ConfFile } from '@/api'
 
 defineProps<{
-  configContent: ConfFile
+  configContent?: ConfFile
 }>()
 </script>
 
 <template>
-  <a-descriptions :column="1" layout="horizontal">
+  <a-descriptions v-if="configContent" :column="1" layout="horizontal">
     <a-descriptions-item label="配置文件">
       {{ configContent.filePath }}
     </a-descriptions-item>
