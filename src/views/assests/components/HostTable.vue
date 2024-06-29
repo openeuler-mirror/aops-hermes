@@ -1,29 +1,13 @@
-<template>
-  <a-table
-    :rowKey="(record:HostsTableItem) => `${record.host_name}${record.host_ip}`"
-    :columns="hostsTableColums"
-    :data-source="tableData"
-    :loading="isLoading"
-    :pagination="false"
-  >
-    <template #bodyCell="{ record, column }">
-      <template v-if="column.dataIndex === 'management'">
-        {{ record.management ? '是' : '否' }}
-      </template>
-    </template>
-  </a-table>
-</template>
-
 <script lang="ts" setup>
-import { api } from '@/api';
-import { HostsTableItem } from '@/api/paths/assests';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue'
+import { api } from '@/api'
+import type { HostsTableItem } from '@/api/paths/assests'
 
 const props = defineProps<{
-  hostGroup: string;
-}>();
+  hostGroup: string
+}>()
 
-const isLoading = ref(false);
+const isLoading = ref(false)
 
 const hostsTableColums = [
   {
@@ -42,22 +26,38 @@ const hostsTableColums = [
     title: '管理节点',
     dataIndex: 'management',
   },
-];
+]
 
-const tableData = ref<HostsTableItem[]>();
+const tableData = ref<HostsTableItem[]>()
 
-const queryHostsWithGroup = async () => {
-  isLoading.value = true;
+async function queryHostsWithGroup() {
+  isLoading.value = true
   const [, res] = await api.getHosts({
     host_group_list: [props.hostGroup],
-  });
-  if (res) {
-    tableData.value = res.host_infos;
-  }
-  isLoading.value = false;
-};
+  })
+  if (res)
+    tableData.value = res.host_infos
+
+  isLoading.value = false
+}
 
 onMounted(() => {
-  queryHostsWithGroup();
-});
+  queryHostsWithGroup()
+})
 </script>
+
+<template>
+  <a-table
+    :row-key="(record:HostsTableItem) => `${record.host_name}${record.host_ip}`"
+    :columns="hostsTableColums"
+    :data-source="tableData"
+    :loading="isLoading"
+    :pagination="false"
+  >
+    <template #bodyCell="{ record, column }">
+      <template v-if="column.dataIndex === 'management'">
+        {{ record.management ? '是' : '否' }}
+      </template>
+    </template>
+  </a-table>
+</template>

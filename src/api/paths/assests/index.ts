@@ -88,6 +88,18 @@ export function deleteHost(hostId: string, params: DistributionParams<{ host_id:
 export function deleteHosts(params: DistributionParams<{ host_ids: string[] }>) {
   return http.delete<Record<string, { data: any, label: string }>>(`/distribute/hosts`, params)
 }
+
+/**
+ * query host Running status with host ids
+ */
+export function getHostsStatus(params: DistributionParams<{ host_ids: string[] }>) {
+  return http.get<
+    Record<string, {
+      data: { host_id: string, status: number }[]
+      label: string
+    }>
+    >('/distribute/hosts/status', { params })
+}
 // #endregion
 
 /**
@@ -108,25 +120,13 @@ export function getHosts(params: QueryHostsParams) {
 export function getHostById<T>(hostId: string, basic: boolean = true, refresh?: boolean) {
   return http.get<T>(`/hosts/${hostId}`, { params: { basic, refresh } })
 }
-/**
- * query host Running status with host ids
- * @param hostIds
- */
-export function getHostsStatus(hostIds: string[]) {
-  return http.get<
-    {
-      host_id: string
-      status: number
-    }[]
-  >('/hosts/status', { params: { host_ids: hostIds } })
-}
 
 /**
  * query host groups
  */
 export function getHostGroups(params?: {
   cluster_ids?: string[]
-} & PageNation &
+} & Partial<PageNation> &
 Partial<Sort>) {
   return http.get<{
     host_group_infos: HostGroupInfo[]

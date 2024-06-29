@@ -1,13 +1,19 @@
 <script lang="ts" setup>
 import { message } from 'ant-design-vue'
-import { PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons-vue'
+import { CheckCircleTwoTone, CloseCircleTwoTone, Loading3QuartersOutlined, PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons-vue'
 import { onMounted, ref } from 'vue'
-// import { useRouter } from 'vue-router'
 import type { Cluster } from '@/api'
 import { api } from '@/api'
 import PageWrapper from '@/components/PageWrapper.vue'
+import { useClusterStore } from '@/store'
 
-// const router = useRouter()
+const { queryPermission } = useClusterStore()
+
+enum SynchronousState {
+  running = '同步中',
+  succeed = '同步成功',
+  fail = '同步失败',
+}
 
 const clusterColumns = [
   {
@@ -21,8 +27,13 @@ const clusterColumns = [
   {
     dataIndex: 'cluster_ip',
     title: 'IP',
+    align: 'center',
   },
-
+  {
+    dataIndex: 'synchronous_state',
+    title: '同步状态',
+    align: 'center',
+  },
   {
     dataIndex: 'operation',
     title: '操作',
@@ -30,25 +41,21 @@ const clusterColumns = [
   },
 ]
 
-const isTableLoading = ref(false)
-
 const clusters = ref<Cluster[]>([])
 
 async function queryClusters() {
-  isTableLoading.value = true
-  const [, res] = await api.getClusters()
-  if (res) {
-    clusters.value = res.map(
-      ({ cluster_id, cluster_ip, cluster_name, description, subcluster }) => ({
-        cluster_id,
-        cluster_ip,
-        cluster_name,
-        description,
-        subcluster,
-      }),
-    )
+  const parseRunning = async (list: Cluster[]) => {
+    return list.some(item => item.synchronous_state === 'running')
   }
-  isTableLoading.value = false
+  const [, res] = await api.getClusters()
+  if (res)
+    clusters.value = res
+  const isRunning = await parseRunning(clusters.value)
+  if (isRunning) {
+    setTimeout(() => {
+      queryClusters()
+    }, 5000)
+  }
 }
 
 async function handleDeleteCluster(clusterId: string) {
@@ -56,12 +63,19 @@ async function handleDeleteCluster(clusterId: string) {
   if (!_) {
     message.success('删除成功')
     await queryClusters()
+    await queryPermission()
   }
 }
 
-// function handleLinkToEdit(cluster:Cluster) {
-//   router.push({name: 'editCluster', paramsz})
-// }
+async function handleSync(record: Cluster) {
+  if (!record.subcluster)
+    return
+  const [_] = await api.syncClusterData(record.cluster_id, record.cluster_ip!)
+  if (_)
+    return
+  message.info('开始执行同步任务')
+  queryClusters()
+}
 
 onMounted(() => {
   queryClusters()
@@ -87,12 +101,32 @@ onMounted(() => {
           </a-space>
         </a-col>
       </a-row>
-      <a-table :columns="clusterColumns" :data-source="clusters" :loading="isTableLoading">
+      <a-table :columns="clusterColumns" :data-source="clusters">
         <template #bodyCell="{ record, column }">
+          <template v-if="column.dataIndex === 'synchronous_state'">
+            <CheckCircleTwoTone v-if="record.synchronous_state === 'succeed'" two-tone-color="#52c41a" />
+            <CloseCircleTwoTone v-else-if="record.synchronous_state === 'fail'" two-tone-color="#ff0000" />
+            <Loading3QuartersOutlined v-else-if="record.synchronous_state === 'running'" spin />
+            {{ SynchronousState[record.synchronous_state] }}
+          </template>
           <template v-if="column.dataIndex === 'operation'">
             <router-link :to="{ path: `/user/cluster/edit-cluster/${record.cluster_id}` }">
               <a>修改</a>
             </router-link>
+            <a-divider type="vertical" />
+            <a-popconfirm
+              v-if="record.subcluster"
+              title="你确定同步数据吗?"
+              ok-text="确认"
+              cancel-text="取消"
+              @confirm="handleSync(record)"
+            >
+              <template #icon>
+                <QuestionCircleOutlined style="color: red" />
+              </template>
+              <a>同步数据</a>
+            </a-popconfirm>
+            <a v-else class="disable-button">同步数据</a>
             <a-divider type="vertical" />
             <a-popconfirm
               title="你确定取消纳管该集群吗?"
@@ -103,7 +137,8 @@ onMounted(() => {
               <template #icon>
                 <QuestionCircleOutlined style="color: red" />
               </template>
-              <a>删除</a>
+              <a v-if="record.subcluster">删除</a>
+              <a v-else class="disable-button">删除</a>
             </a-popconfirm>
           </template>
         </template>
@@ -111,3 +146,17 @@ onMounted(() => {
     </a-card>
   </PageWrapper>
 </template>
+
+<style lang="less" scoped>
+.disable-button {
+  color:  #909399;
+  pointer-events: none;
+  cursor: no-drop;
+  opacity: 0.8;
+  &:hover {
+    color:  #909399;
+    opacity: 0.8;
+
+  }
+}
+</style>

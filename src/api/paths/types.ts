@@ -21,4 +21,4 @@ export interface Search {
 }
 
 export type DistributionParams<T> = Record<string, T>
-export type DistributionResponse = Record<string, { data: any, label: string }>
+export type DistributionResponse<T = any> = Record<string, { data: T, label: string }>

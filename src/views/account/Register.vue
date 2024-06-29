@@ -40,7 +40,7 @@ function validateUsername(_rule: Rule, value: string) {
   const regex = /^[a-z0-9]{5,20}$/i
   if (!regex.test(value)) {
     return Promise.reject(
-      new Error('请输入5-20位字母和数字组成的用户名!'),
+      new Error('请输入5-20位字母或数字组成的用户名!'),
     )
   }
   return Promise.resolve()
@@ -53,7 +53,7 @@ function validatePassword(_rule: Rule, value: string) {
   const regex = /^[a-z0-9]{6,20}$/i
   if (!regex.test(value)) {
     return Promise.reject(
-      new Error('请输入6-20位字母和数字组成的密码!'),
+      new Error('请输入6-20位字母或数字组成的密码!'),
     )
   }
   return Promise.resolve()
@@ -79,7 +79,7 @@ function validateConfirmPassword(_rule: Rule, value: string) {
   const regex = /^[a-z0-9]{6,20}$/i
   if (!regex.test(value)) {
     return Promise.reject(
-      new Error('请输入6-20位字母和数字组成的密码!'),
+      new Error('请输入6-20位字母或数字组成的密码!'),
     )
   }
   else if (value && value !== form.password) {

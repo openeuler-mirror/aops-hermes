@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons-vue'
 import { type FormInstance, type UploadProps, message } from 'ant-design-vue'
 
-import { h, onMounted, reactive, ref } from 'vue'
+import { h, reactive, ref } from 'vue'
 import type { Rule } from 'ant-design-vue/es/form'
 import { storeToRefs } from 'pinia'
 import EditableCell from './EditableCell.vue'
@@ -38,7 +38,6 @@ const formRules: Record<string, Rule[]> = {
 }
 
 const { clusters } = storeToRefs(useClusterStore())
-const { queryClusters } = useClusterStore()
 
 const modalState = reactive({
   visible: false,
@@ -126,6 +125,7 @@ const removeFile: UploadProps['onRemove'] = (file) => {
   fileList.value = newFileList
 }
 
+const excludeList = ['result', 'operation', 'password', 'ssh_pkey']
 const beforeUpload: UploadProps['beforeUpload'] = async (file) => {
   const fileType = file.name.split('.')[1]
   if (!ALLOW_FILE_TYPE.includes(fileType)) {
@@ -143,7 +143,7 @@ const beforeUpload: UploadProps['beforeUpload'] = async (file) => {
     return
 
   const defaultkeys = tableColumn
-    .filter(item => item.dataIndex !== 'result' && item.dataIndex !== 'operation')
+    .filter(item => !excludeList.includes(item.dataIndex))
     .map(item => item.dataIndex)
   const isSatisfactory = result.every((obj: object) =>
     defaultkeys.every(key => Object.prototype.hasOwnProperty.call(obj, key)),
@@ -264,6 +264,7 @@ async function handleSubmit() {
     }
   }
   catch (error) {
+    modalState.isLoading = false
   }
   finally {
     modalState.isLoading = false
@@ -283,10 +284,6 @@ function handleEdit(key: string) {
   editableKeys.value.push(key)
   isEditing.value = true
 }
-
-onMounted(() => {
-  queryClusters()
-})
 </script>
 
 <template>
@@ -379,7 +376,7 @@ onMounted(() => {
                 <CheckCircleTwoTone v-if="record.result === 'succeed'" two-tone-color="#52c41a" />
                 <ExclamationCircleTwoTone
                   v-else-if="record.result === 'failed'"
-                  two-tone-color="#eb2f96"
+                  two-tone-color="#ff0000"
                 />
                 <InfoCircleTwoTone v-else two-tone-color="#CDCD00" />
               </a-col>
@@ -391,7 +388,7 @@ onMounted(() => {
       <a-row type="flex" justify="end">
         <a-button
           type="primary"
-          :is-loading="modalState.isLoading"
+          :loading="modalState.isLoading"
           :disabled="tableData.length === 0 || editableKeys.length !== 0"
           @click="handleSubmit"
         >

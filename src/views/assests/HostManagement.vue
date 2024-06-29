@@ -2,13 +2,13 @@
 import { computed, h, onMounted, reactive, ref } from 'vue'
 import { Modal, message } from 'ant-design-vue'
 import { ExclamationCircleOutlined, PlusOutlined, RedoOutlined } from '@ant-design/icons-vue'
-import type { TableColumnsType, TablePaginationConfig } from 'ant-design-vue'
+import type { TablePaginationConfig } from 'ant-design-vue'
 import type { SorterResult } from 'ant-design-vue/es/table/interface'
 import { storeToRefs } from 'pinia'
 import { orderMap } from '../vulnerability/config'
 import AddmoreHostModal from './components/AddMoreHostModal.vue'
 import { api } from '@/api'
-import type { HostGroupInfo, HostsTableItem, QueryHostsParams, Scene } from '@/api/paths/assests'
+import type { HostsTableItem, QueryHostsParams, Scene } from '@/api/paths/assests'
 import PageWrapper from '@/components/PageWrapper.vue'
 import type { Direction, DistributionParams } from '@/api/paths/types'
 import { useAccountStore, useClusterStore } from '@/store'
@@ -31,14 +31,12 @@ const statusMap: Record<number, string> = {
   5: '未知',
 }
 
-const { clusters } = storeToRefs(useClusterStore())
-const { queryClusters } = useClusterStore()
+const { permissions } = storeToRefs(useClusterStore())
 
 const { accountRole } = storeToRefs(useAccountStore())
 
 // #region ----------------------------------------< host table >----------------------------------------
 const hostTableData = ref<HostsTableItem[]>([])
-const hostGroups = ref<HostGroupInfo[]>([])
 const searchKey = ref<string>()
 const filterMap = reactive<{
   host_group_name: string[]
@@ -56,12 +54,13 @@ const sorterMap = reactive<{
   order: undefined,
 })
 
-const pagination = reactive({
+const pagination = reactive<TablePaginationConfig>({
   total: 0,
   current: 1,
   pageSize: 10,
   showTotal: (total: number) => `总计 ${total} 项`,
   showSizeChanger: true,
+  pageSizeOptions: ['10', '20', '30', '40'],
 })
 
 const tableState = reactive<{
@@ -73,7 +72,7 @@ const tableState = reactive<{
 })
 
 // hosts table colums
-const hostsTableColums = computed<TableColumnsType>(() => {
+const hostsTableColums = computed(() => {
   const arr = [
     {
       key: 'host_name',
@@ -86,20 +85,30 @@ const hostsTableColums = computed<TableColumnsType>(() => {
       dataIndex: 'host_ip',
     },
     {
-      title: '所属主机组',
-      dataIndex: 'host_group_name',
-      filters: hostGroups.value.map(({ host_group_name, host_group_id }) => ({
-        text: host_group_name,
-        value: host_group_id,
-      })),
-    },
-    {
       title: '集群',
       dataIndex: 'cluster_name',
-      filters: clusters.value?.map(({ cluster_id, cluster_name }) => ({
+      filters: permissions.value?.map(({ cluster_id, cluster_name }) => ({
         text: cluster_name,
         value: cluster_id,
       })),
+    },
+    {
+      title: '所属主机组',
+      dataIndex: 'host_group_name',
+      filters: permissions.value.filter((item) => {
+        if (!filterMap.cluster_list || filterMap.cluster_list?.length === 0)
+          return item
+        else
+          return filterMap.cluster_list?.includes(item.cluster_id)
+      }).map(({ cluster_id, cluster_name, host_groups }) => {
+        return {
+          text: cluster_name,
+          value: cluster_id,
+          children: host_groups.map(h => ({ text: h.host_group_name, value: h.host_group_id })),
+        }
+      }),
+      filterMode: 'tree',
+      filterSearch: true,
     },
     {
       title: '管理节点',
@@ -190,8 +199,12 @@ function handleDelete(record: HostsTableItem) {
     async onOk() {
       try {
         await deleteHost(host_id)
+        message.success('删除成功')
+        queryHosts()
       }
-      catch {}
+      catch (err) {
+        message.error('删除失败')
+      }
     },
     onCancel() {},
   })
@@ -228,14 +241,23 @@ async function deleteHost(hostId: string) {
   params[host.cluster_id] = { host_id: host.host_id }
 
   const [_, res] = await api.deleteHost(hostId, params)
+
   if (res) {
-    if (Object.values(res)[0].label !== 'Succeed')
-      message.error('删除失败')
-    queryHosts()
-    return
+    return new Promise((resolve, reject) => {
+      if (Object.values(res)[0].label !== 'Succeed') {
+        setTimeout(() => {
+          queryHosts()
+          reject(new Error('failed'))
+        }, 2000)
+      }
+      else {
+        setTimeout(() => {
+          queryHosts()
+          resolve('succeed')
+        }, 2000)
+      }
+    })
   }
-  message.success('删除成功')
-  queryHosts()
 }
 
 /**
@@ -277,12 +299,20 @@ function refresh() {
  * query hosts status by host id
  */
 async function queryHostStatus() {
-  const hostIds: string[] = hostTableData.value.map(item => item.host_id)
-  if (hostIds.length === 0)
+  if (hostTableData.value.length === 0)
     return
-  const [, res] = await api.getHostsStatus(hostIds)
+  const params: DistributionParams<{ host_ids: string[] }> = {}
+  hostTableData.value.forEach(({ cluster_id, host_id }) => {
+    if (params[cluster_id])
+      params[cluster_id].host_ids.push(host_id)
+    else
+      params[cluster_id] = { host_ids: [host_id] }
+  })
+  const [, res] = await api.getHostsStatus(params)
   if (res) {
-    res.forEach((item) => {
+    Object.keys(res).reduce((acc: { host_id: string, status: number }[], key) => {
+      return acc.concat(...res[key].data)
+    }, []).forEach((item) => {
       const table = hostTableData.value.find(t => t.host_id === item.host_id)
       if (table)
         table.status = item.status
@@ -290,23 +320,9 @@ async function queryHostStatus() {
   }
 }
 // #endregion
-// #region ----------------------------------------< host group >----------------------------------------
-
-/**
- * query host group
- */
-async function queryHostGroups() {
-  const [_, res] = await api.getHostGroups()
-  if (!res)
-    return
-  hostGroups.value = res.host_group_infos
-}
-// #endregion
 
 onMounted(() => {
   queryHosts()
-  queryHostGroups()
-  queryClusters()
 })
 </script>
 
@@ -320,6 +336,7 @@ onMounted(() => {
             <a-col>
               <a-input-search
                 v-model:value="searchKey"
+                :maxlength="40"
                 placeholder="按主机或IP搜索"
                 @search="onSearch"
               />

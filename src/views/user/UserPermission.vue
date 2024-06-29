@@ -108,7 +108,9 @@ function handleChange(clusterId: string, group: HostGroup) {
   }
 }
 
+const isSubmiting = ref(false)
 async function configurationPermission() {
+  isSubmiting.value = true
   const permission = unAssignedPermission.value
     .filter(item => item.assigned_host_groups!.length > 0)
     .map(item => ({
@@ -116,9 +118,14 @@ async function configurationPermission() {
       host_group: item.assigned_host_groups!.map(group => group.host_group_id),
     }))
 
-  const [_] = await api.registerPermission(state.username, permission)
-  message.success('配置成功')
-  router.replace('/user')
+  const [_] = await api.registerPermission(state.username, permission.length === 0 ? undefined : permission)
+  if (!_) {
+    message.success('配置成功')
+    setTimeout(() => {
+      router.replace('/user/users')
+    }, 500)
+  }
+  isSubmiting.value = false
 }
 
 onMounted(async () => {
@@ -138,6 +145,7 @@ onMounted(async () => {
           <a-col>
             <a-input-search
               v-model:value="state.searchKey"
+              :maxlength="40"
               placeholder="按集群名搜索"
             />
           </a-col>
@@ -176,7 +184,7 @@ onMounted(async () => {
                   <a-button @click="$router.back()">
                     取消
                   </a-button>
-                  <a-button type="primary" @click="configurationPermission">
+                  <a-button type="primary" :loading="isSubmiting" @click="configurationPermission">
                     确认
                   </a-button>
                 </a-space>

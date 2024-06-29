@@ -30,7 +30,7 @@ const form = reactive<Form>({
 function goRegistar() {
   isbindvisible.value = false
   formRef.value?.resetFields()
-  router.push('/user/reigster')
+  router.push('/user/register')
 }
 
 let timer: NodeJS.Timer

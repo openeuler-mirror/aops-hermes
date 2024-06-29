@@ -38,9 +38,9 @@ export default () => {
       // }),
     ],
     server: {
-      host: 'localhost',
+      host: '0.0.0.0',
       hmr: true,
-      port: 8000,
+      port: 8080,
       proxy: {
         '/accounts': {
           target: 'http://localhost:11111',
@@ -61,6 +61,12 @@ export default () => {
           ws: false,
         },
         '/vulnerabilities': {
+          target: 'http://localhost:11111',
+          secure: false,
+          changeOrigin: true,
+          ws: false,
+        },
+        '/conftrace': {
           target: 'http://localhost:11111',
           secure: false,
           changeOrigin: true,

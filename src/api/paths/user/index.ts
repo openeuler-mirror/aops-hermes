@@ -66,8 +66,12 @@ function getAccountPermission(username?: string, cluserId?: string) {
   >('/accounts/permission', { params: { username, cluster_id: cluserId } })
 }
 
-function registerPermission(username: string, permission: { cluster_id: string, host_group: string[] }[]) {
+function registerPermission(username: string, permission?: { cluster_id: string, host_group: string[] }[]) {
   return http.post('/accounts/permission', { username, permission })
+}
+
+function syncClusterData(clusterId: string, clusterIp: string) {
+  return http.post('/accounts/cluster/sync ', { cluster_id: clusterId, cluster_ip: clusterIp })
 }
 
 export * from './types'
@@ -80,4 +84,5 @@ export const userApi = {
   updateCluster,
   getAccountPermission,
   registerPermission,
+  syncClusterData,
 }
