@@ -7,21 +7,21 @@
 // IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR
 // PURPOSE.
 // See the Mulan PSL v2 for more details.
+import type { MockMethod } from 'vite-plugin-mock'
 import {
   accountMock,
   assestsMock,
-  vulnerabilityMock,
-  userMock,
-  hostMock,
   domainMock,
-} from './modules';
-import type { MockMethod } from 'vite-plugin-mock';
+  hostMock,
+  userMock,
+  vulnerabilityMock,
+} from './modules'
 
 export default [
   ...accountMock,
   ...assestsMock,
   ...vulnerabilityMock,
   ...userMock,
-  ...domainMock,
   ...hostMock,
-] as MockMethod[];
+  ...domainMock,
+] as MockMethod[]

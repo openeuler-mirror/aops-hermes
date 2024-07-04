@@ -1,21 +1,24 @@
 <script lang="ts" setup>
-import { QuestionCircleOutlined } from '@ant-design/icons-vue'
-import type { FormInstance } from 'ant-design-vue'
-import { message } from 'ant-design-vue'
-import { onMounted, reactive, ref } from 'vue'
-import { api } from '@/api'
-import type { HostInDomain } from '@/api'
+import { CloseOutlined, QuestionCircleOutlined, UploadOutlined } from '@ant-design/icons-vue'
+import { type FormInstance, type UploadProps, message } from 'ant-design-vue'
+
+import { reactive, ref } from 'vue'
+import { type HostInDomain, api } from '@/api'
 
 const props = withDefaults(
   defineProps<{
     type?: 'edit' | 'add'
     domainName: string
+    clusterId: string
     filePath?: string
+    hostList: HostInDomain[]
   }>(),
   {
     type: 'add',
   },
 )
+
+const emit = defineEmits(['success'])
 
 enum TypeEnum {
   edit = '编辑配置',
@@ -38,20 +41,18 @@ function open() {
 
 const sourceOption = [
   {
-    value: '手动输入',
-    title: '手动输入',
+    value: 'manuel',
+    label: '手动输入',
   },
   {
-    value: '从主机导入',
-    title: '从主机导入',
+    value: 'auto',
+    label: '从主机导入',
   },
   {
-    value: '从本地导入',
-    title: '从本地导入',
+    value: 'file',
+    label: '从本地导入',
   },
 ]
-
-const isSubmiting = ref(false)
 
 const formRef = ref<FormInstance>()
 const form = reactive<{ confs: confForm[] }>({
@@ -60,34 +61,63 @@ const form = reactive<{ confs: confForm[] }>({
       domainName: props.domainName,
       filePath: props.filePath || '',
       importWay: sourceOption[0].value,
-      configContent: '',
+      configHostId: undefined,
     },
   ],
 })
 
-const hostList = ref<HostInDomain[]>([])
-
-async function queryHostsInDomain() {
-  const [, res] = await api.getHostsInDomain(props.domainName)
-  if (res)
-    hostList.value = res
-}
+const isSubmiting = ref(false)
+const fileList = ref<UploadProps['fileList']>([])
 
 async function handleSubmit() {
   isSubmiting.value = true
   try {
     await formRef.value!.validate()
-    const [, res] = await api.addDomainConfig(
-      props.domainName,
-      form.confs.map(({ filePath, configHostId, configContent }) => ({
-        filePath,
-        contents: configContent,
-        hostId: configHostId,
-      })),
-    )
-    if (res)
-      message.success(res as string)
-    visible.value = false
+    const params = {}
+
+    if (form.confs[0].importWay === 'file') {
+      const formData = new FormData()
+      formData.append('filePath', form.confs[0].filePath)
+      formData.append('domainName', form.confs[0].domainName)
+      fileList.value?.forEach((file) => {
+        formData.append('file', file as any)
+      })
+      formData.append('cluster_id', props.clusterId)
+
+      const [, res] = await api.uploadDomainConfig(formData)
+      if (res && res[props.clusterId].label === 'Succeed') {
+        message.success('修改成功')
+        emit('success')
+        visible.value = false
+        onClose()
+      }
+      else {
+        message.error('修改失败')
+      }
+    }
+    else {
+      params[props.clusterId] = {
+        domainName: props.domainName,
+        confFiles: form.confs.map(({ filePath, configHostId: hostId, configContent }) => ({
+          filePath,
+          contents: configContent,
+          hostId,
+        })),
+      }
+
+      const [, res] = await api.addDomainConfig(
+        params,
+      )
+      if (res && res[props.clusterId].label === 'Succeed') {
+        message.success('修改成功')
+        emit('success')
+        visible.value = false
+        onClose()
+      }
+      else {
+        message.error('修改失败')
+      }
+    }
   }
   catch {
   }
@@ -96,9 +126,51 @@ async function handleSubmit() {
   }
 }
 
-onMounted(() => {
-  queryHostsInDomain()
-})
+function onClose() {
+  form.confs.forEach((item) => {
+    item.configContent = undefined
+    item.configHostId = undefined
+  })
+  fileList.value = []
+}
+
+const removeFile: UploadProps['onRemove'] = (file) => {
+  if (!fileList.value)
+    return
+  const index = fileList.value.indexOf(file)
+  const newFileList = fileList.value.slice()
+  newFileList.splice(index, 1)
+  fileList.value = newFileList
+}
+
+/**
+ * examine file before upload
+ * @param file
+ */
+const preUpload: UploadProps['beforeUpload'] = async (file) => {
+  fileList.value = [file]
+
+  const fileSize = file.size
+  if (fileSize > 1024 * 1024 * 1) {
+    message.error('文件大于1M')
+    setTimeout(() => {
+      removeFile(file)
+    }, 0)
+    return false
+  }
+
+  return false
+}
+
+function validateFile() {
+  if (fileList.value?.length === 0)
+    return Promise.reject(new Error('请选择文件'))
+  return Promise.resolve()
+}
+
+function OnImportWayChanged(_value: string) {
+  onClose()
+}
 </script>
 
 <template>
@@ -111,6 +183,7 @@ onMounted(() => {
     :width="700"
     :closable="false"
     destroy-on-close
+    @close="onClose"
   >
     <template #extra>
       <CloseOutlined style="cursor: pointer" @click="visible = false" />
@@ -136,10 +209,10 @@ onMounted(() => {
             </a-tooltip>
             &nbsp;配置来源
           </template>
-          <a-select v-model:value="conf.importWay" :options="sourceOption" />
+          <a-select v-model:value="conf.importWay" :options="sourceOption" @change="OnImportWayChanged" />
         </a-form-item>
         <a-form-item
-          v-if="conf.importWay === '手动输入'"
+          v-if="conf.importWay === 'manuel'"
           :name="['confs', index, 'configContent']"
           label="配置内容"
           :rules="[{ required: true, message: '请输入配置路径', trigger: 'change' }]"
@@ -147,12 +220,12 @@ onMounted(() => {
           <a-textarea v-model:value="conf.configContent" :rows="8" placeholder="请输入配置内容" />
         </a-form-item>
         <a-form-item
-          v-if="conf.importWay === '从主机导入'"
-          :name="['confs', index, 'configHost']"
+          v-if="conf.importWay === 'auto'"
+          :name="['confs', index, 'configHostId']"
           label="选择主机"
           :rules="[{ required: true, message: '请选择主机', trigger: 'change' }]"
         >
-          <a-select v-model:value="conf.configHostId">
+          <a-select v-model:value="conf.configHostId" placeholder="请选择主机">
             <a-select-option v-for="item in hostList" :key="item.hostId" :value="item.hostId">
               {{
                 item.ip
@@ -160,22 +233,28 @@ onMounted(() => {
             </a-select-option>
           </a-select>
         </a-form-item>
-        <!-- <a-form-item label="选择文件" v-if="conf.importWay === '从本地导入'">
-        <a-upload :name="['confs', 'index', 'confs']">
-          <a-button>
-            <upload-outlined></upload-outlined>
-            选择文件
-          </a-button>
-          <div class="upload-tip">
-            <p>文件大小不超过1MB</p>
-          </div>
-        </a-upload>
-      </a-form-item> -->
+        <a-form-item v-if="conf.importWay === 'file'" label="选择文件" :name="['confs', index, 'confs']" :rules="[{ validator: validateFile }]">
+          <a-upload
+            :file-list="fileList"
+            :before-upload="preUpload"
+            @remove="removeFile"
+          >
+            <a-button>
+              <UploadOutlined />
+              选择文件
+            </a-button>
+            <span class="upload-tip">
+              <p>文件大小不超过1MB</p>
+            </span>
+          </a-upload>
+        </a-form-item>
       </div>
     </a-form>
     <div class="operate-button">
       <a-space>
-        <a-button>取消</a-button>
+        <a-button @click="visible = false">
+          取消
+        </a-button>
         <a-button type="primary" html-type="submit" @click="handleSubmit">
           确定
         </a-button>
@@ -195,5 +274,14 @@ onMounted(() => {
   background: #fff;
   text-align: right;
   z-index: 1;
+}
+
+.upload-tip {
+  left: 130px;
+  top: 5px;
+  position: absolute;
+  font-size: 15px;
+  width: 170px;
+
 }
 </style>

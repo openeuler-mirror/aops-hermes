@@ -8,28 +8,55 @@
 // PURPOSE.
 // See the Mulan PSL v2 for more details.
 export interface Domain {
-  domainName: string;
+  cluster_id: string
+  cluster_name: string
+  domain_id: string
+  domain_name: string
+  priority: number
+}
+
+export interface SyncStatus {
+  notSyncCount: number
+  status: string
+  syncInfo: {
+    file_path: string
+    isSynced: string
+  }[]
 }
 export interface HostInDomain {
-  hostId: number;
-  ip: string;
-  ipv6: string;
-  syncStatus?: boolean;
+  hostId: string
+  ip: string
+  ipv6: string
+  syncStatus?: string
 }
 export interface ConfFile {
-  contents: string;
-  filePath: string;
+  contents: string
+  filePath: string
+}
+
+export interface RealConfFile {
+  filePath: string
+  path: string
+  fileOwner: string
+  fileAttr: string
+  confContents: string
 }
 export interface ChangeLog {
-  author: string;
-  changeId: string;
-  changeReason: string;
-  date: string;
-  postValue: string;
-  preValue: string;
+  author: string
+  changeId: string
+  changeReason: string
+  date: string
+  postValue: string
+  preValue: string
 }
 export interface ConfBaseInfo {
-  expectedContents: string;
-  filePath: string;
-  changeLog: ChangeLog[];
+  expectedContents: string
+  filePath: string
+  changeLog: ChangeLog[]
+}
+
+export interface DomainConf {
+  confBaseInfos: RealConfFile[]
+  domainName: string
+  hostID: string
 }

@@ -70,6 +70,11 @@ const locale = ref(zhCN)
           borderRadiusLG: 0,
           borderRadiusSM: 0,
         },
+        Transfer: {
+          borderRadius: 0,
+          borderRadiusLG: 0,
+          borderRadiusSM: 0,
+        },
       },
     }"
   >
