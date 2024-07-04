@@ -55,9 +55,11 @@ const pagination = reactive({
   pageSize: 10,
   showTotal: (total: number) => `总计 ${total} 项`,
   showSizeChanger: true,
+  pageSizeOptions: ['10', '20', '30', '40'],
 })
 
 const tableState = reactive({
+  expandedRowKeys: [],
   searchKey: '',
   isUsersTableLoading: false,
   isExpandTableLoading: false,
@@ -108,6 +110,7 @@ async function handleResetPass(record: Account) {
 }
 
 function handleSearch() {
+  tableState.expandedRowKeys = []
   queryAccounts(tableState.searchKey)
 }
 
@@ -122,12 +125,14 @@ onMounted(() => {
       <a-row type="flex">
         <a-input-search
           v-model:value="tableState.searchKey"
+          :maxlength="40"
           placeholder="按照用户名搜索"
           style="width: 200px"
           @search="handleSearch"
         />
       </a-row>
       <a-table
+        v-model:expandedRowKeys="tableState.expandedRowKeys"
         row-key="username"
         :columns="usersColumns"
         :data-source="users"
@@ -146,11 +151,13 @@ onMounted(() => {
             </router-link>
             <a-divider type="vertical" />
             <a-popconfirm
-              title="你确定重置该用户密码吗?"
               ok-text="确认"
               cancel-text="取消"
               @confirm="handleResetPass(record)"
             >
+              <template #title>
+                你确定将该用户密码重置为<span style="color: red">changeme</span>吗?
+              </template>
               <template #icon>
                 <QuestionCircleOutlined style="color: red" />
               </template>

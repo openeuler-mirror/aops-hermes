@@ -8,7 +8,7 @@ import {
 } from '@ant-design/icons-vue'
 import { Modal, message } from 'ant-design-vue'
 import type { TableColumnsType, TableProps } from 'ant-design-vue'
-import type { SorterResult } from 'ant-design-vue/es/table/interface'
+import type { SorterResult, TablePaginationConfig } from 'ant-design-vue/es/table/interface'
 import { storeToRefs } from 'pinia'
 import AddHostGroupModal from './components/AddHostGroupModal.vue'
 import HostTable from './components/HostTable.vue'
@@ -25,10 +25,10 @@ const orderMap: Record<orderType, 'asc' | 'desc'> = {
   descend: 'desc',
 }
 
-const { clusters } = storeToRefs(useClusterStore())
-const { queryClusters } = useClusterStore()
+const { permissions } = storeToRefs(useClusterStore())
 
 const { accountRole } = storeToRefs(useAccountStore())
+const clusters = computed(() => permissions.value.map(i => ({ cluster_name: i.cluster_name, cluster_id: i.cluster_id })))
 
 // #region ----------------------------------------< host group table >----------------------------------------
 const hostGroupTableColumn = computed<TableColumnsType>(() => [
@@ -55,7 +55,7 @@ const hostGroupTableColumn = computed<TableColumnsType>(() => [
     key: 'cluster_name',
     title: '集群',
     dataIndex: 'cluster_name',
-    filters: clusters.value?.map(i => ({ text: i.cluster_name, value: i.cluster_id })),
+    filters: permissions.value.map(i => ({ text: i.cluster_name, value: i.cluster_id })),
   },
   {
     key: 'operation',
@@ -66,12 +66,13 @@ const hostGroupTableColumn = computed<TableColumnsType>(() => [
   },
 ])
 
-const pagination = reactive({
+const pagination = reactive<TablePaginationConfig>({
   total: 0,
   current: 1,
   pageSize: 10,
   showTotal: (total: number) => `总计 ${total} 项`,
   showSizeChanger: true,
+  pageSizeOptions: ['10', '20', '30', '40'],
 })
 
 const tableState = reactive<{
@@ -134,17 +135,20 @@ const handleTableChange: TableProps<HostGroupTableItem>['onChange'] = (
  * distribution interface
  * @param hostGroupId
  */
-async function deleteHostGroup(hostGroupId: string) {
+async function deleteHostGroup(hostGroupId: string): Promise<string> {
   const { host_group_id, cluster_id } = hostGroupTableData.value.find(
     item => hostGroupId === item.host_group_id,
   )!
   const params: Record<string, { group_id: string }> = {}
   params[cluster_id] = { group_id: host_group_id }
   const [_] = await api.deleteHostGroup(hostGroupId, params)
-  if (_)
-    return
-  message.success('删除成功')
-  queryHostGroups()
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (_)
+        return reject(new Error('删除失败'))
+      else return resolve('删除成功')
+    }, 2000)
+  })
 }
 
 /**
@@ -167,9 +171,15 @@ async function handleDelete(hostGroup: HostGroupTableItem): Promise<void> {
     okText: '删除',
     onOk: async () => {
       try {
-        await deleteHostGroup(hostGroup.host_group_id)
+        const res = await deleteHostGroup(hostGroup.host_group_id)
+        if (res) {
+          message.success(res)
+          queryHostGroups()
+        }
       }
-      catch (error) {}
+      catch (error) {
+        message.error(error as any)
+      }
     },
   })
 }
@@ -198,7 +208,6 @@ function handleDrawerOpen(group: string) {
 // #endregion
 onMounted(() => {
   queryHostGroups()
-  queryClusters()
 })
 </script>
 

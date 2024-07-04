@@ -4,7 +4,7 @@ export const severityColorMap = {
   Medium: '#fde92c',
   Low: '#3bd065',
   Unknown: '#ccc',
-};
+}
 
 export const severityMap = {
   Critical: '严重',
@@ -12,7 +12,7 @@ export const severityMap = {
   Medium: '中风险',
   Low: '低风险',
   Unknown: '未知',
-};
+}
 
 export enum RiskMap {
   Critical = '严重',

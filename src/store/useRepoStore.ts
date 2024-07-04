@@ -9,7 +9,7 @@
 // See the Mulan PSL v2 for more details.
 
 import { defineStore } from 'pinia'
-import { onBeforeMount, ref } from 'vue'
+import { ref } from 'vue'
 import type { Repo } from '@/api'
 import { api } from '@/api'
 
@@ -23,8 +23,5 @@ export const useRepoStore = defineStore('repoStore', () => {
       repos.value = res
   }
 
-  onBeforeMount(() => {
-    queryRepos()
-  })
   return { repos, queryRepos }
 })

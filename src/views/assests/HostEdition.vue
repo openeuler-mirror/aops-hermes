@@ -27,7 +27,7 @@ interface Form {
 type PageType = 'create' | 'edit'
 
 const { clusters, hostGroups } = storeToRefs(useClusterStore())
-const { queryClusters, queryHostGroups } = useClusterStore()
+const { queryHostGroups } = useClusterStore()
 
 const route = useRoute()
 const router = useRouter()
@@ -73,55 +73,6 @@ function validateHostUsername(_rule: Rule, value: string) {
   if (/^[#+-]/.test(value))
     return Promise.reject(new Error('首字符不能是“#”、“+”或“-”'))
   return Promise.resolve()
-}
-
-/**
- * validate host password
- * @param _rule
- * @param value
- */
-function validateHostPassword(_rule: Rule, value: string) {
-  if (pageType.value === 'create') {
-    if (/[^\w~`!?.:;\-'"(){}[\]/<>@#$%^&*+|\\=]/.test(value))
-      return Promise.reject(new Error('只允许大小写字母、数字和特殊字符，不能有空格和逗号'))
-    if (value && (value.length < 8 || value.length > 20))
-      return Promise.reject(new Error('长度应为8-20字符'))
-    if (!/[_~`!?.:;\-'"(){}[\]/<>@#$%^&*+|\\=]/.test(value))
-      return Promise.reject(new Error('请至少应包含一个特殊字符'))
-    let count = 0
-    if (/[a-z]/.test(value))
-      count += 1
-    if (/[A-Z]/.test(value))
-      count += 1
-    if (/\d/.test(value))
-      count += 1
-    if (count < 2)
-      return Promise.reject(new Error('至少包含大写字母、小写字母、数字中的两种'))
-    return Promise.resolve()
-  }
-  else {
-    if (form.ssh_user === defaultInfo.ssh_user && form.ssh_port === defaultInfo.ssh_port)
-      return Promise.resolve()
-    if (!value)
-      return Promise.reject(new Error('主机用户名或端口已修改，请输入登录密码'))
-  }
-}
-/**
- * validate host password
- * @param _rule
- * @param value
- */
-function validateHostSshpkey(_rule: Rule, value: string) {
-  if (pageType.value === 'create') {
-    if (!value)
-      return Promise.reject(new Error('请输入登录密钥'))
-  }
-  else {
-    if (form.ssh_user === defaultInfo.ssh_user && form.ssh_port === defaultInfo.ssh_port)
-      return Promise.resolve()
-    if (!value)
-      return Promise.reject(new Error('主机用户名或端口已修改，请输入登录密钥'))
-  }
 }
 
 /**
@@ -175,16 +126,22 @@ const rules: Record<string, Rule[]> = {
     { required: true, message: '请输入用户名', trigger: 'change' },
     { validator: validateHostUsername, trigger: 'blur' },
   ],
-  password: [{ validator: validateHostPassword, trigger: 'blur' }],
-  ssh_pkey: [{ validator: validateHostSshpkey, trigger: 'blur' }],
 }
+
+const isPassRequired = computed<boolean>(() => {
+  if (pageType.value === 'create')
+    return true
+  if (form.ssh_user !== defaultInfo.ssh_user || form.ssh_port !== defaultInfo.ssh_port)
+    return true
+  return false
+})
 // #endregion
 
 /**
  * request the list of host groups after adding the host group successfully
  */
 async function handleAddGroupSuccess() {
-  // await queryHostGroup();
+  await queryHostGroups()
 }
 
 /**
@@ -229,6 +186,7 @@ async function handleSubmit(type: 'create' | 'edit'): Promise<void> {
 
     if (!diff) {
       message.info('当前没有修改，请修改后重试')
+      isLoading.value = false
       return
     }
     const params: Record<
@@ -275,7 +233,12 @@ async function handleSubmit(type: 'create' | 'edit'): Promise<void> {
           })
         }
 
-        else { router.replace('/assests') }
+        else {
+          setTimeout(() => {
+            isLoading.value = false
+            router.replace('/assests')
+          }, 2000)
+        }
       }
     }
     else if (type === 'edit') {
@@ -288,13 +251,16 @@ async function handleSubmit(type: 'create' | 'edit'): Promise<void> {
           })
         }
 
-        else { router.replace('/assests') }
+        else {
+          setTimeout(() => {
+            isLoading.value = false
+            router.replace('/assests')
+          }, 2000)
+        }
       }
     }
   }
   catch (error) {
-  }
-  finally {
     isLoading.value = false
   }
 }
@@ -307,7 +273,6 @@ const hostGroupoOtions = computed<HostGroup[]>(() =>
 )
 
 onMounted(() => {
-  queryClusters()
   queryHostGroups()
   if (pageType.value === 'edit')
     queryHostInfoById(hostId.value)
@@ -340,7 +305,7 @@ onMounted(() => {
           </a-form-item>
 
           <a-form-item label="集群" name="cluster_id">
-            <a-select v-model:value="form.cluster_id" placeholder="请选择集群">
+            <a-select v-model:value="form.cluster_id" placeholder="请选择集群" :disabled="pageType === 'edit'">
               <a-select-option
                 v-for="cluster in clusters"
                 :key="cluster.cluster_id"
@@ -421,7 +386,11 @@ onMounted(() => {
               </a-radio>
             </a-radio-group>
           </a-form-item>
-          <a-form-item :name="form.identificaWay === 1 ? `password` : `ssh_pkey`">
+          <a-form-item
+            :name="form.identificaWay === 1 ? `password` : `ssh_pkey`" :rules="isPassRequired ? [
+              { required: true, message: `请输入登录${form.identificaWay === 1 ? '密码' : '密钥'}` },
+            ] : []"
+          >
             <template #label>
               <span v-if="form.identificaWay === 1">主机登录密码</span>
               <span v-else>
@@ -450,7 +419,7 @@ onMounted(() => {
                 </a-button>
               </a-col>
               <a-col>
-                <a-button type="primary" :loading="isLoading" @click="handleSubmit(pageType)">
+                <a-button type="primary" :loading="isLoading" html-type="submit" @click="handleSubmit(pageType)">
                   {{
                     pageType === 'edit' ? '修改' : '添加'
                   }}

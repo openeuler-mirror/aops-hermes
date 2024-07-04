@@ -89,13 +89,16 @@ async function addNewHostGroup() {
           description: Object.values(res)[0].label,
         })
       }
-      else { message.success('添加成功') }
+      else {
+        message.success('添加成功')
+      }
+      visible.value = false
+      emits('success')
+      formRef.value.resetFields()
     }
-    visible.value = false
-    emits('success')
-    formRef.value.resetFields()
   }
   catch (error) {
+    isLoading.value = false
   }
   finally {
     isLoading.value = false

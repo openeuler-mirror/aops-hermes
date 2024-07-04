@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { QuestionCircleOutlined } from '@ant-design/icons-vue'
+import { ref } from 'vue'
 import AlarmsTable from './AlarmsTable.vue'
 import Drawer from '@/components/Drawer.vue'
 
@@ -20,6 +21,7 @@ const tableColunms = [
     align: 'center',
   },
 ]
+const isDrawerVisible = ref(false)
 </script>
 
 <template>
@@ -34,9 +36,9 @@ const tableColunms = [
       </a-tooltip>
     </a-row>
     <a-table class="table" size="small" :columns="tableColunms" />
-    <Drawer title="告警信息统计">
+    <Drawer v-model:visible="isDrawerVisible" title="告警信息统计">
       <template #trigger>
-        <div class="more">
+        <div class="more" @click="isDrawerVisible = true">
           查看更多
         </div>
       </template>

@@ -6,6 +6,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { computed, onMounted, reactive, ref } from 'vue'
 import PageWrapper from '@/components/PageWrapper.vue'
 import { api } from '@/api'
+import { useClusterStore } from '@/store'
 
 type PageType = 'create' | 'edit'
 interface Form {
@@ -18,6 +19,7 @@ interface Form {
 
 const route = useRoute()
 const router = useRouter()
+const { registerCluster, updateCluster, queryPermission } = useClusterStore()
 
 const clusterId = ref<string>('')
 const formRef = ref<FormInstance>()
@@ -41,8 +43,6 @@ const form = reactive<Form>({
 function validateClustserName(_rule: Rule, value: string) {
   if (/^\s+|\s+$/.test(value))
     return Promise.reject(new Error('首尾不允许空格'))
-  if (!/^(?!\s*$).+/.test(value))
-    return Promise.reject(new Error('不允许全空格'))
   return Promise.resolve()
 }
 
@@ -52,8 +52,6 @@ function validateClustserName(_rule: Rule, value: string) {
  * @param value
  */
 function validateUsername(_rule: Rule, value: string) {
-  if (!value)
-    return Promise.reject(new Error('请输入用户名'))
   if (/[^\w\-~`!?.;(){}[\]@#$^*+|=]/.test(value)) {
     return Promise.reject(
       new Error('用户名为数字、英文字母或特殊字符组成，不能包含空格和以下特殊字符：:<>&,\'"\\/%。'),
@@ -70,19 +68,22 @@ function validateUsername(_rule: Rule, value: string) {
  * @param value
  */
 function validatePassword(_rule: Rule, value: string) {
-  if (!value)
-    return Promise.reject(new Error('请输入密码'))
   if (/[^\w~`!?.:;\-'"(){}[\]/<>@#$%^&*+|\\=]/.test(value))
     return Promise.reject(new Error('只允许大小写字母、数字和特殊字符，不能有空格和逗号'))
-  if (value && (value.length < 6 || value.length > 20))
-    return Promise.reject(new Error('长度应为8-20字符'))
+  if (value && (value.length < 1 || value.length > 255))
+    return Promise.reject(new Error('长度应为1-255字符'))
   return Promise.resolve()
 }
 
 // form validate rules
 const rules: Record<string, Rule[]> = {
   cluster_name: [
-    { max: 50, message: '集群长度应小于50', trigger: 'blur' },
+    { max: 20, message: '集群长度应小于20', trigger: 'change' },
+    {
+      required: true,
+      message: '请输入集群名',
+      trigger: 'change',
+    },
     {
       validator: validateClustserName,
       trigger: 'change',
@@ -96,9 +97,17 @@ const rules: Record<string, Rule[]> = {
       trigger: 'change',
     },
   ],
-  cluster_username: [{ validator: validateUsername, trigger: 'blur' }],
-  cluster_password: [{ validator: validatePassword, trigger: 'blur' }],
-  description: [{ required: true, message: '请输入集群描述', trigger: 'change' }],
+  cluster_username: [{ max: 36, message: '用户名长度应小于20', trigger: 'change' }, {
+    required: true,
+    message: '请输入用户名',
+    trigger: 'change',
+  }, { validator: validateUsername, trigger: 'blur' }],
+  cluster_password: [{
+    required: true,
+    message: '请输入密码',
+    trigger: 'change',
+  }, { validator: validatePassword, trigger: 'blur' }],
+  description: [{ max: 60, message: '描述长度应小于60', trigger: 'change' }, { required: true, message: '请输入集群描述', trigger: 'change' }],
 }
 
 async function handleSubmit(type: 'create' | 'edit'): Promise<void> {
@@ -106,9 +115,9 @@ async function handleSubmit(type: 'create' | 'edit'): Promise<void> {
   try {
     await formRef.value!.validate()
     if (type === 'create')
-      await registerCluster()
+      await handleregisterCluster()
     else if (type === 'edit')
-      await updateCluster()
+      await handleupdateCluster()
   }
   catch (error) {
   }
@@ -117,26 +126,28 @@ async function handleSubmit(type: 'create' | 'edit'): Promise<void> {
   }
 }
 
-async function registerCluster() {
+async function handleregisterCluster() {
   isLoading.value = true
-  const [_] = await api.registerCluster(form as Required<Form>)
-  if (!_) {
+  const _ = await registerCluster(form as Required<Form>)
+  if (_) {
     message.success('添加成功')
+    queryPermission()
     router.push('/user/cluster/cluster-management')
   }
 }
 
-async function updateCluster() {
+async function handleupdateCluster() {
   isLoading.value = true
   const { cluster_ip, cluster_name, description } = form
-  const [_] = await api.updateCluster({
+  const _ = await updateCluster({
     cluster_id: clusterId.value,
     cluster_ip,
     cluster_name,
     description,
   })
-  if (!_) {
+  if (_) {
     message.success('修改成功')
+    queryPermission()
     router.push('/user/cluster/cluster-management')
   }
 }
@@ -221,7 +232,7 @@ onMounted(() => {
                 </a-button>
               </a-col>
               <a-col>
-                <a-button type="primary" :loading="isLoading" @click="handleSubmit(pageType)">
+                <a-button type="primary" :loading="isLoading" html-type="submit" @click="handleSubmit(pageType)">
                   {{
                     pageType === 'create' ? '添加' : '修改'
                   }}

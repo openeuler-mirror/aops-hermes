@@ -10,12 +10,14 @@
 
 import { defineStore } from 'pinia'
 import { onMounted, ref } from 'vue'
-import type { Cluster, HostGroupInfo } from '@/api'
+import { useAccountStore } from './useAccountStore'
+import type { Cluster, HostGroup, HostGroupInfo } from '@/api'
 import { api } from '@/api'
 
 export const useClusterStore = defineStore('clusterStore', () => {
   const clusters = ref<Cluster[]>([])
   const hostGroups = ref<HostGroupInfo[]>([])
+  const permissions = ref<{ cluster_id: string, cluster_name: string, host_groups: HostGroup[] }[]>([])
 
   async function queryClusters() {
     const [_, res] = await api.getClusters()
@@ -29,8 +31,37 @@ export const useClusterStore = defineStore('clusterStore', () => {
       hostGroups.value = res.host_group_infos
   }
 
+  async function queryPermission() {
+    const { userInfo } = useAccountStore()
+    const [_, res] = await api.getAccountPermission(userInfo?.username)
+    if (res)
+      permissions.value = res
+  }
+
+  async function registerCluster(params: {
+    cluster_name: string
+    description: string
+    cluster_ip: string
+    cluster_username: string
+    cluster_password: string
+  }): Promise<boolean> {
+    const [_] = await api.registerCluster(params)
+    return !_
+  }
+
+  async function updateCluster(params: {
+    cluster_id: string
+    cluster_name: string
+    description: string
+    cluster_ip: string
+  }): Promise<boolean> {
+    const [_] = await api.updateCluster(params)
+    return !_
+  }
+
   onMounted(() => {
     queryClusters()
+    queryPermission()
   })
-  return { clusters, hostGroups, queryClusters, queryHostGroups }
+  return { clusters, hostGroups, permissions, queryClusters, queryHostGroups, registerCluster, updateCluster, queryPermission }
 })

@@ -38,30 +38,6 @@ function validateHostUsername(_rule: Rule, value: string) {
 }
 
 /**
- * validate host password
- * @param _rule
- * @param value
- */
-function validateHostPassword(_rule: Rule, value: string) {
-  if (/[^\w~`!?.:;\-'"(){}[\]/<>@#$%^&*+|\\=]/.test(value))
-    return Promise.reject(new Error('只允许大小写字母、数字和特殊字符，不能有空格和逗号'))
-  if (value && (value.length < 8 || value.length > 20))
-    return Promise.reject(new Error('长度应为8-20字符'))
-  if (!/[_~`!?.:;\-'"(){}[\]/<>@#$%^&*+|\\=]/.test(value))
-    return Promise.reject(new Error('请至少应包含一个特殊字符'))
-  let count = 0
-  if (/[a-z]/.test(value))
-    count += 1
-  if (/[A-Z]/.test(value))
-    count += 1
-  if (/\d/.test(value))
-    count += 1
-  if (count < 2)
-    return Promise.reject(new Error('至少包含大写字母、小写字母、数字中的两种'))
-  return Promise.resolve()
-}
-
-/**
  * validate host name
  * @param _rule
  * @param value
@@ -110,8 +86,6 @@ const formRules: Record<string, Rule[]> = {
     { required: true, message: '请输入用户名', trigger: 'change' },
     { validator: validateHostUsername, trigger: 'blur' },
   ],
-  password: [{ validator: validateHostPassword, trigger: 'blur' }],
-  ssh_pkey: [{ required: true, message: '请设置主机登录密钥', trigger: 'change' }],
 }
 
 async function save(key: string) {
@@ -172,7 +146,11 @@ watch(isEditing, (newVal) => {
         <a-switch v-model:checked="sourceData[formKey]" @change="save(formKey)" />
       </span>
       <span v-else>
-        {{ formData[formKey] }}
+        <span v-if="formKey === 'password' || formKey === 'ssh_pkey'">********
+        </span>
+        <span v-else>
+          {{ formData[formKey] }}
+        </span>
         <EditOutlined class="editable-cell-icon" @click="edit(formKey)" />
       </span>
     </div>

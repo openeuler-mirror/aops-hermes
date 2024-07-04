@@ -16,7 +16,7 @@ import type {
 import axios from 'axios'
 import { message as Message, notification } from 'ant-design-vue'
 import { useAccountStore } from '@/store'
-import { downloadBlobFile } from '@/utils'
+import { downloadBlobFile, isArrayOrObject } from '@/utils'
 
 export interface Result<T = any> {
   code: number
@@ -40,7 +40,7 @@ const request = axios.create({
   timeout: 60 * 1000,
 })
 
-const formDataUrl = ['/vulnerabilities/cve/advisory/upload', '/vulnerabilities/cve/unaffected/upload']
+const formDataUrl = ['/vulnerabilities/cve/advisory/upload', '/vulnerabilities/cve/unaffected/upload', '/distribute/conftrace/management/uploadManagementConf', '/conftrace/management/uploadManagementConf']
 
 request.interceptors.request.use(
   (
@@ -61,10 +61,12 @@ request.interceptors.request.use(
       const { params } = config
       if (!params)
         return config
+
       Object.keys(params).forEach((key) => {
-        if (Array.isArray(params[key]) && params[key].length > 0)
+        if (isArrayOrObject(params[key]))
           params[key] = encodeURI(JSON.stringify(params[key]))
       })
+
       return config
     }
 
@@ -160,6 +162,17 @@ request.interceptors.response.use(
             return new Promise((resolve, reject) => {
               requestQueue.push({ config: response.config, resolve, reject })
             })
+          }
+          else {
+            notification.error({
+              message: '用户校验失败',
+              description: response.data.message,
+            })
+            setTimeout(() => {
+              const { clearInfo } = useAccountStore()
+              clearInfo()
+              window.location.reload()
+            }, 1000)
           }
           break
         default:

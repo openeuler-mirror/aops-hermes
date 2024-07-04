@@ -63,6 +63,20 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 meta: {
                   hidden: true,
                   title: '用户列表',
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: '主页',
+                      path: '/',
+                    },
+                    {
+                      breadcrumbName: '用户管理',
+                      path: '/user/users',
+                    },
+                    {
+                      breadcrumbName: '用户列表',
+                      path: '/user/users',
+                    },
+                  ],
                 },
               },
               {
@@ -79,11 +93,11 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                     },
                     {
                       breadcrumbName: '用户管理',
-                      path: '/user',
+                      path: '/user/users',
                     },
                     {
                       breadcrumbName: '用户列表',
-                      path: '/user',
+                      path: '/user/users',
                     },
                     {
                       breadcrumbName: '权限分配',
@@ -109,6 +123,21 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 meta: {
                   hidden: true,
                   title: '集群管理',
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: '主页',
+                      path: '/',
+                    },
+                    {
+                      breadcrumbName: '用户管理',
+                      path: '/user/users',
+                    },
+                    {
+                      breadcrumbName: '集群管理',
+                      path: '/user/cluster',
+                    },
+
+                  ],
                 },
               },
               {
@@ -125,7 +154,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                     },
                     {
                       breadcrumbName: '用户管理',
-                      path: '/user',
+                      path: '/user/users',
                     },
                     {
                       breadcrumbName: '集群管理',
@@ -151,7 +180,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                     },
                     {
                       breadcrumbName: '用户管理',
-                      path: '/user',
+                      path: '/user/users',
                     },
                     {
                       breadcrumbName: '集群管理',
@@ -280,7 +309,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
           },
           {
             path: '/assests/host-group',
-            name: 'HostGroupManagement',
+            name: 'hostGroup',
             redirect: '/assests/host-group/host-group-management',
             meta: {
               title: '主机组管理',
@@ -290,7 +319,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
             children: [
               {
                 path: '/assests/host-group/host-group-management',
-                name: 'HostGroupManagement',
+                name: 'hostGroupManagement',
                 component: () => import('@/views/assests/HostGroupManagement.vue'),
                 meta: {
                   title: '主机组管理',
@@ -526,7 +555,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
         children: [
           {
             path: '/configuration/domain-management',
-            name: '业务域管理',
+            name: 'domain',
             redirect: '/configuration/domain-management/list',
             meta: {
               hiddenChildren: true,
@@ -535,7 +564,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
             children: [
               {
                 path: '/configuration/domain-management/list',
-                name: '业务域管理',
+                name: 'domainManagement',
                 component: () => import('@/views/configuration/DomainManagement.vue'),
                 meta: {
                   hidden: true,
@@ -543,8 +572,8 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 },
               },
               {
-                path: '/configuration/domain-management/detail/:domainId',
-                name: '业务域详情',
+                path: '/configuration/domain-management/detail/:domainId/:domainName/:clusterId',
+                name: 'domainDetail',
                 component: () => import('@/views/configuration/DomainDetail.vue'),
                 meta: {
                   hidden: true,
@@ -568,24 +597,30 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                   ],
                 },
               },
-            ],
-          },
-          {
-            path: '/configuration/domain-configurations',
-            name: '业务域配置管理',
-            redirect: `/configuration/domain-configurations/$noDomain`,
-            meta: {
-              hiddenChildren: true,
-              title: '业务域配置管理',
-            },
-            children: [
               {
-                path: '/configuration/domain-configurations/:domainId',
-                name: '业务域配置管理',
+                path: '/configuration/domain-management/conf-list/:domainId/:domainName/:clusterId',
+                name: 'configurationManagement',
                 component: () => import('@/views/configuration/DominConfigurations.vue'),
                 meta: {
                   hidden: true,
                   title: '业务域配置管理',
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: '主页',
+                      path: '/',
+                    },
+                    {
+                      breadcrumbName: '配置溯源',
+                      path: '/configuration',
+                    },
+                    {
+                      breadcrumbName: '业务域管理',
+                      path: '/configuration/domain-management',
+                    },
+                    {
+                      breadcrumbName: '业务域配置管理',
+                    },
+                  ],
                 },
               },
             ],

@@ -21,3 +21,25 @@ export function hasIntersection(arr1: string[], arr2: string[]) {
   }
   return false
 }
+
+export function isArrayOrObject(value: any) {
+  if (Array.isArray(value))
+    return true
+
+  if (typeof value === 'object' && value !== null)
+    return true
+
+  return false
+}
+
+export function isObject(value: any) {
+  return !!(typeof value === 'object' && value !== null)
+}
+
+export function checkIsDiff(diffResult: Diff.Change[]) {
+  for (let i = 0; i < diffResult.length; i++) {
+    if (diffResult[i].added || diffResult[i].removed)
+      return true
+  }
+  return false
+}
