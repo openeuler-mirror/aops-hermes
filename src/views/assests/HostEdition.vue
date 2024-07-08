@@ -26,8 +26,12 @@ interface Form {
 
 type PageType = 'create' | 'edit'
 
-const { clusters, hostGroups } = storeToRefs(useClusterStore())
+const { permissions, hostGroups } = storeToRefs(useClusterStore())
 const { queryHostGroups } = useClusterStore()
+
+const clusterOptions = computed(() =>
+  permissions.value.map(({ cluster_id, cluster_name }) => ({ cluster_id, cluster_name })),
+)
 
 const route = useRoute()
 const router = useRouter()
@@ -265,9 +269,6 @@ async function handleSubmit(type: 'create' | 'edit'): Promise<void> {
   }
 }
 
-const clusterOptions = computed(() =>
-  clusters.value.map(({ cluster_id, cluster_name }) => ({ cluster_id, cluster_name })),
-)
 const hostGroupoOtions = computed<HostGroup[]>(() =>
   form.cluster_id ? hostGroups.value.filter(item => item.cluster_id === form.cluster_id) : [],
 )
@@ -307,7 +308,7 @@ onMounted(() => {
           <a-form-item label="集群" name="cluster_id">
             <a-select v-model:value="form.cluster_id" placeholder="请选择集群" :disabled="pageType === 'edit'">
               <a-select-option
-                v-for="cluster in clusters"
+                v-for="cluster in clusterOptions"
                 :key="cluster.cluster_id"
                 :value="cluster.cluster_id"
               >

@@ -88,8 +88,8 @@ function onBreadCrumbClick(route: Breadcrumb): void {
     padding: 20px;
   }
   &-breadcrumb {
-    background-color: #ffffff;
     padding: 12px 24px;
+    background-color: var(--bg-basic-layout-header);
 
     &__operable {
       cursor: pointer;
@@ -101,7 +101,6 @@ function onBreadCrumbClick(route: Breadcrumb): void {
       display: flex;
       margin-bottom: 0;
       padding-right: 12px;
-      color: rgba(0, 0, 0, 0.85);
       font-weight: 600;
       font-size: 20px;
       line-height: 32px;

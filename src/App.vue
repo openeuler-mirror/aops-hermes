@@ -3,15 +3,11 @@ import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import { ref } from 'vue'
+import { theme as antdTheme } from 'ant-design-vue'
+
+import { isDark } from '@/composables/dark'
 
 dayjs.locale('zh-cn')
-
-const theme = ref({
-  white: '#ffffff',
-  borderRadius: 2,
-  colorPrimary: '#002FA7',
-  colorItemTextHover: '#1890ff',
-})
 
 const locale = ref(zhCN)
 </script>
@@ -23,12 +19,7 @@ const locale = ref(zhCN)
       components: {
         Menu: {
           radiusItem: 0,
-          colorItemBgHover: theme.white,
-          colorSubItemBg: theme.white,
           itemMarginInline: 0,
-          colorItemText: 'rgba(0, 0, 0, 0.6)',
-          colorItemTextSelected: '#1677ff',
-          colorItemTextHover: '#1677ff',
           colorActiveBarWidth: 3,
         },
         Input: {
@@ -76,6 +67,8 @@ const locale = ref(zhCN)
           borderRadiusSM: 0,
         },
       },
+      algorithm: !isDark ? antdTheme.defaultAlgorithm : antdTheme.darkAlgorithm,
+
     }"
   >
     <div class="aops-app">

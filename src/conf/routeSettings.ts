@@ -15,7 +15,6 @@ import {
   BugOutlined,
   DashboardOutlined,
   FormOutlined,
-  MedicineBoxOutlined,
   UserOutlined,
 } from '@ant-design/icons-vue'
 import Index from '@/views/Index.vue'
@@ -37,165 +36,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
           icon: h(DashboardOutlined),
         },
       },
-      {
-        path: '/user',
-        name: 'user',
-        redirect: '/user/users',
-        meta: {
-          title: '用户管理',
-          icon: h(UserOutlined),
-          permission: 'administrator',
-        },
-        children: [
-          {
-            path: '/user/users',
-            name: 'users',
-            redirect: '/user/users/user-management',
-            meta: {
-              hiddenChildren: true,
-              title: '用户列表',
-            },
-            children: [
-              {
-                path: '/user/users/user-management',
-                name: 'userManagement',
-                component: () => import('@/views/user/UserManagement.vue'),
-                meta: {
-                  hidden: true,
-                  title: '用户列表',
-                  diyBreadcrumb: [
-                    {
-                      breadcrumbName: '主页',
-                      path: '/',
-                    },
-                    {
-                      breadcrumbName: '用户管理',
-                      path: '/user/users',
-                    },
-                    {
-                      breadcrumbName: '用户列表',
-                      path: '/user/users',
-                    },
-                  ],
-                },
-              },
-              {
-                path: '/user/users/user-permission/:username',
-                name: 'userPermission',
-                component: () => import('@/views/user/UserPermission.vue'),
-                meta: {
-                  hidden: true,
-                  title: '权限分配',
-                  diyBreadcrumb: [
-                    {
-                      breadcrumbName: '主页',
-                      path: '/',
-                    },
-                    {
-                      breadcrumbName: '用户管理',
-                      path: '/user/users',
-                    },
-                    {
-                      breadcrumbName: '用户列表',
-                      path: '/user/users',
-                    },
-                    {
-                      breadcrumbName: '权限分配',
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-          {
-            path: '/user/cluster',
-            name: 'cluster',
-            redirect: '/user/cluster/cluster-management',
-            meta: {
-              hiddenChildren: true,
-              title: '集群列表',
-            },
-            children: [
-              {
-                path: '/user/cluster/cluster-management',
-                name: 'clusterManagement',
-                component: () => import('@/views/user/ClusterManagement.vue'),
-                meta: {
-                  hidden: true,
-                  title: '集群管理',
-                  diyBreadcrumb: [
-                    {
-                      breadcrumbName: '主页',
-                      path: '/',
-                    },
-                    {
-                      breadcrumbName: '用户管理',
-                      path: '/user/users',
-                    },
-                    {
-                      breadcrumbName: '集群管理',
-                      path: '/user/cluster',
-                    },
 
-                  ],
-                },
-              },
-              {
-                path: '/user/cluster/register-cluster',
-                name: 'registerCluster',
-                component: () => import('@/views/user/EditCluster.vue'),
-                meta: {
-                  hidden: true,
-                  title: '添加集群',
-                  diyBreadcrumb: [
-                    {
-                      breadcrumbName: '主页',
-                      path: '/',
-                    },
-                    {
-                      breadcrumbName: '用户管理',
-                      path: '/user/users',
-                    },
-                    {
-                      breadcrumbName: '集群管理',
-                      path: '/user/cluster',
-                    },
-                    {
-                      breadcrumbName: '添加集群',
-                    },
-                  ],
-                },
-              },
-              {
-                path: '/user/cluster/edit-cluster/:clusterId',
-                name: 'editCluster',
-                component: () => import('@/views/user/EditCluster.vue'),
-                meta: {
-                  hidden: true,
-                  title: '修改集群',
-                  diyBreadcrumb: [
-                    {
-                      breadcrumbName: '主页',
-                      path: '/',
-                    },
-                    {
-                      breadcrumbName: '用户管理',
-                      path: '/user/users',
-                    },
-                    {
-                      breadcrumbName: '集群管理',
-                      path: '/user/cluster',
-                    },
-                    {
-                      breadcrumbName: '修改集群',
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-        ],
-      },
       {
         path: '/assests',
         name: 'assests',
@@ -517,33 +358,33 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
           },
         ],
       },
-      {
-        path: '/diagnosis',
-        name: 'diagnosis',
-        redirect: '/diagnosis/workflow',
-        meta: {
-          title: '智能诊断',
-          icon: h(MedicineBoxOutlined),
-        },
-        children: [
-          {
-            path: '/diagnosis/workflow',
-            name: '工作流',
-            component: () => import('@/views/diagnosis/Workflow.vue'),
-            meta: {
-              title: '工作流',
-            },
-          },
-          {
-            path: '/diagnosis/alarm',
-            name: '告警',
-            component: () => import('@/views/diagnosis/Alarm.vue'),
-            meta: {
-              title: '告警',
-            },
-          },
-        ],
-      },
+      // {
+      //   path: '/diagnosis',
+      //   name: 'diagnosis',
+      //   redirect: '/diagnosis/workflow',
+      //   meta: {
+      //     title: '智能诊断',
+      //     icon: h(MedicineBoxOutlined),
+      //   },
+      //   children: [
+      //     {
+      //       path: '/diagnosis/workflow',
+      //       name: '工作流',
+      //       component: () => import('@/views/diagnosis/Workflow.vue'),
+      //       meta: {
+      //         title: '工作流',
+      //       },
+      //     },
+      //     {
+      //       path: '/diagnosis/alarm',
+      //       name: '告警',
+      //       component: () => import('@/views/diagnosis/Alarm.vue'),
+      //       meta: {
+      //         title: '告警',
+      //       },
+      //     },
+      //   ],
+      // },
       {
         path: '/configuration',
         name: 'configuration',
@@ -619,6 +460,165 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                     },
                     {
                       breadcrumbName: '业务域配置管理',
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: '/user',
+        name: 'user',
+        redirect: '/user/users',
+        meta: {
+          title: '用户管理',
+          icon: h(UserOutlined),
+          permission: 'administrator',
+        },
+        children: [
+          {
+            path: '/user/users',
+            name: 'users',
+            redirect: '/user/users/user-management',
+            meta: {
+              hiddenChildren: true,
+              title: '用户列表',
+            },
+            children: [
+              {
+                path: '/user/users/user-management',
+                name: 'userManagement',
+                component: () => import('@/views/user/UserManagement.vue'),
+                meta: {
+                  hidden: true,
+                  title: '用户列表',
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: '主页',
+                      path: '/',
+                    },
+                    {
+                      breadcrumbName: '用户管理',
+                      path: '/user/users',
+                    },
+                    {
+                      breadcrumbName: '用户列表',
+                      path: '/user/users',
+                    },
+                  ],
+                },
+              },
+              {
+                path: '/user/users/user-permission/:username',
+                name: 'userPermission',
+                component: () => import('@/views/user/UserPermission.vue'),
+                meta: {
+                  hidden: true,
+                  title: '权限分配',
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: '主页',
+                      path: '/',
+                    },
+                    {
+                      breadcrumbName: '用户管理',
+                      path: '/user/users',
+                    },
+                    {
+                      breadcrumbName: '用户列表',
+                      path: '/user/users',
+                    },
+                    {
+                      breadcrumbName: '权限分配',
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+          {
+            path: '/user/cluster',
+            name: 'cluster',
+            redirect: '/user/cluster/cluster-management',
+            meta: {
+              hiddenChildren: true,
+              title: '集群列表',
+            },
+            children: [
+              {
+                path: '/user/cluster/cluster-management',
+                name: 'clusterManagement',
+                component: () => import('@/views/user/ClusterManagement.vue'),
+                meta: {
+                  hidden: true,
+                  title: '集群管理',
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: '主页',
+                      path: '/',
+                    },
+                    {
+                      breadcrumbName: '用户管理',
+                      path: '/user/users',
+                    },
+                    {
+                      breadcrumbName: '集群管理',
+                      path: '/user/cluster',
+                    },
+
+                  ],
+                },
+              },
+              {
+                path: '/user/cluster/register-cluster',
+                name: 'registerCluster',
+                component: () => import('@/views/user/EditCluster.vue'),
+                meta: {
+                  hidden: true,
+                  title: '添加集群',
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: '主页',
+                      path: '/',
+                    },
+                    {
+                      breadcrumbName: '用户管理',
+                      path: '/user/users',
+                    },
+                    {
+                      breadcrumbName: '集群管理',
+                      path: '/user/cluster',
+                    },
+                    {
+                      breadcrumbName: '添加集群',
+                    },
+                  ],
+                },
+              },
+              {
+                path: '/user/cluster/edit-cluster/:clusterId',
+                name: 'editCluster',
+                component: () => import('@/views/user/EditCluster.vue'),
+                meta: {
+                  hidden: true,
+                  title: '修改集群',
+                  diyBreadcrumb: [
+                    {
+                      breadcrumbName: '主页',
+                      path: '/',
+                    },
+                    {
+                      breadcrumbName: '用户管理',
+                      path: '/user/users',
+                    },
+                    {
+                      breadcrumbName: '集群管理',
+                      path: '/user/cluster',
+                    },
+                    {
+                      breadcrumbName: '修改集群',
                     },
                   ],
                 },

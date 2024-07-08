@@ -19,7 +19,10 @@ onBeforeMount(() => {
   <BasicLayout :menus="menus || []">
     <template #menuHeaderLogo>
       <div class="logo">
-        <img src="@/assets/imgs/vertical-left.png" class="logo" alt="logo">
+        <div class="logo-content">
+          <img style="width: 22px;" src="@/assets/imgs/openeuler_logo.png" alt="logo">
+          <img class="openeuler" src="@/assets/imgs/openeuler.png" alt="logo">
+        </div>
         <h1>A-Ops</h1>
       </div>
     </template>
@@ -36,6 +39,14 @@ onBeforeMount(() => {
 .logo {
   display: flex;
   align-items: center;
+  &-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .openeuler {
+      filter: var(--openeuler-logo-filter)
+    }
+  }
   img {
     width: 32px;
     height: auto;

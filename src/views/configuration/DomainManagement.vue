@@ -70,7 +70,7 @@ const handleTableChange: TableProps<Domain>['onChange'] = (
   queryDomains()
 }
 
-async function handleDelte(record: Domain) {
+async function handleDelete(record: Domain) {
   const params: DistributionParams<{ domainId: string, domainName: string }> = {}
   params[record.cluster_id] = {
     domainId: record.domain_id,
@@ -105,7 +105,7 @@ onMounted(() => {
           <h3 class="card-title">
             业务域列表
           </h3>
-          <span>共有业务域{{ domains.length }}个</span>
+          <span>共有业务域{{ pagination.total }}个</span>
         </a-col>
         <a-col>
           <a-space>
@@ -142,7 +142,7 @@ onMounted(() => {
                 title="你确定删除该业务域吗?"
                 ok-text="确认"
                 cancel-text="取消"
-                @confirm="handleDelte(record)"
+                @confirm="handleDelete(record)"
               >
                 <template #icon>
                   <QuestionCircleOutlined style="color: red" />
