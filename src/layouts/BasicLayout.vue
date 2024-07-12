@@ -165,18 +165,18 @@ onBeforeMount(() => {
     transition: all 0.3s;
     padding-left: 24px;
     cursor: pointer;
-    box-shadow: 1px 1px 0 0 #e8e8e8;
+    box-shadow: 1px 1px 0 0 var(--box-shadow-color);
     position: relative;
     white-space: nowrap;
   }
 }
 .basic-layout-header {
-  background-color: #ffffff;
+  background-color: var(--bg-basic-layout-header);
   padding: 0 20px 0 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  box-shadow: 0 1px 4px var(--box-shadow-color);
   z-index: 1;
   &__left {
     width: 64px;
@@ -185,7 +185,7 @@ onBeforeMount(() => {
     text-align: center;
     cursor: pointer;
     &:hover {
-      background-color: #fcf3f3;
+      background-color: var(--bg-basic-layout-hover );
     }
   }
   &__right {
@@ -225,10 +225,9 @@ onBeforeMount(() => {
   transition: all 0.5s;
 }
 .basic-layout-footer {
-  padding: 24px 50px;
+  padding: 24px 50px 25px 50px;
   color: rgba(0, 0, 0, 0.65);
   font-size: 14px;
-  background: #f5f5f5;
   text-align: center;
 }
 </style>

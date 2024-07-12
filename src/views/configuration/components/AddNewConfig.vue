@@ -212,7 +212,7 @@ onMounted(() => {
         :rules="[{ required: true, message: '请选择来源', trigger: 'change' }]"
       >
         <template #label>
-          <a-tooltip title="配置来源二选一，推荐使用手动输入">
+          <a-tooltip title="配置来源三选一，推荐使用手动输入">
             <QuestionCircleOutlined />
           </a-tooltip>
           &nbsp;配置来源

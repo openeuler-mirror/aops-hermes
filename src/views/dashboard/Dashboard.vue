@@ -232,7 +232,6 @@ onBeforeUnmount(() => {
   h3 {
     font-weight: bold;
     font-size: 24px;
-    color: rgba(0, 0, 0, 0.65);
     margin-bottom: 0;
   }
   .cve-pie-chart {

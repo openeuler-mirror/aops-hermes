@@ -12,7 +12,10 @@ import GlobalFooter from '@/components/GlobalFooter.vue'
         <a-col class="right-side" :xs="{ span: 24, order: 1 }" :lg="{ span: 12, order: 2 }">
           <header class="header">
             <a href="/">
-              <img src="@/assets/imgs/vertical-left.png" class="logo" alt="logo">
+              <div class="logo">
+                <img src="@/assets/imgs/openeuler_logo.png" class="openeuler-logo" alt="logo">
+                <img src="@/assets/imgs/openeuler.png" class="openeuler" alt="logo">
+              </div>
             </a>
             <div class="desc">
               欢迎来到A-Ops系统
@@ -40,7 +43,8 @@ import GlobalFooter from '@/components/GlobalFooter.vue'
 
     .left-side {
       height: 100%;
-      background: #edeff3;
+      background:var(--background-third-color);
+
       img {
         width: 500px;
         display: block;
@@ -52,22 +56,31 @@ import GlobalFooter from '@/components/GlobalFooter.vue'
     }
     .right-side {
       height: 100%;
-      background: #fff;
-      padding-top: 18vh;
+      background:var(--background-secondary-color);
+
+      padding-top: 16vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
       .header {
         .logo {
-          height: 80px;
-          vertical-align: top;
-          border-style: none;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          .openeuler-logo {
+            height: 50px
+          }
+          .openeuler {
+            height: 30px;
+            filter: var(--openeuler-logo-filter)
+          }
+
         }
 
         .desc {
           font-size: 14px;
-          color: rgba(0, 0, 0, 0.45);
+          color: var(--text-color);
           margin-top: 12px;
           margin-bottom: 40px;
         }

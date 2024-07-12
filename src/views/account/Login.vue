@@ -70,7 +70,7 @@ onMounted(() => {
   <div class="login">
     <a-form ref="formRef" class="user-layout-login" :model="form" :rules="rules">
       <a-form-item name="username">
-        <a-input v-model:value="form.username" class="login-input" placeholder="用户名">
+        <a-input v-model:value="form.username" class="login-input" placeholder="用户名" autocomplete="off">
           <template #prefix>
             <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
           </template>
@@ -140,7 +140,6 @@ onMounted(() => {
       width: 62px;
     }
     .login-gitee-text {
-      color: #323232;
       font-size: 16px;
       padding-left: 10px;
       line-height: 40px;
