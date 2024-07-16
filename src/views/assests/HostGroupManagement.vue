@@ -1,412 +1,287 @@
-<template>
-  <my-page-header-wrapper extraDesc="对建立的主机组进行管理。">
-    <a-card :bordered="false" class="aops-theme">
-      <div class="hostgroupbox">
-        <div>共获取到{{ tableData.length }}条主机组信息</div>
-        <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
-          <a-col>
-            <a-row type="flex" :gutter="16">
-              <a-col v-if="selectedRowKeys.length > 0">
-                <a-alert type="info" show-icon>
-                  <div slot="message">
-                    <span>{{ `已选择` + selectedRowKeys.length + `项` }}</span>
-                    <a v-if="selectedRowKeys.length > 0" @click="deleteHostBash(selectedRowKeys, selectedRowsAll)">
-                      批量删除
-                    </a>
-                  </div>
-                </a-alert>
-              </a-col>
-              <a-col>
-                <a-button @click="handleReset"> 重置条件 </a-button>
-              </a-col>
-            </a-row>
-          </a-col>
-          <a-col>
-            <a-row type="flex" :gutter="16">
-              <!---------后续功能----------
-              <a-col>
-                <a-input placeholder="请搜索主机组名称"/>
-              </a-col>
-              --------------------------->
-              <a-col>
-                <add-host-group-modal :onSuccess="handleAddHostGroupSuccess">
-                  <a-button type="primary" slot="button"> <a-icon type="plus" />添加主机组 </a-button>
-                </add-host-group-modal>
-              </a-col>
-              <a-col>
-                <a-button @click="handleRefresh"> <a-icon type="redo" />刷新 </a-button>
-              </a-col>
-            </a-row>
-          </a-col>
-        </a-row>
-        <a-table
-          :rowKey="rowKey"
-          :columns="columns"
-          :data-source="tableData"
-          :pagination="pagination"
-          :row-selection="rowSelection"
-          @change="handleTableChange"
-          :loading="tableIsLoading"
-          :expandIconColumnIndex="0"
-          @expend="aleret(1)">
-          <span slot="action" slot-scope="record">
-            <!------后续增加-----
-            <span>编辑</span>
-            <a-divider type="vertical" />
-            ------------------->
-            <a @click="deleteHostGroup(record)">删除</a>
-            <a-divider type="vertical" />
-            <a href="javascript:;" @click="showHostList(record.host_group_name)">组内主机</a>
-          </span>
-        </a-table>
-        <a-drawer
-          title="拥有主机"
-          :width="720"
-          placement="right"
-          :visible="hostListVisible"
-          :body-style="{paddingBottom: '80px'}"
-          @close="closeHostList">
-          <a-table
-            :rowKey="hostRowKey"
-            :columns="hostListColumns"
-            :data-source="this.hostListDataStore[this.hostGroupName] || []"
-            :loading="hostListIsLoading ? true : false"
-            :pagination="false">
-            <span slot="isManagement" slot-scope="isMana">{{ isMana ? '是' : '否' }}</span>
-          </a-table>
-        </a-drawer>
-      </div>
-    </a-card>
-  </my-page-header-wrapper>
-</template>
+<script lang="ts" setup>
+import { computed, h, onMounted, reactive, ref } from 'vue'
+import {
+  CloseOutlined,
+  ExclamationCircleOutlined,
+  PlusOutlined,
+  RedoOutlined,
+} from '@ant-design/icons-vue'
+import { Modal, message } from 'ant-design-vue'
+import type { TableColumnsType, TableProps } from 'ant-design-vue'
+import type { SorterResult, TablePaginationConfig } from 'ant-design-vue/es/table/interface'
+import { storeToRefs } from 'pinia'
+import AddHostGroupModal from './components/AddHostGroupModal.vue'
+import HostTable from './components/HostTable.vue'
+import type { HostGroupTableItem } from '@/api/paths/assests'
+import PageWrapper from '@/components/PageWrapper.vue'
 
-<script>
-import MyPageHeaderWrapper from '@/views/utils/MyPageHeaderWrapper';
-import AddHostGroupModal from './components/AddHostGroupModal';
-import {getSelectedRow} from './utils/getSelectedRow';
+import { api } from '@/api'
+import type { Direction } from '@/api/paths/types'
+import { useAccountStore, useClusterStore } from '@/store'
 
-import {hostList, hostGroupList, deleteHostGroup} from '@/api/assest';
+type orderType = 'ascend' | 'descend'
+const orderMap: Record<orderType, 'asc' | 'desc'> = {
+  ascend: 'asc',
+  descend: 'desc',
+}
 
-const defaultPagination = {
+const { permissions } = storeToRefs(useClusterStore())
+
+const { accountRole } = storeToRefs(useAccountStore())
+const clusters = computed(() => permissions.value.map(i => ({ cluster_name: i.cluster_name, cluster_id: i.cluster_id })))
+
+// #region ----------------------------------------< host group table >----------------------------------------
+const hostGroupTableColumn = computed<TableColumnsType>(() => [
+  {
+    key: 'host_group_id',
+    title: '主机组',
+    dataIndex: 'host_group_id',
+    customRender: ({ record }) => {
+      return record.host_group_name
+    },
+  },
+  {
+    key: 'description',
+    title: '信息描述',
+    dataIndex: 'description',
+  },
+  {
+    key: 'host_count',
+    title: '拥有主机数',
+    dataIndex: 'host_count',
+    sorter: true,
+  },
+  {
+    key: 'cluster_name',
+    title: '集群',
+    dataIndex: 'cluster_name',
+    filters: permissions.value.map(i => ({ text: i.cluster_name, value: i.cluster_id })),
+  },
+  {
+    key: 'operation',
+    title: '操作',
+    dataIndex: 'operation',
+    width: '25%',
+    align: 'center',
+  },
+])
+
+const pagination = reactive<TablePaginationConfig>({
+  total: 0,
   current: 1,
   pageSize: 10,
-  showTotal: (total) => `总计 ${total} 项`,
+  showTotal: (total: number) => `总计 ${total} 项`,
   showSizeChanger: true,
-  showQuickJumper: true
-};
+  pageSizeOptions: ['10', '20', '30', '40'],
+})
 
-const hostListColumns = [
-  {
-    dataIndex: 'host_name',
-    key: 'host_name',
-    title: '主机名称'
-  },
-  {
-    dataIndex: 'host_ip',
-    key: 'host_ip',
-    title: 'IP地址'
-  },
-  {
-    dataIndex: 'ssh_port',
-    key: 'ssh_port',
-    title: 'SSH登录端口'
-  },
-  {
-    dataIndex: 'management',
-    key: 'management',
-    title: '管理节点',
-    scopedSlots: {customRender: 'isManagement'}
+const tableState = reactive<{
+  selectedRowKeys: string[]
+  loading: boolean
+}>({
+  selectedRowKeys: [],
+  loading: false,
+})
+
+const hostGroupTableData = ref<HostGroupTableItem[]>([])
+
+/**
+ * query host groups
+ * @param sort
+ * @param order
+ * @param clusterIds
+ */
+async function queryHostGroups(sort?: string, order?: Direction, clusterIds?: string[]) {
+  tableState.loading = true
+  const [, res] = await api.getHostGroups({
+    page: pagination.current,
+    per_page: pagination.pageSize,
+    sort,
+    direction: order,
+    cluster_ids: clusterIds,
+  })
+  if (res) {
+    hostGroupTableData.value = res.host_group_infos
+    pagination.total = res.total_count
   }
-];
+  tableState.loading = false
+  tableState.selectedRowKeys = []
+}
 
-export default {
-  name: 'HostGroupManagement',
-  components: {
-    MyPageHeaderWrapper,
-    AddHostGroupModal
-  },
-  data() {
-    return {
-      rowKey: 'host_group_name',
-      hostRowKey: 'host_id',
-      pagination: defaultPagination,
-      // 筛选和排序信息
-      filters: null,
-      sorter: null,
-      hostListColumns,
-      tableData: [],
-      hostListDataStore: {},
-      hostListData: [],
-      hostGroupName: undefined,
-      selectedRowKeys: [],
-      selectedRowsAll: [],
-      tableIsLoading: false,
-      hostListIsLoading: 0,
-      hostListVisible: false
-    };
-  },
-  computed: {
-    columns() {
-      let {sorter} = this;
-      sorter = sorter || {};
-      return [
-        {
-          dataIndex: 'host_group_name',
-          key: 'host_group_name',
-          title: '主机组',
-          sortOrder: sorter.columnKey === 'host_group_name' && sorter.order,
-          sorter: true
-        },
-        {
-          dataIndex: 'host_count',
-          key: 'host_count',
-          title: '拥有主机数',
-          sortOrder: sorter.columnKey === 'host_count' && sorter.order,
-          sorter: true
-        },
+/**
+ * re request when conditions changed
+ * @param page
+ * @param filters
+ * @param sorter
+ */
+const handleTableChange: TableProps<HostGroupTableItem>['onChange'] = (
+  page,
+  filters,
+  sorter: SorterResult<HostGroupTableItem>,
+) => {
+  page.current && (pagination.current = page.current)
+  page.pageSize && (pagination.pageSize = page.pageSize)
 
-        /*
-         * {
-         *   dataIndex: 'hasControl',
-         *   key: 'hasControl',
-         *   title: '是否包含管理节点'
-         * },
-         */
-        {
-          dataIndex: 'description',
-          key: 'description',
-          title: '信息描述'
-        },
-
-        /*
-         * {
-         *   dataIndex: 'status',
-         *   key: 'status',
-         *   title: '运行状态'
-         * },
-         */
-        {
-          key: 'operation',
-          title: '操作',
-          scopedSlots: {customRender: 'action'}
-        }
-      ];
-    },
-    rowSelection() {
-      return {
-        selectedRowKeys: this.selectedRowKeys,
-        onChange: this.onSelectChange
-      };
-    }
-  },
-  watch: {
-    hostListIsLoading: function () {
-      // loaidng改变后，检查hostListDataStore[this.hostGroupId]的值，触发vue更新
-      if (this.hostGroupId && this.hostListDataStore[this.hostGroupId]) {
-        return true;
-      }
-    }
-  },
-  methods: {
-    handleTableChange(pagination, filters, sorter) {
-      // 设置翻页状态
-      this.pagination = pagination;
-      this.filters = filters;
-      this.sorter = sorter;
-      // 触发排序、筛选、分页时，重新请求主机列表
-      this.getHostGroupList();
-    },
-    handleExpand(expend, record) {},
-    onSelectChange(selectedRowKeys) {
-      this.selectedRowKeys = selectedRowKeys;
-
-      this.selectedRowsAll = getSelectedRow(selectedRowKeys, this.selectedRowsAll, this.tableData);
-    },
-    // 获取列表数据
-    getHostGroupList() {
-      const _this = this;
-      this.tableIsLoading = true;
-      const pagination = this.pagination || {};
-      const filters = this.filters || {};
-      const sorter = this.sorter || {};
-
-      hostGroupList({
-        tableInfo: {
-          pagination: {
-            current: pagination.current,
-            pageSize: pagination.pageSize
-          },
-          filters: filters,
-          sorter: {
-            field: sorter.field,
-            order: sorter.order
-          }
-        }
-      })
-        .then(function (res) {
-          _this.tableData = res.data.host_group_infos;
-          _this.pagination = {
-            ..._this.pagination,
-            current: pagination.current,
-            pageSize: pagination.pageSize,
-            total: res.data.total_count || (res.data.total_count === 0 ? 0 : pagination.total)
-          };
-        })
-        .catch(function (err) {
-          _this.$message.error(err.response.message);
-        })
-        .finally(function () {
-          _this.tableIsLoading = false;
-        });
-    },
-    showHostList(hostGroupName) {
-      this.hostGroupName = hostGroupName;
-      this.hostListVisible = true;
-      this.getHostUnderGroup(hostGroupName);
-    },
-    closeHostList() {
-      this.hostListVisible = false;
-    },
-    // 获取主机组下的主机信息，全量
-    getHostUnderGroup(hostGroupName) {
-      if (this.hostListDataStore[hostGroupName]) return;
-      const _this = this;
-      this.hostListIsLoading += 1;
-      hostList({
-        tableInfo: {
-          pagination: {},
-          filters: {
-            host_group_name: [hostGroupName]
-          },
-          sorter: {}
-        }
-      })
-        .then(function (res) {
-          _this.hostListDataStore[hostGroupName] = res.data.host_infos;
-        })
-        .catch(function (err) {
-          _this.$message.error(err.response.message);
-        })
-        .finally(function () {
-          _this.hostListIsLoading -= 1;
-        });
-    },
-    deleteHostGroup(record) {
-      if (record.host_count > 0) {
-        this.$warning({
-          title: '主机组内有主机时无法删除',
-          okText: '确定',
-          onOk: function () {}
-        });
-        return;
-      }
-      const _this = this;
-      this.$confirm({
-        title: (
-          <div>
-            <p>删除后无法恢复</p>
-            <p>请确认删除以下主机组:</p>
-          </div>
-        ),
-        content: <span>{record.host_group_name}</span>,
-        icon: () => <a-icon type="exclamation-circle" />,
-        okType: 'danger',
-        okText: '删除',
-        onOk: function () {
-          return _this.handleDelete([record.host_group_name]);
-        },
-        onCancel() {}
-      });
-    },
-    deleteHostBash(selectedRowKeys, selectedRowsAll) {
-      const filteredRows = selectedRowsAll.filter((row) => row.host_count > 0);
-      if (filteredRows.length > 0) {
-        this.$warning({
-          title: '主机组内有主机时无法删除',
-          content: (
-            <div>
-              <p>请移除下列组内主机后再尝试</p>
-              {filteredRows.map((row) => (
-                <p>
-                  <span>{row.host_group_name}</span>
-                </p>
-              ))}
-            </div>
-          )
-        });
-        return;
-      }
-
-      const _this = this;
-      this.$confirm({
-        title: (
-          <div>
-            <p>删除后无法恢复</p>
-            <p>请确认删除以下主机组:</p>
-          </div>
-        ),
-        content: () =>
-          selectedRowsAll.map((row) => (
-            <p>
-              <span>{row.host_group_name}</span>
-            </p>
-          )),
-        icon: () => <a-icon type="exclamation-circle" />,
-        okType: 'danger',
-        okText: '删除',
-        onOk: function () {
-          return _this.handleDelete(selectedRowKeys, true);
-        },
-        onCancel() {}
-      });
-    },
-    handleAddHostGroupSuccess() {
-      // 添加完成后，清空table设置，刷新列表
-      this.handleReset();
-    },
-    handleDelete(hostGroupList, isBash) {
-      const _this = this;
-      return new Promise((resolve, reject) => {
-        deleteHostGroup({
-          hostGroupList
-        })
-          .then((res) => {
-            _this.$message.success(res.message);
-            _this.getHostGroupList({});
-            if (isBash) _this.selectedRowKeys = [];
-            resolve();
-          })
-          .catch((err) => {
-            _this.$message.error(err.response.message);
-            reject(err);
-          });
-      });
-    },
-    handleReset() {
-      this.pagination = defaultPagination;
-      this.sorter = null;
-      this.filters = null;
-      this.selectedRowKeys = [];
-      this.getHostGroupList();
-    },
-    handleRefresh() {
-      this.selectedRowKeys = [];
-      this.getHostGroupList();
-    }
-  },
-  mounted: function () {
-    this.getHostGroupList();
+  const params = {
+    sort: sorter.column ? (sorter.columnKey as string) : undefined,
+    order: sorter.order ? orderMap[sorter.order] : undefined,
+    clusterIds: filters.cluster_name ? filters.cluster_name : undefined,
   }
-};
+  queryHostGroups(params.sort, params.order, params.clusterIds as string[] | undefined)
+}
+
+/**
+ * delete host group with host group name
+ * distribution interface
+ * @param hostGroupId
+ */
+async function deleteHostGroup(hostGroupId: string): Promise<string> {
+  const { host_group_id, cluster_id } = hostGroupTableData.value.find(
+    item => hostGroupId === item.host_group_id,
+  )!
+  const params: Record<string, { group_id: string }> = {}
+  params[cluster_id] = { group_id: host_group_id }
+  const [_] = await api.deleteHostGroup(hostGroupId, params)
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (_)
+        return reject(new Error('删除失败'))
+      else return resolve('删除成功')
+    }, 2000)
+  })
+}
+
+/**
+ * handle delete host group event
+ * @param hostGroup
+ */
+async function handleDelete(hostGroup: HostGroupTableItem): Promise<void> {
+  if (hostGroup.host_count > 0) {
+    Modal.warning({
+      title: '主机组内有主机时无法删除',
+      okText: '确定',
+    })
+    return
+  }
+  Modal.confirm({
+    title: `删除后无法恢复,请确认删除以下主机组`,
+    icon: h(ExclamationCircleOutlined),
+    content: `${hostGroup.host_group_name}`,
+    okType: 'danger',
+    okText: '删除',
+    onOk: async () => {
+      try {
+        const res = await deleteHostGroup(hostGroup.host_group_id)
+        if (res) {
+          message.success(res)
+          queryHostGroups()
+        }
+      }
+      catch (error) {
+        message.error(error as any)
+      }
+    },
+  })
+}
+
+async function handleAddGroupSuccess() {
+  await queryHostGroups()
+}
+
+function refresh() {
+  pagination.total = 0
+  pagination.current = 1
+  pagination.pageSize = 10
+  queryHostGroups()
+}
+// #endregion
+
+// #region ----------------------------------------< hosts in group drawer >----------------------------------------
+const hostDrawerVisible = ref(false)
+const currentSlectedGroup = ref<string>('')
+
+function handleDrawerOpen(group: string) {
+  currentSlectedGroup.value = group
+  hostDrawerVisible.value = true
+}
+
+// #endregion
+onMounted(() => {
+  queryHostGroups()
+})
 </script>
 
+<template>
+  <PageWrapper>
+    <a-card>
+      <a-row type="flex" justify="space-between" align="middle">
+        <a-col>
+          {{ `共获取到${pagination.total}条主机组信息 ` }}
+        </a-col>
+        <a-col>
+          <a-row type="flex" :gutter="8">
+            <a-col>
+              <!-- <a-button @click="refresh">重置条件</a-button> -->
+            </a-col>
+          </a-row>
+        </a-col>
+        <a-col>
+          <a-row :gutter="16">
+            <a-col v-if="accountRole === 'administrator'">
+              <AddHostGroupModal :clusters="clusters" @success="handleAddGroupSuccess">
+                <template #button>
+                  <a-button type="primary">
+                    <PlusOutlined />添加主机组
+                  </a-button>
+                </template>
+              </AddHostGroupModal>
+            </a-col>
+            <a-col>
+              <a-button :icon="h(RedoOutlined)" @click="refresh">
+                刷新
+              </a-button>
+            </a-col>
+          </a-row>
+        </a-col>
+      </a-row>
+      <a-table
+        row-key="host_group_id"
+        :columns="hostGroupTableColumn"
+        :pagination="pagination"
+        :loading="tableState.loading"
+        :data-source="hostGroupTableData"
+        @change="handleTableChange"
+      >
+        <template #bodyCell="{ record, column }">
+          <template v-if="column.dataIndex === 'operation'">
+            <template v-if="accountRole === 'administrator'">
+              <a @click="handleDelete(record)">删除</a>
+              <a-divider type="vertical" />
+            </template>
+
+            <a @click="handleDrawerOpen(record.host_group_id)">组内主机</a>
+          </template>
+        </template>
+      </a-table>
+    </a-card>
+    <a-drawer
+      v-model:open="hostDrawerVisible"
+      title="拥有主机"
+      :width="720"
+      placement="right"
+      :closable="false"
+      destroy-on-close
+    >
+      <template #extra>
+        <CloseOutlined @click="hostDrawerVisible = false" />
+      </template>
+      <HostTable :host-group="currentSlectedGroup" />
+    </a-drawer>
+  </PageWrapper>
+</template>
+
 <style lang="less" scoped>
-.aops-theme {
-  .hostgroupbox {
-    overflow: auto;
-  }
-}
-.ant-lert {
-  line-height: 14px;
+.operation {
+  line-height: 100%;
 }
 </style>

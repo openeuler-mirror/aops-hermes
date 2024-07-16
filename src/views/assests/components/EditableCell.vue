@@ -1,238 +1,206 @@
+<script setup lang="ts">
+import { nextTick, ref, watch } from 'vue'
+import { CheckOutlined, EditOutlined } from '@ant-design/icons-vue'
+import type { FormInstance, Rule } from 'ant-design-vue/es/form'
+import type { HostItem } from '@/api'
+
+const props = defineProps<{
+  formKey: string
+  formData: HostItem
+}>()
+
+const emit = defineEmits<{
+  (e: 'save', key: string, value: string)
+  (e: 'edit', key: string)
+}>()
+
+const sourceData = ref(props.formData)
+
+const isEditing = ref(false)
+
+const inputRef = ref<HTMLInputElement | null>(null)
+const formRef = ref<FormInstance>()
+
+/**
+ * validate host username
+ * @param _rule
+ * @param value
+ */
+function validateHostUsername(_rule: Rule, value: string) {
+  if (/[^\w\-~`!?.;(){}[\]@#$^*+|=]|[<>\\]/.test(value)) {
+    return Promise.reject(
+      new Error('用户名为数字、英文字母或特殊字符组成，不能包含空格和以下特殊字符：:<>&,\'"\\/%。'),
+    )
+  }
+  if (/^[#+-]/.test(value))
+    return Promise.reject(new Error('首字符不能是“#”、“+”或“-”'))
+  return Promise.resolve()
+}
+
+/**
+ * validate host name
+ * @param _rule
+ * @param value
+ */
+function validateHostName(_rule: Rule, value: string) {
+  if (!/^\S(.*\S)?$/.test(value))
+    return Promise.reject(new Error('首尾不允许空格'))
+  if (!/^(?!\s*$).+/.test(value))
+    return Promise.reject(new Error('不允许全空格'))
+  return Promise.resolve()
+}
+
+const formRules: Record<string, Rule[]> = {
+  host_name: [
+    { max: 50, message: '主机名长度应小于50', trigger: 'blur' },
+    {
+      validator: validateHostName,
+      trigger: 'blur',
+    },
+  ],
+  cluster_id: [
+    {
+      required: true,
+      message: '请选择集群',
+      trigger: 'change',
+    },
+  ],
+  host_group_id: [
+    {
+      required: true,
+      message: '请选择所属主机组',
+      trigger: 'change',
+    },
+  ],
+  host_ip: [
+    {
+      required: true,
+      pattern: /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/,
+      message: '请输入IP地址在 0.0.0.0~255.255.255.255 区间内',
+      trigger: 'change',
+    },
+  ],
+  management: [{ required: true, message: '请选择管理还是监控节点', trigger: 'change' }],
+  ssh_port: [{ required: true, message: '请输入 0~65535 内正整数', trigger: 'change' }],
+  ssh_user: [
+    { required: true, message: '请输入用户名', trigger: 'change' },
+    { validator: validateHostUsername, trigger: 'blur' },
+  ],
+}
+
+async function save(key: string) {
+  try {
+    await formRef.value!.validate()
+    isEditing.value = false
+    const value = sourceData.value[key]
+    emit('save', key, value)
+  }
+  catch (error) {
+  }
+}
+
+function edit(key: string) {
+  isEditing.value = true
+  emit('edit', key)
+}
+
+watch(isEditing, (newVal) => {
+  if (newVal) {
+    nextTick(() => {
+      inputRef.value!.focus()
+    })
+  }
+})
+</script>
+
 <template>
-  <div class="editable-cell" ref="childitem">
-    <a-form-model ref="ruleForm" :model="form" :rules="rules">
-      <div v-if="editable" class="editable-cell-input-wrapper">
-        <a-form-model-item :prop="formkey">
-          <!-- 当formkey为密码时，使用密码框组件 -->
+  <div class="editable-cell">
+    <div v-if="isEditing" class="editable-cell-input-wrapper">
+      <a-form ref="formRef" :model="sourceData" :rules="formRules">
+        <a-form-item :name="formKey" class="form-item">
           <a-input-password
-            v-if="formkey === 'password' || formkey === 'ssh_pkey'"
-            @change="handleChange"
-            @pressEnter="check"
-            v-model="form[formkey]"
+            v-if="formKey === 'password' || formKey === 'ssh_pkey'"
+            ref="inputRef"
+            v-model:value="sourceData[formKey]"
+            style="width: 85px"
+            @press-enter="save(formKey)"
+            @blur="save(formKey)"
           />
-          <a-input v-else @change="handleChange" @pressEnter="check" v-model="form[formkey]" />
-          <a-icon style="top: -7px" type="check" class="editable-cell-icon-check" @click="check" />
-        </a-form-model-item>
-      </div>
-      <div v-else class="editable-cell-text-wrapper">
-        <div class="editable-content">
-          <!-- <a-input :type="formkey === 'password' ? 'password' : 'text'" v-model="value" /> -->
-          <span v-if="formkey === 'password' || formkey === 'ssh_pkey'">{{ countStar() }}</span>
-          <span v-else>{{ value || ' ' }}</span>
-        </div>
-        <a-icon type="edit" class="editable-cell-icon" @click="edit" />
-      </div>
-    </a-form-model>
+
+          <a-input
+            v-else
+            ref="inputRef"
+            v-model:value="sourceData[formKey]"
+            style="width: 85px"
+            @press-enter="save(formKey)"
+            @blur="save(formKey)"
+          />
+        </a-form-item>
+      </a-form>
+
+      <CheckOutlined class="editable-cell-icon-check" @click="save(formKey)" />
+    </div>
+
+    <div v-else class="editable-cell-text-wrapper">
+      <span v-if="formKey === 'management'">
+        <a-switch v-model:checked="sourceData[formKey]" @change="save(formKey)" />
+      </span>
+      <span v-else>
+        <span v-if="formKey === 'password' || formKey === 'ssh_pkey'">********
+        </span>
+        <span v-else>
+          {{ formData[formKey] }}
+        </span>
+        <EditOutlined class="editable-cell-icon" @click="edit(formKey)" />
+      </span>
+    </div>
   </div>
 </template>
-<script>
-export default {
-  name: 'EditableCell',
-  props: {
-    text: {
-      default: ' ',
-      type: String
-    },
-    formkey: {
-      default: '',
-      type: String
-    },
-    record: {
-      default: null,
-      type: Object
-    }
-  },
-  data() {
-    const validatePassword = (rule, value, callback) => {
-      if (!this.record.ssh_pkey && (value.length === 0 || value.split(' ').join('').length === 0)) {
-        callback(new Error('password和ssh_pkey不能都为空!'));
-      } else {
-        callback();
-      }
-    };
-    const validateSshpkey = (rule, value, callback) => {
-      if (!this.record.password && (value.length === 0 || value.split(' ').join('').length === 0)) {
-        callback(new Error('password和ssh_pkey不能都为空!'));
-      } else {
-        callback();
-      }
-    };
-    const validateUser = (rule, value, callback) => {
-      if (value.length === 0 || value.split(' ').join('').length === 0) {
-        callback(new Error('ssh_user不能为空!'));
-      } else {
-        callback();
-      }
-    };
-    const checkmanagement = (rule, value, callback) => {
-      if (value === 'true') {
-        callback();
-      } else if (value === 'false') {
-        callback();
-      } else {
-        callback(new Error('management必须为布尔值'));
-      }
-    };
-    const checkNameInput = (rule, value, callback) => {
-      if (!/^\S.*\S$/.test(value)) {
-        /* eslint-disable */
-        callback(new Error('首尾不允许空格'));
-        /* eslint-enable */
-        return;
-      }
-      if (!/^(?!\s*$).+/.test(value)) {
-        /* eslint-disable */
-        callback(new Error('不允许全空格'));
-        /* eslint-enable */
-        return;
-      }
-      callback();
-    };
-    const checkSSHPort = (rule, value, cb) => {
-      if (value < 0 || value > 65535) {
-        /* eslint-disable */
-        cb('输入数据范围必须在0~65535之间!');
-        /* eslint-enable */
-        return;
-      }
-      if (value % 1 !== 0) {
-        /* eslint-disable */
-        cb('输入数据必须是整数!');
-        /* eslint-enable */
-        return;
-      }
-      cb();
-    };
-    return {
-      value: this.text === 'undefined' ? '' : this.text,
-      editable: false,
-      rules: {
-        host_ip: [
-          {
-            required: true,
-            pattern: /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/,
-            message: '请输入IP地址在 0.0.0.0~255.255.255.255 区间内',
-            trigger: 'change'
-          }
-        ],
-        ssh_port: [{required: true, message: '请输入端口'}, {validator: checkSSHPort}],
-        ssh_user: [{validator: validateUser, trigger: 'change'}],
-        password: [{validator: validatePassword, trigger: 'change'}],
-        ssh_pkey: [{validator: validateSshpkey, trigger: 'change'}],
-        host_name: [{validator: checkNameInput, trigger: 'change'}],
-        host_group_name: [{required: true, message: 'host_group_name不能为空', trigger: 'change'}],
-        management: [{validator: checkmanagement, trigger: 'change'}]
-      }
-    };
-  },
-  methods: {
-    countStar(num) {
-      return '**********';
-    },
-    handleChange(e) {
-      const value = e.target.value;
-      this.value = value;
-    },
-    preToUpload() {
-      this.edit();
-      this.check();
-    },
-    check() {
-      this.$refs.ruleForm.validate((valid) => {
-        if (valid) {
-          if (this.editable) {
-            // 判断当前状态，只对处于修改状态的组件执行此操作，节省性能
-            this.editable = false;
-            this.$emit('allowSub');
-            this.$emit('change', this.value);
-          }
-        } else {
-          return false;
-        }
-      });
-    },
-    edit() {
-      this.$emit('unSubmit');
-      this.editable = true;
-    },
-    handleClickOutside(event) {
-      // 鼠标监听事件
-      const target = event.target;
-      const wrapper = this.$refs.childitem;
-      // 判断点击的区域是否是当前组件的区域
-      if (!wrapper.contains(target)) {
-        // 当点击组件之外时 执行校验操作
-        this.check();
-      }
-    }
-  },
-  created() {},
-  beforeDestroy() {
-    document.removeEventListener('mouseup', this.handleClickOutside);
-  },
-  mounted() {
-    document.addEventListener('mouseup', this.handleClickOutside);
-  },
-  computed: {
-    form() {
-      const params = {};
-      params[this.formkey] = this.value;
-      return params;
-    }
-  }
-};
-</script>
-<style>
-.editable-content {
-  display: inline-block;
-}
 
+<style lang="less" scoped>
+.form-item {
+  margin: 0;
+}
 .editable-cell {
   position: relative;
-}
+  .editable-cell-input-wrapper,
+  .editable-cell-text-wrapper {
+    padding-right: 15px;
+  }
 
-.editable-cell-input-wrapper,
-.editable-cell-text-wrapper {
-  padding-right: 24px;
-}
+  .editable-cell-text-wrapper {
+    padding: 5px 24px 5px 5px;
+    height: 35px;
+  }
 
-.editable-cell-text-wrapper {
-  padding: 5px 24px 5px 5px;
-}
+  .editable-cell-icon,
+  .editable-cell-icon-check {
+    position: absolute;
+    top: 8px;
+    right: 0;
+    width: 20px;
+    cursor: pointer;
+  }
 
-.editable-cell-icon {
-  position: absolute;
-  right: 0;
-  width: 20px;
-  cursor: pointer;
-}
+  .editable-cell-icon {
+    margin-top: 4px;
+    display: none;
+  }
 
-.editable-cell-icon-check {
-  position: absolute;
-  right: -26px;
-  width: 20px;
-  cursor: pointer;
-}
+  .editable-cell-icon-check {
+    line-height: 28px;
+  }
 
-.editable-cell-icon {
-  line-height: 24px;
-  display: none;
-}
+  .editable-cell-icon:hover,
+  .editable-cell-icon-check:hover {
+    color: #108ee9;
+  }
 
-.editable-cell-icon-check {
-  line-height: 35px;
+  .editable-add-btn {
+    margin-bottom: 8px;
+  }
 }
-
 .editable-cell:hover .editable-cell-icon {
   display: inline-block;
-}
-
-.editable-cell-icon:hover,
-.editable-cell-icon-check:hover {
-  color: #108ee9;
-}
-
-.editable-add-btn {
-  margin-bottom: 8px;
 }
 </style>

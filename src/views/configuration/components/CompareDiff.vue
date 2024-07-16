@@ -1,0 +1,78 @@
+<script setup lang='ts'>
+import type * as Diff from 'diff'
+import { computed } from 'vue'
+
+const props = withDefaults(defineProps<{
+  diffResult: Diff.Change[]
+}>(), {
+  diffResult: () => [],
+})
+
+const diffPartList = computed(() => props.diffResult.map(part => part))
+
+function setDiffClass(isAdd?: boolean, isRemoved?: boolean, isOrigin?: boolean) {
+  if (isOrigin) {
+    if (isAdd)
+      return 'diff-add-blank'
+
+    if (isRemoved)
+      return 'diff-remove'
+  }
+  else {
+    if (isAdd)
+      return 'diff-add'
+
+    if (isRemoved)
+      return 'diff-remove-blank'
+  }
+  return ''
+}
+</script>
+
+<template>
+  <a-row type="flex" justify="space-between">
+    <a-col :span="11">
+      <h3>主机端（实际配置）</h3>
+    </a-col>
+    <a-col :span="11">
+      <h3>业务域（默认配置）</h3>
+    </a-col>
+  </a-row>
+  <div class="diff-content">
+    <div v-for="(part, index) in diffPartList" :key="index">
+      <a-row type="flex" justify="space-between">
+        <a-col :span="11" class="diff-line" :class="[setDiffClass(part.added, part.removed)]">
+          {{ !part.removed ? part.value : '' }}
+        </a-col>
+        <a-col :span="11" class="diff-line" :class="[setDiffClass(part.added, part.removed, true)]">
+          {{ !part.added ? part.value : '' }}
+        </a-col>
+      </a-row>
+    </div>
+  </div>
+</template>
+
+<style lang="less" scoped>
+.diff-content {
+  border: 1px solid #ccc;
+  padding: 24px;
+}
+.diff-line {
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+.diff-add {
+  background: rgb(236, 253, 240);
+  &-blank {
+    background: rgb(236, 253, 240);
+    color: rgb(236, 253, 240);
+  }
+}
+.diff-remove {
+  background: rgb(251, 233, 235);
+  &-blank {
+    background: rgb(251, 233, 235);
+    color: rgb(251, 233, 235);
+  }
+}
+</style>
