@@ -1,473 +1,439 @@
-<template>
-  <my-page-header-wrapper extraDesc="对已纳管的主机进行管理。">
-    <a-card :bordered="false" class="aops-theme">
-      <div class="hostbox">
-        <div>共获取到{{ tableData.length }}条主机信息</div>
-        <a-row class="aops-app-table-control-row" type="flex" justify="space-between">
-          <a-col>
-            <a-row type="flex" :gutter="16">
-              <a-col v-if="selectedRowKeys.length > 0">
-                <a-alert type="info" show-icon>
-                  <div slot="message">
-                    <span>{{ `已选择` + selectedRowKeys.length + `项` }}</span>
-                    <a v-if="selectedRowKeys.length > 0" @click="deleteHostBash(selectedRowKeys, selectedRowsAll)">
-                      批量删除
-                    </a>
-                  </div>
-                </a-alert>
-              </a-col>
-              <a-col>
-                <!-- <a-button @click="handleReset">重置条件</a-button> -->
-                <a-input-search placeholder="按主机名或IP搜索" style="width: 200px" @search="handleSearch" />
-              </a-col>
-            </a-row>
-          </a-col>
-          <a-col>
-            <a-row type="flex" :gutter="16">
-              <!-----后续功能--------
-              <a-col>
-                <a-input placeholder="请搜索主机名称" @pressEnter="handleInput"/>
-              </a-col>
-              ---------------------->
-              <a-col>
-                <router-link :to="{path: `hosts-management/host-create`}">
-                  <a-button type="primary"> <a-icon type="plus" />添加主机 </a-button>
-                </router-link>
-              </a-col>
-              <a-col>
-                <add-more-host @addSuccess="handleUploadSuccess" />
-              </a-col>
-              <a-col>
-                <a-button @click="handleRefresh"> <a-icon type="redo" />刷新 </a-button>
-              </a-col>
-            </a-row>
-          </a-col>
-        </a-row>
-        <a-table
-          :rowKey="rowKey"
-          :columns="columns"
-          :data-source="tableData"
-          :pagination="pagination"
-          :row-selection="rowSelection"
-          @change="handleTableChange"
-          :loading="tableIsLoading"
-          :locale="{emptyText: getEmpty}"
-        >
-          <router-link
-            :to="{path: `/assests/host/detail/${record.host_id}`}"
-            slot="hostName"
-            slot-scope="hostName, record"
-            >{{ hostName }}</router-link
-          >
-          <span slot="isManagement" slot-scope="isMana">{{ isMana ? '是' : '否' }}</span>
-          <span slot="statusItem" slot-scope="status">
-            <a-spin v-if="!status && status !== 0"></a-spin>
-            <span v-else>{{ hostStatusMap[status] }}</span>
-          </span>
-          <span slot="scene" slot-scope="scene">{{ scene ? (scene === 'normal' ? '通用' : scene) : '暂无' }}</span>
-          <span slot="action" slot-scope="record">
-            <router-link
-              :to="{path: `hosts-management/host-edit`, query: {hostId: record.host_id, pageType: 'edit'}}"
-              @click="editHost(record)"
-              >编辑
-            </router-link>
-            <a @click="deleteHost(record)" class="delete-button"> 删除</a>
-          </span>
-        </a-table>
-      </div>
-    </a-card>
-    <host-detail-drawer :visible="detailVisisble" @close="closeDetail" :hostId="detailId" />
-  </my-page-header-wrapper>
-</template>
+<script lang="ts" setup>
+import { computed, h, onMounted, reactive, ref } from 'vue'
+import { Modal, message } from 'ant-design-vue'
+import { ExclamationCircleOutlined, PlusOutlined, RedoOutlined } from '@ant-design/icons-vue'
+import type { TablePaginationConfig } from 'ant-design-vue'
+import type { SorterResult } from 'ant-design-vue/es/table/interface'
+import { storeToRefs } from 'pinia'
+import { orderMap } from '../vulnerability/config'
+import AddmoreHostModal from './components/AddMoreHostModal.vue'
+import { api } from '@/api'
+import type { HostsTableItem, QueryHostsParams, Scene } from '@/api/paths/assests'
+import PageWrapper from '@/components/PageWrapper.vue'
+import type { Direction, DistributionParams } from '@/api/paths/types'
+import { useAccountStore, useClusterStore } from '@/store'
 
-<script>
-import {beforeDestory} from 'vue';
-import store from '@/store';
-import router from '@/vendor/ant-design-pro/router';
-import AddMoreHost from './components/addMoreHost.vue';
-import MyPageHeaderWrapper from '@/views/utils/MyPageHeaderWrapper';
-import {getSelectedRow} from '@/views/utils/getSelectedRow';
-import HostDetailDrawer from './components/HostDetailDrawer';
-// import HostTerminal from '@/views/assests/components/HostTerminal';
-import {hostList, deleteHost, hostGroupList, getHostListWithStatus} from '@/api/assest';
+const [modal, contextHolder] = Modal.useModal()
+const sceneMap: Scene = {
+  big_data: '大数据',
+  web: 'web服务',
+  edge: '边缘设备',
+  cloud: '云服务',
+  normal: '通用',
+}
 
-const hostStatusMap = {
+const statusMap: Record<number, string> = {
   0: '在线',
   1: '离线',
   2: '未确认',
   3: '在线',
   4: '在线',
-  5: '未知'
-};
+  5: '未知',
+}
 
-const defaultPagination = {
+const { permissions } = storeToRefs(useClusterStore())
+
+const { accountRole } = storeToRefs(useAccountStore())
+
+// #region ----------------------------------------< host table >----------------------------------------
+const hostTableData = ref<HostsTableItem[]>([])
+const searchKey = ref<string>()
+const filterMap = reactive<{
+  host_group_name: string[]
+  management?: boolean
+  cluster_list?: string[]
+}>({
+  host_group_name: [],
+})
+
+const sorterMap = reactive<{
+  sortKey: string | undefined
+  order: Direction | undefined
+}>({
+  sortKey: undefined,
+  order: undefined,
+})
+
+const pagination = reactive<TablePaginationConfig>({
+  total: 0,
   current: 1,
   pageSize: 10,
-  showTotal: (total) => `总计 ${total} 项`,
+  showTotal: (total: number) => `总计 ${total} 项`,
   showSizeChanger: true,
-  showQuickJumper: true
-};
+  pageSizeOptions: ['10', '20', '30', '40'],
+})
 
-export default {
-  name: 'HostManagement',
-  components: {
-    MyPageHeaderWrapper,
-    HostDetailDrawer,
-    AddMoreHost
-    // HostTerminal
-  },
-  data() {
-    return {
-      hostStatusMap,
-      rowKey: 'host_id',
-      pagination: defaultPagination,
-      filters: null,
-      sorter: null,
-      tableData: [],
-      groupData: [],
-      selectedRowKeys: [],
-      selectedRowsAll: [],
-      tableIsLoading: false,
-      detailId: undefined,
-      detailVisisble: false,
-      deleteHostTempInfo: {},
-      // 主机运行状态心跳定时器
-      statusTimer: null
-    };
-  },
-  computed: {
-    columns() {
-      let {sorter, filters} = this;
-      sorter = sorter || {};
-      filters = filters || {};
-      return [
-        {
-          dataIndex: 'host_name',
-          key: 'host_name',
-          title: '主机名称',
-          scopedSlots: {customRender: 'hostName'},
-          sorter: true,
-          sortOrder: sorter.columnKey === 'host_name' && sorter.order
-        },
-        {
-          dataIndex: 'host_ip',
-          key: 'host_ip',
-          title: 'IP地址'
-        },
-        {
-          dataIndex: 'host_group_name',
-          key: 'host_group_name',
-          title: '所属主机组',
-          filteredValue: filters.host_group_name || null,
-          filters: this.groupData.map((group) => {
-            return {
-              text: group.host_group_name,
-              value: group.host_group_name
-            };
-          })
-        },
-        {
-          dataIndex: 'management',
-          key: 'management',
-          title: '管理节点',
-          filteredValue: filters.management || null,
-          filters: [
-            {
-              text: '是',
-              value: 'true'
-            },
-            {
-              text: '否',
-              value: 'false'
-            }
-          ],
-          filterMultiple: false,
-          scopedSlots: {customRender: 'isManagement'}
-        },
-        {
-          dataIndex: 'status',
-          key: 'status',
-          title: '运行状态',
-          scopedSlots: {customRender: 'statusItem'}
-        },
-        {
-          dataIndex: 'scene',
-          key: 'scene',
-          title: '场景',
-          scopedSlots: {customRender: 'scene'}
-        },
-        {
-          key: 'operation',
-          title: '操作',
-          scopedSlots: {customRender: 'action'}
-        }
-      ];
-    },
-    rowSelection() {
-      return {
-        selectedRowKeys: this.selectedRowKeys,
-        onChange: this.onSelectChange
-      };
-    }
-  },
-  methods: {
-    async getAllHostStatus() {
-      const res = await getHostListWithStatus();
-    },
-    handleTableChange(pagination, filters, sorter) {
-      // 存储翻页状态
-      this.pagination = pagination;
-      this.filters = filters;
-      this.sorter = sorter;
-      // 出发排序、筛选、分页时，重新请求主机列表
-      this.getHostList();
-    },
-    handleUploadSuccess() {
-      this.getHostList();
-    },
-    onSelectChange(selectedRowKeys, selectedRows) {
-      this.selectedRowKeys = selectedRowKeys;
-      this.selectedRowsAll = getSelectedRow(selectedRowKeys, this.selectedRowsAll, this.tableData, 'host_id');
-    },
-    // 获取列表数据
-    async getHostList() {
-      this.tableIsLoading = true;
-      const pagination = this.pagination || {};
-      const filters = this.filters || {};
-      const sorter = this.sorter || {};
+const tableState = reactive<{
+  selectedRowKeys: string[]
+  loading: boolean
+}>({
+  selectedRowKeys: [],
+  loading: false,
+})
 
-      const hostListRes = await hostList({
-        tableInfo: {
-          pagination: {
-            current: pagination.current,
-            pageSize: pagination.pageSize
-          },
-          filters: filters,
-          sorter: {
-            field: sorter.field,
-            order: sorter.order
-          }
-        }
-      });
-      if (hostListRes) {
-        this.tableData = hostListRes.data.host_infos || [];
-        this.pagination = {
-          ...this.pagination,
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-          total: hostListRes.data.total_count || (hostListRes.data.total_count === 0 ? 0 : pagination.total)
-        };
-        this.tableIsLoading = false;
-        await this.hostStatusHeartBeat();
-        this.statusTimer = setInterval(async () => {
-          await this.hostStatusHeartBeat();
-        }, 30 * 1000);
-      }
+// hosts table colums
+const hostsTableColums = computed(() => {
+  const arr = [
+    {
+      key: 'host_name',
+      title: '主机名称',
+      dataIndex: 'host_name',
+      sorter: true,
     },
-    /**
-     * 主机运行状态心跳检测
-     */
-    async hostStatusHeartBeat() {
-      const hostIdList = this.tableData.map((item) => item.host_id);
-      const res = await getHostListWithStatus(hostIdList);
-      if (res) {
-        this.tableData.forEach((item) => {
-          this.tableData.forEach((item) => {
-            const s = res.data.find((s) => item.host_id === s.host_id);
-            if (s) {
-              item.status = s.status;
-            }
-          });
-          this.tableData = JSON.parse(JSON.stringify(this.tableData));
-        });
-      }
+    {
+      title: 'IP地址',
+      dataIndex: 'host_ip',
     },
-    editHost(record) {
-      this.$message.success('连接到主机' + record.host_ip);
+    {
+      title: '集群',
+      dataIndex: 'cluster_name',
+      filters: permissions.value?.map(({ cluster_id, cluster_name }) => ({
+        text: cluster_name,
+        value: cluster_id,
+      })),
     },
-    deleteHost(record) {
-      const _this = this;
-      // 保存单独删除时的主机信息，错误提示时需要展示主机名
-      this.deleteHostTempInfo = {
-        host_id: record.host_id,
-        host_name: record.host_name
-      };
-
-      this.$confirm({
-        title: (
-          <div>
-            <p>删除后无法恢复</p>
-            <p>请确认删除以下主机:</p>
-          </div>
-        ),
-        content: <span>{record.host_name}</span>,
-        icon: () => <a-icon type="exclamation-circle" />,
-        okType: 'danger',
-        okText: '删除',
-        onOk: function () {
-          return _this.handleDelete([record.host_id], true);
-        },
-        onCancel() {}
-      });
-    },
-    deleteHostBash(selectedRowKeys, selectedRowsAll) {
-      const _this = this;
-      this.$confirm({
-        title: (
-          <div>
-            <p>删除后无法恢复</p>
-            <p>请确认删除以下主机:</p>
-          </div>
-        ),
-        content: () =>
-          selectedRowsAll.map((row) => (
-            <p>
-              <span>{row.host_name}</span>
-            </p>
-          )),
-        icon: () => <a-icon type="exclamation-circle" />,
-        okType: 'danger',
-        okText: '删除',
-        onOk: function () {
-          return _this.handleDelete(selectedRowKeys, true);
-        },
-        onCancel() {}
-      });
-    },
-    handleDelete(hostList, isBash) {
-      const _this = this;
-      return new Promise((resolve, reject) => {
-        deleteHost({
-          hostList
-        })
-          .then((res) => {
-            if (res.data.fail_list && Object.keys(res.data.fail_list).length > 0) {
-              _this.deleteErrorHandler(res);
-            } else {
-              this.$message.success('删除成功');
-            }
-            _this.pagination.current = 1;
-            // 删除主机后重置当前分页为第一页
-            _this.getHostList();
-            // 重新请求主机列表
-            if (isBash) {
-              _this.selectedRowKeys = [];
-              _this.selectedRowsAll = [];
-            }
-            resolve();
-          })
-          .catch((err) => {
-            if (err.data.code === 1103) {
-              _this.deleteErrorHandler(err.data, true);
-            } else {
-              _this.$message.error(err.response.message);
-            }
-            // 业务逻辑，报错时依然关闭弹窗。因此触发resolve()
-            resolve();
-          });
-      });
-    },
-    deleteErrorHandler(data, allFailed = false) {
-      const deleteErrorList = Object.keys(data.fail_list || {}).map((hostId) => {
-        let matchedHost = this.selectedRowsAll.filter((item) => item.host_id === hostId)[0];
-        // 正常情况下，未匹配到说明selectedRowsAll和返回的错误主机id不匹配。则说明用户是直接点击表格的删除按钮提交的
-        if (!matchedHost) {
-          matchedHost = this.deleteHostTempInfo;
-        }
+    {
+      title: '所属主机组',
+      dataIndex: 'host_group_name',
+      filters: permissions.value.filter((item) => {
+        if (!filterMap.cluster_list || filterMap.cluster_list?.length === 0)
+          return item
+        else
+          return filterMap.cluster_list?.includes(item.cluster_id)
+      }).map(({ cluster_id, cluster_name, host_groups }) => {
         return {
-          hostId,
-          hostName: matchedHost && matchedHost.host_name,
-          errorInfo: data.fail_list && data.fail_list[hostId]
-        };
-      });
-      this.$notification['error']({
-        message: `${allFailed ? '删除失败' : '部分主机删除失败'}`,
-        description: (
-          <div>
-            <p>{`${allFailed ? '全部' : ''}${deleteErrorList.length}个主机删除失败：`}</p>
-            {deleteErrorList.slice(0, 3).map((errorInfo, idx) => {
-              return (
-                <p>
-                  {`${idx + 1}、`}
-                  <span>{`${errorInfo.hostName}: `}</span>
-                  <span>{errorInfo.errorInfo}</span>
-                </p>
-              );
-            })}
-            {deleteErrorList.length > 3 && <p>更多错误信息请查看返回信息...</p>}
-          </div>
-        ),
-        duration: 5
-      });
-    },
-    handleSearch(text = '') {
-      this.pagination = defaultPagination;
-      this.sorter = null;
-      if (!this.filters) {
-        this.filters = {};
-      }
-      this.selectedRowKeys = [];
-      this.filters.searchKey = text !== '' ? text : undefined;
-      this.getHostList();
-    },
-    handleReset() {
-      this.pagination = defaultPagination;
-      this.sorter = null;
-      this.filters = null;
-      this.selectedRowKeys = [];
-      this.getHostList();
-      this.getGroupList();
-    },
-    handleRefresh() {
-      this.selectedRowKeys = [];
-      this.getHostList();
-      this.getGroupList();
-    },
-    closeDetail() {
-      this.detailVisisble = false;
-    },
-    openEdit(hostInfo) {
-      store.dispatch('setHostInfo', hostInfo);
-      router.push('hosts-management/host-edit');
-    },
-    getGroupList() {
-      const _this = this;
-      hostGroupList({
-        tableInfo: {
-          pagination: {},
-          filters: {},
-          sorter: {}
+          text: cluster_name,
+          value: cluster_id,
+          children: host_groups.map(h => ({ text: h.host_group_name, value: h.host_group_id })),
         }
-      })
-        .then(function (res) {
-          _this.groupData = res.data.host_group_infos;
-        })
-        .catch(function (err) {
-          _this.$message.error(err.response.message);
-        })
-        .finally(function () {});
+      }),
+      filterMode: 'tree',
+      filterSearch: true,
     },
-    getEmpty() {
-      return (
-        <div class="aops-app-table-empty">
-          <a-empty description="暂无主机数据" image={require('@/assets/empty.svg')} />
-        </div>
-      );
-    }
-  },
-  mounted: function () {
-    this.getHostList();
-    this.getGroupList();
-  },
-  beforeDestory() {
-    clearInterval(this.status.statusTimer);
-    this.statusTimer = null;
+    {
+      title: '管理节点',
+      dataIndex: 'management',
+      filters: [
+        {
+          text: '是',
+          value: true,
+        },
+        {
+          text: '否',
+          value: false,
+        },
+      ],
+      filterMultiple: false,
+    },
+    {
+      title: '运行状态',
+      dataIndex: 'status',
+    },
+    {
+      title: '场景',
+      dataIndex: 'scene',
+    },
+
+  ]
+  if (accountRole.value === 'administrator') {
+    arr.push({
+      title: '操作',
+      dataIndex: 'operation',
+    })
   }
-};
+  return arr
+})
+
+/**
+ * query host list
+ */
+async function queryHosts(searchKey?: string) {
+  tableState.loading = true
+  const params: QueryHostsParams = {
+    page: pagination.current,
+    per_page: pagination.pageSize,
+    sort: sorterMap.sortKey,
+    direction: sorterMap.order,
+    host_group_list: filterMap.host_group_name,
+    search_key: searchKey,
+    management: filterMap.management,
+    cluster_list: filterMap.cluster_list,
+  }
+  const [_, res] = await api.getHosts(params)
+  if (!res)
+    return
+  const { host_infos, total_count } = res
+  hostTableData.value = host_infos
+
+  pagination.total = total_count
+  tableState.selectedRowKeys = []
+  tableState.loading = false
+  await queryHostStatus()
+}
+
+function handleTableChange(page: TablePaginationConfig, filters: Record<string, string[] | null>, sorter: SorterResult<HostsTableItem>) {
+  page.current && (pagination.current = page.current)
+  page.pageSize && (pagination.pageSize = page.pageSize)
+  sorterMap.sortKey = sorter.column && (sorter.columnKey as string)
+  sorterMap.order = sorter.order ? orderMap[sorter.order] : undefined
+  filterMap.host_group_name = filters.host_group_name ? filters.host_group_name : []
+  filterMap.management = filters.management ? Boolean(filters.management[0]) : undefined
+  filterMap.cluster_list = filters.cluster_name ? filters.cluster_name : undefined
+  queryHosts()
+}
+/** filter host table data with search key */
+function onSearch(searchValue: string) {
+  searchValue ? queryHosts(searchValue) : queryHosts()
+}
+/**
+ * handle delete host event
+ */
+function handleDelete(record: HostsTableItem) {
+  const { host_id, host_name } = record
+  modal.confirm({
+    title: `删除后无法恢复,请确认删除以下主机`,
+    icon: h(ExclamationCircleOutlined),
+    content: `${host_name}`,
+    okType: 'danger',
+    okText: '删除',
+    async onOk() {
+      try {
+        await deleteHost(host_id)
+        message.success('删除成功')
+        queryHosts()
+      }
+      catch (err) {
+        message.error('删除失败')
+      }
+    },
+    onCancel() {},
+  })
+}
+/**
+ * handle delete host batch
+ * @param hostIds
+ */
+function deleteHostBash(hostIds: string[]) {
+  const hostNameList = hostTableData.value.filter(item => hostIds.includes(item.host_id))
+  modal.confirm({
+    title: `删除后无法恢复,请确认删除以下主机`,
+    icon: h(ExclamationCircleOutlined),
+    content: () => {
+      return hostNameList.map(row => `${row.host_name}`).join(',')
+    },
+    okType: 'danger',
+    okText: '删除',
+    async onOk() {
+      try {
+        await deleteHosts(hostIds)
+      }
+      catch (error) {}
+    },
+    onCancel() {},
+  })
+}
+/**
+ * delete hosts with host id
+ */
+async function deleteHost(hostId: string) {
+  const host = hostTableData.value.find(item => hostId === item.host_id)!
+  const params: DistributionParams<{ host_id: string }> = {}
+  params[host.cluster_id] = { host_id: host.host_id }
+
+  const [_, res] = await api.deleteHost(hostId, params)
+
+  if (res) {
+    return new Promise((resolve, reject) => {
+      if (Object.values(res)[0].label !== 'Succeed') {
+        setTimeout(() => {
+          queryHosts()
+          reject(new Error('failed'))
+        }, 2000)
+      }
+      else {
+        setTimeout(() => {
+          queryHosts()
+          resolve('succeed')
+        }, 2000)
+      }
+    })
+  }
+}
+
+/**
+ * delete hosts with host id
+ * @param hostIds
+ */
+async function deleteHosts(hostIds: string[]) {
+  const hosts = hostTableData.value.filter(item => hostIds.includes(item.host_id))
+  const params: DistributionParams<{ host_ids: string[] }> = {}
+  hosts.forEach(({ cluster_id, host_id }) => {
+    if (!params[cluster_id])
+      params[cluster_id] = { host_ids: [host_id] }
+    else
+      params[cluster_id].host_ids.push(host_id)
+  })
+  const [, res] = await api.deleteHosts(params)
+  if (res) {
+    if (Object.values(res)[0].label !== 'Succeed')
+      message.error('删除失败')
+    queryHosts()
+
+    return
+  }
+  message.success('删除成功')
+  queryHosts()
+}
+
+function refresh() {
+  searchKey.value = ''
+  filterMap.host_group_name = []
+  filterMap.management = undefined
+  filterMap.cluster_list = undefined
+  pagination.total = 0
+  pagination.current = 1
+  pagination.pageSize = 10
+  queryHosts()
+}
+/**
+ * query hosts status by host id
+ */
+async function queryHostStatus() {
+  if (hostTableData.value.length === 0)
+    return
+  const params: DistributionParams<{ host_ids: string[] }> = {}
+  hostTableData.value.forEach(({ cluster_id, host_id }) => {
+    if (params[cluster_id])
+      params[cluster_id].host_ids.push(host_id)
+    else
+      params[cluster_id] = { host_ids: [host_id] }
+  })
+  const [, res] = await api.getHostsStatus(params)
+  if (res) {
+    Object.keys(res).reduce((acc: { host_id: string, status: number }[], key) => {
+      return acc.concat(...res[key].data)
+    }, []).forEach((item) => {
+      const table = hostTableData.value.find(t => t.host_id === item.host_id)
+      if (table)
+        table.status = item.status
+    })
+  }
+}
+// #endregion
+
+onMounted(() => {
+  queryHosts()
+})
 </script>
 
+<template>
+  <PageWrapper>
+    <a-card>
+      <a-row> {{ `共获取到${pagination.total}条主机信息 ` }} </a-row>
+      <a-row type="flex" justify="space-between">
+        <a-col>
+          <a-row type="flex" :gutter="8">
+            <a-col>
+              <a-input-search
+                v-model:value="searchKey"
+                :maxlength="40"
+                placeholder="按主机或IP搜索"
+                @search="onSearch"
+              />
+            </a-col>
+            <a-col v-show="tableState.selectedRowKeys.length">
+              <a-alert type="info" show-icon class="delete-alert">
+                <template #message>
+                  <span>{{ `已选择${tableState.selectedRowKeys.length}项` }}</span>
+                  <a @click="deleteHostBash(tableState.selectedRowKeys)"> 批量删除 </a>
+                </template>
+              </a-alert>
+            </a-col>
+          </a-row>
+        </a-col>
+        <a-row type="flex" :gutter="16">
+          <template v-if="accountRole === 'administrator'">
+            <a-col>
+              <router-link to="/assests/hosts/host-create">
+                <a-button type="primary" :icon="h(PlusOutlined)">
+                  添加主机
+                </a-button>
+              </router-link>
+            </a-col>
+            <a-col>
+              <AddmoreHostModal @success="refresh">
+                <template #trigger>
+                  <a-button type="primary">
+                    批量添加主机
+                  </a-button>
+                </template>
+              </AddmoreHostModal>
+            </a-col>
+          </template>
+          <a-col>
+            <a-button :icon="h(RedoOutlined)" @click="refresh">
+              刷新
+            </a-button>
+          </a-col>
+        </a-row>
+      </a-row>
+      <a-table
+        row-key="host_id"
+        :columns="hostsTableColums"
+        :data-source="hostTableData"
+        :loading="tableState.loading"
+        :pagination="pagination"
+        @change="handleTableChange"
+      >
+        <template #bodyCell="{ record, column }">
+          <template v-if="column.dataIndex === 'host_name'">
+            <router-link :to="`/assests/hosts/host-detail/${record.host_id}`">
+              {{
+                record.host_name
+              }}
+            </router-link>
+          </template>
+          <template v-if="column.dataIndex === 'management'">
+            {{ record.management ? '是' : '否' }}
+          </template>
+          <template v-if="column.dataIndex === 'status'">
+            <a-spin v-if="!statusMap[record.status]" size="small" />
+            <span v-else>{{ statusMap[record.status] }}</span>
+          </template>
+          <template v-if="column.dataIndex === 'scene'">
+            {{ sceneMap[record.scene] || '暂无' }}
+          </template>
+          <template v-if="column.dataIndex === 'operation'">
+            <a-row :gutter="8" class="operation">
+              <a-col>
+                <router-link
+                  :to="{
+                    path: `/assests/hosts/host-edit`,
+                    query: { hostId: record.host_id, pageType: 'edit' },
+                  }"
+                >
+                  编辑
+                </router-link>
+              </a-col>
+              <a-col @click="handleDelete(record)">
+                删除
+              </a-col>
+            </a-row>
+          </template>
+        </template>
+      </a-table>
+    </a-card>
+    <contextHolder />
+  </PageWrapper>
+</template>
+
 <style lang="less" scoped>
-.ant-lert {
-  line-height: 14px;
+.operation {
+  color: #1677ff;
+  * {
+    cursor: pointer;
+    user-select: none;
+  }
 }
 </style>
+HostGroupInfo,

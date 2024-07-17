@@ -1,0 +1,33 @@
+@import url('./theme.css');
+@import url('./antd.css');
+html,
+body
+{
+  height: 100%;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background-color: var(--scrollbar-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-color-hover);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-color-hover);
+}
+
+html.dark {
+  background: var(--background-color);
+  color: var(--text-color);
+}
+
+html {
+  background: var(--background-color);
+  color: var(--text-color);
+}

@@ -1,0 +1,47 @@
+.aops-app {
+  .ant-layout-sider-children {
+    background-image: url('@/assets/imgs/menu-bg.png');
+    background-size: 100% auto;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    .ant-menu {
+      &-item {
+        margin: 0;
+        height: 60px;
+        line-height: 60px;
+      }
+      &-submenu {
+        margin: 0;
+        &-title {
+          height: 60px;
+          line-height: 60px;
+          margin: 0;
+        }
+
+        .antd-menu-sub,
+        .ant-menu-item {
+          height: 40px;
+          line-height: 40px;
+        }
+      }
+    }
+  }
+  .ant-card {
+    border: 0;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px var(--box-shadow-color);
+    text-align: start;
+    &:not(:first-child) {
+      margin-top: 20px;
+    }
+  }
+  .ant-row:not(:last-child) {
+    margin-bottom: 8px;
+  }
+  .delete-alert.ant-alert {
+    padding: 4px 12px;
+  }
+  .ant-table {
+    overflow-x: auto;
+  }
+}
