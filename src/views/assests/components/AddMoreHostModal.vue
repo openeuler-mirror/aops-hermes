@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons-vue'
 import { type FormInstance, type UploadProps, message } from 'ant-design-vue'
 
-import { h, reactive, ref } from 'vue'
+import { computed, h, reactive, ref } from 'vue'
 import type { Rule } from 'ant-design-vue/es/form'
 import { storeToRefs } from 'pinia'
 import EditableCell from './EditableCell.vue'
@@ -37,7 +37,11 @@ const formRules: Record<string, Rule[]> = {
   selectedCluster: [{ required: true, message: '请选择集群', trigger: 'change' }],
 }
 
-const { clusters } = storeToRefs(useClusterStore())
+const { permissions } = storeToRefs(useClusterStore())
+
+const clusterOptions = computed(() =>
+  permissions.value.map(({ cluster_id, cluster_name }) => ({ cluster_id, cluster_name })),
+)
 
 const modalState = reactive({
   visible: false,
@@ -308,7 +312,7 @@ function handleEdit(key: string) {
                 placeholder="请选择集群"
                 style="width: 300px"
               >
-                <template v-for="cluster in clusters" :key="cluster.cluster_id">
+                <template v-for="cluster in clusterOptions" :key="cluster.cluster_id">
                   <a-select-option :value="cluster.cluster_id">
                     {{
                       cluster.cluster_name

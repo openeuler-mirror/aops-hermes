@@ -306,7 +306,12 @@ onMounted(() => {
           </a-form-item>
 
           <a-form-item label="集群" name="cluster_id">
-            <a-select v-model:value="form.cluster_id" placeholder="请选择集群" :disabled="pageType === 'edit'">
+            <a-select
+              v-model:value="form.cluster_id"
+              placeholder="请选择集群"
+              :disabled="pageType === 'edit'"
+              @change="form.host_group_id = undefined"
+            >
               <a-select-option
                 v-for="cluster in clusterOptions"
                 :key="cluster.cluster_id"
