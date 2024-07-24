@@ -7,3 +7,4 @@ dist
 .vscode
 src/typings
 pnpm-lock.yaml
+stats.html
