@@ -29,6 +29,7 @@ onBeforeMount(() => {
     <template #headerRight>
       <RightContent />
     </template>
+    <!-- <template v-if="$route.path !== '/dashboard'" #footer> -->
     <template #footer>
       <GlobalFooter />
     </template>

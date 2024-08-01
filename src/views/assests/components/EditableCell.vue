@@ -2,6 +2,7 @@
 import { nextTick, ref, watch } from 'vue'
 import { CheckOutlined, EditOutlined } from '@ant-design/icons-vue'
 import type { FormInstance, Rule } from 'ant-design-vue/es/form'
+import { useI18n } from 'vue-i18n'
 import type { HostItem } from '@/api'
 
 const props = defineProps<{
@@ -13,6 +14,8 @@ const emit = defineEmits<{
   (e: 'save', key: string, value: string)
   (e: 'edit', key: string)
 }>()
+
+const { t } = useI18n()
 
 const sourceData = ref(props.formData)
 
@@ -27,13 +30,13 @@ const formRef = ref<FormInstance>()
  * @param value
  */
 function validateHostUsername(_rule: Rule, value: string) {
-  if (/[^\w\-~`!?.;(){}[\]@#$^*+|=]|[<>\\]/.test(value)) {
+  if (/[^\w\-~`!?.;(){}[\]@#$^*+|=<>\\]/.test(value)) {
     return Promise.reject(
-      new Error('用户名为数字、英文字母或特殊字符组成，不能包含空格和以下特殊字符：:<>&,\'"\\/%。'),
+      new Error(t('assests.validateMsg.username_three')),
     )
   }
   if (/^[#+-]/.test(value))
-    return Promise.reject(new Error('首字符不能是“#”、“+”或“-”'))
+    return Promise.reject(new Error(t('assests.validateMsg.username_two')))
   return Promise.resolve()
 }
 
@@ -43,16 +46,16 @@ function validateHostUsername(_rule: Rule, value: string) {
  * @param value
  */
 function validateHostName(_rule: Rule, value: string) {
-  if (!/^\S(.*\S)?$/.test(value))
-    return Promise.reject(new Error('首尾不允许空格'))
+  if (!/^\S(?:.*\S)?$/.test(value))
+    return Promise.reject(new Error(t('assests.validateMsg.hostName_one')))
   if (!/^(?!\s*$).+/.test(value))
-    return Promise.reject(new Error('不允许全空格'))
+    return Promise.reject(new Error(t('assests.validateMsg.hostName_two')))
   return Promise.resolve()
 }
 
 const formRules: Record<string, Rule[]> = {
   host_name: [
-    { max: 50, message: '主机名长度应小于50', trigger: 'blur' },
+    { max: 50, message: t('assests.validateMsg.hostName'), trigger: 'blur' },
     {
       validator: validateHostName,
       trigger: 'blur',
@@ -61,14 +64,14 @@ const formRules: Record<string, Rule[]> = {
   cluster_id: [
     {
       required: true,
-      message: '请选择集群',
+      message: t('assests.validateMsg.cluster'),
       trigger: 'change',
     },
   ],
   host_group_id: [
     {
       required: true,
-      message: '请选择所属主机组',
+      message: t('assests.validateMsg.hostGroup'),
       trigger: 'change',
     },
   ],
@@ -76,14 +79,14 @@ const formRules: Record<string, Rule[]> = {
     {
       required: true,
       pattern: /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/,
-      message: '请输入IP地址在 0.0.0.0~255.255.255.255 区间内',
+      message: t('assests.validateMsg.ip'),
       trigger: 'change',
     },
   ],
-  management: [{ required: true, message: '请选择管理还是监控节点', trigger: 'change' }],
-  ssh_port: [{ required: true, message: '请输入 0~65535 内正整数', trigger: 'change' }],
+  management: [{ required: true, message: t('assests.validateMsg.management'), trigger: 'change' }],
+  ssh_port: [{ required: true, message: t('assests.validateMsg.sshPort'), trigger: 'change' }],
   ssh_user: [
-    { required: true, message: '请输入用户名', trigger: 'change' },
+    { required: true, message: t('assests.validateMsg.username'), trigger: 'change' },
     { validator: validateHostUsername, trigger: 'blur' },
   ],
 }
@@ -95,7 +98,7 @@ async function save(key: string) {
     const value = sourceData.value[key]
     emit('save', key, value)
   }
-  catch (error) {
+  catch {
   }
 }
 

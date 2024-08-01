@@ -1,45 +1,48 @@
 <script setup lang="ts">
 import { QuestionCircleOutlined } from '@ant-design/icons-vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AlarmsTable from './AlarmsTable.vue'
 import Drawer from '@/components/Drawer.vue'
 
-const tableColunms = [
+const { t } = useI18n()
+
+const tableColunms = computed(() => [
   {
     dataIndex: 'order',
-    title: '排名',
+    title: t('dashboard.alerts.rank'),
     align: 'center',
   },
   {
-    title: '主机组名称',
+    title: t('dashboard.alerts.hostGroupName'),
     dataIndex: 'domain',
     align: 'center',
   },
   {
-    title: '告警数',
+    title: t('dashboard.alerts.alertsCount'),
     dataIndex: 'count',
     align: 'center',
   },
-]
+])
 const isDrawerVisible = ref(false)
 </script>
 
 <template>
   <a-card style="margin-top: 0" class="alarm-statisics">
     <a-row type="flex" align="middle">
-      <h3>告警信息统计</h3>
+      <h3>{{ $t('dashboard.alerts.statistics') }}</h3>
       <a-tooltip placement="bottomLeft">
         <template #title>
-          <span>展示告警信息最多的前5个主机组</span>
+          <span>{{ $t('dashboard.alerts.tips.alertTable') }}</span>
         </template>
         <QuestionCircleOutlined style="transform: translate(5px, -3px)" />
       </a-tooltip>
     </a-row>
     <a-table class="table" size="small" :columns="tableColunms" />
-    <Drawer v-model:visible="isDrawerVisible" title="告警信息统计">
+    <Drawer v-model:visible="isDrawerVisible" :title="$t('dashboard.alertsTable.title')">
       <template #trigger>
         <div class="more" @click="isDrawerVisible = true">
-          查看更多
+          {{ $t('dashboard.alerts.loadMore') }}
         </div>
       </template>
       <template #content>

@@ -2,8 +2,16 @@
 import type { FormInstance, Rule } from 'ant-design-vue/es/form'
 import { reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
+import { useI18n } from 'vue-i18n'
+import { storeToRefs } from 'pinia'
 import { api } from '@/api'
-import { useAccountStore } from '@/store'
+import { useAccountStore, useLangStore } from '@/store'
+
+interface Form {
+  oldPassword: string
+  password: string
+  confirmPassword: string
+}
 
 defineProps<{
   visible: boolean
@@ -11,11 +19,8 @@ defineProps<{
 
 const emit = defineEmits(['update:visible'])
 
-interface Form {
-  oldPassword: string
-  password: string
-  confirmPassword: string
-}
+const { t } = useI18n()
+const { lang } = storeToRefs(useLangStore())
 
 const fromRef = ref<FormInstance>()
 const form = reactive<Form>({
@@ -41,7 +46,7 @@ function validateOldPassword(_rule: Rule, value: string) {
   const regex = /^[a-z0-9]{6,20}$/i
   if (!regex.test(value)) {
     return Promise.reject(
-      new Error('请输入6-20位字母和数字组成的密码!'),
+      new Error(t('account.validateMsg.passwordOne')),
     )
   }
   return Promise.resolve()
@@ -54,12 +59,12 @@ function validatePassword(_rule: Rule, value: string) {
   const regex = /^[a-z0-9]{6,20}$/i
   if (!regex.test(value)) {
     return Promise.reject(
-      new Error('请输入6-20位字母和数字组成的密码!'),
+      new Error(t('account.validateMsg.passwordOne')),
     )
   }
   else {
     if (value && value === form.oldPassword)
-      return Promise.reject(new Error('新密码和当前密码不能相同！'))
+      return Promise.reject(new Error(t('account.validateMsg.diffPass')))
   }
   return Promise.resolve()
 }
@@ -71,12 +76,12 @@ function validateConfirmPassword(_rule: Rule, value: string) {
   const regex = /^[a-z0-9]{6,20}$/i
   if (!regex.test(value)) {
     return Promise.reject(
-      new Error('请输入6-20位字母和数字组成的密码!'),
+      new Error(t('account.validateMsg.passwordOne')),
     )
   }
   else {
     if (value && value !== form.password)
-      return Promise.reject(new Error('确认密码和新密码必须保持一致!'))
+      return Promise.reject(new Error(t('account.validateMsg.passwordTwo')))
   }
   return Promise.resolve()
 }
@@ -96,13 +101,11 @@ async function handleConfirm() {
     )
     if (!_) {
       emit('update:visible', false)
-      message.success('修改成功')
+      message.success(t('common.succeed'))
       fromRef.value?.resetFields()
     }
   }
-  catch (error) {
-
-  }
+  catch {}
   finally {
     isSubmiting.value = false
   }
@@ -117,29 +120,29 @@ function handleClose() {
     <slot name="button" />
 
     <a-modal
-      :open="visible" title="修改密码" @ok="handleConfirm"
+      :open="visible" :title="$t('common.changePass')" @ok="handleConfirm"
       @cancel="handleClose"
     >
-      <a-form ref="fromRef" :model="form" :rules="rules" :label-col="{ span: 5 }">
+      <a-form ref="fromRef" :model="form" :rules="rules" :label-col="{ span: lang === 'zh_cn' ? 5 : 7 }">
         <a-form-item
-          label="当前密码"
+          :label="$t('account.currentPass')"
           name="oldPassword"
         >
-          <a-input-password v-model:value="form.oldPassword" placeholder="密码长度6-20位, 包含字母和数字" />
+          <a-input-password v-model:value="form.oldPassword" :placeholder="$t('account.palceHolder.password')" />
         </a-form-item>
 
         <a-form-item
-          label="新密码"
+          :label="$t('account.newPass')"
           name="password"
         >
-          <a-input-password v-model:value="form.password" placeholder="新密码和当前密码不能相同" />
+          <a-input-password v-model:value="form.password" :placeholder="$t('account.palceHolder.password')" />
         </a-form-item>
 
         <a-form-item
-          label="确认密码"
+          :label="$t('account.reNewPass')"
           name="confirmPassword"
         >
-          <a-input-password v-model:value="form.confirmPassword" placeholder="确认密码和新密码保持一致" />
+          <a-input-password v-model:value="form.confirmPassword" :placeholder="$t('account.palceHolder.rePassword')" />
         </a-form-item>
       </a-form>
     </a-modal>

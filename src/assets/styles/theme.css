@@ -1,10 +1,11 @@
 html {
   --background-color             : #EBEBEB;
-  --background-secondary-color   : #edeff3;
+  --background-secondary-color   : #FFFFFF;
   --background-third-color       : #EBEBEB;
 
   --bg-drawer                    : #ffffff;
   --bg-color                     : #ffffff;
+  --bg-hover                     :#eee;
 
   --text-color                   : #000000;
   --global-text-selection-bg     : #8884;
@@ -31,6 +32,7 @@ html.dark {
 
   --bg-drawer                   : #1F1F1F;
   --bg-color                    : #231f20;
+  --bg-hover                    :#585656;
 
   --text-color                  : #f0f2f8;
   --global-text-selection-bg    : #8884;

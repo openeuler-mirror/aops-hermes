@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
+import en from 'ant-design-vue/es/locale/en_US'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
-import { ref } from 'vue'
+import { computed } from 'vue'
 import { theme as antdTheme } from 'ant-design-vue'
+import { storeToRefs } from 'pinia'
+import { useLangStore } from '@/store/langStore'
 
 import { isDark } from '@/composables/dark'
 
+const { lang } = storeToRefs(useLangStore())
+
 dayjs.locale('zh-cn')
 
-const locale = ref(zhCN)
+const locale = computed(() => lang.value === 'en' ? en : lang.value === 'zh_cn' ? zhCN : zhCN)
 </script>
 
 <template>

@@ -2,6 +2,7 @@
 import { useRoute, useRouter } from 'vue-router'
 import { QuestionCircleOutlined } from '@ant-design/icons-vue'
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 export interface Breadcrumb {
   breadcrumbName: string
@@ -15,6 +16,7 @@ export interface Breadcrumb {
 const props = defineProps<{
   breadcrumb?: Breadcrumb[]
 }>()
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const breadcrumb = computed<Breadcrumb[]>(() => {
@@ -50,17 +52,17 @@ function onBreadCrumbClick(route: Breadcrumb): void {
     <div class="page-wrapper-breadcrumb">
       <a-breadcrumb>
         <a-breadcrumb-item v-for="(item, index) in breadcrumb" :key="item.path">
-          <span v-if="index === breadcrumb.length - 1">{{ item.breadcrumbName }}</span>
+          <span v-if="index === breadcrumb.length - 1">{{ t(item.breadcrumbName) }}</span>
           <span v-else class="page-wrapper-breadcrumb__operable" @click="onBreadCrumbClick(item)">{{
-            item.breadcrumbName
+            t(item.breadcrumbName)
           }}</span>
         </a-breadcrumb-item>
       </a-breadcrumb>
       <div class="page-wrapper-breadcrumb__title">
         <span>
           {{
-            breadcrumb[breadcrumb.length - 1].label
-              || breadcrumb[breadcrumb.length - 1].breadcrumbName
+            t(breadcrumb[breadcrumb.length - 1].label
+              || breadcrumb[breadcrumb.length - 1].breadcrumbName)
           }}
         </span>
         <a-tooltip
@@ -71,7 +73,7 @@ function onBreadCrumbClick(route: Breadcrumb): void {
         >
           <QuestionCircleOutlined />
           <template #title>
-            <span style="color: #000000"> {{ breadcrumb[breadcrumb.length - 1].desc }}</span>
+            <span style="color: #000000"> {{ $t(breadcrumb[breadcrumb.length - 1].desc as string) }}</span>
           </template>
         </a-tooltip>
       </div>

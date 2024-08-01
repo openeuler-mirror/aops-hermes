@@ -1,18 +1,31 @@
 <script lang="ts" setup>
 import { QuestionCircleOutlined } from '@ant-design/icons-vue'
-import DarkTogger from '../DarkTogger.vue'
+import { useI18n } from 'vue-i18n'
+import { storeToRefs } from 'pinia'
+import DarkTogger from './DarkTogger.vue'
 import AvatarDropdown from './AvatarDropdown.vue'
+import LangCheck from './LangCheck.vue'
+import { useLangStore } from '@/store'
 
+const { t } = useI18n()
+const { lang } = storeToRefs(useLangStore())
+
+const enDoc = 'https://docs.openeuler.org/en/docs/22.03_LTS_SP2/docs/A-Ops/overview.html'
+const zhDoc = 'https://docs.openeuler.org/zh/docs/22.03_LTS_SP2/docs/A-Ops/overview.html'
 function toSupportFile() {
-  window.open('https://docs.openeuler.org/zh/docs/22.03_LTS_SP2/docs/A-Ops/overview.html')
+  let link = zhDoc
+  if (lang.value === 'en')
+    link = enDoc
+  window.open(link)
 }
 </script>
 
 <template>
   <div class="right-content">
     <a-space>
-      <DarkTogger class="dark-togger" />
-      <span class="support" @click="toSupportFile"> <QuestionCircleOutlined /> 帮助文档 </span>
+      <DarkTogger />
+      <LangCheck />
+      <span class="support" @click="toSupportFile"> <QuestionCircleOutlined /> {{ t('common.helpDoc') }} </span>
       <AvatarDropdown />
     </a-space>
   </div>
@@ -21,13 +34,13 @@ function toSupportFile() {
 <style lang="less" scoped>
 .right-content {
   display: flex;
-  align-items: center
+  align-items: center;
+  user-select: none;
 }
 .support {
+  display: inline-block;
+  width: 75px;
   cursor: pointer;
-}
-
-.dark-togger {
-  transform: translate(0, 2px);
+  text-align: center
 }
 </style>

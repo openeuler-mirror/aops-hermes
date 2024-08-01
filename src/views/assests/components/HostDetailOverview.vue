@@ -2,16 +2,16 @@
 import { useRoute } from 'vue-router'
 import { computed, onMounted, ref } from 'vue'
 import { RedoOutlined } from '@ant-design/icons-vue'
+import { useI18n } from 'vue-i18n'
 import { api } from '@/api'
 import type { HostDetailInfo } from '@/api/paths/assests'
 
+const { t } = useI18n()
+
 const statusMap: Record<number, string> = {
-  0: '在线',
-  1: '离线',
-  2: '未确认',
-  3: '在线',
-  4: '在线',
-  5: '未知',
+  0: t('assests.online'),
+  1: t('assests.offline'),
+  2: t('assests.unknown'),
 }
 
 const route = useRoute()
@@ -42,15 +42,15 @@ const osDescriptions = computed(() => {
   const { os_version, kernel, bios_version } = hostDetailInfo.value.os || {}
   return [
     {
-      label: '操作系统版本',
+      label: t('assests.osVersion'),
       value: os_version,
     },
     {
-      label: '内核版本',
+      label: t('assests.kernel'),
       value: kernel,
     },
     {
-      label: 'bios版本',
+      label: t('assests.biosVersion'),
       value: bios_version,
     },
   ]
@@ -74,35 +74,35 @@ const cpuDescriptions = computed(() => {
   } = hostDetailInfo.value.cpu || {}
   return [
     {
-      label: '架构',
+      label: t('assests.architecture'),
       value: architecture,
     },
     {
-      label: '内核数',
+      label: t('assests.coreCount'),
       value: core_count,
     },
     {
-      label: '厂商',
+      label: t('assests.manufacturer'),
       value: vendor_id,
     },
     {
-      label: 'model名称',
+      label: t('assests.modelName'),
       value: model_name,
     },
     {
-      label: 'L1d_cache',
+      label: t('assests.l1dCache'),
       value: l1d_cache,
     },
     {
-      label: 'L1i_cache',
+      label: t('assests.l1iCache'),
       value: l1i_cache,
     },
     {
-      label: 'L2_cache',
+      label: t('assests.l2cCche'),
       value: l2_cache,
     },
     {
-      label: 'L3_cache',
+      label: t('assests.l3Cache'),
       value: l3_cache,
     },
   ]
@@ -117,19 +117,19 @@ const memoryDescriptions = computed(() => {
   const { manufacturer, size, speed, type } = hostDetailInfo.value.memory.info[0] || {}
   return [
     {
-      label: '大小',
+      label: t('assests.size'),
       value: size,
     },
     {
-      label: '类型',
+      label: t('assests.type'),
       value: type,
     },
     {
-      label: '速度',
+      label: t('assests.speed'),
       value: speed,
     },
     {
-      label: '架构',
+      label: t('assests.architecture'),
       value: manufacturer,
     },
   ]
@@ -152,7 +152,7 @@ onMounted(() => {
         <template #header>
           <a-tooltip placement="topLeft">
             <template #title>
-              <span>查询主机最新的数据</span>
+              <span>{{ t('assests.tips.refresh') }}</span>
             </template>
             <a-button class="refresh" type="primary" @click.stop="refresh">
               <template #icon>
@@ -168,18 +168,18 @@ onMounted(() => {
             <a-col class="host-info__basic">
               <a-row type="flex">
                 <a-col :span="12" class="row">
-                  主机名：{{ hostDetailInfo.host_name }}
+                  {{ `${t('assests.hostName')} : ${hostDetailInfo.host_name} ` }}
                 </a-col>
                 <a-col :span="12" class="row">
-                  主机ip：{{ hostDetailInfo.host_ip }}
+                  {{ `${t('assests.ip')} : ${hostDetailInfo.host_ip} ` }}
                 </a-col>
               </a-row>
               <a-row type="flex">
                 <a-col :span="12" class="row">
-                  主机组： {{ hostDetailInfo.host_group_name }}
+                  {{ `${t('assests.hostGroup')} : ${hostDetailInfo.host_group_name} ` }}
                 </a-col>
                 <a-col :span="12" class="row">
-                  状态：{{ statusMap[hostDetailInfo.status] || '暂无' }}
+                  {{ `${t('assests.status')} : ${statusMap[hostDetailInfo.status] || t('common.none')}` }}
                 </a-col>
               </a-row>
             </a-col>
@@ -187,7 +187,7 @@ onMounted(() => {
         </template>
         <a-descriptions
           v-if="osDescriptions.length"
-          title="操作系统"
+          :title="t('assests.os')"
           :column="2"
           class="descriptions"
           :label-style="{ fontWeight: 'bold' }"
@@ -201,7 +201,7 @@ onMounted(() => {
 
         <a-descriptions
           v-if="cpuDescriptions.length"
-          title="CPU信息"
+          :title="t('assests.cpu')"
           :column="4"
           class="descriptions"
           :label-style="{ fontWeight: 'bold' }"
@@ -209,7 +209,7 @@ onMounted(() => {
           <template v-for="item in cpuDescriptions" :key="item.label">
             <a-descriptions-item :label="item.label">
               {{
-                item.value || `暂无`
+                item.value || t('common.none')
               }}
             </a-descriptions-item>
           </template>
@@ -217,17 +217,17 @@ onMounted(() => {
 
         <a-descriptions
           v-if="hostDetailInfo.memory"
-          title="内存信息"
+          :title="t('assests.memory')"
           :column="2"
           class="descriptions"
           :label-style="{ fontWeight: 'bold' }"
         >
-          <a-descriptions-item label="内存大小">
+          <a-descriptions-item :label="t('assests.memorySize')">
             {{
               hostDetailInfo.memory.size
             }}
           </a-descriptions-item>
-          <a-descriptions-item label="内存数量">
+          <a-descriptions-item :label="t('assests.memoryCount')">
             {{
               hostDetailInfo.memory.total
             }}
@@ -237,13 +237,13 @@ onMounted(() => {
             <a-collapse v-model:activeKey="memoryCollapseKey" ghost expand-icon-position="end">
               <a-collapse-panel key="menory">
                 <template #header>
-                  <span style="font-weight: bold; font-size: 15px">详情</span>
+                  <span style="font-weight: bold; font-size: 15px">{{ t('common.detail') }}</span>
                 </template>
                 <a-descriptions :column="4">
                   <template v-for="item in memoryDescriptions" :key="item.label">
                     <a-descriptions-item :label="item.label">
                       {{
-                        item.value || `暂无`
+                        item.value || t('common.none')
                       }}
                     </a-descriptions-item>
                   </template>
@@ -254,12 +254,12 @@ onMounted(() => {
         </a-descriptions>
         <a-descriptions
           v-if="hostDetailInfo.disk"
-          title="硬盘信息"
+          :title="t('assests.disk')"
           :column="2"
           class="descriptions"
           :label-style="{ fontWeight: 'bold' }"
         >
-          <a-descriptions-item label="硬盘数量">
+          <a-descriptions-item :label="t('assests.diskCount')">
             {{
               hostDetailInfo.disk.length
             }}
@@ -270,18 +270,18 @@ onMounted(() => {
             <a-collapse v-model:activeKey="diskCollapseKey" ghost expand-icon-position="end">
               <a-collapse-panel key="disk">
                 <template #header>
-                  <span style="font-weight: bold; font-size: 15px">详情</span>
+                  <span style="font-weight: bold; font-size: 15px">{{ t('common.detail') }}</span>
                 </template>
                 <a-descriptions :column="2" :label-style="{ fontWeight: 'bold' }">
                   <template v-for="item in hostDetailInfo.disk" :key="item.label">
-                    <a-descriptions-item label="容量">
+                    <a-descriptions-item :label="t('assests.capacity')">
                       {{
-                        item.capacity || `暂无`
+                        item.capacity || t('common.none')
                       }}
                     </a-descriptions-item>
-                    <a-descriptions-item label="模型">
+                    <a-descriptions-item :label="t('assests.model')">
                       {{
-                        item.model || `暂无`
+                        item.model || t('common.none')
                       }}
                     </a-descriptions-item>
                   </template>

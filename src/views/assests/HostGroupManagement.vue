@@ -10,6 +10,7 @@ import { Modal, message } from 'ant-design-vue'
 import type { TableColumnsType, TableProps } from 'ant-design-vue'
 import type { SorterResult, TablePaginationConfig } from 'ant-design-vue/es/table/interface'
 import { storeToRefs } from 'pinia'
+import { useI18n } from 'vue-i18n'
 import AddHostGroupModal from './components/AddHostGroupModal.vue'
 import HostTable from './components/HostTable.vue'
 import type { HostGroupTableItem } from '@/api/paths/assests'
@@ -25,6 +26,8 @@ const orderMap: Record<orderType, 'asc' | 'desc'> = {
   descend: 'desc',
 }
 
+const { t } = useI18n()
+
 const { permissions } = storeToRefs(useClusterStore())
 
 const { accountRole } = storeToRefs(useAccountStore())
@@ -34,7 +37,7 @@ const clusters = computed(() => permissions.value.map(i => ({ cluster_name: i.cl
 const hostGroupTableColumn = computed<TableColumnsType>(() => [
   {
     key: 'host_group_id',
-    title: '主机组',
+    title: t('assests.hostGroup'),
     dataIndex: 'host_group_id',
     customRender: ({ record }) => {
       return record.host_group_name
@@ -42,24 +45,24 @@ const hostGroupTableColumn = computed<TableColumnsType>(() => [
   },
   {
     key: 'description',
-    title: '信息描述',
+    title: t('assests.description'),
     dataIndex: 'description',
   },
   {
     key: 'host_count',
-    title: '拥有主机数',
+    title: t('assests.hostCount'),
     dataIndex: 'host_count',
     sorter: true,
   },
   {
     key: 'cluster_name',
-    title: '集群',
+    title: t('assests.cluster'),
     dataIndex: 'cluster_name',
     filters: permissions.value.map(i => ({ text: i.cluster_name, value: i.cluster_id })),
   },
   {
     key: 'operation',
-    title: '操作',
+    title: t('common.operation'),
     dataIndex: 'operation',
     width: '25%',
     align: 'center',
@@ -70,7 +73,7 @@ const pagination = reactive<TablePaginationConfig>({
   total: 0,
   current: 1,
   pageSize: 10,
-  showTotal: (total: number) => `总计 ${total} 项`,
+  showTotal: (total: number) => `${t('common.total', { count: total })}`,
   showSizeChanger: true,
   pageSizeOptions: ['10', '20', '30', '40'],
 })
@@ -145,8 +148,8 @@ async function deleteHostGroup(hostGroupId: string): Promise<string> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (_)
-        return reject(new Error('删除失败'))
-      else return resolve('删除成功')
+        return reject(new Error(t('common.fail')))
+      else return resolve(t('common.succeed'))
     }, 2000)
   })
 }
@@ -158,17 +161,17 @@ async function deleteHostGroup(hostGroupId: string): Promise<string> {
 async function handleDelete(hostGroup: HostGroupTableItem): Promise<void> {
   if (hostGroup.host_count > 0) {
     Modal.warning({
-      title: '主机组内有主机时无法删除',
-      okText: '确定',
+      title: t('assests.sentence.hasHosts'),
+      okText: t('common.confirm'),
     })
     return
   }
   Modal.confirm({
-    title: `删除后无法恢复,请确认删除以下主机组`,
+    title: t('assests.sentence.hostGroupDeleteConfirm'),
     icon: h(ExclamationCircleOutlined),
     content: `${hostGroup.host_group_name}`,
     okType: 'danger',
-    okText: '删除',
+    okText: t('common.delete'),
     onOk: async () => {
       try {
         const res = await deleteHostGroup(hostGroup.host_group_id)
@@ -216,7 +219,7 @@ onMounted(() => {
     <a-card>
       <a-row type="flex" justify="space-between" align="middle">
         <a-col>
-          {{ `共获取到${pagination.total}条主机组信息 ` }}
+          {{ `${t('assests.hostGroupTotal', { count: pagination.total })}` }}
         </a-col>
         <a-col>
           <a-row type="flex" :gutter="8">
@@ -231,14 +234,14 @@ onMounted(() => {
               <AddHostGroupModal :clusters="clusters" @success="handleAddGroupSuccess">
                 <template #button>
                   <a-button type="primary">
-                    <PlusOutlined />添加主机组
+                    <PlusOutlined />{{ t('assests.addHostGroup') }}
                   </a-button>
                 </template>
               </AddHostGroupModal>
             </a-col>
             <a-col>
               <a-button :icon="h(RedoOutlined)" @click="refresh">
-                刷新
+                {{ t('common.refresh') }}
               </a-button>
             </a-col>
           </a-row>
@@ -255,18 +258,18 @@ onMounted(() => {
         <template #bodyCell="{ record, column }">
           <template v-if="column.dataIndex === 'operation'">
             <template v-if="accountRole === 'administrator'">
-              <a @click="handleDelete(record)">删除</a>
+              <a @click="handleDelete(record)">{{ t('common.delete') }}</a>
               <a-divider type="vertical" />
             </template>
 
-            <a @click="handleDrawerOpen(record.host_group_id)">组内主机</a>
+            <a @click="handleDrawerOpen(record.host_group_id)">{{ t('assests.hostInGroup') }}</a>
           </template>
         </template>
       </a-table>
     </a-card>
     <a-drawer
       v-model:open="hostDrawerVisible"
-      title="拥有主机"
+      :title="t('assests.ownHost')"
       :width="720"
       placement="right"
       :closable="false"

@@ -1,1 +1,3 @@
-<template>Alarm</template>
+<template>
+  Alarm
+</template>
