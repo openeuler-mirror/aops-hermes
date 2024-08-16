@@ -4,47 +4,50 @@ import { QuestionCircleOutlined } from '@ant-design/icons-vue'
 import type { TableProps } from 'ant-design-vue'
 import { message } from 'ant-design-vue'
 import { computed, onMounted, reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import PageWrapper from '@/components/PageWrapper.vue'
 import { api } from '@/api'
 import type { Account, AccountRole } from '@/api'
 
+const { t } = useI18n()
+
 const AccountRoleMap: Record<AccountRole, string> = {
-  administrator: '管理员',
-  normal: '普通用户',
+  administrator: t('users.administrator'),
+  normal: t('users.normal'),
 }
 
-const usersColumns = [
+const usersColumns = computed(() => [
   {
     dataIndex: 'username',
-    title: '用户名',
+    title: t('users.username'),
   },
   {
     dataIndex: 'role_type',
-    title: '类型',
+    title: t('users.role'),
   },
   {
     dataIndex: 'email',
-    title: '邮箱',
+    title: t('users.email'),
   },
   {
     dataIndex: 'clusters_num',
-    title: '集群',
+    title: t('users.cluster'),
   },
   {
     dataIndex: 'operation',
-    title: '操作',
+    title: t('common.operation'),
     align: 'center',
   },
-]
+])
 
 const usersExpandColumns = computed(() => [
   {
     dataIndex: 'cluster_name',
-    title: '集群',
+    title: t('users.cluster'),
   },
   {
     dataIndex: 'host_groups',
-    title: '主机组',
+    title: t('users.hostGroup'),
     align: 'center',
   },
 ])
@@ -53,7 +56,7 @@ const pagination = reactive({
   total: 0,
   current: 1,
   pageSize: 10,
-  showTotal: (total: number) => `总计 ${total} 项`,
+  showTotal: (total: number) => t('common.total', { count: total }),
   showSizeChanger: true,
   pageSizeOptions: ['10', '20', '30', '40'],
 })
@@ -106,7 +109,7 @@ const onChange: TableProps<Account>['onChange'] = (page) => {
 async function handleResetPass(record: Account) {
   const [_] = await api.resetPassword(record.username)
   if (!_)
-    message.success('重置密码成功')
+    message.success(t('common.succeed'))
 }
 
 function handleSearch() {
@@ -126,7 +129,7 @@ onMounted(() => {
         <a-input-search
           v-model:value="tableState.searchKey"
           :maxlength="40"
-          placeholder="按照用户名搜索"
+          :placeholder="t('users.placeHolder.searchBy')"
           style="width: 200px"
           @search="handleSearch"
         />
@@ -147,21 +150,21 @@ onMounted(() => {
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <router-link :to="{ path: `/user/users/user-permission/${record.username}` }">
-              <a>分配权限</a>
+              <a>{{ $t('users.permissions') }}</a>
             </router-link>
             <a-divider type="vertical" />
             <a-popconfirm
-              ok-text="确认"
-              cancel-text="取消"
+              :ok-text="t('common.confirm')"
+              :cancel-text="t('common.cancel')"
               @confirm="handleResetPass(record)"
             >
               <template #title>
-                你确定将该用户密码重置为<span style="color: red">changeme</span>吗?
+                {{ $t('users.sentence.resetPassword') }}
               </template>
               <template #icon>
                 <QuestionCircleOutlined style="color: red" />
               </template>
-              <a>重置密码</a>
+              <a>{{ $t('users.resetPassword') }}</a>
             </a-popconfirm>
           </template>
         </template>

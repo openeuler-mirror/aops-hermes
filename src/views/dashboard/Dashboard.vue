@@ -1,14 +1,20 @@
 <script lang="ts" setup>
 import { init } from 'echarts'
 import type { EChartsOption, EChartsType } from 'echarts'
-import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { storeToRefs } from 'pinia'
 import AlarmInformationStatistics from './components/AlarmInformationStatistics.vue'
 import PageWrapper from '@/components/PageWrapper.vue'
 import { api } from '@/api'
-import { RiskMap, severityColorMap } from '@/conf'
+import { severityColorMap } from '@/conf'
 import type { Cluster, CveCount } from '@/api'
+import { useLangStore } from '@/store'
 
 let chart: EChartsType | null = null
+
+const { t } = useI18n()
+const { lang } = storeToRefs(useLangStore())
 const cvePieRef = ref<HTMLDivElement>()
 
 const dashboardData = reactive<{
@@ -66,17 +72,21 @@ async function queryCveOverview() {
   const [_, res] = await api.getCveOverview()
   if (res) {
     dashboardData.cveRiskOverview = res
-    option.series![0].data = Object.keys(res).map((key) => {
-      return {
-        value: res[key],
-        name: RiskMap[key],
-        itemStyle: {
-          color: severityColorMap[key],
-        },
-      }
-    })
-    chart!.setOption(option)
+    setChartData()
   }
+}
+
+function setChartData() {
+  option.series![0].data = Object.keys(dashboardData.cveRiskOverview).map((key) => {
+    return {
+      value: dashboardData.cveRiskOverview[key],
+      name: t(`vul.severityStatus.${key.toLowerCase()}`),
+      itemStyle: {
+        color: severityColorMap[key],
+      },
+    }
+  })
+  chart!.setOption(option)
 }
 
 async function queryClusters() {
@@ -84,6 +94,10 @@ async function queryClusters() {
   if (res)
     dashboardData.clusters = res
 }
+
+watch(() => lang.value, () => {
+  queryCveOverview()
+})
 
 onMounted(() => {
   queryHostsCount()
@@ -108,7 +122,7 @@ onBeforeUnmount(() => {
             <a-col>
               <a-space>
                 <img class="card-icon" src="@/assets/imgs/dash-host.png" alt="">
-                <span> 主机数量</span>
+                <span> {{ $t('dashboard.hostCount') }}</span>
               </a-space>
             </a-col>
             <a-col>
@@ -121,7 +135,7 @@ onBeforeUnmount(() => {
             <a-col>
               <a-space>
                 <img class="card-icon" src="@/assets/imgs/dash-fault.png" alt="">
-                <span> 告警数量</span>
+                <span> {{ $t('dashboard.alertCount') }}</span>
               </a-space>
             </a-col>
             <a-col>
@@ -134,7 +148,7 @@ onBeforeUnmount(() => {
             <a-col>
               <a-space>
                 <img class="card-icon" src="@/assets/imgs/dash-host.png" alt="">
-                <span> 集群数量</span>
+                <span> {{ $t('dashboard.clusterCount') }}</span>
               </a-space>
             </a-col>
             <a-col>
@@ -159,14 +173,14 @@ onBeforeUnmount(() => {
               <div class="dash-sync-card-desc">
                 <span class="small-title">
                   <a-badge status="processing" />
-                  业务域同步率
+                  {{ $t('dashboard.domianSync') }}
                 </span>
                 <span class="data-number">100%</span>
               </div>
               <div class="dash-sync-card-desc">
                 <span class="small-title">
                   <a-badge status="error" />
-                  未同步业务域
+                  {{ $t('dashboard.domainUnSync') }}
                 </span>
                 <div class="data-number">
                   0
@@ -179,7 +193,7 @@ onBeforeUnmount(() => {
       <a-col :xs="24" :md="24" :xl="8" style="margin-bottom: 20px">
         <a-card>
           <div class="cve-card">
-            <h3>CVE风险</h3>
+            <h3>{{ $t('dashboard.cveRisk') }}</h3>
             <div ref="cvePieRef" class="cve-pie-chart" />
           </div>
         </a-card>

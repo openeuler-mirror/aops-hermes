@@ -32,10 +32,10 @@ function setDiffClass(isAdd?: boolean, isRemoved?: boolean, isOrigin?: boolean) 
 <template>
   <a-row type="flex" justify="space-between">
     <a-col :span="11">
-      <h3>主机端（实际配置）</h3>
+      <h3>{{ $t('conftrace.domainConf.hostSide') }}</h3>
     </a-col>
     <a-col :span="11">
-      <h3>业务域（默认配置）</h3>
+      <h3>{{ $t('conftrace.domainDetail.domainSide') }}</h3>
     </a-col>
   </a-row>
   <div class="diff-content">

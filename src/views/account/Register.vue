@@ -4,9 +4,11 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons-vue'
 import { reactive, ref } from 'vue'
 import { type FormInstance, message } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
+import { useI18n } from 'vue-i18n'
 import { api } from '@/api'
 
 const router = useRouter()
+const { t } = useI18n()
 
 interface Form {
   username: string
@@ -40,7 +42,7 @@ function validateUsername(_rule: Rule, value: string) {
   const regex = /^[a-z0-9]{5,20}$/i
   if (!regex.test(value)) {
     return Promise.reject(
-      new Error('请输入5-20位字母或数字组成的用户名!'),
+      new Error(t('account.validateMsg.username')),
     )
   }
   return Promise.resolve()
@@ -53,7 +55,7 @@ function validatePassword(_rule: Rule, value: string) {
   const regex = /^[a-z0-9]{6,20}$/i
   if (!regex.test(value)) {
     return Promise.reject(
-      new Error('请输入6-20位字母或数字组成的密码!'),
+      new Error(t('account.validateMsg.passwordOne')),
     )
   }
   return Promise.resolve()
@@ -66,7 +68,7 @@ function validateEmail(_rule: Rule, value: string) {
   const regex = /^[\w.%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i
   if (!regex.test(value)) {
     return Promise.reject(
-      new Error('请输入正确的邮箱格式!'),
+      new Error(t('account.validateMsg.email')),
     )
   }
   return Promise.resolve()
@@ -79,12 +81,12 @@ function validateConfirmPassword(_rule: Rule, value: string) {
   const regex = /^[a-z0-9]{6,20}$/i
   if (!regex.test(value)) {
     return Promise.reject(
-      new Error('请输入6-20位字母或数字组成的密码!'),
+      new Error(t('account.validateMsg.passwordOne')),
     )
   }
   else if (value && value !== form.password) {
     return Promise.reject(
-      new Error('请确保前后两次输入的密码保持一致！'),
+      new Error(t('account.validateMsg.passwordTwo')),
     )
   }
   return Promise.resolve()
@@ -102,15 +104,14 @@ async function handlerRegister() {
     const { username, password, email } = form
     const [_] = await api.register({ username, password, email })
     if (!_) {
-      message.success('注册成功')
+      message.success(t('account.message.registerSuccess'))
       setTimeout(() => {
         router.push('/user/login')
         formRef.value?.resetFields()
       }, 500)
     }
   }
-  catch (error) {
-
+  catch {
   }
   finally {
     isSubmiting.value = false
@@ -127,10 +128,10 @@ async function handlerRegister() {
         <a-input
           v-model:value="form.username"
           class="register-input"
-          placeholder="用户名5-20位,包含字母或数字"
+          :placeholder="t('account.palceHolder.username')"
         >
           <template #prefix>
-            <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
+            <UserOutlined />
           </template>
         </a-input>
       </a-form-item>
@@ -139,10 +140,10 @@ async function handlerRegister() {
         <a-input-password
           v-model:value="form.password"
           class="register-input"
-          placeholder="密码长度6-20位,包含字母或数字"
+          :placeholder="t('account.palceHolder.password')"
         >
           <template #prefix>
-            <LockOutlined style="color: rgba(0, 0, 0, 0.25)" />
+            <LockOutlined />
           </template>
         </a-input-password>
       </a-form-item>
@@ -151,10 +152,10 @@ async function handlerRegister() {
         <a-input-password
           v-model:value="form.confirmPassword"
           class="register-input"
-          placeholder="确认前后两次输入的密码保持一致"
+          :placeholder="t('account.palceHolder.rePassword')"
         >
           <template #prefix>
-            <LockOutlined style="color: rgba(0, 0, 0, 0.25)" />
+            <LockOutlined />
           </template>
         </a-input-password>
       </a-form-item>
@@ -163,24 +164,26 @@ async function handlerRegister() {
         <a-input
           v-model:value="form.email"
           class="register-input"
-          placeholder="输入邮箱地址: eg: xxxx@163.com"
+          :placeholder="t('account.palceHolder.email')"
         >
           <template #prefix>
-            <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
+            <UserOutlined />
           </template>
         </a-input>
       </a-form-item>
 
       <a-form-item style="margin-top: 24px">
         <a-button class="register-button" size="large" type="primary" html-type="submit" :loading="isSubmiting" @click="handlerRegister">
-          注册
+          {{ t('account.register') }}
         </a-button>
       </a-form-item>
 
       <a-form-item style="margin-top: 24px">
-        <div class="jump-login">
-          <span>已有账号? </span>
-          <span class="spin-top-jump" @click="backLogin">返回登录</span>
+        <div class="jump-login" @click="backLogin">
+          <a-space>
+            <span>{{ t('account.sentence.hasAccount') }} </span>
+            <span class="spin-top-jump">{{ t('account.sentence.backLogin') }}</span>
+          </a-space>
         </div>
       </a-form-item>
     </a-form>

@@ -5,7 +5,7 @@ export enum DOMAN_STATUS_ENUM {
 }
 
 export enum DOMAN_STATUS_LABEL_ENUM {
-  'SYNCHRONIZED' = '已同步',
-  'NOT SYNCHRONIZE' = '未同步',
-  'NOT FOUND' = '未知状态',
+  'SYNCHRONIZED' = 'synchronized',
+  'NOT SYNCHRONIZE' = 'unsynchronized',
+  'NOT FOUND' = 'unknownStatus',
 }

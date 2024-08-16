@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { CloseOutlined } from '@ant-design/icons-vue'
 import { useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
+import { useI18n } from 'vue-i18n'
 import type { HostInDomain, HostsTableItem } from '@/api'
 import { api } from '@/api'
 
@@ -19,7 +20,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['success'])
-
+const { t } = useI18n()
 const route = useRoute()
 
 const domainName = ref()
@@ -71,7 +72,7 @@ const isSubmiting = ref(false)
 async function handleSubmit() {
   const selected = sourceHosts.value.filter(item => targetKeys.value.includes(item.key) && !item.disabled)
   if (selected.length === 0) {
-    message.info('至少选择一个主机添加！')
+    message.info(t('conftrace.domainDetail.message.leastOne'))
     return
   }
   isSubmiting.value = true
@@ -89,12 +90,12 @@ async function handleSubmit() {
 
   const [, res] = await api.addHost(params)
   if (res && res[clusterId.value].label === 'Succeed') {
-    message.success('添加成功')
+    message.success(t('common.succeed'))
     visible.value = false
     emit('success')
     getAllHost()
   }
-  else { message.error('添加失败') }
+  else { message.error(t('common.fail')) }
 
   isSubmiting.value = false
 }
@@ -114,19 +115,19 @@ onMounted(() => {
   <span @click="visible = true">
     <slot name="trigger" />
   </span>
-  <a-drawer v-model:open="visible" title="添加主机" :width="700" :closable="false" destroy-on-close @after-open-change="afterOpenChange">
+  <a-drawer v-model:open="visible" :title="$t('conftrace.domainDetail.addHost')" :width="700" :closable="false" destroy-on-close @after-open-change="afterOpenChange">
     <template #extra>
       <CloseOutlined style="cursor: pointer" @click="visible = false" />
     </template>
     <a-spin :spinning="isLoading">
       <a-form :label-col="{ span: 5 }" :wrapper-col="{ span: 16 }">
-        <a-form-item name="domainName" label="归属业务域">
+        <a-form-item name="domainName" :label="$t('conftrace.domainDetail.beloneDomain')">
           <a-input :value="domainName" disabled type="text" :rules="[{ required: true, message: '请选择业务域' }]" />
         </a-form-item>
       </a-form>
 
       <h4 style="margin: 40px 0 20px 0;">
-        选择要添加的主机:
+        {{ $t('conftrace.domainDetail.sentence.selectHost') }}
       </h4>
       <a-transfer
         v-model:target-keys="targetKeys"
@@ -146,10 +147,10 @@ onMounted(() => {
       <a-row type="flex" justify="end">
         <a-space>
           <a-button @click="visible = false">
-            取消
+            {{ $t('common.cancel') }}
           </a-button>
           <a-button type="primary" :loading="isSubmiting" @click="handleSubmit">
-            确认
+            {{ $t('common.confirm') }}
           </a-button>
         </a-space>
       </a-row>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { h, onMounted, reactive, ref } from 'vue'
+import { computed, h, onMounted, reactive, ref } from 'vue'
 import {
   CheckCircleTwoTone,
   CloseCircleTwoTone,
@@ -12,6 +12,7 @@ import {
 import { useRoute } from 'vue-router'
 import { Modal, message } from 'ant-design-vue'
 import { storeToRefs } from 'pinia'
+import { useI18n } from 'vue-i18n'
 import { DOMAN_STATUS_ENUM, DOMAN_STATUS_LABEL_ENUM } from './constants'
 import AddHostModal from './components/AddHostModal.vue'
 import CurrentConf from './components/CurrentConf.vue'
@@ -22,6 +23,7 @@ import type { ConfFile, HostInDomain } from '@/api'
 import Drawer from '@/components/Drawer.vue'
 import { useAccountStore } from '@/store'
 
+const { t } = useI18n()
 const route = useRoute()
 const { userInfo } = storeToRefs(useAccountStore())
 
@@ -37,27 +39,27 @@ const domainDetail = reactive<{
   clusterId: '',
 })
 
-const domainHostColumns = [
+const domainHostColumns = computed(() => [
   {
     dataIndex: 'ip',
-    title: 'IP地址',
+    title: t('conftrace.domainDetail.ip'),
   },
   {
     dataIndex: 'ipv6',
-    title: 'IP协议',
+    title: t('conftrace.domainDetail.ipProtocol'),
   },
   {
     dataIndex: 'syncStatus',
-    title: '同步状态',
+    title: t('conftrace.domainDetail.syncStatus'),
     align: 'center',
   },
   {
     dataIndex: 'operation',
-    title: '操作',
+    title: t('common.operation'),
     width: 300,
     align: 'center',
   },
-]
+])
 
 const domainHostState = reactive<{
   selectedRowKeys: string[]
@@ -110,11 +112,11 @@ async function handleDelete(record: HostInDomain) {
   params[domainDetail.clusterId] = { domainName: domainDetail.domainName, hostInfos: [{ hostId: record.hostId }] }
   const [,res] = await api.deleteDomainHosts(params)
   if (res && res[domainDetail.clusterId].label === 'Succeed') {
-    message.success('删除成功')
+    message.success(t('common.succeed'))
     refresh()
   }
 
-  else { message.error('删除失败') }
+  else { message.error(t('common.fail')) }
 }
 
 const isStatusLoaidng = ref(false)
@@ -160,11 +162,11 @@ function showSyncStatus(host: HostInDomain) {
 
 async function handleSyncALl() {
   Modal.confirm({
-    title: `你确定要将当前业务域的配置同步到已选主机吗？`,
+    title: t('conftrace.domainDetail.sentence.syncConfirmTitle'),
     icon: h(ExclamationCircleOutlined),
-    content: `同步后配置将无法恢复，但可从配置日志中查看记录,你还要继续吗?`,
+    content: t('conftrace.domainDetail.sentence.syncConfirmContent'),
     okType: 'danger',
-    okText: '继续同步',
+    okText: t('conftrace.domainDetail.sentence.syncGoon'),
     onOk: async () => {
       try {
         const params = {}
@@ -174,9 +176,9 @@ async function handleSyncALl() {
         }
         const [_, res] = await api.syncConfsBatchly(params)
         if (res && res[domainDetail.clusterId].label === 'Succeed')
-          message.success('同步成功')
+          message.success(t('conftrace.domainDetail.message.syncSucceed'))
         else
-          message.error('同步失败')
+          message.error(t('conftrace.domainDetail.message.syncFailed'))
       }
       catch (error) {
         message.error(error as any)
@@ -199,13 +201,13 @@ onMounted(() => {
     <a-card>
       <a-row type="flex" justify="space-between">
         <a-col>
-          <span class="domain-detail-title">{{ `业务域${domainDetail.domainName}` }}</span>
-          <span>共获取到{{ domainDetail.domainHosts.length }}条主机信息</span>
+          <span class="domain-detail-title">{{ `${domainDetail.domainName}` }}</span>
+          <span>{{ t('conftrace.domainDetail.hosts', { count: domainDetail.domainHosts.length }) }}</span>
         </a-col>
         <a-col v-show="domainHostState.selectedRowKeys.length > 0">
           <a-alert type="info" show-icon class="delete-alert">
             <template #message>
-              <span>{{ `已选择${domainHostState.selectedRowKeys.length}项` }}</span>
+              <span>{{ t('common.selectItems', { count: domainHostState.selectedRowKeys.length }) }}</span>
             </template>
           </a-alert>
         </a-col>
@@ -214,16 +216,16 @@ onMounted(() => {
             <AddHostModal v-if="userInfo?.type === 'administrator'" :host-list="domainDetail.domainHosts" :domain-name="domainDetail.domainName" @success="queryHostsInDomain">
               <template #trigger>
                 <a-button type="primary" :icon="h(PlusOutlined)">
-                  添加主机
+                  {{ $t('assests.addHost') }}
                 </a-button>
               </template>
             </AddHostModal>
 
             <a-button :icon="h(ReloadOutlined)" :disabled="!domainHostState.selectedRowKeys.length" @click="handleSyncALl">
-              批量同步
+              {{ $t('conftrace.domainDetail.batchSync') }}
             </a-button>
             <a-button :icon="h(RedoOutlined)" @click="refresh">
-              刷新
+              {{ $t('common.refresh') }}
             </a-button>
           </a-space>
         </a-col>
@@ -243,21 +245,21 @@ onMounted(() => {
       >
         <template #bodyCell="{ record, column }">
           <template v-if="column.dataIndex === 'operation'">
-            <a @click="currentConfHostInfo = record; isCurrentConfVisible = true"> 当前配置 </a>
+            <a @click="currentConfHostInfo = record; isCurrentConfVisible = true"> {{ $t('conftrace.domainDetail.currentConf') }} </a>
             <a-divider type="vertical" />
-            <a @click="showSyncStatus(record)"> 状态详情 </a>
+            <a @click="showSyncStatus(record)"> {{ $t('conftrace.domainDetail.statusDetail') }} </a>
             <template v-if="userInfo?.type === 'administrator'">
               <a-divider type="vertical" />
               <a-popconfirm
-                title="你确定删除该主机吗?"
-                ok-text="确认"
-                cancel-text="取消"
+                :title="$t('conftrace.domainDetail.sentence.deleteConfirm')"
+                :ok-text="t('common.confirm')"
+                :cancel-text="t('common.cancel')"
                 @confirm="handleDelete(record)"
               >
                 <template #icon>
                   <QuestionCircleOutlined style="color: red" />
                 </template>
-                <a>删除</a>
+                <a>{{ $t('common.delete') }}</a>
               </a-popconfirm>
             </template>
           </template>
@@ -275,8 +277,8 @@ onMounted(() => {
                 two-tone-color="#ff0000"
               />
               <QuestionCircleOutlined v-else style="font-size: 16px" />
-              {{ DOMAN_STATUS_LABEL_ENUM[record.syncStatus] || '未知状态' }}
-              <span v-if="record.syncStatus.notSyncCount > 0">{{ record.syncStatus.notSyncCount }}条</span>
+              {{ record.isSynced ? t(`conftrace.domainDetail.${DOMAN_STATUS_LABEL_ENUM[record.isSynced]}`) : t('conftrace.domainDetail.unknownStatus') }}
+              <span v-if="record.syncStatus.notSyncCount > 0">{{ record.syncStatus.notSyncCount }}</span>
             </a-space>
           </template>
         </template>
@@ -291,13 +293,13 @@ onMounted(() => {
     <template #footer>
       <a-row type="flex" justify="end">
         <a-button @click="isCurrentConfVisible = false">
-          关闭
+          {{ $t('common.close') }}
         </a-button>
       </a-row>
     </template>
   </Drawer>
 
-  <Drawer v-model:visible="isSyncStatusVisible" title="状态详情">
+  <Drawer v-model:visible="isSyncStatusVisible" :title="$t('conftrace.domainDetail.statusDetail')">
     <template #content>
       <DomainSyncStatus
         :sync-host="selectedSyncHost"

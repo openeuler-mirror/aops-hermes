@@ -5,6 +5,7 @@ import type { Rule } from 'ant-design-vue/es/form'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { message, notification } from 'ant-design-vue'
+import { useI18n } from 'vue-i18n'
 import AddHostGroupModal from './components/AddHostGroupModal.vue'
 import PageWrapper from '@/components/PageWrapper.vue'
 import type { HostGroup } from '@/api'
@@ -25,6 +26,8 @@ interface Form {
 }
 
 type PageType = 'create' | 'edit'
+
+const { t } = useI18n()
 
 const { permissions, hostGroups } = storeToRefs(useClusterStore())
 const { queryHostGroups } = useClusterStore()
@@ -71,11 +74,15 @@ const isLoading = ref(false)
 function validateHostUsername(_rule: Rule, value: string) {
   if (/[^\w\-~`!?.;(){}[\]@#$^*+|=]/.test(value)) {
     return Promise.reject(
-      new Error('用户名为数字、英文字母或特殊字符组成，不能包含空格和以下特殊字符：:<>&,\'"\\/%。'),
+      new Error(t('assests.validateMsg.username_one')),
     )
   }
-  if (/^[#+-]/.test(value))
-    return Promise.reject(new Error('首字符不能是“#”、“+”或“-”'))
+  if (/^[#+-]/.test(value)) {
+    return Promise.reject(
+      new Error(t('assests.validateMsg.username_two')),
+    )
+  }
+
   return Promise.resolve()
 }
 
@@ -86,16 +93,16 @@ function validateHostUsername(_rule: Rule, value: string) {
  */
 function validateHostName(_rule: Rule, value: string) {
   if (/^\S?$/.test(value))
-    return Promise.reject(new Error('首尾不允许空格'))
+    return Promise.reject(new Error(t('assests.validateMsg.hostname_one')))
   if (!/^(?!\s*$).+/.test(value))
-    return Promise.reject(new Error('不允许全空格'))
+    return Promise.reject(new Error(t('assests.validateMsg.hostname_two')))
   return Promise.resolve()
 }
 
 // form validate rules
-const rules: Record<string, Rule[]> = {
+const rules = computed<Record<string, Rule[]>>(() => ({
   host_name: [
-    { max: 50, message: '主机名长度应小于50', trigger: 'blur' },
+    { max: 50, message: t('assests.validateMsg.hostName'), trigger: 'blur' },
     {
       validator: validateHostName,
       trigger: 'blur',
@@ -104,14 +111,14 @@ const rules: Record<string, Rule[]> = {
   cluster_id: [
     {
       required: true,
-      message: '请选择集群',
+      message: t('assests.validateMsg.cluster'),
       trigger: 'change',
     },
   ],
   host_group_id: [
     {
       required: true,
-      message: '请选择所属主机组',
+      message: t('assests.validateMsg.hostGroup'),
       trigger: 'change',
     },
   ],
@@ -119,18 +126,18 @@ const rules: Record<string, Rule[]> = {
     {
       required: true,
       pattern: /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/,
-      message: '请输入IP地址在 0.0.0.0~255.255.255.255 区间内',
+      message: t('assests.validateMsg.ip'),
       trigger: 'change',
     },
   ],
-  management: [{ required: true, message: '请选择管理还是监控节点', trigger: 'change' }],
-  identificaWay: [{ required: true, message: '请选择认证方式', trigger: 'change' }],
-  ssh_port: [{ required: true, message: '请输入 0~65535 内正整数', trigger: 'change' }],
+  management: [{ required: true, message: t('assests.validateMsg.management'), trigger: 'change' }],
+  identificaWay: [{ required: true, message: t('assests.validateMsg.identificaWay'), trigger: 'change' }],
+  ssh_port: [{ required: true, message: t('assests.validateMsg.sshPort'), trigger: 'change' }],
   ssh_user: [
-    { required: true, message: '请输入用户名', trigger: 'change' },
+    { required: true, message: t('assests.validateMsg.username'), trigger: 'change' },
     { validator: validateHostUsername, trigger: 'blur' },
   ],
-}
+}))
 
 const isPassRequired = computed<boolean>(() => {
   if (pageType.value === 'create')
@@ -189,7 +196,7 @@ async function handleSubmit(type: 'create' | 'edit'): Promise<void> {
     const diff = await verifyChanged(defaultInfo, form)
 
     if (!diff) {
-      message.info('当前没有修改，请修改后重试')
+      message.info(t('assests.sentence.noChange'))
       isLoading.value = false
       return
     }
@@ -232,7 +239,7 @@ async function handleSubmit(type: 'create' | 'edit'): Promise<void> {
       if (!_ && res) {
         if (Object.values(res)[0].label !== 'Succeed') {
           notification.error({
-            message: '添加失败',
+            message: t('common.fail'),
             description: Object.values(res)[0].label,
           })
         }
@@ -250,7 +257,7 @@ async function handleSubmit(type: 'create' | 'edit'): Promise<void> {
       if (!_ && res) {
         if (Object.values(res)[0].label !== 'Succeed') {
           notification.error({
-            message: '编辑失败',
+            message: t('common.fail'),
             description: Object.values(res)[0].label,
           })
         }
@@ -264,7 +271,7 @@ async function handleSubmit(type: 'create' | 'edit'): Promise<void> {
       }
     }
   }
-  catch (error) {
+  catch {
     isLoading.value = false
   }
 }
@@ -291,27 +298,22 @@ onMounted(() => {
           :label-col="{ span: 5 }"
           :wrapper-col="{ span: 10 }"
         >
-          <a-form-item label="主机名称" name="host_name">
+          <a-form-item :label="t('assests.hostName')" name="host_name">
             <a-input
               v-model:value="form.host_name"
+              autocomplete="off"
               :max-length="50"
-              placeholder="请输入主机名称，50个字符以内"
+              :placeholder="t('assests.placeHolder.hostName')"
             >
               <template #suffix>
-                <a-tooltip title="最大长度50个字符，首尾不能为空格，不允许全空格">
+                <a-tooltip :title="t('assests.tips.hostName')">
                   <InfoCircleOutlined style="color: rgba(0, 0, 0, 0.45)" />
                 </a-tooltip>
               </template>
             </a-input>
           </a-form-item>
-
-          <a-form-item label="集群" name="cluster_id">
-            <a-select
-              v-model:value="form.cluster_id"
-              placeholder="请选择集群"
-              :disabled="pageType === 'edit'"
-              @change="form.host_group_id = undefined"
-            >
+          <a-form-item :label="t('assests.cluster')" name="cluster_id">
+            <a-select v-model:value="form.cluster_id" :placeholder="t('assests.placeHolder.cluster')" :disabled="pageType === 'edit'" @change="form.host_group_id = undefined">
               <a-select-option
                 v-for="cluster in clusterOptions"
                 :key="cluster.cluster_id"
@@ -322,10 +324,10 @@ onMounted(() => {
             </a-select>
           </a-form-item>
 
-          <a-form-item v-if="form.cluster_id" label="所属主机组" name="host_group_id">
+          <a-form-item v-if="form.cluster_id" :label="t('assests.hostGroup')" name="host_group_id">
             <a-row type="flex" :gutter="16">
               <a-col flex="5">
-                <a-select v-model:value="form.host_group_id" placeholder="请选择">
+                <a-select v-model:value="form.host_group_id" :placeholder="t('assests.placeHolder.hostGroup')">
                   <a-select-option
                     v-for="group in hostGroupoOtions"
                     :key="group.host_group_id"
@@ -339,95 +341,98 @@ onMounted(() => {
                 <AddHostGroupModal :clusters="clusterOptions" @success="handleAddGroupSuccess">
                   <template #button>
                     <a-button type="primary">
-                      <PlusOutlined />添加主机组
+                      <PlusOutlined />{{ t('assests.addHostGroup') }}
                     </a-button>
                   </template>
                 </AddHostGroupModal>
               </a-col>
             </a-row>
           </a-form-item>
-          <a-form-item label="IP地址" name="host_ip">
+          <a-form-item :label="t('assests.ip')" name="host_ip">
             <a-input
               v-model:value="form.host_ip"
+              autocomplete="off"
               :disabled="pageType === 'edit'"
-              placeholder="请输入有效ip地址，e.g. 192.168.0.1"
+              :placeholder="t('assests.placeHolder.ip')"
             />
           </a-form-item>
-          <a-form-item label="SSH登录端口" name="ssh_port">
+          <a-form-item :label="t('assests.sshPort')" name="ssh_port">
             <a-input-number
               v-model:value="form.ssh_port"
+              autocomplete="off"
               :min="0"
               :max="65535"
-              placeholder="请输入"
+              :placeholder="t('assests.placeHolder.sshPort')"
               :controls="false"
               style="border-radius: 0"
             />
           </a-form-item>
-          <a-form-item label="管理/监控节点" name="management">
+          <a-form-item :label="t('assests.managementCheck')" name="management">
             <a-radio-group v-model:value="form.management" name="managementGroup">
               <a-radio :value="true">
-                管理节点
+                {{ t('assests.management') }}
               </a-radio>
               <a-radio :value="false">
-                监控节点
+                {{ t('assests.monitor') }}
               </a-radio>
             </a-radio-group>
           </a-form-item>
-          <a-form-item label="主机用户名" name="ssh_user">
-            <a-input v-model:value="form.ssh_user" :max-length="32" placeholder="请输入主机用户名">
+          <a-form-item :label="t('assests.username')" name="ssh_user">
+            <a-input v-model:value="form.ssh_user" :max-length="32" :placeholder="t('assests.placeHolder.username')" autocomplete="off">
               <template #suffix>
-                <a-tooltip title="登录主机时使用的用户名">
+                <a-tooltip :title="t('assests.tips.username')">
                   <InfoCircleOutlined style="color: rgba(0, 0, 0, 0.45)" />
                 </a-tooltip>
               </template>
             </a-input>
           </a-form-item>
-          <a-form-item label="认证方式" name="identificaWay">
+          <a-form-item :label="t('assests.certification')" name="identificaWay">
             <a-radio-group v-model:value="form.identificaWay" name="identificaWay">
               <a-radio :value="1">
-                主机登录密码
+                {{ t('assests.password') }}
               </a-radio>
               <a-radio :value="2">
-                主机登录密钥
+                {{ t('assests.sshPkey') }}
               </a-radio>
             </a-radio-group>
           </a-form-item>
           <a-form-item
             :name="form.identificaWay === 1 ? `password` : `ssh_pkey`" :rules="isPassRequired ? [
-              { required: true, message: `请输入登录${form.identificaWay === 1 ? '密码' : '密钥'}` },
+              { required: true, message: `${form.identificaWay === 1 ? t('assests.validateMsg.password') : t('assests.validateMsg.ssh_pkey')}` },
             ] : []"
           >
             <template #label>
-              <span v-if="form.identificaWay === 1">主机登录密码</span>
+              <span v-if="form.identificaWay === 1">  {{ t('assests.password') }}</span>
               <span v-else>
-                <span style="margin-right: 3px">主机登录密钥</span>
+                <span style="margin-right: 3px"> {{ t('assests.sshPkey') }}</span>
                 <a-tooltip title="id_rsa"><QuestionCircleOutlined /> </a-tooltip>
               </span>
             </template>
             <a-input-password
               v-if="form.identificaWay === 1"
               v-model:value="form.password"
-              :placeholder="pageType === 'create' ? '请设置主机登录密码' : '请输入主机登录密码, 若未修改主机用户名或端口可以为空'"
+              autocomplete="off"
+              :placeholder="pageType === 'create' ? t('assests.placeHolder.password') : t('assests.placeHolder.password_require')"
             />
             <a-textarea
               v-else
               v-model:value="form.ssh_pkey"
               :max-length="4096"
               :rows="3"
-              :placeholder="pageType === 'create' ? '请设置主机登录密钥' : '请输入主机登录密钥, 若未修改主机用户名或端口可以为空'"
+              :placeholder="pageType === 'create' ? t('assests.placeHolder.ssh_pkey') : t('assests.placeHolder.ssh_pkey_require')"
             />
           </a-form-item>
           <a-form-item :wrapper-col="{ span: 10, offset: 5 }">
             <a-row :gutter="16">
               <a-col>
                 <a-button @click="$router.back()">
-                  取消
+                  {{ t('common.cancel') }}
                 </a-button>
               </a-col>
               <a-col>
                 <a-button type="primary" :loading="isLoading" html-type="submit" @click="handleSubmit(pageType)">
                   {{
-                    pageType === 'edit' ? '修改' : '添加'
+                    pageType === 'edit' ? t('common.modify') : t('common.add')
                   }}
                 </a-button>
               </a-col>

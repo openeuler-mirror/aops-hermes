@@ -1,5 +1,5 @@
-import type { MockMethod } from 'vite-plugin-mock';
-import { host_infos } from '../contants';
+import type { MockMethod } from 'vite-plugin-mock'
+import { host_infos } from '../contants'
 
 export const assestsMock: Array<MockMethod> = [
   {
@@ -8,7 +8,7 @@ export const assestsMock: Array<MockMethod> = [
     method: 'post',
     response: ({ body }) => {
       const hostInfo = body.basic
-        ? host_infos.filter((item) => body.host_list.includes(item.host_id))
+        ? host_infos.filter(item => body.host_list.includes(item.host_id))
         : [
             {
               host_id: 1,
@@ -57,7 +57,7 @@ export const assestsMock: Array<MockMethod> = [
                 },
               },
             },
-          ];
+          ]
       return {
         code: 200,
         data: {
@@ -65,7 +65,7 @@ export const assestsMock: Array<MockMethod> = [
         },
         label: 'Succeed',
         message: 'operation succeed',
-      };
+      }
     },
   },
   {
@@ -205,7 +205,7 @@ export const assestsMock: Array<MockMethod> = [
         },
         label: 'Succeed',
         message: 'operation succeed',
-      };
+      }
     },
   },
   {
@@ -221,7 +221,7 @@ export const assestsMock: Array<MockMethod> = [
         },
         label: 'Succeed',
         message: 'operation succeed',
-      };
+      }
     },
   },
-];
+]

@@ -35,7 +35,7 @@ export const host_infos = [
     ssh_pkey: 123456,
     last_scan: 1267398172,
   },
-];
+]
 
 export const host_group_infos = [
   {
@@ -54,9 +54,9 @@ export const host_group_infos = [
     cluster_id: 'cluster2',
     cluster_name: '集群2',
   },
-];
+]
 
-export const clusters: any[] = [];
+export const clusters: any[] = []
 
 Array.from({ length: 2 }, (_, index) => index + 1).forEach((num) => {
   clusters.push({
@@ -75,18 +75,18 @@ Array.from({ length: 2 }, (_, index) => index + 1).forEach((num) => {
         host_group_name: 'aops2',
       },
     ],
-  });
-});
+  })
+})
 
 export const cve_list: {
-  cve_id: string;
-  cvss_score: string;
-  description: string;
-  host_num: number;
-  package: string;
-  publish_time: string;
-  severity: string;
-}[] = [];
+  cve_id: string
+  cvss_score: string
+  description: string
+  host_num: number
+  package: string
+  publish_time: string
+  severity: string
+}[] = []
 
 const severityMap = {
   Critical: '严重',
@@ -94,7 +94,7 @@ const severityMap = {
   Medium: '中风险',
   Low: '低风险',
   Unknown: '未知',
-};
+}
 
 Array.from({ length: 11 }, (_, index) => index + 1).forEach((num) => {
   cve_list.push({
@@ -108,33 +108,33 @@ Array.from({ length: 11 }, (_, index) => index + 1).forEach((num) => {
       severityMap[
         Object.keys(severityMap)[Math.floor(Math.random() * Object.keys(severityMap).length)]
       ],
-  });
-});
+  })
+})
 
-const taskTypes = ['cve fix', 'cve rollback', 'repo set', 'hotpatch remove'];
+const taskTypes = ['cve fix', 'cve rollback', 'repo set', 'hotpatch remove']
 const taskTypeMap = {
   'cve fix': 'cve修复',
   'repo set': 'REPO设置',
   'cve rollback': 'cve回滚',
   'hotpatch remove': '热补丁移除',
-};
+}
 
 export const tasks: {
-  task_id: string;
-  task_name: string;
-  task_type: string;
-  host_num: number;
-  description: string;
-  create_time: number;
-  cluster_id: string;
-  cluster_name: string;
+  task_id: string
+  task_name: string
+  task_type: string
+  host_num: number
+  description: string
+  create_time: number
+  cluster_id: string
+  cluster_name: string
   status: {
-    fail: number;
-    running: number;
-    succeed: number;
-    unknown: number;
-  };
-}[] = [];
+    fail: number
+    running: number
+    succeed: number
+    unknown: number
+  }
+}[] = []
 
 Array.from({ length: 11 }, (_, index) => index + 1).forEach((num) => {
   tasks.push({
@@ -152,8 +152,8 @@ Array.from({ length: 11 }, (_, index) => index + 1).forEach((num) => {
       unknown: 0,
       running: 0,
     },
-  });
-});
+  })
+})
 
 export const host_list_in_vul = [
   {
@@ -180,16 +180,16 @@ export const host_list_in_vul = [
     cluster_id: 'cluster2',
     cluster_name: '集群2',
   },
-];
+]
 
 export const repos: {
-  repo_id: string;
-  repo_name: string;
-  cluster_id: string;
-  cluster_name: string;
-  repo_attr: string;
-  repo_data: string;
-}[] = [];
+  repo_id: string
+  repo_name: string
+  cluster_id: string
+  cluster_name: string
+  repo_attr: string
+  repo_data: string
+}[] = []
 
 Array.from({ length: 11 }, (_, index) => index + 1).forEach((num) => {
   repos.push({
@@ -200,5 +200,5 @@ Array.from({ length: 11 }, (_, index) => index + 1).forEach((num) => {
     repo_name: `repo${num}`,
     cluster_id: clusters[num % 2].cluster_id,
     cluster_name: clusters[num % 2].cluster_name,
-  });
-});
+  })
+})

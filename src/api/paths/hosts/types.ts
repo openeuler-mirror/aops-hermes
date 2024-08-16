@@ -8,26 +8,26 @@
 // PURPOSE.
 // See the Mulan PSL v2 for more details.
 export interface HostParams {
-  host_name: string;
-  host_group_name: string;
-  host_ip: string;
-  management: boolean;
-  ssh_user: string;
-  ssh_port: number;
-  ssh_pkey: string;
-  password: string;
+  host_name: string
+  host_group_name: string
+  host_ip: string
+  management: boolean
+  ssh_user: string
+  ssh_port: number
+  ssh_pkey: string
+  password: string
 }
 
 export interface HostItem {
-  key?: string | number;
-  host_ip: string;
-  host_group_name: string;
-  host_name: string;
-  management: boolean;
-  ssh_pkey: string;
-  ssh_port: number;
-  ssh_user: string;
-  password: string;
-  reason?: string;
-  result?: string;
+  key?: string | number
+  host_ip: string
+  host_group_name: string
+  host_name: string
+  management: boolean
+  ssh_pkey: string
+  ssh_port: number
+  ssh_user: string
+  password: string
+  reason?: string
+  result?: string
 }

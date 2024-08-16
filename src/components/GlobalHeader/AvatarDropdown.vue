@@ -4,8 +4,11 @@ import { ExclamationCircleOutlined, KeyOutlined, LogoutOutlined, UserOutlined } 
 import { createVNode, ref } from 'vue'
 import { Modal } from 'ant-design-vue'
 import { storeToRefs } from 'pinia'
+import { useI18n } from 'vue-i18n'
 import ChangePasswordModal from './ChangePasswordModal.vue'
 import { useAccountStore } from '@/store'
+
+const { t } = useI18n()
 
 const router = useRouter()
 
@@ -13,7 +16,7 @@ const { userInfo } = storeToRefs(useAccountStore())
 
 async function handleLogout() {
   Modal.confirm({
-    title: '确定注销账号吗?',
+    title: t('sentence.sureForOut'),
     icon: createVNode(ExclamationCircleOutlined),
     onOk: async () => {
       const { logout } = useAccountStore()
@@ -42,14 +45,14 @@ const isModalVisible = ref(false)
           <ChangePasswordModal v-model:visible="isModalVisible">
             <template #button>
               <span @click=" isModalVisible = true">
-                <KeyOutlined /> 修改密码
+                <KeyOutlined /> {{ t("common.changePass") }}
               </span>
             </template>
           </ChangePasswordModal>
         </a-menu-item>
         <a-menu-divider />
         <a-menu-item key="logout" @click="handleLogout">
-          <LogoutOutlined /> 退出登录
+          <LogoutOutlined /> {{ t("common.signOut") }}
         </a-menu-item>
       </a-menu>
     </template>

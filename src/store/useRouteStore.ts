@@ -7,41 +7,45 @@
 // IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR
 // PURPOSE.
 // See the Mulan PSL v2 for more details.
-import { defineStore } from 'pinia';
-import { useAccountStore } from '@/store';
-import { dynamicRoutes, staticRoutes } from '@/conf';
-import type { RouteRecordRaw } from 'vue-router';
-import { deepClone } from '@/utils';
-import { ref } from 'vue';
+import { defineStore } from 'pinia'
+import type { RouteRecordRaw } from 'vue-router'
+import { ref } from 'vue'
+import { useAccountStore } from '@/store'
+import { dynamicRoutes, staticRoutes } from '@/conf'
+import { deepClone } from '@/utils'
 
 export const useRouteStore = defineStore('routeStore', () => {
-  const routeMap = ref<RouteRecordRaw[]>([]);
+  const routeMap = ref<RouteRecordRaw[]>([])
 
   /**
    * generate dynamic routes by route config
    */
   function generateRouter(): RouteRecordRaw[] {
-    const { userInfo } = useAccountStore();
-    const roleType = userInfo?.type || '';
+    const { userInfo } = useAccountStore()
+    const roleType = userInfo?.type || ''
     if (roleType === 'administrator') {
-      return (routeMap.value = [...staticRoutes, ...dynamicRoutes]);
-    } else {
+      return (routeMap.value = [...staticRoutes, ...dynamicRoutes])
+    }
+    else {
       const authentication = (routes: RouteRecordRaw[]) => {
-        const routesDp = deepClone(routes) as RouteRecordRaw[];
+        const routesDp = deepClone(routes) as RouteRecordRaw[]
         const result = routesDp.map((route: RouteRecordRaw) => {
           route.children = route.children?.filter((child) => {
-            if (!child.meta) return true;
-            if (!child.meta.permission) return true;
-            if (child.meta.permission === roleType) return true;
-            return false;
-          });
-          return route;
-        });
+            if (!child.meta)
+              return true
+            if (!child.meta.permission)
+              return true
+            if (child.meta.permission === roleType)
+              return true
+            return false
+          })
+          return route
+        })
 
-        return result;
-      };
-      const dynamicR = authentication(dynamicRoutes);
-      return (routeMap.value = [...staticRoutes, ...dynamicR]);
+        return result
+      }
+      const dynamicR = authentication(dynamicRoutes)
+      return (routeMap.value = [...staticRoutes, ...dynamicR])
     }
   }
 
@@ -49,8 +53,8 @@ export const useRouteStore = defineStore('routeStore', () => {
    * clear routes
    */
   function clearRoutes() {
-    routeMap.value = [];
+    routeMap.value = []
   }
 
-  return { routeMap, generateRouter, clearRoutes };
-});
+  return { routeMap, generateRouter, clearRoutes }
+})

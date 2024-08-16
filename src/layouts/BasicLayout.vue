@@ -4,13 +4,19 @@ import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons-vue'
 import type { ItemType, MenuProps } from 'ant-design-vue'
 import type { MenuInfo } from 'ant-design-vue/es/menu/src/interface'
 import type { RouteLocationRaw, RouteRecordRaw } from 'vue-router'
-import { computed, onBeforeMount, ref, watch } from 'vue'
+import { computed, onBeforeMount, ref, useSlots, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   menus: RouteRecordRaw[]
 }>()
+
+const { t } = useI18n()
+
 const router = useRouter()
 const route = useRoute()
+
+const slots = useSlots()
 
 const collapsed = ref<boolean>(false)
 const menuWidth = computed(() => (collapsed.value ? 80 : 256))
@@ -33,10 +39,10 @@ function generateMenu(tree: RouteRecordRaw[]): ItemType[] {
       const result = {
         key: item.path,
         icon,
-        label: title,
+        label: t(title as string),
       }
       if (item.children && !hiddenChildren)
-        result.children = generateMenu(item.children)
+        (result as any).children = generateMenu(item.children)
 
       return result
     }) as ItemType[]
@@ -140,7 +146,7 @@ onBeforeMount(() => {
       <a-layout-content class="basic-layout-content">
         <router-view />
       </a-layout-content>
-      <a-layout-footer>
+      <a-layout-footer v-if="Object.keys(slots).includes('footer')">
         <div class="basic-layout-footer">
           <slot name="footer" />
         </div>
@@ -219,7 +225,6 @@ onBeforeMount(() => {
 }
 .basic-layout-content {
   min-height: calc(100vh - 213px);
-  text-align: center;
   display: flex;
   flex-direction: column;
   transition: all 0.5s;
@@ -229,5 +234,24 @@ onBeforeMount(() => {
   color: rgba(0, 0, 0, 0.65);
   font-size: 14px;
   text-align: center;
+}
+
+.over {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+.trigger-button {
+  width: 50px;
+  height: 50px;
+  background: var(--background-secondary-color);
+  display: grid;
+  place-items: center;
+  place-content: center;
+  border-radius: 50%;
+}
+.content {
+  width: 400px;
+  height: 75vh;
 }
 </style>

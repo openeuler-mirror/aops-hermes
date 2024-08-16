@@ -17,6 +17,9 @@ import axios from 'axios'
 import { message as Message, notification } from 'ant-design-vue'
 import { useAccountStore } from '@/store'
 import { downloadBlobFile, isArrayOrObject } from '@/utils'
+import i18n from '@/locales'
+
+const { t } = i18n.global
 
 export interface Result<T = any> {
   code: number
@@ -54,7 +57,8 @@ request.interceptors.request.use(
       const { userInfo } = JSON.parse(aopsInfo)
       if (userInfo) {
         const { token } = userInfo
-        token && (config.headers['Access-Token'] = token)
+        if (token)
+          config.headers['Access-Token'] = token
       }
     }
     if (config.method === 'get') {
@@ -121,7 +125,7 @@ request.interceptors.response.use(
       switch (Number(code)) {
         case 1201:
           notification.error({
-            message: '用户校验失败',
+            message: `${t('account.sentence.validationFailed')}`,
             description: response.data.message,
           })
           setTimeout(() => {
@@ -165,7 +169,7 @@ request.interceptors.response.use(
           }
           else {
             notification.error({
-              message: '用户校验失败',
+              message: `${t('account.sentence.validationFailed')}`,
               description: response.data.message,
             })
             setTimeout(() => {
@@ -186,7 +190,7 @@ request.interceptors.response.use(
     return data
   },
   (error: AxiosError) => {
-    const message = error.message || '请求错误'
+    const message = error.message || 'Network Error'
     Message.error(message)
     return Promise.reject(error)
   },
