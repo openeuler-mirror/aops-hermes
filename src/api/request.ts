@@ -15,9 +15,10 @@ import type {
 } from 'axios'
 import axios from 'axios'
 import { message as Message, notification } from 'ant-design-vue'
-import { useAccountStore } from '@/store'
+import { useAccountStore, useLangStore } from '@/store'
 import { downloadBlobFile, isArrayOrObject } from '@/utils'
 import i18n from '@/locales'
+
 
 const { t } = i18n.global
 
@@ -43,15 +44,26 @@ const request = axios.create({
   timeout: 60 * 1000,
 })
 
-const formDataUrl = ['/vulnerabilities/cve/advisory/upload', '/vulnerabilities/cve/unaffected/upload', '/distribute/conftrace/management/uploadManagementConf', '/conftrace/management/uploadManagementConf']
+const formDataUrl = [
+  '/vulnerabilities/cve/advisory/upload',
+  '/vulnerabilities/cve/unaffected/upload',
+  '/distribute/conftrace/management/uploadManagementConf',
+  '/conftrace/management/uploadManagementConf',
+]
 
 request.interceptors.request.use(
   (
     config: InternalAxiosRequestConfig<any>,
   ): InternalAxiosRequestConfig<any> | Promise<InternalAxiosRequestConfig<any>> => {
-    if (config.url && formDataUrl.includes(config.url))
-      config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-    else config.headers['Content-Type'] = 'application/json; charset=UTF-8'
+    if (!config.headers['Content-Type']) {
+      if (config.url && formDataUrl.includes(config.url))
+        config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+      else config.headers['Content-Type'] = 'application/json; charset=UTF-8'
+    }
+
+    const { lang } = useLangStore()
+    config.headers['Accept-Language'] = lang === 'zh_cn' ? 'zh' : 'en'
+
     const aopsInfo = localStorage.getItem('aops')
     if (aopsInfo) {
       const { userInfo } = JSON.parse(aopsInfo)
@@ -234,6 +246,15 @@ export const http = {
   delete: async <T>(url: string, data?: object, params?: object): Promise<[any, T | undefined]> => {
     try {
       const result = await request.delete(url, { data, params })
+      return [null, result as T]
+    }
+    catch (error) {
+      return [error, undefined]
+    }
+  },
+  patch: async <T>(url: string, data?: object, params?: object): Promise<[any, T | undefined]> => {
+    try {
+      const result = await request.patch(url, data, { params })
       return [null, result as T]
     }
     catch (error) {

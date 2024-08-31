@@ -12,11 +12,11 @@ const { t } = useI18n()
 
 const { queryPermission } = useClusterStore()
 
-const SynchronousState = {
+const SynchronousState = computed(() => ({
   running: t('users.clusters.running'),
   succeed: t('users.clusters.succeed'),
   fail: t('users.clusters.fail'),
-}
+}))
 
 const clusterColumns = computed(() => [
   {
@@ -64,7 +64,7 @@ async function queryClusters() {
 async function handleDeleteCluster(clusterId: string) {
   const [_] = await api.deleteCluster(clusterId)
   if (!_) {
-    message.success(t('common.fail'))
+    message.success(t('common.succeed'))
     await queryClusters()
     await queryPermission()
   }

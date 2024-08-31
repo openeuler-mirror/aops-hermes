@@ -165,7 +165,7 @@
     "clear": "清除选择",
     "close": "关闭",
     "confirm": "确认",
-    "copyright": "版权所有 © 2023 openEuler 保留一切权利",
+    "copyright": "版权所有 © 2024 openEuler 保留一切权利",
     "count": "个",
     "create": "创建",
     "createFail": "创建失败",
@@ -666,6 +666,12 @@
         "unknown": "未知"
       },
       "taskType": "任务类型",
+      "taskTypeEnum": {
+        "cveFix": "CVE修复",
+        "cveRollback": "CVE回滚",
+        "hotPatchRemove": "热补丁移除",
+        "repoSet": "REPO设置"
+      },
       "tips": {
         "accept": "如使用热补丁修复，accept后会在重启时自动应用热补丁，不勾选则重启时失效",
         "compilation": "仅针对内核：应用热补丁后会同步安装最新冷补丁。 若收编失败会自动accept热补丁",

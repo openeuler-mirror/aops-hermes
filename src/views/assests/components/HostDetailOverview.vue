@@ -8,11 +8,11 @@ import type { HostDetailInfo } from '@/api/paths/assests'
 
 const { t } = useI18n()
 
-const statusMap: Record<number, string> = {
+const statusMap = computed<Record<number, string>>(() => ({
   0: t('assests.online'),
   1: t('assests.offline'),
   2: t('assests.unknown'),
-}
+}))
 
 const route = useRoute()
 const hostId = ref<string>('')

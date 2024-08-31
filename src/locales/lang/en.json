@@ -165,7 +165,7 @@
     "clear": "Clear",
     "close": "Close",
     "confirm": "Confirm",
-    "copyright": "Copyright © 2023 openEuler All rights reserved",
+    "copyright": "Copyright © 2024 openEuler All rights reserved",
     "count": " ",
     "create": "Create",
     "createFail": "Create Failed",
@@ -603,7 +603,7 @@
       "hotpatch": "Hot Patch Fix",
       "hotpatchRemoveResult": "Remove Status:",
       "installedRpm": "Installed Rpm",
-      "isAccept": "Is Accept",
+      "isAccept": "Accepted",
       "lastExcute": "Last Excute",
       "message": {
         "allExecuteFailed": "{0} executed failed",
@@ -666,6 +666,12 @@
         "unknown": "Unknown"
       },
       "taskType": "Task Type",
+      "taskTypeEnum": {
+        "cveFix": "CVE fix",
+        "cveRollback": "CVE rollback",
+        "hotPatchRemove": "Hot patch remove",
+        "repoSet": "Repo set"
+      },
       "tips": {
         "accept": "If hot patching is used for fix, the hot patch will be automatically applied upon reboot after acceptance. If not checked, it will become invalid upon reboot",
         "compilation": "Only for the kernel: After applying the hot patch, the latest cold patch will be synchronously installed. If the compilation fails, it will automatically accept the hot patch",

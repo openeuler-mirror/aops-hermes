@@ -93,9 +93,9 @@ function validateHostUsername(_rule: Rule, value: string) {
  */
 function validateHostName(_rule: Rule, value: string) {
   if (/^\S?$/.test(value))
-    return Promise.reject(new Error(t('assests.validateMsg.hostname_one')))
+    return Promise.reject(new Error(t('assests.validateMsg.hostName_one')))
   if (!/^(?!\s*$).+/.test(value))
-    return Promise.reject(new Error(t('assests.validateMsg.hostname_two')))
+    return Promise.reject(new Error(t('assests.validateMsg.hostName_two')))
   return Promise.resolve()
 }
 
