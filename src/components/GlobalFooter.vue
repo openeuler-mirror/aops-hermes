@@ -13,8 +13,8 @@ function toHelp() {
       {{ $t('common.copyright') }}
     </div>
     <a-space>
-      <img class="openeuler-logo" src="@/assets/imgs/openeuler_logo.png" alt="openeuler-logo">
-      <img src="@/assets/imgs/openeuler.png" class="openeuler" alt="openeuler">
+      <img class="openeuler-logo" src="@/assets/imgs/openeuler_logo.png" alt="openeuler-logo" />
+      <img src="@/assets/imgs/openeuler.png" class="openeuler" alt="openeuler" />
     </a-space>
   </div>
 </template>
@@ -26,11 +26,11 @@ a {
 }
 
 .openeuler-logo {
-  height: 20px
+  height: 20px;
 }
 .openeuler {
   height: 20px;
-  filter:var(--openeuler-logo-filter)
+  filter: var(--openeuler-logo-filter);
 }
 
 .footer {

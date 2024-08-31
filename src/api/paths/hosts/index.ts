@@ -32,8 +32,8 @@ function getDomainRate() {
   return http.get('/check/result/domain/count')
 }
 
-function downLoadHostTemplate() {
-  return http.get('/hosts/template/file', { responseType: 'blob' })
+function downLoadHostTemplate(lang: 'zh' | 'en') {
+  return http.get(`/hosts/template/file`, { params: { lang }, responseType: 'blob' })
 }
 
 function addHostsBatch(params: DistributionParams<{

@@ -17,10 +17,11 @@ import EditableCell from './EditableCell.vue'
 import { type HostItem, type HostParams, api } from '@/api'
 
 import type { DistributionParams } from '@/api/paths/types'
-import { useClusterStore } from '@/store'
+import { useClusterStore, useLangStore } from '@/store'
 
 const emit = defineEmits(['success'])
 
+const { lang } = storeToRefs(useLangStore())
 const ALLOW_FILE_TYPE = ['xlsx', 'xls', 'csv']
 
 const { t } = useI18n()
@@ -188,9 +189,8 @@ async function readFile(file: File): Promise<unknown> {
 }
 
 async function downLoadTemplate() {
-  const [_] = await api.downLoadHostTemplate()
-  if (_)
-    message.error(t('common.fail'))
+  const [_] = await api.downLoadHostTemplate(lang.value === 'zh_cn' ? 'zh' : 'en')
+  if (_) message.error(t('common.fail'))
 }
 // #endregion
 
@@ -316,9 +316,7 @@ function handleEdit(key: string) {
               >
                 <template v-for="cluster in clusterOptions" :key="cluster.cluster_id">
                   <a-select-option :value="cluster.cluster_id">
-                    {{
-                      cluster.cluster_name
-                    }}
+                    {{ cluster.cluster_name }}
                   </a-select-option>
                 </template>
               </a-select>

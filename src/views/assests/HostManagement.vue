@@ -133,7 +133,6 @@ const hostsTableColums = computed(() => {
       title: t('assests.scenes'),
       dataIndex: 'scene',
     },
-
   ]
   if (accountRole.value === 'administrator') {
     arr.push({
@@ -200,9 +199,8 @@ function handleDelete(record: HostsTableItem) {
       try {
         await deleteHost(host_id)
         message.success(t('common.succeed'))
-        queryHosts()
-      }
-      catch {
+        refresh()
+      } catch {
         message.error(t('common.fail'))
       }
     },

@@ -177,10 +177,9 @@ async function handleDelete(hostGroup: HostGroupTableItem): Promise<void> {
         const res = await deleteHostGroup(hostGroup.host_group_id)
         if (res) {
           message.success(res)
-          queryHostGroups()
+          refresh()
         }
-      }
-      catch (error) {
+      } catch (error) {
         message.error(error as any)
       }
     },
