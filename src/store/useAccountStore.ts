@@ -20,7 +20,7 @@ export const useAccountStore = defineStore(
       username: string
       type: string
       token: string
-      refreshToken: string
+      refreshToken?: string
     } | null>()
 
     const accountRole = computed(() => userInfo.value ? userInfo.value.type : '')
@@ -72,6 +72,8 @@ export const useAccountStore = defineStore(
       if (_)
         return false
       clearInfo()
+      window.location.href = authRedirectUrl.value
+
       return true
     }
     function saveInfo(info: typeof userInfo.value) {
@@ -88,7 +90,7 @@ export const useAccountStore = defineStore(
      * refresh login status by refresh_token
      */
     const refreshToken = async (): Promise<string | null> => {
-      const [_, res] = await api.refreshToken({ refresh_token: userInfo.value!.refreshToken })
+      const [_, res] = await api.refreshToken({ refresh_token: userInfo.value!.refreshToken! })
       if (!res)
         return null
       const { token, refresh_token } = res
@@ -99,7 +101,32 @@ export const useAccountStore = defineStore(
       }
       return token
     }
-    return { userInfo, accountRole, login, logout, refreshToken, authorizeLogin, clearInfo, saveInfo }
+
+    const refreshAuthToken = async (): Promise<string | null> => {
+      const [_, res] = await api.refreshAuthToken()
+      if (!res)
+        return null
+      const { token } = res
+      userInfo.value = {
+        ...userInfo.value!,
+        token,
+      }
+
+      return token
+    }
+
+    const authRedirectUrl = ref('')
+
+    async function getAuthRedirectUrl() {
+      const [, res] = await api.queryAuthRedirectUrl()
+      if (res) {
+        authRedirectUrl.value = res
+        return res
+      }
+      return ''
+    }
+
+    return { userInfo, accountRole, authRedirectUrl, login, logout, refreshToken, authorizeLogin, clearInfo, saveInfo, refreshAuthToken, getAuthRedirectUrl }
   },
   {
     persist: {

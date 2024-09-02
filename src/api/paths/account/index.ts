@@ -62,13 +62,26 @@ function bindAccount(params: { auth_account: string, username: string, password:
   }>('/accounts/auth/bind', params)
 }
 
+
 /**
- * account logout
+ * Account logout
+ *
+ * Logout the currently logged in account.
+ *
+ * @returns A Promise that resolves when the logout is complete.
  */
 export function logout() {
   return http.get('/accounts/logout')
 }
 
+
+/**
+ * Refresh the access token.
+ *
+ * @param params The parameters for refreshing the token.
+ * @returns A Promise that resolves to an object containing the new
+ * access token and refresh token.
+ */
 export function refreshToken(params: RefreshTokenParams) {
   return http.post<{
     token: string
@@ -84,6 +97,24 @@ function changePassword(username: string, oldPassword: string, password: string)
   return http.put('/accounts/password', { username, password, old_password: oldPassword })
 }
 
+function queryTokenByAuthCode(code: string) {
+  return http.post<{
+    token: string
+    username: string
+    type: string
+  }>('/accounts/login', { code })
+}
+
+function refreshAuthToken() {
+  return http.get<{
+    token: string
+  }>('/accounts/refreshtoken')
+}
+
+function queryAuthRedirectUrl() {
+  return http.get<string>('/accounts/authorize-uri')
+}
+
 export * from './types'
 export const accountApi = {
   login,
@@ -95,4 +126,7 @@ export const accountApi = {
   changePassword,
   giteeAuthorize,
   bindAccount,
+  queryTokenByAuthCode,
+  refreshAuthToken,
+  queryAuthRedirectUrl
 }
