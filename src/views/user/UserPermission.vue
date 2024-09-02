@@ -59,10 +59,9 @@ async function queryAssignedPermission() {
   const [_, res] = await api.getAccountPermission(state.username)
   if (res) {
     assignedPermission.value = res
-    res.forEach((item) => {
+    res.forEach(item => {
       const perm = unAssignedPermission.value.find(u => u.cluster_id === item.cluster_id)
-      if (perm)
-        perm.assigned_host_groups = item.host_groups
+      if (perm) perm.assigned_host_groups = item.host_groups
     })
   }
 }
@@ -87,22 +86,18 @@ const checkedList = computed(
       host_groups: HostGroup[]
       assigned_host_groups?: HostGroup[]
     }) => {
-      return permission.assigned_host_groups
-        ? permission.assigned_host_groups.map(i => i.host_group_id)
-        : []
+      return permission.assigned_host_groups ? permission.assigned_host_groups.map(i => i.host_group_id) : []
     },
 )
 
 function handleChange(clusterId: string, group: HostGroup) {
   const cluster = unAssignedPermission.value.find(item => item.cluster_id === clusterId)
-  if (!cluster)
-    return
+  if (!cluster) return
   if (cluster.assigned_host_groups?.map(i => i.host_group_id).includes(group.host_group_id)) {
     cluster.assigned_host_groups = cluster.assigned_host_groups.filter(
       item => item.host_group_id !== group.host_group_id,
     )
-  }
-  else {
+  } else {
     cluster.assigned_host_groups?.push({
       host_group_id: group.host_group_id,
       host_group_name: group.host_group_name,
@@ -210,3 +205,4 @@ onMounted(async () => {
   display: block;
 }
 </style>
+

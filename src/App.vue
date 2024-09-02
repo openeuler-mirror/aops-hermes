@@ -14,7 +14,7 @@ const { lang } = storeToRefs(useLangStore())
 
 dayjs.locale('zh-cn')
 
-const locale = computed(() => lang.value === 'en' ? en : lang.value === 'zh_cn' ? zhCN : zhCN)
+const locale = computed(() => (lang.value === 'en' ? en : lang.value === 'zh_cn' ? zhCN : zhCN))
 </script>
 
 <template>
@@ -71,9 +71,11 @@ const locale = computed(() => lang.value === 'en' ? en : lang.value === 'zh_cn' 
           borderRadiusLG: 0,
           borderRadiusSM: 0,
         },
+        DatePicker: {
+          borderRadius: 0,
+        },
       },
       algorithm: !isDark ? antdTheme.defaultAlgorithm : antdTheme.darkAlgorithm,
-
     }"
   >
     <div class="aops-app">

@@ -1,6 +1,12 @@
 <script lang="ts" setup>
 import { message } from 'ant-design-vue'
-import { CheckCircleTwoTone, CloseCircleTwoTone, Loading3QuartersOutlined, PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons-vue'
+import {
+  CheckCircleTwoTone,
+  CloseCircleTwoTone,
+  Loading3QuartersOutlined,
+  PlusCircleOutlined,
+  QuestionCircleOutlined,
+} from '@ant-design/icons-vue'
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { Cluster } from '@/api'
@@ -51,8 +57,7 @@ async function queryClusters() {
     return list.some(item => item.synchronous_state === 'running')
   }
   const [, res] = await api.getClusters()
-  if (res)
-    clusters.value = res
+  if (res) clusters.value = res
   const isRunning = await parseRunning(clusters.value)
   if (isRunning) {
     setTimeout(() => {
@@ -71,11 +76,9 @@ async function handleDeleteCluster(clusterId: string) {
 }
 
 async function handleSync(record: Cluster) {
-  if (!record.subcluster)
-    return
+  if (!record.subcluster) return
   const [_] = await api.syncClusterData(record.cluster_id, record.cluster_ip!)
-  if (_)
-    return
+  if (_) return
   message.info(t('users.sentence.syncStart'))
   queryClusters()
 }
@@ -93,9 +96,7 @@ onMounted(() => {
           <a-space>
             <router-link to="/user/cluster/register-cluster">
               <a-button type="primary">
-                <template #icon>
-                  <PlusCircleOutlined />
-                </template>{{ $t('users.addCluster') }}
+                <template #icon> <PlusCircleOutlined /> </template>{{ $t('users.addCluster') }}
               </a-button>
             </router-link>
           </a-space>
@@ -107,7 +108,7 @@ onMounted(() => {
             <CheckCircleTwoTone v-if="record.synchronous_state === 'succeed'" two-tone-color="#52c41a" />
             <CloseCircleTwoTone v-else-if="record.synchronous_state === 'fail'" two-tone-color="#ff0000" />
             <Loading3QuartersOutlined v-else-if="record.synchronous_state === 'running'" spin />
-            {{ SynchronousState[record.synchronous_state] }}
+            {{ SynchronousState[record.synchronous_state as keyof typeof SynchronousState] }}
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <router-link :to="{ path: `/user/cluster/edit-cluster/${record.cluster_id}` }">
@@ -149,14 +150,14 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .disable-button {
-  color:  #909399;
+  color: #909399;
   pointer-events: none;
   cursor: no-drop;
   opacity: 0.8;
   &:hover {
-    color:  #909399;
+    color: #909399;
     opacity: 0.8;
-
   }
 }
 </style>
+

@@ -7,17 +7,18 @@
 // IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR
 // PURPOSE.
 // See the Mulan PSL v2 for more details.
-import { URL, fileURLToPath } from 'node:url'
+import path from 'path'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { viteMockServe } from 'vite-plugin-mock'
-import { visualizer } from 'rollup-plugin-visualizer'
+
+const BASE_PROXY_URL = 'http://localhost:11111'
 
 export default () => {
   return defineConfig({
     resolve: {
       alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url)),
+        '@': path.resolve(__dirname, './src'),
       },
     },
     envPrefix: 'A_OPS',
@@ -29,7 +30,6 @@ export default () => {
         mockPath: 'mock',
         localEnabled: false,
       }),
-      visualizer({ open: true }),
     ],
     build: {
       minify: 'terser',
@@ -70,31 +70,37 @@ export default () => {
       port: 8080,
       proxy: {
         '/accounts': {
-          target: 'http://localhost:11111',
+          target: BASE_PROXY_URL,
           secure: false,
           changeOrigin: true,
           ws: false,
         },
         '/hosts': {
-          target: 'http://localhost:11111',
+          target: BASE_PROXY_URL,
           secure: false,
           changeOrigin: true,
           ws: false,
         },
         '/distribute': {
-          target: 'http://localhost:11111',
+          target: BASE_PROXY_URL,
           secure: false,
           changeOrigin: true,
           ws: false,
         },
         '/vulnerabilities': {
-          target: 'http://localhost:11111',
+          target: BASE_PROXY_URL,
           secure: false,
           changeOrigin: true,
           ws: false,
         },
         '/conftrace': {
-          target: 'http://localhost:11111',
+          target: BASE_PROXY_URL,
+          secure: false,
+          changeOrigin: true,
+          ws: false,
+        },
+        '/operations': {
+          target: BASE_PROXY_URL,
           secure: false,
           changeOrigin: true,
           ws: false,

@@ -89,18 +89,16 @@ async function queryAccountPermission(username: string) {
   const [_, res] = await api.getAccountPermission(username)
   if (res) {
     const user = users.value.find(item => item.username === username)
-    if (user)
-      user.clusters = res
+    if (user) user.clusters = res
   }
   tableState.isExpandTableLoading = false
 }
 
 function onExpand(expanded: boolean, record: Account) {
-  if (expanded)
-    queryAccountPermission(record.username)
+  if (expanded) queryAccountPermission(record.username)
 }
 
-const onChange: TableProps<Account>['onChange'] = (page) => {
+const onChange: TableProps<Account>['onChange'] = page => {
   page.current && (pagination.current = page.current)
   page.pageSize && (pagination.pageSize = page.pageSize)
   queryAccounts(tableState.searchKey)
@@ -108,8 +106,7 @@ const onChange: TableProps<Account>['onChange'] = (page) => {
 
 async function handleResetPass(record: Account) {
   const [_] = await api.resetPassword(record.username)
-  if (!_)
-    message.success(t('common.succeed'))
+  if (!_) message.success(t('common.succeed'))
 }
 
 function handleSearch() {
@@ -146,7 +143,7 @@ onMounted(() => {
       >
         <template #bodyCell="{ record, column }">
           <template v-if="column.dataIndex === 'type'">
-            {{ AccountRoleMap[record.type] }}
+            {{ AccountRoleMap[record.type as AccountRole] }}
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <router-link :to="{ path: `/user/users/user-permission/${record.username}` }">
@@ -178,9 +175,9 @@ onMounted(() => {
             <template #bodyCell="{ record: expandRecord, column }">
               <template v-if="column.dataIndex === 'host_groups'">
                 {{
-                  expandRecord.host_groups.reduce((acc, cur) => {
-                    if (acc === '') return cur.host_group_name;
-                    else return `${acc},${cur.host_group_name}`;
+                  expandRecord.host_groups.reduce((acc: any, cur: any) => {
+                    if (acc === '') return cur.host_group_name
+                    else return `${acc},${cur.host_group_name}`
                   }, '')
                 }}
               </template>
@@ -210,3 +207,4 @@ onMounted(() => {
   margin: 0;
 }
 </style>
+

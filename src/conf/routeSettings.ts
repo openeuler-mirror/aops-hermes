@@ -15,6 +15,7 @@ import {
   BugOutlined,
   DashboardOutlined,
   FormOutlined,
+  PlaySquareOutlined,
   UserOutlined,
 } from '@ant-design/icons-vue'
 import Index from '@/views/Index.vue'
@@ -36,7 +37,6 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
           icon: h(DashboardOutlined),
         },
       },
-
       {
         path: '/assests',
         name: 'assests',
@@ -468,6 +468,33 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
         ],
       },
       {
+        path: '/execution',
+        name: 'execution',
+        redirect: '/execution/command-management',
+        meta: {
+          title: 'router.execution.self',
+          icon: h(PlaySquareOutlined),
+        },
+        children: [
+          {
+            path: '/execution/command-management',
+            name: 'commanndManagement',
+            component: () => import('@/views/execution/CommandManagement.vue'),
+            meta: {
+              title: 'router.execution.commamdManagement',
+            },
+          },
+          {
+            path: '/execution/script-management',
+            name: 'scriptManagement',
+            component: () => import('@/views/execution/ScriptManagement.vue'),
+            meta: {
+              title: 'router.execution.scriptManagement',
+            },
+          },
+        ],
+      },
+      {
         path: '/user',
         name: 'user',
         redirect: '/user/users',
@@ -655,6 +682,11 @@ export const staticRoutes: Array<RouteRecordRaw> = [
         name: 'account',
         component: () => import('@/views/account/Account.vue'),
       },
+      // {
+      //   path: '/user/auth',
+      //   name: 'auth',
+      //   component: () => import('@/views/account/Auth.vue'),
+      // },
     ],
   },
   {
