@@ -4,10 +4,12 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons-vue'
 import type { Rule } from 'ant-design-vue/es/form'
 import { notification } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAccountStore } from '@/store'
 import { api } from '@/api'
 
 const router = useRouter()
+const { t } = useI18n()
 
 interface Form {
   username: string
@@ -24,8 +26,8 @@ const form = reactive<Form>({
 })
 
 const rules: Record<string, Rule[]> = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'change' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'change' }],
+  username: [{ required: true, message: t('assests.validateMsg.username'), trigger: 'change' }],
+  password: [{ required: true, message: t('users.validateMsg.passwordThree'), trigger: 'change' }],
 }
 
 function goRegister() {
@@ -42,8 +44,8 @@ async function handleSubmit() {
       router.push('/')
       setTimeout(() => {
         notification.success({
-          message: '欢迎',
-          description: '欢迎回来',
+          message: t('account.sentence.welcome'),
+          description: t('account.sentence.welcomeBack'),
         })
       }, 1000)
     }
@@ -70,17 +72,17 @@ onMounted(() => {
   <div class="login">
     <a-form ref="formRef" class="user-layout-login" :model="form" :rules="rules">
       <a-form-item name="username">
-        <a-input v-model:value="form.username" class="login-input" placeholder="用户名" autocomplete="off">
+        <a-input v-model:value="form.username" class="login-input" :placeholder="$t('users.username')" autocomplete="off">
           <template #prefix>
-            <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
+            <UserOutlined />
           </template>
         </a-input>
       </a-form-item>
 
       <a-form-item name="password">
-        <a-input-password v-model:value="form.password" class="login-input" placeholder="密码">
+        <a-input-password v-model:value="form.password" class="login-input" :placeholder="$t('account.password')">
           <template #prefix>
-            <LockOutlined style="color: rgba(0, 0, 0, 0.25)" />
+            <LockOutlined />
           </template>
         </a-input-password>
       </a-form-item>
@@ -89,7 +91,7 @@ onMounted(() => {
         <div class="login-gitee" style="text-align: center">
           <div style="cursor: pointer" @click="toGitee">
             <img src="https://gitee.com/static/images/logo-black.svg?t=158106666" alt="">
-            <span class="login-gitee-text">使用gitee账号登录</span>
+            <span class="login-gitee-text">{{ $t('account.useGitee') }}</span>
           </div>
         </div>
       </a-form-item>
@@ -103,14 +105,16 @@ onMounted(() => {
           :loading="loginLoading"
           @click="handleSubmit"
         >
-          登录
+          {{ $t('account.login') }}
         </a-button>
       </a-form-item>
 
       <a-form-item style="margin-top: 24px">
         <div class="jump-registar">
-          <span>没有账号? </span>
-          <span class="spin-top-jump" @click="goRegister">立即注册</span>
+          <a-space>
+            <span>{{ $t('account.noAccount') }} </span>
+            <span class="spin-top-jump" @click="goRegister"> {{ $t('account.register') }}</span>
+          </a-space>
         </div>
       </a-form-item>
     </a-form>

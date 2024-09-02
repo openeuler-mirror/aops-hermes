@@ -9,22 +9,25 @@ import {
 } from '@ant-design/icons-vue'
 import { type FormInstance, type UploadProps, message } from 'ant-design-vue'
 
-import { h, reactive, ref } from 'vue'
+import { computed, h, reactive, ref } from 'vue'
 import type { Rule } from 'ant-design-vue/es/form'
 import { storeToRefs } from 'pinia'
+import { useI18n } from 'vue-i18n'
 import EditableCell from './EditableCell.vue'
 import { type HostItem, type HostParams, api } from '@/api'
 
 import type { DistributionParams } from '@/api/paths/types'
-import { useClusterStore } from '@/store'
+import { useClusterStore, useLangStore } from '@/store'
 
 const emit = defineEmits(['success'])
 
+const { lang } = storeToRefs(useLangStore())
 const ALLOW_FILE_TYPE = ['xlsx', 'xls', 'csv']
 
-enum addStatusEnum {
-  succeed = '添加成功',
-  failed = '添加失败',
+const { t } = useI18n()
+const addStatusEnum: Record<string, string> = {
+  succeed: t('common.succeed'),
+  failed: t('common.fail'),
 }
 
 const form = reactive<{
@@ -34,10 +37,14 @@ const form = reactive<{
 })
 
 const formRules: Record<string, Rule[]> = {
-  selectedCluster: [{ required: true, message: '请选择集群', trigger: 'change' }],
+  selectedCluster: [{ required: true, message: t('assests.placeHolder.cluster'), trigger: 'change' }],
 }
 
-const { clusters } = storeToRefs(useClusterStore())
+const { permissions } = storeToRefs(useClusterStore())
+
+const clusterOptions = computed(() =>
+  permissions.value.map(({ cluster_id, cluster_name }) => ({ cluster_id, cluster_name })),
+)
 
 const modalState = reactive({
   visible: false,
@@ -45,49 +52,49 @@ const modalState = reactive({
   expandedRowKeys: [],
 })
 // #region ----------------------------------------< table >----------------------------------------
-const tableColumn = [
+const tableColumn = computed(() => ([
   {
-    title: '主机IP',
+    title: t('assests.ip'),
     dataIndex: 'host_ip',
   },
   {
-    title: 'SSH登录端口',
+    title: t('assests.sshPort'),
     dataIndex: 'ssh_port',
   },
   {
-    title: '主机用户名',
+    title: t('assests.username'),
     dataIndex: 'ssh_user',
   },
   {
-    title: '登录密码',
+    title: t('assests.password'),
     dataIndex: 'password',
   },
   {
-    title: '登录密钥',
+    title: t('assests.sshPkey'),
     dataIndex: 'ssh_pkey',
   },
   {
-    title: '主机名称',
+    title: t('assests.hostName'),
     dataIndex: 'host_name',
   },
   {
-    title: '所属主机组',
+    title: t('assests.hostGroup'),
     dataIndex: 'host_group_name',
   },
   {
-    title: '管理/监控节点',
+    title: t('assests.managementCheck'),
     dataIndex: 'management',
     align: 'center',
   },
   {
-    title: '操作',
+    title: t('common.operation'),
     dataIndex: 'operation',
   },
   {
-    title: '添加结果',
+    title: t('assests.addResult'),
     dataIndex: 'result',
   },
-]
+]))
 
 const tableData = ref<HostItem[]>([])
 
@@ -129,7 +136,7 @@ const excludeList = ['result', 'operation', 'password', 'ssh_pkey']
 const beforeUpload: UploadProps['beforeUpload'] = async (file) => {
   const fileType = file.name.split('.')[1]
   if (!ALLOW_FILE_TYPE.includes(fileType)) {
-    message.error('文件类型不符合规定！')
+    message.error(t('assests.sentence.fileError'))
     setTimeout(() => {
       removeFile(file)
     }, 0)
@@ -142,14 +149,14 @@ const beforeUpload: UploadProps['beforeUpload'] = async (file) => {
   if (!result)
     return
 
-  const defaultkeys = tableColumn
+  const defaultkeys = tableColumn.value
     .filter(item => !excludeList.includes(item.dataIndex))
     .map(item => item.dataIndex)
   const isSatisfactory = result.every((obj: object) =>
     defaultkeys.every(key => Object.prototype.hasOwnProperty.call(obj, key)),
   )
   if (!isSatisfactory) {
-    message.error('文件参数不符合规定!')
+    message.error(t('assests.sentence.fileParamsError'))
     setTimeout(() => {
       removeFile(file)
     }, 0)
@@ -182,9 +189,8 @@ async function readFile(file: File): Promise<unknown> {
 }
 
 async function downLoadTemplate() {
-  const [_] = await api.downLoadHostTemplate()
-  if (_)
-    message.error('下载失败')
+  const [_] = await api.downLoadHostTemplate(lang.value === 'zh_cn' ? 'zh' : 'en')
+  if (_) message.error(t('common.fail'))
 }
 // #endregion
 
@@ -252,18 +258,18 @@ async function handleSubmit() {
           success += 1
       })
       if (success === tableData.value.length)
-        message.success('添加成功')
+        message.success(t('common.succeed'))
       else if (success > 0 && success < tableData.value.length)
-        message.warning('部分主机添加成功')
-      else message.error('添加失败')
+        message.warning(t('assests.sentence.partialSuccess'))
+      else message.error(t('common.fail'))
     }
     else {
-      message.success('添加成功')
+      message.success(t('common.succeed'))
       closeModal()
       emit('success')
     }
   }
-  catch (error) {
+  catch {
     modalState.isLoading = false
   }
   finally {
@@ -293,7 +299,7 @@ function handleEdit(key: string) {
     </div>
     <a-modal
       v-model:open="modalState.visible"
-      title="添加主机"
+      :title="t('assests.addHost')"
       :footer="null"
       destroy-on-close
       width="98%"
@@ -305,14 +311,12 @@ function handleEdit(key: string) {
             <a-form-item name="selectedCluster" class="form-item">
               <a-select
                 v-model:value="form.selectedCluster"
-                placeholder="请选择集群"
+                :placeholder="t('assests.placeHolder.cluster')"
                 style="width: 300px"
               >
-                <template v-for="cluster in clusters" :key="cluster.cluster_id">
+                <template v-for="cluster in clusterOptions" :key="cluster.cluster_id">
                   <a-select-option :value="cluster.cluster_id">
-                    {{
-                      cluster.cluster_name
-                    }}
+                    {{ cluster.cluster_name }}
                   </a-select-option>
                 </template>
               </a-select>
@@ -330,19 +334,19 @@ function handleEdit(key: string) {
             <template #itemRender />
             <a-button>
               <UploadOutlined />
-              选择文件
+              {{ t('common.selectDoc') }}
             </a-button>
           </a-upload>
           <span class="upload-type">
-            支持类型: xls、xlsx、csv，
-            <a @click="downLoadTemplate">下载模板</a>
+            {{ t('assests.sentence.supportFile') }}
+            <a @click="downLoadTemplate">{{ t('common.downloadTemp') }}</a>
           </span>
         </a-col>
       </a-row>
       <a-row style="margin: 10px 0" type="flex" justify="space-between">
         <a-col>
           <a-button :icon="h(PlusOutlined)" @click="addNewRow">
-            新增
+            {{ t('common.add') }}
           </a-button>
         </a-col>
       </a-row>
@@ -368,7 +372,7 @@ function handleEdit(key: string) {
           </template>
 
           <template v-if="column.dataIndex === 'operation'">
-            <a @click="deleteHost(index)"> 删除 </a>
+            <a @click="deleteHost(index)">{{ t('common.delete') }} </a>
           </template>
           <template v-if="column.dataIndex === 'result'">
             <a-row :gutter="8">
@@ -380,7 +384,7 @@ function handleEdit(key: string) {
                 />
                 <InfoCircleTwoTone v-else two-tone-color="#CDCD00" />
               </a-col>
-              <a-col> {{ addStatusEnum[record.result] || '暂未执行' }} </a-col>
+              <a-col> {{ addStatusEnum[record.result] || t('common.notExcute') }} </a-col>
             </a-row>
           </template>
         </template>
@@ -392,7 +396,7 @@ function handleEdit(key: string) {
           :disabled="tableData.length === 0 || editableKeys.length !== 0"
           @click="handleSubmit"
         >
-          {{ modalState.isLoading ? '提交中' : '确认' }}
+          {{ modalState.isLoading ? t('common.submitting') : t('common.confirm') }}
         </a-button>
       </a-row>
     </a-modal>

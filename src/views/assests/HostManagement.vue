@@ -5,6 +5,7 @@ import { ExclamationCircleOutlined, PlusOutlined, RedoOutlined } from '@ant-desi
 import type { TablePaginationConfig } from 'ant-design-vue'
 import type { SorterResult } from 'ant-design-vue/es/table/interface'
 import { storeToRefs } from 'pinia'
+import { useI18n } from 'vue-i18n'
 import { orderMap } from '../vulnerability/config'
 import AddmoreHostModal from './components/AddMoreHostModal.vue'
 import { api } from '@/api'
@@ -13,23 +14,22 @@ import PageWrapper from '@/components/PageWrapper.vue'
 import type { Direction, DistributionParams } from '@/api/paths/types'
 import { useAccountStore, useClusterStore } from '@/store'
 
+const { t } = useI18n()
+
 const [modal, contextHolder] = Modal.useModal()
 const sceneMap: Scene = {
-  big_data: '大数据',
-  web: 'web服务',
-  edge: '边缘设备',
-  cloud: '云服务',
-  normal: '通用',
+  big_data: t('assests.bigData'),
+  web: t('assests.web'),
+  edge: t('assests.edge'),
+  cloud: t('assests.cloud'),
+  normal: t('assests.normal'),
 }
 
-const statusMap: Record<number, string> = {
-  0: '在线',
-  1: '离线',
-  2: '未确认',
-  3: '在线',
-  4: '在线',
-  5: '未知',
-}
+const statusMap = computed<Record<number, string>>(() => ({
+  0: t('assests.online'),
+  1: t('assests.offline'),
+  2: t('assests.unknown'),
+}))
 
 const { permissions } = storeToRefs(useClusterStore())
 
@@ -58,7 +58,7 @@ const pagination = reactive<TablePaginationConfig>({
   total: 0,
   current: 1,
   pageSize: 10,
-  showTotal: (total: number) => `总计 ${total} 项`,
+  showTotal: (total: number) => `${t('common.total', { count: total })}`,
   showSizeChanger: true,
   pageSizeOptions: ['10', '20', '30', '40'],
 })
@@ -76,16 +76,16 @@ const hostsTableColums = computed(() => {
   const arr = [
     {
       key: 'host_name',
-      title: '主机名称',
+      title: t('assests.hostName'),
       dataIndex: 'host_name',
       sorter: true,
     },
     {
-      title: 'IP地址',
+      title: t('assests.ip'),
       dataIndex: 'host_ip',
     },
     {
-      title: '集群',
+      title: t('assests.cluster'),
       dataIndex: 'cluster_name',
       filters: permissions.value?.map(({ cluster_id, cluster_name }) => ({
         text: cluster_name,
@@ -93,7 +93,7 @@ const hostsTableColums = computed(() => {
       })),
     },
     {
-      title: '所属主机组',
+      title: t('assests.hostGroup'),
       dataIndex: 'host_group_name',
       filters: permissions.value.filter((item) => {
         if (!filterMap.cluster_list || filterMap.cluster_list?.length === 0)
@@ -111,33 +111,32 @@ const hostsTableColums = computed(() => {
       filterSearch: true,
     },
     {
-      title: '管理节点',
+      title: t('assests.management'),
       dataIndex: 'management',
       filters: [
         {
-          text: '是',
+          text: t('common.yes'),
           value: true,
         },
         {
-          text: '否',
+          text: t('common.no'),
           value: false,
         },
       ],
       filterMultiple: false,
     },
     {
-      title: '运行状态',
+      title: t('assests.status'),
       dataIndex: 'status',
     },
     {
-      title: '场景',
+      title: t('assests.scenes'),
       dataIndex: 'scene',
     },
-
   ]
   if (accountRole.value === 'administrator') {
     arr.push({
-      title: '操作',
+      title: t('common.operation'),
       dataIndex: 'operation',
     })
   }
@@ -191,47 +190,24 @@ function onSearch(searchValue: string) {
 function handleDelete(record: HostsTableItem) {
   const { host_id, host_name } = record
   modal.confirm({
-    title: `删除后无法恢复,请确认删除以下主机`,
+    title: t('assests.sentence.deleteConfim'),
     icon: h(ExclamationCircleOutlined),
     content: `${host_name}`,
     okType: 'danger',
-    okText: '删除',
+    okText: t('common.delete'),
     async onOk() {
       try {
         await deleteHost(host_id)
-        message.success('删除成功')
-        queryHosts()
-      }
-      catch (err) {
-        message.error('删除失败')
+        message.success(t('common.succeed'))
+        refresh()
+      } catch {
+        message.error(t('common.fail'))
       }
     },
     onCancel() {},
   })
 }
-/**
- * handle delete host batch
- * @param hostIds
- */
-function deleteHostBash(hostIds: string[]) {
-  const hostNameList = hostTableData.value.filter(item => hostIds.includes(item.host_id))
-  modal.confirm({
-    title: `删除后无法恢复,请确认删除以下主机`,
-    icon: h(ExclamationCircleOutlined),
-    content: () => {
-      return hostNameList.map(row => `${row.host_name}`).join(',')
-    },
-    okType: 'danger',
-    okText: '删除',
-    async onOk() {
-      try {
-        await deleteHosts(hostIds)
-      }
-      catch (error) {}
-    },
-    onCancel() {},
-  })
-}
+
 /**
  * delete hosts with host id
  */
@@ -258,31 +234,6 @@ async function deleteHost(hostId: string) {
       }
     })
   }
-}
-
-/**
- * delete hosts with host id
- * @param hostIds
- */
-async function deleteHosts(hostIds: string[]) {
-  const hosts = hostTableData.value.filter(item => hostIds.includes(item.host_id))
-  const params: DistributionParams<{ host_ids: string[] }> = {}
-  hosts.forEach(({ cluster_id, host_id }) => {
-    if (!params[cluster_id])
-      params[cluster_id] = { host_ids: [host_id] }
-    else
-      params[cluster_id].host_ids.push(host_id)
-  })
-  const [, res] = await api.deleteHosts(params)
-  if (res) {
-    if (Object.values(res)[0].label !== 'Succeed')
-      message.error('删除失败')
-    queryHosts()
-
-    return
-  }
-  message.success('删除成功')
-  queryHosts()
 }
 
 function refresh() {
@@ -329,7 +280,7 @@ onMounted(() => {
 <template>
   <PageWrapper>
     <a-card>
-      <a-row> {{ `共获取到${pagination.total}条主机信息 ` }} </a-row>
+      <a-row> {{ t('assests.hostsTotal', { count: pagination.total }) }} </a-row>
       <a-row type="flex" justify="space-between">
         <a-col>
           <a-row type="flex" :gutter="8">
@@ -337,17 +288,9 @@ onMounted(() => {
               <a-input-search
                 v-model:value="searchKey"
                 :maxlength="40"
-                placeholder="按主机或IP搜索"
+                :placeholder="t('assests.searchBy')"
                 @search="onSearch"
               />
-            </a-col>
-            <a-col v-show="tableState.selectedRowKeys.length">
-              <a-alert type="info" show-icon class="delete-alert">
-                <template #message>
-                  <span>{{ `已选择${tableState.selectedRowKeys.length}项` }}</span>
-                  <a @click="deleteHostBash(tableState.selectedRowKeys)"> 批量删除 </a>
-                </template>
-              </a-alert>
             </a-col>
           </a-row>
         </a-col>
@@ -356,7 +299,7 @@ onMounted(() => {
             <a-col>
               <router-link to="/assests/hosts/host-create">
                 <a-button type="primary" :icon="h(PlusOutlined)">
-                  添加主机
+                  {{ t('assests.addHost') }}
                 </a-button>
               </router-link>
             </a-col>
@@ -364,7 +307,7 @@ onMounted(() => {
               <AddmoreHostModal @success="refresh">
                 <template #trigger>
                   <a-button type="primary">
-                    批量添加主机
+                    {{ t('assests.addHostBatch') }}
                   </a-button>
                 </template>
               </AddmoreHostModal>
@@ -372,7 +315,7 @@ onMounted(() => {
           </template>
           <a-col>
             <a-button :icon="h(RedoOutlined)" @click="refresh">
-              刷新
+              {{ t('common.refresh') }}
             </a-button>
           </a-col>
         </a-row>
@@ -394,14 +337,14 @@ onMounted(() => {
             </router-link>
           </template>
           <template v-if="column.dataIndex === 'management'">
-            {{ record.management ? '是' : '否' }}
+            {{ record.management ? t('common.yes') : t('common.no') }}
           </template>
           <template v-if="column.dataIndex === 'status'">
             <a-spin v-if="!statusMap[record.status]" size="small" />
             <span v-else>{{ statusMap[record.status] }}</span>
           </template>
           <template v-if="column.dataIndex === 'scene'">
-            {{ sceneMap[record.scene] || '暂无' }}
+            {{ sceneMap[record.scene] || t("common.none") }}
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <a-row :gutter="8" class="operation">
@@ -412,11 +355,11 @@ onMounted(() => {
                     query: { hostId: record.host_id, pageType: 'edit' },
                   }"
                 >
-                  编辑
+                  {{ t('common.edit') }}
                 </router-link>
               </a-col>
               <a-col @click="handleDelete(record)">
-                删除
+                {{ t('common.delete') }}
               </a-col>
             </a-row>
           </template>
@@ -436,4 +379,3 @@ onMounted(() => {
   }
 }
 </style>
-HostGroupInfo,

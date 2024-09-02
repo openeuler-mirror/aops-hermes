@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 import GlobalFooter from '@/components/GlobalFooter.vue'
+import LangCheck from '@/components/GlobalHeader/LangCheck.vue'
 </script>
 
 <template>
   <div id="userLayout" class="user-layout-wrapper">
     <div class="container">
-      <a-row style="height: 100vh" type="flex">
+      <LangCheck class="lang" />      <a-row style="height: 100vh" type="flex">
         <a-col class="left-side" :xs="{ span: 24, order: 2 }" :lg="{ span: 12, order: 1 }">
           <img src="@/assets/imgs/loginPage.png">
         </a-col>
@@ -18,7 +19,7 @@ import GlobalFooter from '@/components/GlobalFooter.vue'
               </div>
             </a>
             <div class="desc">
-              欢迎来到A-Ops系统
+              {{ $t('common.welcomeAops') }}
             </div>
           </header>
           <router-view class="main" />
@@ -40,6 +41,13 @@ import GlobalFooter from '@/components/GlobalFooter.vue'
     min-height: 100%;
     background-size: 100%;
     position: relative;
+
+    .lang {
+      position: absolute;
+      right: 20px;
+      top: 10px;
+      z-index: 2;
+    }
 
     .left-side {
       height: 100%;
@@ -86,7 +94,7 @@ import GlobalFooter from '@/components/GlobalFooter.vue'
         }
       }
       .main {
-        width: 368px;
+        width: 400px;
         margin: 0 auto;
       }
     }

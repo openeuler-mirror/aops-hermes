@@ -1,28 +1,31 @@
 <script lang="ts" setup>
 import { message } from 'ant-design-vue'
 import { CheckCircleTwoTone, CloseCircleTwoTone, Loading3QuartersOutlined, PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons-vue'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import type { Cluster } from '@/api'
 import { api } from '@/api'
 import PageWrapper from '@/components/PageWrapper.vue'
 import { useClusterStore } from '@/store'
 
+const { t } = useI18n()
+
 const { queryPermission } = useClusterStore()
 
-enum SynchronousState {
-  running = '同步中',
-  succeed = '同步成功',
-  fail = '同步失败',
-}
+const SynchronousState = computed(() => ({
+  running: t('users.clusters.running'),
+  succeed: t('users.clusters.succeed'),
+  fail: t('users.clusters.fail'),
+}))
 
-const clusterColumns = [
+const clusterColumns = computed(() => [
   {
     dataIndex: 'cluster_name',
-    title: '集群名',
+    title: t('users.clusterName'),
   },
   {
     dataIndex: 'description',
-    title: '描述',
+    title: t('users.clusterDes'),
   },
   {
     dataIndex: 'cluster_ip',
@@ -31,15 +34,15 @@ const clusterColumns = [
   },
   {
     dataIndex: 'synchronous_state',
-    title: '同步状态',
+    title: t('user.clusterStatus'),
     align: 'center',
   },
   {
     dataIndex: 'operation',
-    title: '操作',
+    title: t('common.operation'),
     align: 'center',
   },
-]
+])
 
 const clusters = ref<Cluster[]>([])
 
@@ -61,7 +64,7 @@ async function queryClusters() {
 async function handleDeleteCluster(clusterId: string) {
   const [_] = await api.deleteCluster(clusterId)
   if (!_) {
-    message.success('删除成功')
+    message.success(t('common.succeed'))
     await queryClusters()
     await queryPermission()
   }
@@ -73,7 +76,7 @@ async function handleSync(record: Cluster) {
   const [_] = await api.syncClusterData(record.cluster_id, record.cluster_ip!)
   if (_)
     return
-  message.info('开始执行同步任务')
+  message.info(t('users.sentence.syncStart'))
   queryClusters()
 }
 
@@ -92,12 +95,9 @@ onMounted(() => {
               <a-button type="primary">
                 <template #icon>
                   <PlusCircleOutlined />
-                </template>添加集群
+                </template>{{ $t('users.addCluster') }}
               </a-button>
             </router-link>
-            <a-button type="primary" style="display: none">
-              批量添加
-            </a-button>
           </a-space>
         </a-col>
       </a-row>
@@ -111,34 +111,34 @@ onMounted(() => {
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <router-link :to="{ path: `/user/cluster/edit-cluster/${record.cluster_id}` }">
-              <a>修改</a>
+              <a>{{ t('common.modify') }}</a>
             </router-link>
             <a-divider type="vertical" />
             <a-popconfirm
               v-if="record.subcluster"
-              title="你确定同步数据吗?"
-              ok-text="确认"
-              cancel-text="取消"
+              :title="$t('users.sentence.syncConfirm')"
+              :ok-text="t('common.confirm')"
+              :cancel-text="t('common.cancel')"
               @confirm="handleSync(record)"
             >
               <template #icon>
                 <QuestionCircleOutlined style="color: red" />
               </template>
-              <a>同步数据</a>
+              <a>{{ $t('users.syncData') }}</a>
             </a-popconfirm>
-            <a v-else class="disable-button">同步数据</a>
+            <a v-else class="disable-button">{{ $t('users.syncData') }}</a>
             <a-divider type="vertical" />
             <a-popconfirm
-              title="你确定取消纳管该集群吗?"
-              ok-text="确认"
-              cancel-text="取消"
+              :title="$t('users.sentence.deleteCluster')"
+              :ok-text="t('common.confirm')"
+              :cancel-text="t('common.cancel')"
               @confirm="handleDeleteCluster(record.cluster_id)"
             >
               <template #icon>
                 <QuestionCircleOutlined style="color: red" />
               </template>
-              <a v-if="record.subcluster">删除</a>
-              <a v-else class="disable-button">删除</a>
+              <a v-if="record.subcluster">{{ t('common.delete') }}</a>
+              <a v-else class="disable-button">{{ t('common.delete') }}</a>
             </a-popconfirm>
           </template>
         </template>

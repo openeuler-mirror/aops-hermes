@@ -23,7 +23,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'index',
-    meta: { title: '主页', hidden: true },
+    meta: { title: 'router.index', hidden: true },
     component: Index,
     redirect: '/dashboard',
     children: [
@@ -32,7 +32,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
         name: 'dashboard',
         component: () => import('@/views/dashboard/Dashboard.vue'),
         meta: {
-          title: '工作台',
+          title: 'router.dashboard',
           icon: h(DashboardOutlined),
         },
       },
@@ -42,7 +42,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
         name: 'assests',
         redirect: '/assests/hosts',
         meta: {
-          title: '资产管理',
+          title: 'router.assests.self',
           icon: h(FormOutlined),
         },
         children: [
@@ -51,8 +51,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
             name: 'hosts',
             redirect: '/assests/hosts/hosts-management',
             meta: {
-              title: '主机管理',
-              desc: '对已纳管的主机进行管理。',
+              title: 'router.assests.hostsManagement',
               hiddenChildren: true,
             },
             children: [
@@ -61,7 +60,8 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 name: 'hostManagement',
                 component: () => import('@/views/assests/HostManagement.vue'),
                 meta: {
-                  title: '主机管理',
+                  title: 'router.assests.hostsManagement',
+                  desc: 'router.assests.sentence.hostManagement',
                   hidden: true,
                 },
               },
@@ -70,23 +70,23 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 name: 'hostCreate',
                 component: () => import('@/views/assests/HostEdition.vue'),
                 meta: {
-                  title: '创建主机',
+                  title: 'router.assests.createHost',
                   hidden: true,
                   diyBreadcrumb: [
                     {
-                      breadcrumbName: '主页',
+                      breadcrumbName: 'router.index',
                       path: '/',
                     },
                     {
-                      breadcrumbName: '资产管理',
+                      breadcrumbName: 'router.assests.self',
                       path: '/assests',
                     },
                     {
-                      breadcrumbName: '主机管理',
+                      breadcrumbName: 'router.assests.hostsManagement',
                       path: '/assests/hosts/hosts-management',
                     },
                     {
-                      breadcrumbName: '创建主机',
+                      breadcrumbName: 'router.assests.createHost',
                       path: '/assests/hosts/host-management/host-create',
                     },
                   ],
@@ -97,23 +97,23 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 name: 'hostEdit',
                 component: () => import('@/views/assests/HostEdition.vue'),
                 meta: {
-                  title: '编辑主机',
+                  title: 'router.assests.editHost',
                   hidden: true,
                   diyBreadcrumb: [
                     {
-                      breadcrumbName: '主页',
+                      breadcrumbName: 'router.index',
                       path: '/',
                     },
                     {
-                      breadcrumbName: '资产管理',
+                      breadcrumbName: 'router.assests.self',
                       path: '/assests',
                     },
                     {
-                      breadcrumbName: '主机管理',
+                      breadcrumbName: 'router.assests.hostsManagement',
                       path: '/assests/hosts/hosts-management',
                     },
                     {
-                      breadcrumbName: '编辑主机',
+                      breadcrumbName: 'router.assests.editHost',
                       path: '/assests/hosts/host-edit',
                     },
                   ],
@@ -124,23 +124,23 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 name: 'hostDetail',
                 component: () => import('@/views/assests/HostDetail.vue'),
                 meta: {
-                  title: '主机详情',
+                  title: 'router.assests.hostDetail',
                   hidden: true,
                   diyBreadcrumb: [
                     {
-                      breadcrumbName: '主页',
+                      breadcrumbName: 'router.index',
                       path: '/',
                     },
                     {
-                      breadcrumbName: '资产管理',
+                      breadcrumbName: 'router.assests.self',
                       path: '/assests',
                     },
                     {
-                      breadcrumbName: '主机管理',
+                      breadcrumbName: 'router.assests.hostsManagement',
                       path: '/assests/hosts/hosts-management',
                     },
                     {
-                      breadcrumbName: '主机详情',
+                      breadcrumbName: 'router.assests.hostDetail',
                       path: '/assests/hosts/host-detail/:id',
                     },
                   ],
@@ -153,8 +153,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
             name: 'hostGroup',
             redirect: '/assests/host-group/host-group-management',
             meta: {
-              title: '主机组管理',
-              desc: '对建立的主机组进行管理。',
+              title: 'router.assests.hostGroupManagement',
               hiddenChildren: true,
             },
             children: [
@@ -163,9 +162,9 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 name: 'hostGroupManagement',
                 component: () => import('@/views/assests/HostGroupManagement.vue'),
                 meta: {
-                  title: '主机组管理',
+                  title: 'router.assests.hostGroupManagement',
                   hidden: true,
-                  desc: '对建立的主机组进行管理。',
+                  desc: 'router.assests.sentence.hostGroupManagement',
                 },
               },
             ],
@@ -177,7 +176,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
         name: 'vulnerability',
         redirect: '/vulnerability/cves',
         meta: {
-          title: '漏洞管理',
+          title: 'router.vulnerability.self',
           icon: h(BugOutlined),
         },
         children: [
@@ -186,7 +185,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
             name: 'cves',
             redirect: '/vulnerability/cves/cves-management',
             meta: {
-              title: 'CVEs',
+              title: 'router.vulnerability.cves',
               hiddenChildren: true,
             },
             children: [
@@ -195,7 +194,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 name: 'cvesManagement',
                 component: () => import('@/views/vulnerability/CVEsManagement.vue'),
                 meta: {
-                  title: 'CVEs',
+                  title: 'router.vulnerability.cves',
                   hidden: true,
                 },
               },
@@ -204,23 +203,23 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 name: 'cveDetail',
                 component: () => import('@/views/vulnerability/CveDetail.vue'),
                 meta: {
-                  title: '主机详情',
+                  title: 'router.vulnerability.hostDetail',
                   hidden: true,
                   diyBreadcrumb: [
                     {
-                      breadcrumbName: '主页',
+                      breadcrumbName: 'router.index',
                       path: '/',
                     },
                     {
-                      breadcrumbName: '漏洞管理',
+                      breadcrumbName: 'router.vulnerability.self',
                       path: '/vulnerability/cves',
                     },
                     {
-                      breadcrumbName: 'CVEs',
+                      breadcrumbName: 'router.vulnerability.cves',
                       path: '/vulnerability/cves',
                     },
                     {
-                      breadcrumbName: 'CVE 详情',
+                      breadcrumbName: 'router.vulnerability.cveDetail',
                       path: '/vulnerability/cves/cve-detail/:cve_id',
                       dynamic: 'cve_id',
                     },
@@ -234,7 +233,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
             name: 'vulnerabilityHosts',
             redirect: '/vulnerability/hosts/hosts-list',
             meta: {
-              title: '主机列表',
+              title: 'router.vulnerability.host',
               hiddenChildren: true,
             },
             children: [
@@ -243,7 +242,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 name: 'hostsListInVulnerability',
                 component: () => import('@/views/vulnerability/HostList.vue'),
                 meta: {
-                  title: '主机列表',
+                  title: 'router.vulnerability.host',
                   hidden: true,
                 },
               },
@@ -252,23 +251,23 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 name: 'hostsDetail',
                 component: () => import('@/views/vulnerability/HostDetail.vue'),
                 meta: {
-                  title: '主机详情',
+                  title: 'router.vulnerability.hostDetail',
                   hidden: true,
                   diyBreadcrumb: [
                     {
-                      breadcrumbName: '主页',
+                      breadcrumbName: 'router.index',
                       path: '/',
                     },
                     {
-                      breadcrumbName: '漏洞管理',
+                      breadcrumbName: 'router.vulnerability.self',
                       path: '/vulnerability/cves',
                     },
                     {
-                      breadcrumbName: '主机列表',
+                      breadcrumbName: 'router.vulnerability.host',
                       path: '/vulnerability/hosts',
                     },
                     {
-                      breadcrumbName: '主机详情',
+                      breadcrumbName: 'router.vulnerability.hostDetail',
                       path: '/vulnerability/hosts/host-detail/:host_id',
                       dynamic: 'host_name',
                     },
@@ -284,7 +283,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
             component: RouterView,
             redirect: '/vulnerability/tasks/tasks-list',
             meta: {
-              title: '任务',
+              title: 'router.vulnerability.task',
               hiddenChildren: true,
             },
             children: [
@@ -293,7 +292,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 name: 'tasksList',
                 component: () => import('@/views/vulnerability/Tasks.vue'),
                 meta: {
-                  title: '任务',
+                  title: 'router.vulnerability.task',
                   hidden: true,
                 },
               },
@@ -302,23 +301,23 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 name: 'tasksDetail',
                 component: () => import('@/views/vulnerability/TaskDetail.vue'),
                 meta: {
-                  title: '任务详情',
+                  title: 'router.vulnerability.taskDetail',
                   hidden: true,
                   diyBreadcrumb: [
                     {
-                      breadcrumbName: '主页',
+                      breadcrumbName: 'router.index',
                       path: '/',
                     },
                     {
-                      breadcrumbName: '漏洞管理',
+                      breadcrumbName: 'router.vulnerability.self',
                       path: '/vulnerability',
                     },
                     {
-                      breadcrumbName: '任务',
+                      breadcrumbName: 'router.vulnerability.task',
                       path: '/vulnerability/tasks',
                     },
                     {
-                      breadcrumbName: '任务详情',
+                      breadcrumbName: 'router.vulnerability.taskDetail',
                       path: '/vulnerability/tasks/task-detail',
                     },
                   ],
@@ -329,27 +328,27 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 name: 'taskReport',
                 component: () => import('@/views/vulnerability/TaskReport.vue'),
                 meta: {
-                  title: '任务报告 ',
+                  title: 'router.vulnerability.taskReport',
                   hidden: true,
                   diyBreadcrumb: [
                     {
-                      breadcrumbName: '主页',
+                      breadcrumbName: 'router.index',
                       path: '/',
                     },
                     {
-                      breadcrumbName: '漏洞管理',
+                      breadcrumbName: 'router.vulnerability.self',
                       path: '/vulnerability',
                     },
                     {
-                      breadcrumbName: '任务',
+                      breadcrumbName: 'router.vulnerability.task',
                       path: '/vulnerability/tasks',
                     },
                     {
-                      breadcrumbName: '任务详情',
+                      breadcrumbName: 'router.vulnerability.taskDetail',
                       path: `/vulnerability/tasks/task-detail`,
                     },
                     {
-                      breadcrumbName: '任务报告',
+                      breadcrumbName: 'router.vulnerability.taskReport',
                     },
                   ],
                 },
@@ -390,7 +389,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
         name: 'configuration',
         redirect: '/configuration/domain-management',
         meta: {
-          title: '配置溯源',
+          title: 'router.configuration.self',
           icon: h(ApartmentOutlined),
         },
         children: [
@@ -400,7 +399,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
             redirect: '/configuration/domain-management/list',
             meta: {
               hiddenChildren: true,
-              title: '业务域管理',
+              title: 'router.configuration.domain',
             },
             children: [
               {
@@ -409,7 +408,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 component: () => import('@/views/configuration/DomainManagement.vue'),
                 meta: {
                   hidden: true,
-                  title: '业务域管理',
+                  title: 'router.configuration.domain',
                 },
               },
               {
@@ -418,22 +417,22 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 component: () => import('@/views/configuration/DomainDetail.vue'),
                 meta: {
                   hidden: true,
-                  title: '业务域详情',
+                  title: 'router.configuration.domainDetail',
                   diyBreadcrumb: [
                     {
-                      breadcrumbName: '主页',
+                      breadcrumbName: 'router.index',
                       path: '/',
                     },
                     {
-                      breadcrumbName: '配置溯源',
+                      breadcrumbName: 'router.configuration.self',
                       path: '/configuration',
                     },
                     {
-                      breadcrumbName: '业务域管理',
+                      breadcrumbName: 'router.configuration.domain',
                       path: '/configuration/domain-management',
                     },
                     {
-                      breadcrumbName: '业务域详情',
+                      breadcrumbName: 'router.configuration.domainDetail',
                     },
                   ],
                 },
@@ -444,22 +443,22 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 component: () => import('@/views/configuration/DominConfigurations.vue'),
                 meta: {
                   hidden: true,
-                  title: '业务域配置管理',
+                  title: 'router.configuration.configurationManagement',
                   diyBreadcrumb: [
                     {
-                      breadcrumbName: '主页',
+                      breadcrumbName: 'router.index',
                       path: '/',
                     },
                     {
-                      breadcrumbName: '配置溯源',
+                      breadcrumbName: 'router.configuration.self',
                       path: '/configuration',
                     },
                     {
-                      breadcrumbName: '业务域管理',
+                      breadcrumbName: 'router.configuration.domain',
                       path: '/configuration/domain-management',
                     },
                     {
-                      breadcrumbName: '业务域配置管理',
+                      breadcrumbName: 'router.configuration.configurationManagement',
                     },
                   ],
                 },
@@ -473,7 +472,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
         name: 'user',
         redirect: '/user/users',
         meta: {
-          title: '用户管理',
+          title: 'router.user.self',
           icon: h(UserOutlined),
           permission: 'administrator',
         },
@@ -484,7 +483,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
             redirect: '/user/users/user-management',
             meta: {
               hiddenChildren: true,
-              title: '用户列表',
+              title: 'router.user.users',
             },
             children: [
               {
@@ -493,18 +492,18 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 component: () => import('@/views/user/UserManagement.vue'),
                 meta: {
                   hidden: true,
-                  title: '用户列表',
+                  title: 'router.user.users',
                   diyBreadcrumb: [
                     {
-                      breadcrumbName: '主页',
+                      breadcrumbName: 'router.index',
                       path: '/',
                     },
                     {
-                      breadcrumbName: '用户管理',
+                      breadcrumbName: 'router.user.self',
                       path: '/user/users',
                     },
                     {
-                      breadcrumbName: '用户列表',
+                      breadcrumbName: 'router.user.users',
                       path: '/user/users',
                     },
                   ],
@@ -516,22 +515,22 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 component: () => import('@/views/user/UserPermission.vue'),
                 meta: {
                   hidden: true,
-                  title: '权限分配',
+                  title: 'router.user.userPermission',
                   diyBreadcrumb: [
                     {
-                      breadcrumbName: '主页',
+                      breadcrumbName: 'router.index',
                       path: '/',
                     },
                     {
-                      breadcrumbName: '用户管理',
+                      breadcrumbName: 'router.user.self',
                       path: '/user/users',
                     },
                     {
-                      breadcrumbName: '用户列表',
+                      breadcrumbName: 'router.user.users',
                       path: '/user/users',
                     },
                     {
-                      breadcrumbName: '权限分配',
+                      breadcrumbName: 'router.user.userPermission',
                     },
                   ],
                 },
@@ -544,7 +543,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
             redirect: '/user/cluster/cluster-management',
             meta: {
               hiddenChildren: true,
-              title: '集群列表',
+              title: 'router.user.cluster',
             },
             children: [
               {
@@ -553,18 +552,18 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 component: () => import('@/views/user/ClusterManagement.vue'),
                 meta: {
                   hidden: true,
-                  title: '集群管理',
+                  title: 'router.user.clusterManagement',
                   diyBreadcrumb: [
                     {
-                      breadcrumbName: '主页',
+                      breadcrumbName: 'router.index',
                       path: '/',
                     },
                     {
-                      breadcrumbName: '用户管理',
+                      breadcrumbName: 'router.user.self',
                       path: '/user/users',
                     },
                     {
-                      breadcrumbName: '集群管理',
+                      breadcrumbName: 'router.user.clusterManagement',
                       path: '/user/cluster',
                     },
 
@@ -577,22 +576,22 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 component: () => import('@/views/user/EditCluster.vue'),
                 meta: {
                   hidden: true,
-                  title: '添加集群',
+                  title: 'router.user.registerCluster',
                   diyBreadcrumb: [
                     {
-                      breadcrumbName: '主页',
+                      breadcrumbName: 'router.index',
                       path: '/',
                     },
                     {
-                      breadcrumbName: '用户管理',
+                      breadcrumbName: 'router.user.self',
                       path: '/user/users',
                     },
                     {
-                      breadcrumbName: '集群管理',
+                      breadcrumbName: 'router.user.clusterManagement',
                       path: '/user/cluster',
                     },
                     {
-                      breadcrumbName: '添加集群',
+                      breadcrumbName: 'router.user.registerCluster',
                     },
                   ],
                 },
@@ -603,22 +602,22 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                 component: () => import('@/views/user/EditCluster.vue'),
                 meta: {
                   hidden: true,
-                  title: '修改集群',
+                  title: 'router.user.editCluster',
                   diyBreadcrumb: [
                     {
-                      breadcrumbName: '主页',
+                      breadcrumbName: 'router.index',
                       path: '/',
                     },
                     {
-                      breadcrumbName: '用户管理',
+                      breadcrumbName: 'router.user.self',
                       path: '/user/users',
                     },
                     {
-                      breadcrumbName: '集群管理',
+                      breadcrumbName: 'router.user.clusterManagement',
                       path: '/user/cluster',
                     },
                     {
-                      breadcrumbName: '修改集群',
+                      breadcrumbName: 'router.user.editCluster',
                     },
                   ],
                 },
@@ -637,7 +636,7 @@ export const staticRoutes: Array<RouteRecordRaw> = [
     component: () => import('@/layouts/UserLayout.vue'),
     redirect: '/user/login',
     meta: {
-      title: '用户',
+      title: 'router.account.self',
       hidden: true,
     },
     children: [

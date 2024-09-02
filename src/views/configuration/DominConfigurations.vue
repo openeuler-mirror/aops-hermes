@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { h, onMounted, reactive, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, h, onMounted, reactive, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined, QuestionCircleOutlined, RedoOutlined } from '@ant-design/icons-vue'
 import type { SorterResult } from 'ant-design-vue/es/table/interface'
 import { storeToRefs } from 'pinia'
-import DomainSelectionModal from './components/DomainSelectionModal.vue'
+import { useI18n } from 'vue-i18n'
 import DomainConfContent from './components/DomainConfContent.vue'
 import DomainConfLog from './components/DomainConfLog.vue'
 import EditConfigDrawer from './components/EditConfigDrawer.vue'
@@ -17,10 +17,10 @@ import { api } from '@/api'
 import PageWrapper from '@/components/PageWrapper.vue'
 import { useAccountStore } from '@/store'
 
+const { t } = useI18n()
 const { userInfo } = storeToRefs(useAccountStore())
 
 const route = useRoute()
-const router = useRouter()
 const domainConfig = reactive<{ domainId: string, domainName: string, clusterId: string, isSelectDomainModalVisible: boolean }>({
   domainId: (route.params.domainId as string) || '',
   domainName: (route.params.domainName as string) || '',
@@ -28,39 +28,26 @@ const domainConfig = reactive<{ domainId: string, domainName: string, clusterId:
   isSelectDomainModalVisible: false,
 })
 
-function handleDomainSelectCancel() {
-  domainConfig.isSelectDomainModalVisible = false
-  message.warning('未选择业务域，返回管理列表页')
-  router.push('/configuration/domain-management')
-}
-
-function handleDomainSelectOk(domainName: string) {
-  domainConfig.isSelectDomainModalVisible = false
-  domainConfig.domainName = domainName
-  router.replace(`${domainName}`)
-  queryDomainConf()
-}
-
 const domainConfs = ref<ConfFile[]>([])
 
-const domainConfsColumns = [
+const domainConfsColumns = computed(() => [
   {
     key: 'filePath',
     dataIndex: 'filePath',
-    title: '配置文件',
+    title: t('conftrace.domainConf.file'),
   },
   {
     dataIndex: 'contents',
-    title: '配置详情 ',
+    title: t('conftrace.domainConf.detail'),
     width: 200,
   },
   {
     dataIndex: 'operation',
-    title: '操作',
+    title: t('common.operation'),
     width: 340,
     align: 'center',
   },
-]
+])
 
 const domainConfState = reactive<{
   selectedRowKeys: string[]
@@ -74,7 +61,7 @@ const pagination = reactive({
   total: 0,
   current: 1,
   pageSize: 10,
-  showTotal: (total: number) => `总计 ${total} 项`,
+  showTotal: (total: number) => t('common.total', { count: total }),
   showSizeChanger: true,
   pageSizeOptions: ['10', '20', '30', '40'],
 })
@@ -145,16 +132,16 @@ async function confirmDelete(record: ConfFile) {
   }
   const [, res] = await api.deleteDomainConfig(params)
   if (res && res[domainConfig.clusterId].label === 'Succeed') {
-    message.success('删除成功')
+    message.success(t('common.succeed'))
     refresh()
   }
 
-  else { message.error('删除失败') }
+  else { message.error(t('common.fail')) }
 }
 
 async function deleteBatch() {
   if (domainConfState.selectedRowKeys.length === 0) {
-    message.info('请选择要删除的配置文件')
+    message.info(t('conftrace.domainConf.message.noFile'))
     return
   }
 
@@ -165,11 +152,11 @@ async function deleteBatch() {
   }
   const [, res] = await api.deleteDomainConfig(params)
   if (res && res[domainConfig.clusterId].label === 'Succeed') {
-    message.success('删除成功')
+    message.success(t('common.succeed'))
     refresh()
   }
 
-  else { message.error('删除失败') }
+  else { message.error(t('common.fail')) }
 }
 
 function handleTableChange(page: TablePaginationConfig, _filters: Record<string, string[] | null>, _sorter: SorterResult<ConfFile>) {
@@ -200,27 +187,27 @@ onMounted(() => {
       <a-row type="flex" justify="space-between">
         <a-col>
           <h1 class="card-title">
-            {{ `${domainConfig.domainName}配置表` }}
+            {{ `${domainConfig.domainName}` }}
           </h1>
-          <span>共获取到{{ domainConfs.length }}条配置信息</span>
+          <span>{{ t('conftrace.domainConf.confCount', { count: domainConfs.length }) }}</span>
         </a-col>
         <a-col v-show="domainConfState.selectedRowKeys.length > 0">
           <a-alert type="info" show-icon class="delete-alert">
             <template #message>
               <span>{{ `已选择${domainConfState.selectedRowKeys.length}项` }}
-                <a @click="deleteBatch">批量删除</a>
+                <a @click="deleteBatch">{{ $t('conftrace.domainConf.batchDelete') }}</a>
                 <a-divider type="vertical" />
-                <a @click="domainConfState.selectedRowKeys = []">清除选择</a>
+                <a @click="domainConfState.selectedRowKeys = []">{{ $t('common.clear') }}</a>
               </span>
             </template>
           </a-alert>
         </a-col>
         <a-col>
           <a-space>
-            <Drawer v-if="userInfo?.type === 'administrator'" v-model:visible="isEditingDrawerVisibale" title="新增配置">
+            <Drawer v-if="userInfo?.type === 'administrator'" v-model:visible="isEditingDrawerVisibale" :title="$t('conftrace.domainConf.addConf')">
               <template #trigger>
                 <a-button type="primary" :icon="h(PlusOutlined)" @click="isEditingDrawerVisibale = true">
-                  新增配置
+                  {{ $t('conftrace.domainConf.addConf') }}
                 </a-button>
               </template>
               <template #content>
@@ -232,7 +219,7 @@ onMounted(() => {
               </template>
             </Drawer>
             <a-button :icon="h(RedoOutlined)" @click="refresh()">
-              刷新
+              {{ $t('common.refresh') }}
             </a-button>
           </a-space>
         </a-col>
@@ -252,7 +239,7 @@ onMounted(() => {
       >
         <template #bodyCell="{ record, column }">
           <template v-if="column.dataIndex === 'contents'">
-            <a-popover title="配置详情">
+            <a-popover :title="$t('conftrace.domainConf.detail')">
               <template #content>
                 <div style="width: 350px;word-break: break-all">
                   {{ record.contents }}
@@ -264,9 +251,9 @@ onMounted(() => {
             </a-popover>
           </template>
           <template v-if="column.dataIndex === 'operation'">
-            <a @click="currentConfContent = record; isConfContentDrawerVisibale = true">查看配置文件</a>
+            <a @click="currentConfContent = record; isConfContentDrawerVisibale = true">{{ $t('conftrace.domainConf.view') }}</a>
             <a-divider type="vertical" />
-            <a @click="currentConfContent = record; isConfChangeLogVisible = true">配置变更日志</a>
+            <a @click="currentConfContent = record; isConfChangeLogVisible = true">{{ $t('conftrace.domainConf.changeLog') }}</a>
             <template v-if="userInfo?.type === 'administrator'">
               <a-divider type="vertical" />
               <EditConfigDrawer
@@ -278,37 +265,32 @@ onMounted(() => {
                 @success="refresh()"
               >
                 <template #trigger>
-                  <a>编辑配置</a>
+                  <a>{{ $t('conftrace.domainConf.editConf') }}</a>
                 </template>
               </EditConfigDrawer>
               <a-divider type="vertical" />
               <a-popconfirm
-                title="你确定删除这行配置吗?"
-                ok-text="确认"
-                cancel-text="取消"
+                :title="$t('conftrace.domainConf.deleteConfirm')"
+                :ok-text="t('common.confirm')"
+                :cancel-text="t('common.cancel')"
                 @confirm="confirmDelete(record)"
               >
                 <template #icon>
                   <QuestionCircleOutlined style="color: red" />
                 </template>
-                <a>删除</a>
+                <a>{{ $t('common.delete') }}</a>
               </a-popconfirm>
             </template>
           </template>
         </template>
       </a-table>
     </a-card>
-    <DomainSelectionModal
-      :visible="domainConfig.isSelectDomainModalVisible"
-      @cancel="handleDomainSelectCancel"
-      @ok="handleDomainSelectOk"
-    />
-    <Drawer v-model:visible="isConfContentDrawerVisibale" title="配置文件内容">
+    <Drawer v-model:visible="isConfContentDrawerVisibale" :title="$t('conftrace.domainConf.confContent')">
       <template #content>
         <DomainConfContent :config-content="currentConfContent" />
       </template>
     </Drawer>
-    <Drawer v-model:visible="isConfChangeLogVisible" title="配置日志" :width="1100">
+    <Drawer v-model:visible="isConfChangeLogVisible" :title="$t('conftrace.domainConf.changeLog')" :width="1100">
       <template #content>
         <DomainConfLog :domain-name="domainConfig.domainName" :conf-file="currentConfContent" :cluster-id="domainConfig.clusterId" />
       </template>

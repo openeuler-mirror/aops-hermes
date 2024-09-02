@@ -6,5 +6,7 @@ export default antfu({
   },
   rules: {
     'no-console': 'warn',
+    'no-unused-expressions': 'off',
+    'ts/no-unused-expressions': 'off',
   },
 })

@@ -7,14 +7,14 @@ function toHelp() {
 <template>
   <div class="footer">
     <div>
-      <a target="_blank" @click="toHelp">帮助</a>
+      <a target="_blank" @click="toHelp">{{ $t('common.help') }}</a>
     </div>
     <div class="copyright">
-      版权所有 © 2023 openEuler 保留一切权利
+      {{ $t('common.copyright') }}
     </div>
     <a-space>
-      <img class="openeuler-logo" src="@/assets/imgs/openeuler_logo.png" alt="openeuler-logo">
-      <img src="@/assets/imgs/openeuler.png" class="openeuler" alt="openeuler">
+      <img class="openeuler-logo" src="@/assets/imgs/openeuler_logo.png" alt="openeuler-logo" />
+      <img src="@/assets/imgs/openeuler.png" class="openeuler" alt="openeuler" />
     </a-space>
   </div>
 </template>
@@ -26,11 +26,11 @@ a {
 }
 
 .openeuler-logo {
-  height: 20px
+  height: 20px;
 }
 .openeuler {
   height: 20px;
-  filter:var(--openeuler-logo-filter)
+  filter: var(--openeuler-logo-filter);
 }
 
 .footer {

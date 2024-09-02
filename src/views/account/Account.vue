@@ -4,6 +4,7 @@ import { message, notification } from 'ant-design-vue'
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { CheckCircleOutlined, LoadingOutlined, UserAddOutlined } from '@ant-design/icons-vue'
+import { useI18n } from 'vue-i18n'
 import { useAccountStore } from '@/store'
 import { api } from '@/api'
 
@@ -11,6 +12,8 @@ interface Form {
   username: string
   password: string
 }
+
+const { t } = useI18n()
 
 const router = useRouter()
 
@@ -36,7 +39,7 @@ function goRegistar() {
 let timer: NodeJS.Timer
 
 function handleCancel() {
-  message.info('取消第三方授权！')
+  message.info(t('account.message.cancelAuth'))
   setTimeout(() => {
     router.push('/user/login')
   }, 1000)
@@ -62,7 +65,7 @@ async function handleOk() {
         refreshToken: refresh_token,
         type: type || '',
       })
-      message.success('绑定成功！')
+      message.success(t('account.message.bindSuccess'))
       isbindvisible.value = false
       loginloading.value = false
       timer = setInterval(() => {
@@ -74,9 +77,7 @@ async function handleOk() {
       }, 1000)
     }
   }
-  catch (error) {
-
-  }
+  catch {}
   finally {
     confirmLoading.value = false
   }
@@ -86,8 +87,8 @@ function loginSuccess() {
   router.push({ path: '/' })
   setTimeout(() => {
     notification.success({
-      message: '欢迎',
-      description: '欢迎回来',
+      message: t('account.sentence.welcome'),
+      description: t('account.sentence.welcomeBack'),
     })
   }, 1000)
 }
@@ -98,7 +99,7 @@ onMounted(async () => {
   if (!code)
     return
   if (code === 'access_denied&error_description') {
-    message.success('拒绝授权！')
+    message.success(t('account.message.denyAuth'))
     router.push('/user/login')
   }
   else {
@@ -135,11 +136,11 @@ onBeforeUnmount(() => {
     <div class="container">
       <div class="spin_top">
         <div v-if="loginloading" class="info">
-          gitee授权登录中...
+          {{ $t('account.authorizing') }}
         </div>
         <div v-else>
-          <span>授权成功!{{ countDown }}秒后跳转到首页 |</span>
-          <span class="spin_top_jump" @click="$router.push('/')">点击立即跳转</span>
+          <span>{{ $t('account.sentence.countDown', [countDown]) }}</span>
+          <span class="spin_top_jump" @click="$router.push('/')">{{ $t('account.jump') }}</span>
         </div>
       </div>
       <div class="spin_footer">
@@ -153,7 +154,7 @@ onBeforeUnmount(() => {
     </div>
 
     <a-modal
-      title="绑定本地账户"
+      :title="$t('account.bindAccount')"
       :open="isbindvisible"
       :confirm-loading="confirmLoading"
       @ok="handleOk"
@@ -161,24 +162,24 @@ onBeforeUnmount(() => {
     >
       <div style="display: flex; align-items: center; margin-bottom: 15px">
         <UserAddOutlined style="margin-right: 18px; font-size: 19px" />
-        <span style="font-size: 15px">当前gitee账号尚未绑定本地账号! 绑定一个本地账号以继续登录</span>
+        <span style="font-size: 15px">{{ $t('account.sentence.bindGitee') }}</span>
       </div>
       <div style="margin-bottom: 23px; margin-left: 37px">
-        <span style="font-size: 14px">没有账号? </span>
-        <span style="font-size: 14px; color: #005980; cursor: pointer" @click="goRegistar">点此注册</span>
+        <span style="font-size: 14px">{{ $t('account.noAccount') }} </span>
+        <span style="font-size: 14px; color: #005980; cursor: pointer" @click="goRegistar">{{ $t('account.clickToRegsiter') }}</span>
       </div>
       <a-form ref="formRef" :model="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 16 }">
-        <a-form-item name="username" label="本地账号" :rules="[{ required: true, message: '请输入本地账号用户名!' }]">
+        <a-form-item name="username" :label="$t('account.loaclAccount')" :rules="[{ required: true, message: '请输入本地账号用户名!' }]">
           <a-input
             v-model:value="form.username"
             type="text"
-            placeholder="用户名"
+            :placeholder="$t('users.username')"
           />
         </a-form-item>
-        <a-form-item name="password" label="密码" :rules="[{ required: true, message: '请输入密码!' }]">
+        <a-form-item name="password" :label="$t('account.password')" :rules="[{ required: true, message: '请输入密码!' }]">
           <a-input-password
             v-model:value="form.password"
-            placeholder="密码"
+            :placeholder="$t('account.password')"
           />
         </a-form-item>
       </a-form>

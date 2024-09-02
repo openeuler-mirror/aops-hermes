@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia'
 import { computed, reactive, ref } from 'vue'
 import type { FormInstance, Rule } from 'ant-design-vue/es/form'
 import { message } from 'ant-design-vue'
+import { useI18n } from 'vue-i18n'
 import { useClusterStore } from '@/store'
 import { api } from '@/api'
 import type { DistributionParams } from '@/api/paths/types'
@@ -14,7 +15,7 @@ interface Form {
 }
 
 const emit = defineEmits(['success'])
-
+const { t } = useI18n()
 const { permissions } = storeToRefs(useClusterStore())
 
 const clusterOptions = computed(() => permissions.value.map(i => ({ cluster_id: i.cluster_id, cluster_name: i.cluster_name })))
@@ -32,14 +33,14 @@ const rules: Record<string, Rule[]> = {
   clusterId: [
     {
       required: true,
-      message: '请选择集群',
+      message: t('conftrace.domain.validateMsg.cluster'),
       trigger: 'change',
     },
   ],
   domainName: [
     {
       required: true,
-      message: '请输入业务域名称',
+      message: t('conftrace.domain.validateMsg.domainName'),
       trigger: 'change',
     },
     {
@@ -56,9 +57,9 @@ const rules: Record<string, Rule[]> = {
  */
 function validateDomainName(_rule: Rule, value: string) {
   if (value && value.length > 26)
-    return Promise.reject(new Error('名称长度不应超过26个字符'))
+    return Promise.reject(new Error(t('conftrace.domain.validateMsg.domainNameOne')))
   if (/[^\w\-.]/.test(value))
-    return Promise.reject(new Error('名称只能输入大小写字母、下划线、中划线和小数点'))
+    return Promise.reject(new Error(t('conftrace.domain.validateMsg.domainNameTwo')))
   return Promise.resolve()
 }
 
@@ -83,12 +84,12 @@ async function addDomain() {
     if (res) {
       if (res[form.clusterId!].label === 'Succeed') {
         emit('success')
-        message.success('添加成功')
+        message.success(t('common.succeed'))
         onClose()
         isModalVisible.value = false
       }
       else {
-        message.error('添加失败')
+        message.error(t('common.fail'))
       }
     }
   }
@@ -108,15 +109,15 @@ async function addDomain() {
     </div>
     <a-modal
       v-model:open="isModalVisible"
-      title="创建业务域"
+      :title="$t('conftrace.domain.addDomain')"
       destroy-on-close
       :confirm-loading="confirmLoading"
       @ok="addDomain"
       @cancel="isModalVisible = false; onClose()"
     >
       <a-form ref="formRef" :model="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 16 }" :rules="rules">
-        <a-form-item name="clusterId" label="集群">
-          <a-select v-model:value="form.clusterId" placeholder="请选择集群">
+        <a-form-item name="clusterId" :label="$t('conftrace.domain.cluster')">
+          <a-select v-model:value="form.clusterId" :placeholder="$t('conftrace.domain.validateMsg.cluster')">
             <a-select-option
               v-for="cluster in clusterOptions"
               :key="cluster.cluster_id"
@@ -126,11 +127,11 @@ async function addDomain() {
             </a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item name="domainName" label="业务域名称">
-          <a-input v-model:value="form.domainName" placeholder="请输入业务域名称，26个字符以内" />
+        <a-form-item name="domainName" :label="$t('conftrace.domain.domainName')">
+          <a-input v-model:value="form.domainName" :placeholder="$t('conftrace.domain.placeHolder.domainName')" />
         </a-form-item>
-        <a-form-item label="优先级">
-          <a-input :disabled="true" placeholder="未开放设置" />
+        <a-form-item :label="$t('conftrace.domain.priority')">
+          <a-input :disabled="true" :placeholder="$t('conftrace.domain.placeHolder.priority')" />
         </a-form-item>
       </a-form>
     </a-modal>
