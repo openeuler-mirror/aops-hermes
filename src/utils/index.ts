@@ -45,7 +45,15 @@ export function isObject(value: any) {
   return !!(typeof value === 'object' && value !== null)
 }
 
-export function checkIsDiff(diffResult: Diff.Change[]) {
+
+/**
+ * Checks if there are any added or removed items in the given diff result array.
+ *
+ * @param {Diff.Change[]} diffResult - The diff result array to check.
+ * @return {boolean} Returns `true` if there are any added or removed items,
+ *                   `false` otherwise.
+ */
+export function checkIsDiff(diffResult: Diff.Change[]): boolean {
   for (let i = 0; i < diffResult.length; i++) {
     if (diffResult[i].added || diffResult[i].removed)
       return true

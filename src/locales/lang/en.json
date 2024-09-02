@@ -3,43 +3,43 @@
     "authorizing": "Gitee Authorizing...",
     "bindAccount": "Bind local account",
     "clickToRegsiter": "Register",
+    "currentPass": "Old Password",
     "jump": "To Home",
     "loaclAccount": "Local Account",
     "login": "Login",
-    "password": "Password",
-    "register": "Register",
-    "noAccount": "No Account?",
-    "useGitee": "Login with Gitee",
-    "currentPass": "Old Password",
-    "newPass": "New Password",
-    "reNewPass": "Confirm Password",
     "message": {
       "bindSuccess": "Bind Successfully",
       "cancelAuth": "Cancel Authorizing",
       "denyAuth": "Deny authorization",
       "registerSuccess": "Register Successfully"
     },
+    "newPass": "New Password",
+    "noAccount": "No Account?",
     "palceHolder": {
       "email": "Email: eg:xxxx{'@'}163.com",
       "password": "6-20 characters, including letters or numbers",
       "rePassword": "Confirm password",
       "username": "5-20 characters, including letters or numbers"
     },
+    "password": "Password",
+    "reNewPass": "Confirm Password",
+    "register": "Register",
     "sentence": {
       "backLogin": "Back",
       "bindGitee": "The current gitee account has not been bound to a local account! Bind a local account to continue login",
       "countDown": "Authorization successful! Redirect to home page in {0} seconds",
       "hasAccount": "Already have an account?",
+      "validationFailed": "User validation failed",
       "welcome": "Welcome",
-      "welcomeBack": "Welcome Back",
-      "validationFailed": "User validation failed"
+      "welcomeBack": "Welcome Back"
     },
+    "useGitee": "Login with Gitee",
     "validateMsg": {
+      "diffPass": "The new password cannot be the same as the current password!",
       "email": "Please enter the correct email format!",
       "passwordOne": "Please enter a password consisting of 6-20 letters or numbers!",
       "passwordTwo": "Please make sure the password you enter twice is consistent!",
-      "username": "Please enter a username consisting of 5-20 letters or numbers!",
-      "diffPass": "The new password cannot be the same as the current password!"
+      "username": "Please enter a username consisting of 5-20 letters or numbers!"
     }
   },
   "assests": {
@@ -90,18 +90,6 @@
     "overview": "Overview",
     "ownHost": "Hosts",
     "password": "Password",
-    "plugin": "Plugin",
-    "scenes": "Scenes",
-    "searchBy": "host name or ip",
-    "size": "Size",
-    "speed": "Speed",
-    "sshPkey": "ssh_pkey",
-    "sshPort": "Port",
-    "status": "Status",
-    "type": "Type",
-    "unknown": "Unknown",
-    "username": "Username",
-    "web": "Web Server",
     "placeHolder": {
       "cluster": "Please select a cluster",
       "desc": "Enter a description within 60 characters",
@@ -116,6 +104,9 @@
       "ssh_pkey_require": "Please enter the ssh_pkey. If the host username or port is not modified, it can be left blank.",
       "username": "Please enter the host username"
     },
+    "plugin": "Plugin",
+    "scenes": "Scenes",
+    "searchBy": "host name or ip",
     "sentence": {
       "deleteConfim": "After deletion, it cannot be restored. Please confirm to delete the following host",
       "fileError": "The file type does not match the specification!",
@@ -126,12 +117,20 @@
       "partialSuccess": "Partial Success",
       "supportFile": "Support types: xls, xlsx, csv"
     },
+    "size": "Size",
+    "speed": "Speed",
+    "sshPkey": "ssh_pkey",
+    "sshPort": "Port",
+    "status": "Status",
     "tips": {
       "hostGroupName": "The maximum length is 50 characters, consisting of numbers, lowercase letters, and English underscores_. \nIt starts with a lowercase letter and cannot end with an English underscore_",
       "hostName": "The maximum length is 50 characters, no spaces at the beginning or end, and all spaces are not allowed",
       "refresh": "Query the latest data of the host",
       "username": "Username used to log in to the host"
     },
+    "type": "Type",
+    "unknown": "Unknown",
+    "username": "Username",
     "validateMsg": {
       "cluster": "Please select a cluster",
       "description": "Please enter a host group description",
@@ -155,11 +154,13 @@
       "username_one": "Usernames are composed of numbers, English letters or special characters. They cannot contain spaces and the following special characters: :<>&,'\"\\/%.",
       "username_three": "The user name consists of numbers, English letters or special characters. It cannot contain spaces and the following special characters: :<>",
       "username_two": "The first character cannot be \"#\", \"+\" or \"-\""
-    }
+    },
+    "web": "Web Server"
   },
   "common": {
     "ImportFile": "Import File",
     "add": "Add",
+    "arch": "Arch",
     "cancel": "Cancel",
     "changePass": "Change Password",
     "clear": "Clear",
@@ -170,6 +171,7 @@
     "create": "Create",
     "createFail": "Create Failed",
     "createSuccess": "Create Successfully",
+    "createTime": "Create Time",
     "delete": "Delete",
     "deleteBatch": "Batch Delete",
     "deleteFail": "Delete Failed",
@@ -178,6 +180,7 @@
     "downloadFail": "Download Failed",
     "downloadTemp": "Template",
     "edit": "Edit",
+    "editSuccess": "Update Succeed",
     "excute": "Excute",
     "excuteSuccess": "Excute Sucessfully",
     "excuting": "Excuting",
@@ -197,19 +200,26 @@
     "none": "None",
     "notExcute": "Not Implemented",
     "operation": "Operation",
+    "os": "Os",
     "palceHolder": {
       "selectDoc": "Please select file"
     },
     "refresh": "Refresh",
     "result": "Result: [0]",
+    "secends": "s",
     "selectDoc": "Select",
     "selectItems": "{count} item has been selected",
     "sentence": {
+      "confirmDelete": "Are you sure to delete?",
       "fileSize": "The file size must not exceed 1M"
     },
     "signOut": "Sign out",
+    "startTime": "Start {type} Time",
+    "status": "Status",
     "submitting": "Submitting",
     "succeed": "Succeed",
+    "sync": "Sync",
+    "timeout": "Timeout",
     "total": "{count} in total",
     "upload": "Upload",
     "uploadSuccess": "Upload Succeed",
@@ -217,9 +227,9 @@
     "validateMsg": {
       "LeadingAndTrailingNoSpaces": "No leading or trailing spaces are allowed"
     },
+    "viewDetail": "Detail",
     "welcomeAops": "Welcome to A-Ops",
-    "yes": "Yes",
-    "sync": "Sync"
+    "yes": "Yes"
   },
   "conftrace": {
     "domain": {
@@ -259,6 +269,7 @@
       "confCount": "{count} configurations in total",
       "confPath": "Path",
       "confRegion": "Source",
+      "configurationItem": "Item",
       "deleteConfirm": "Are you sure you want to delete this line?",
       "detail": "Configuration Detail",
       "editConf": "Edit",
@@ -267,7 +278,6 @@
       "fileImport": "Import from local",
       "hostSide": "Host Side (actual configuration)",
       "manuel": "Manual import",
-      "configurationItem": "Item",
       "message": {
         "noDomain": "No domain is selected, return to the management list page",
         "noFile": "Please select a profile to delete"
@@ -326,8 +336,8 @@
       },
       "statusDetail": "Detail",
       "syncStatus": "Sync Status",
-      "unknownStatus": "Unknown",
       "synchronized": "synchronized",
+      "unknownStatus": "Unknown",
       "unsynchronized": "unsynchronized"
     }
   },
@@ -353,7 +363,127 @@
     "domianSync": "Domain Sync",
     "hostCount": "Hosts"
   },
+  "execution": {
+    "command": {
+      "commandContent": "Content",
+      "commandExeuction": "Command Exeuction",
+      "commandManagement": "Command Management",
+      "commandName": "Name",
+      "executionUser": "Execution User",
+      "newCommand": "New Command",
+      "placeHolder": {
+        "requireCommandContent": "Please enter the command content",
+        "requireCommandName": "Please enter the command name",
+        "timeoutRange": "Please enter timeout between 1 and 86400"
+      },
+      "validate": {
+        "requireCommandContent": "Please enter the command content",
+        "requireCommandName": "Please enter the command name",
+        "requireTimeout": "Please enter the timeout",
+        "timeoutRange": "Timeout must be between 1 and 86400"
+      }
+    },
+    "operate": {
+      "editCommond": "Edit Command",
+      "newCommand": "New Command",
+      "operateName": "Operate Name"
+    },
+    "script": {
+      "arch": "Arch",
+      "command": "Command",
+      "editOperate": "Edit Operation",
+      "editScript": "Edit Script",
+      "newOperate": "New Operation",
+      "newScript": "New Script",
+      "operateName": "Operate Name",
+      "operationManagement": "Operation Management",
+      "osName": "OS Name",
+      "placeHolder": {
+        "requireArch": "Please select the arch",
+        "requireCommandContent": "Please enter the command",
+        "requireOperate": "Please enter the operate name",
+        "requireOs": "Please select the os",
+        "requireScriptName": "Please enter the script name"
+      },
+      "scriptExeuction": "Script Exeuction",
+      "scriptFile": "Script File",
+      "scriptManagement": "Script Management",
+      "scriptName": "Script Name",
+      "sentence": {
+        "fileOversize": "{fileName} is more than 2GB, automatically deleted"
+      },
+      "uploadScript": "Upload Script",
+      "validate": {
+        "requireArch": "Please select the arch",
+        "requireCommand": "Please enter the command",
+        "requireFiles": "Please select at least one file",
+        "requireInputOperate": "Please enter the operate",
+        "requireOperateName": "Please select the operate name",
+        "requireOs": "Please select the os",
+        "requireScriptName": "Please enter the script name",
+        "requireTimeout": "Please enter the timeout"
+      }
+    },
+    "task": {
+      "batchImportHost": "Batch Import Host",
+      "cancelBatchImport": "Cancel Batch Import",
+      "cancelExecute": "Cancel Excute",
+      "commandContent": "Command Content",
+      "commandName": "Command Name",
+      "commandSelect": "Command Select",
+      "cycleExecution": "Cycle Execution",
+      "duration": "Duration",
+      "editTask": "Edit Task",
+      "executeIndex": "Execute Index",
+      "executeResult": "Execute Result",
+      "executionStrategy": "Execution Strategy",
+      "host": "Host",
+      "hostImport": "Hosts",
+      "hostSelect": "Hosts",
+      "moveDown": "Move Down",
+      "moveUp": "Move Up",
+      "newTask": "New Task",
+      "operateSelect": "Operate Select",
+      "placeHolder": {
+        "requireExecutiontime": "Please select the execution time",
+        "requireHost": "Please select the host",
+        "requireHostArea": "Please enter the host IP list, each IP is separated by an English comma 「,」, and press Enter to parse the IP list",
+        "requireHostGroup": "Please select the host group",
+        "requireRemotePath": "Please enter the push directory",
+        "requireTaskName": "Please enter the task name"
+      },
+      "progress": "Progress",
+      "pushOnly": "Only push",
+      "remotePath": "Remote Path",
+      "retry": "Re Excute",
+      "scheduledTask": "Scheduled Task",
+      "sentence": {
+        "atLeastOneTaskDelete": "Please select at least one task to delete",
+        "filterHostIp": "The following hosts with IP addresses {ipStr} were not found. The hosts that were not found have been automatically removed for you.",
+        "noHostInGroup": "There are no hosts in the currently selected host group. Please select another host group.",
+        "taskNotFinish": "The task has not been executed or completed"
+      },
+      "singleExecution": "Single Execution",
+      "startExecute": "Start Excute",
+      "taskDetail": "Task Detail",
+      "taskName": "Name",
+      "validate": {
+        "remotePath": "The push directory cannot start with . or .., please fill in the absolute path",
+        "requireCommandList": "Please select",
+        "requireCron": "Please select the cron",
+        "requireExecutiontime": "Please select the execution time",
+        "requireHostGroup": "Please select the host group",
+        "requireHostIps": "Please enter the host ip list",
+        "requireHosts": "Please select the host",
+        "requireRemotePath": "Please enter the push path",
+        "requireTaskName": "Please enter the task name"
+      }
+    }
+  },
   "router": {
+    "account": {
+      "self": "Account"
+    },
     "assests": {
       "createHost": "Create Host",
       "editHost": "Edit Host",
@@ -373,6 +503,12 @@
       "self": "Conf Trace"
     },
     "dashboard": "Dashboard",
+    "execution": {
+      "commamdManagement": "Command Management",
+      "scriptExecution": "Script Execution",
+      "scriptManagement": "Script Management",
+      "self": "Automated execution"
+    },
     "index": "Home",
     "user": {
       "cluster": "Clusters",
@@ -382,9 +518,6 @@
       "self": "User",
       "userPermission": "Permission Assignment",
       "users": "Users"
-    },
-    "account": {
-      "self": "Account"
     },
     "vulnerability": {
       "cveDetail": "Cve Detail",

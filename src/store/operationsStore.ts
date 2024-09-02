@@ -7,10 +7,25 @@
 // IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR
 // PURPOSE.
 // See the Mulan PSL v2 for more details.
-export * from './account'
-export * from './assests'
-export * from './vulnerability'
-export * from './user'
-export * from './domain'
-export * from './hosts'
-export * from './execution'
+
+import { defineStore } from 'pinia'
+import { onMounted, ref } from 'vue'
+import type { Operation } from '@/api'
+import { api } from '@/api'
+
+export const useOperationsStore = defineStore('operationsStore', () => {
+  const operations = ref<Operation[]>([])
+
+  async function queryOperations() {
+    const [_, res] = await api.queryOperations()
+    if (res) {
+      operations.value = res.operate_infos
+    }
+  }
+
+  onMounted(() => {
+    queryOperations()
+  })
+
+  return { operations, queryOperations }
+})
