@@ -1,0 +1,23 @@
+{
+  "day": "日",
+  "dayOfWeek": "轴",
+  "designation": "指定",
+  "every": "每",
+  "executeOnce": "执行一次",
+  "from": "从",
+  "hour": "小时",
+  "minutes": "分",
+  "month": "月",
+  "perDay": "每日",
+  "perHour": "每小时",
+  "perMinute": "每分钟",
+  "perMonth": "每月",
+  "perSeconds": "每秒",
+  "perYear": "每年",
+  "period": "周期",
+  "seconds": "秒",
+  "select": "选择",
+  "unspecified": "不指定",
+  "week": "星期",
+  "year": "年"
+}
