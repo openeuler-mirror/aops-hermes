@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 import { PlusOutlined, QuestionCircleOutlined, RedoOutlined } from '@ant-design/icons-vue'
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import type { TableColumnProps, TablePaginationConfig, TableProps } from 'ant-design-vue'
 import { message } from 'ant-design-vue'
 import { storeToRefs } from 'pinia'
 import type { SorterResult } from 'ant-design-vue/es/table/interface'
+import { useI18n } from 'vue-i18n'
 import AddDomainModal from './components/AddDomainModal.vue'
 import PageWrapper from '@/components/PageWrapper.vue'
 import type { Domain } from '@/api'
@@ -12,32 +13,34 @@ import { api } from '@/api'
 import type { DistributionParams } from '@/api/paths/types'
 import { useAccountStore } from '@/store'
 
+const { t } = useI18n()
+
 const { userInfo } = storeToRefs(useAccountStore())
 
 const pagination = reactive<TablePaginationConfig>({
   total: 0,
   current: 1,
   pageSize: 10,
-  showTotal: (total: number) => `总计 ${total} 项`,
+  showTotal: (total: number) => t('common.total', { count: total }),
   showSizeChanger: true,
   pageSizeOptions: ['10', '20', '30', '40'],
 })
 
-const tableColumns: TableColumnProps[] = [
+const tableColumns = computed< TableColumnProps[]>(() => [
   {
     dataIndex: 'domain_name',
-    title: '业务域名称',
+    title: t('conftrace.domain.domainName'),
   },
   {
     dataIndex: 'cluster_name',
-    title: '集群',
+    title: t('conftrace.domain.cluster'),
   },
   {
     dataIndex: 'operation',
-    title: '操作',
+    title: t('common.operation'),
     align: 'center',
   },
-]
+])
 const domains = ref<Domain[]>([])
 
 const tableLoading = ref(false)
@@ -78,9 +81,9 @@ async function handleDelete(record: Domain) {
   }
   const [, res] = await api.deleteDomain(params)
   if (res && res[record.cluster_id].label === 'Succeed')
-    refresh('删除成功')
+    refresh(t('common.fail'))
 
-  else message.error('删除失败')
+  else message.error(t('common.fail'))
 }
 
 function refresh(msg?: string) {
@@ -103,9 +106,9 @@ onMounted(() => {
       <a-row type="flex" justify="space-between">
         <a-col>
           <h3 class="card-title">
-            业务域列表
+            {{ $t('conftrace.domain.domainList') }}
           </h3>
-          <span>共有业务域{{ pagination.total }}个</span>
+          <span>{{ t('conftrace.domain.domainTotal', { count: pagination.total }) }}</span>
         </a-col>
         <a-col>
           <a-space>
@@ -113,14 +116,14 @@ onMounted(() => {
               <template #trigger>
                 <a-button type="primary">
                   <PlusOutlined />
-                  创建业务域
+                  {{ $t('conftrace.domain.addDomain') }}
                 </a-button>
               </template>
             </AddDomainModal>
 
             <a-button @click="refresh()">
               <RedoOutlined />
-              刷新
+              {{ $t('common.refresh') }}
             </a-button>
           </a-space>
         </a-col>
@@ -130,24 +133,24 @@ onMounted(() => {
         <template #bodyCell="{ record, column }">
           <template v-if="column.dataIndex === 'operation'">
             <router-link :to="{ path: `/configuration/domain-management/detail/${record.domain_id}/${record.domain_name}/${record.cluster_id}` }">
-              业务域详情
+              {{ $t('conftrace.domain.domainDetail') }}
             </router-link>
             <a-divider type="vertical" />
             <router-link :to="{ path: `/configuration/domain-management/conf-list/${record.domain_id}/${record.domain_name}/${record.cluster_id}` }">
-              查看域内配置
+              {{ $t('conftrace.domain.domainConf') }}
             </router-link>
             <template v-if="userInfo?.type === 'administrator'">
               <a-divider type="vertical" />
               <a-popconfirm
-                title="你确定删除该业务域吗?"
-                ok-text="确认"
-                cancel-text="取消"
+                :title="$t('conftrace.domain.deleteConfirm')"
+                :ok-text="t('common.confirm')"
+                :cancel-text="t('common.cancel')"
                 @confirm="handleDelete(record)"
               >
                 <template #icon>
                   <QuestionCircleOutlined style="color: red" />
                 </template>
-                <a>删除</a>
+                <a>{{ $t('common.delete') }}</a>
               </a-popconfirm>
             </template>
           </template>

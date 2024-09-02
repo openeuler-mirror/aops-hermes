@@ -1,0 +1,697 @@
+{
+  "account": {
+    "authorizing": "gitee授权登录中...",
+    "bindAccount": "绑定本地账户",
+    "clickToRegsiter": "点此注册",
+    "jump": "点击立即跳转",
+    "loaclAccount": "本地账号",
+    "login": "登录",
+    "password": "密码",
+    "register": "立即注册",
+    "noAccount": "没有账号?",
+    "useGitee": "使用gitee账号登录",
+    "currentPass": "当前密码",
+    "newPass": "新密码",
+    "reNewPass": "确认密码",
+    "message": {
+      "bindSuccess": "绑定成功！",
+      "cancelAuth": "取消第三方授权！",
+      "denyAuth": "拒绝授权！",
+      "registerSuccess": "注册成功"
+    },
+    "palceHolder": {
+      "email": "输入邮箱地址: eg: xxxx{'@'}163.com",
+      "password": "密码长度6-20位,包含字母或数字",
+      "rePassword": "确认前后两次输入的密码保持一致",
+      "username": "用户名5-20位,包含字母或数字"
+    },
+    "sentence": {
+      "backLogin": "返回登录",
+      "bindGitee": "当前gitee账号尚未绑定本地账号! 绑定一个本地账号以继续登录",
+      "countDown": "授权成功!{0}秒后跳转到首页",
+      "hasAccount": "已有账号？",
+      "welcome": "欢迎",
+      "welcomeBack": "欢迎回来",
+      "validationFailed": "用户校验失败"
+    },
+    "validateMsg": {
+      "email": "请输入正确的邮箱格式!",
+      "passwordOne": "请输入6-20位字母或数字组成的密码!",
+      "passwordTwo": "请确保前后两次输入的密码保持一致！",
+      "username": "请输入5-20位字母或数字组成的用户名!",
+      "diffPass": "新密码和当前密码不能相同!"
+    }
+  },
+  "assests": {
+    "addHost": "添加主机",
+    "addHostBatch": "批量添加主机",
+    "addHostGroup": "添加主机组",
+    "addResult": "添加结果",
+    "architecture": "架构",
+    "bigData": "大数据",
+    "biosVersion": "bios版本",
+    "capacity": "容量",
+    "certification": "认证方式",
+    "cloud": "云服务",
+    "cluster": "集群",
+    "coreCount": "内核数",
+    "cpu": "CPU信息",
+    "description": "信息描述",
+    "disk": "硬盘信息",
+    "diskCount": "硬盘数量",
+    "edge": "边缘设备",
+    "hostCount": "拥有主机数",
+    "hostGroup": "主机组",
+    "hostGroupName": "主机组名称",
+    "hostGroupTotal": "共获取到{count}主机组信息",
+    "hostInGroup": "组内主机",
+    "hostName": "主机名称",
+    "hostsTotal": "共获取到{count}主机信息",
+    "ip": "IP地址",
+    "kernel": "内核版本",
+    "l1dCache": "L1d_cache",
+    "l1iCache": "L1d_cache",
+    "l2cCche": "L2_cache",
+    "l3Cache": "L3_cache",
+    "management": "管理节点",
+    "managementCheck": "管理/监控节点",
+    "manufacturer": "厂商",
+    "memory": "内存信息",
+    "memoryCount": "内存数量",
+    "memorySize": "内存大小",
+    "model": "模型",
+    "modelName": "model名称",
+    "monitor": "监控节点",
+    "normal": "通用",
+    "offline": "离线",
+    "online": "在线",
+    "os": "操作系统",
+    "osVersion": "操作系统版本",
+    "overview": "概览",
+    "ownHost": "拥有主机",
+    "password": "主机登录密码",
+    "plugin": "插件",
+    "scenes": "场景",
+    "searchBy": "按主机或IP搜索",
+    "size": "大小",
+    "speed": "速度",
+    "sshPkey": "主机登录密钥",
+    "sshPort": "SSH登录端口",
+    "status": "运行状态",
+    "type": "类型",
+    "unknown": "未确认",
+    "username": "主机用户名",
+    "web": "web服务",
+    "placeHolder": {
+      "cluster": "请选择集群",
+      "desc": "请输入描述，60个字符以内",
+      "hostGroup": "请选择主机组",
+      "hostGroupInput": "请输入主机组名称，50个字符以内",
+      "hostName": "请输入主机名称，50个字符以内",
+      "ip": "请输入有效ip地址，e.g. 192.168.0.1",
+      "password": "请设置主机登录密码",
+      "password_require": "请输入主机登录密码, 若未修改主机用户名或端口可以为空",
+      "sshPort": "请输入端口号",
+      "ssh_pkey": "请输入主机登录密钥",
+      "ssh_pkey_require": "请输入主机登录密钥, 若未修改主机用户名或端口可以为空",
+      "username": "请输入主机用户名"
+    },
+    "sentence": {
+      "deleteConfim": "删除后无法恢复,请确认删除以下主机",
+      "fileError": "文件类型不符合规定！",
+      "fileParamsError": "文件参数不符合规定!",
+      "hasHosts": "主机组内有主机时无法删除",
+      "hostGroupDeleteConfirm": "删除后无法恢复,请确认删除以下主机组",
+      "noChange": "当前没有修改，请修改后重试",
+      "partialSuccess": "部分主机添加成功",
+      "supportFile": "支持类型: xls、xlsx、csv"
+    },
+    "tips": {
+      "hostGroupName": "最大长度50个字符，由数字、小写字母、英文下划线_组成。以小写字母开头，且结尾不能是英文下划线_",
+      "hostName": "最大长度50个字符，首尾不能为空格，不允许全空格",
+      "refresh": "查询主机最新的数据",
+      "username": "登录主机时使用的用户名"
+    },
+    "validateMsg": {
+      "cluster": "请选择集群",
+      "description": "请输入主机组描述",
+      "descriptionOne": "长度不超过60个字符",
+      "descriptionTwo": "不能有><符号",
+      "hostGroup": "请选择所属主机组",
+      "hostGroup_input": "请输入主机组名称",
+      "hostGroup_one": "以小写字母开头，且结尾不能是英文下划线",
+      "hostGroup_three": "名称应由数字、小写字母、英文下划线组成",
+      "hostGroup_two": "以小写字母开头，且结尾不能是英文下划线",
+      "hostName": "主机名长度应小于50",
+      "hostName_one": "首尾不允许空格",
+      "hostName_two": "不允许全空格",
+      "identificaWay": "请选择认证方式",
+      "ip": "请输入IP地址在 0.0.0.0~255.255.255.255 区间内",
+      "management": "请选择管理还是监控节点",
+      "password": "请设置主机登录密码",
+      "sshPort": "请输入 0~65535 内正整数",
+      "ssh_pkey": "请输入主机登录密钥",
+      "username": "请输入用户名",
+      "username_one": "用户名为数字、英文字母或特殊字符组成，不能包含空格和以下特殊字符：:<>&,'\"\\/%。",
+      "username_three": "用户名为数字、英文字母或特殊字符组成，不能包含空格和以下特殊字符：:<>&,\\'\"\\\\/%。",
+      "username_two": "首字符不能是“#”、“+”或“-”"
+    }
+  },
+  "common": {
+    "ImportFile": "导入文件",
+    "add": "添加",
+    "cancel": "取消",
+    "changePass": "修改密码",
+    "clear": "清除选择",
+    "close": "关闭",
+    "confirm": "确认",
+    "copyright": "版权所有 © 2024 openEuler 保留一切权利",
+    "count": "个",
+    "create": "创建",
+    "createFail": "创建失败",
+    "createSuccess": "创建成功",
+    "delete": "删除",
+    "deleteBatch": "批量删除",
+    "deleteFail": "删除失败",
+    "deleteSuccess": "删除成功",
+    "detail": "详情",
+    "downloadFail": "下载失败",
+    "downloadTemp": "下载模板",
+    "edit": "编辑",
+    "excute": "执行",
+    "excuteSuccess": "执行成功",
+    "excuting": "执行中",
+    "execute": "立即执行",
+    "export": "导出",
+    "fail": "失败",
+    "help": "帮助",
+    "helpDoc": "帮助文档",
+    "host": "主机：{0}",
+    "ip": "IP地址：{0}",
+    "message": {
+      "partialDelete": "下发成功,部分删除成功"
+    },
+    "modify": "修改",
+    "more": "更多",
+    "no": "否",
+    "none": "暂无",
+    "notExcute": "暂未执行",
+    "operation": "操作",
+    "palceHolder": {
+      "selectDoc": "请选择文件"
+    },
+    "refresh": "刷新",
+    "result": "结果： {0}",
+    "selectDoc": "选择文件",
+    "selectItems": "已选择{count}项",
+    "sentence": {
+      "fileSize": "文件不得大于1M"
+    },
+    "signOut": "退出登录",
+    "submitting": "提交中",
+    "succeed": "成功",
+    "total": "总计{count}项",
+    "upload": "上传",
+    "uploadSuccess": "上传成功",
+    "uploading": "上传中",
+    "validateMsg": {
+      "LeadingAndTrailingNoSpaces": "首尾不允许空格"
+    },
+    "welcomeAops": "欢迎来到A-Ops系统",
+    "yes": "是",
+    "sync": "同步"
+  },
+  "conftrace": {
+    "domain": {
+      "addDomain": "创建业务域",
+      "cluster": "集群",
+      "deleteConfirm": "你确定删除该业务域吗?",
+      "domainConf": "查看域内配置",
+      "domainDetail": "业务域详情",
+      "domainList": "业务域列表",
+      "domainName": "业务域名称",
+      "domainTotal": "共有业务域{count}个",
+      "placeHolder": {
+        "domainName": "请输入业务域名称，26个字符以内",
+        "priority": "未开放设置"
+      },
+      "priority": "优先级",
+      "validateMsg": {
+        "cluster": "请选择集群",
+        "domainName": "请输入业务域名称",
+        "domainNameOne": "名称长度不应超过26个字符",
+        "domainNameTwo": "名称只能输入大小写字母、下划线、中划线和小数点"
+      }
+    },
+    "domainConf": {
+      "addConf": "新增配置",
+      "auto": "从主机导入",
+      "batchDelete": "批量删除",
+      "belongDomain": "所属业务域",
+      "changeAuthor": "变更人",
+      "changeDate": "变更时间",
+      "changeDetail": "变更详情",
+      "changeHistory": "变更历史：",
+      "changeId": "变更ID",
+      "changeLog": "配置变更日志",
+      "changeReason": "变更原因",
+      "confContent": "配置文件内容",
+      "confCount": "共获取到{count}条配置信息",
+      "confPath": "配置路径",
+      "confRegion": "配置来源",
+      "deleteConfirm": "你确定删除这行配置吗?",
+      "detail": "配置详情",
+      "editConf": "编辑配置",
+      "expectedConfiguration": "期望配置文本：",
+      "file": "配置文件",
+      "fileImport": "从本地导入",
+      "hostSide": "主机端（实际配置）",
+      "manuel": "手动输入",
+      "configurationItem": "配置项",
+      "message": {
+        "noDomain": "未选择业务域，返回管理列表页",
+        "noFile": "请选择要删除的配置文件"
+      },
+      "placeHolder": {
+        "confContent": "请输入配置内容",
+        "confPath": "请输入配置路径",
+        "confRegion": "请选择配置来源",
+        "domain": "请选择业务域",
+        "host": "请选择主机"
+      },
+      "selectHost": "选择主机",
+      "sentence": {
+        "addSuccess": "添加成功",
+        "fileSize": "文件大小不超过1MB",
+        "partialAddSuccess": "部分添加成功"
+      },
+      "tips": {
+        "confRegion": "配置来源三选一，推荐使用手动输入"
+      },
+      "view": "查看配置文件"
+    },
+    "domainDetail": {
+      "addHost": "添加主机",
+      "attributes": "属性",
+      "batchSync": "批量同步",
+      "beloneDomain": "归属业务域",
+      "confContent": "文本内容：",
+      "currentConf": "当前配置",
+      "currentHostConf": "主机当前配置",
+      "differences": "差异对比",
+      "domainSide": "业务域（默认配置）",
+      "hosts": "共获取到{count}条主机信息",
+      "ip": "IP地址",
+      "ipProtocol": "IP协议",
+      "message": {
+        "atLeastOneFile": "请确保有至少有一个文件可同步",
+        "leastOne": "至少选择一个主机添加！",
+        "syncFailed": "同步失败",
+        "syncSucceed": "同步成功"
+      },
+      "sentence": {
+        "deleteConfirm": "你确定删除该主机吗?",
+        "hostIp": "主机：{ip}",
+        "inconsistency": "与业务域配置不一致",
+        "missing": "主机缺失配置",
+        "noConf": "主机中无该项配置",
+        "same": "与业务域配置一致",
+        "selectHost": "选择要添加的主机:",
+        "sureSyncConf": "你确定要同步该配置到这台主机吗?",
+        "sureSyncDomain": "你确定要将当前业务域的配置同步到这台主机吗?",
+        "syncAll": "全部同步",
+        "syncConfirmContent": "同步后配置将无法恢复，但可从配置日志中查看记录,你还要继续吗?",
+        "syncConfirmTitle": "你确定要将当前业务域的配置同步到已选主机吗？",
+        "syncGoon": "继续同步"
+      },
+      "statusDetail": "状态详情",
+      "syncStatus": "同步状态",
+      "unknownStatus": "未知状态",
+      "synchronized": "已同步",
+      "unsynchronized": "未同步"
+    }
+  },
+  "dashboard": {
+    "alertCount": "告警数量",
+    "alerts": {
+      "alertsCount": "告警数",
+      "hostGroupName": "主机组名称",
+      "loadMore": "查看更多",
+      "rank": "排名",
+      "statistics": "告警信息统计",
+      "tips": {
+        "alertTable": "展示告警信息最多的前5个主机组"
+      },
+      "total": "共获取到 {total} 条告警信息"
+    },
+    "alertsTable": {
+      "title": "告警信息统计"
+    },
+    "clusterCount": "集群数量",
+    "cveRisk": "CVE风险",
+    "domainUnSync": "未同步业务域",
+    "domianSync": "业务域同步率",
+    "hostCount": "主机数量"
+  },
+  "router": {
+    "assests": {
+      "createHost": "创建主机",
+      "editHost": "编辑主机",
+      "hostDetail": "主机详情",
+      "hostGroupManagement": "主机组管理",
+      "hostsManagement": "主机管理",
+      "self": "资产管理",
+      "sentence": {
+        "hostGroupManagement": "对已纳管的主机进行管理。",
+        "hostManagement": "对已纳管的主机进行管理。"
+      }
+    },
+    "configuration": {
+      "configurationManagement": "业务域配置管理",
+      "domain": "业务域管理",
+      "domainDetail": "业务域详情",
+      "self": "配置溯源"
+    },
+    "dashboard": "工作台",
+    "index": "主页",
+    "user": {
+      "cluster": "集群列表",
+      "clusterManagement": "集群管理",
+      "editCluster": "编辑集群",
+      "registerCluster": "添加集群",
+      "self": "用户管理",
+      "userPermission": "权限分配",
+      "users": "用户列表"
+    },
+    "account": {
+      "self": "用户"
+    },
+    "vulnerability": {
+      "cveDetail": "Cve 详情",
+      "cves": "CVEs",
+      "cvesManagement": "CVEs",
+      "host": "主机列表",
+      "hostDetail": "主机详情",
+      "self": "漏洞管理",
+      "task": "任务",
+      "taskDetail": "任务详情",
+      "taskList": "任务",
+      "taskReport": "任务报告"
+    }
+  },
+  "sentence": {
+    "sureForOut": "确定注销账号?"
+  },
+  "user": {
+    "clusterStatus": "同步状态"
+  },
+  "users": {
+    "addCluster": "添加集群",
+    "administrator": "管理员",
+    "cluster": "集群",
+    "clusterDes": "描述",
+    "clusterIp": "集群IP",
+    "clusterName": "集群名",
+    "clusters": {
+      "fail": "同步失败",
+      "password": "登录密码",
+      "running": "同步中",
+      "succeed": "同步成功"
+    },
+    "email": "邮箱",
+    "hostGroup": "主机组",
+    "normal": "普通用户",
+    "permissions": "分配权限",
+    "placeHolder": {
+      "clsuterIp": "请输入集群IP",
+      "clsuterName": "请输入集群名称",
+      "clusterDesc": "请输入集群描述",
+      "password": "请输入子集群管理员密码",
+      "searchBy": "按照用户名搜索",
+      "searchByCluster": "按集群名搜索",
+      "username": "请输入子集群用户名"
+    },
+    "resetPassword": "重置密码",
+    "role": "类型",
+    "sentence": {
+      "deleteCluster": "你确定取消纳管该集群吗?",
+      "resetPassword": "你确定将该用户密码重置为changeme吗?",
+      "syncConfirm": "你确定同步数据吗?",
+      "syncStart": "开始执行同步任务"
+    },
+    "syncData": "同步数据",
+    "tips": {
+      "password": "子集群管理员登录密码",
+      "username": "子集群管理员用户名"
+    },
+    "username": "用户名",
+    "validateMsg": {
+      "clusterDesc": "描述长度应小于60",
+      "clusterDescTwo": "请输入集群描述",
+      "clusterIp": "请输入IP地址在 0.0.0.0~255.255.255.255 区间内",
+      "clusterName": "首尾不允许空格",
+      "clusterNameOne": "集群长度应小于20",
+      "clusterNameTwo": "请输入集群名",
+      "passwordOne": "只允许大小写字母、数字和特殊字符，不能有空格和逗号",
+      "passwordThree": "请输入密码",
+      "passwordTwo": "长度应为1-255字符",
+      "usernameOne": "用户名为数字、英文字母或特殊字符组成，不能包含空格和以下特殊字符：:<>&,\\'\"\\\\/%。",
+      "usernameThree": "用户名长度应小于20",
+      "usernameTwo": "首字符不能是“#”、“+”或“-”"
+    }
+  },
+  "vul": {
+    "affected": "受影响",
+    "cluster": "集群",
+    "cveDetail": {
+      "affectedHost": "受影响主机",
+      "affectedProduct": "影响产品：",
+      "associateCVE": "关联CVE",
+      "cveDesc": "cve描述：",
+      "cveName": "cve名称",
+      "fixWay": "修复方式",
+      "fixed": {
+        "rpms": {
+          "installedRpm": "已安装rpm"
+        }
+      },
+      "hostNum": "涉及主机数量",
+      "index": "序号",
+      "message": {
+        "atLeastOne": "至少选择一个CVE进行{type}!"
+      },
+      "package": "软件包",
+      "palceHolder": {
+        "searchBy": "按主机名搜索"
+      },
+      "product": "产品",
+      "publishTime": "发布时间：",
+      "severity": "严重性:",
+      "unfixed": {
+        "rpms": {
+          "availableRpm": "待安装rpm",
+          "installedRpm": "受影响rpm"
+        }
+      }
+    },
+    "cveFix": "cve修复",
+    "cveFixTask": "CVE修复任务",
+    "cves": {
+      "cvssScore": "CVSS 分数",
+      "cvssScore3": "CVSS 3.0 评分",
+      "fixed": {
+        "rpms": {
+          "installedRpm": "已安装rpm"
+        }
+      },
+      "hostNum": "涉及主机数量",
+      "hosts": "主机",
+      "ip": "IP地址",
+      "message": {
+        "atLeastOne": "至少选择一个CVE进行{type}!"
+      },
+      "note": "注意事项",
+      "package": "软件包",
+      "placeHolder": {
+        "searchBy": "按cve id或package搜索"
+      },
+      "publishTime": "发布时间",
+      "sentence": {
+        "hostCount": "cve选中的修复方式对应的主机数量"
+      },
+      "severity": "严重性",
+      "supportWay": "修复方式",
+      "unfixed": {
+        "rpms": {
+          "availableRpm": "待安装rpm",
+          "installedRpm": "受影响rpm"
+        }
+      }
+    },
+    "exportCve": "导出cve信息",
+    "fix": "修复",
+    "fixed": "已修复",
+    "fixedCve": "已修复的CVE数量",
+    "generateFixTask": "生成修复任务",
+    "hostGroup": "主机组",
+    "hostName": "主机名",
+    "hotPatchRemove": "热补丁移除任务",
+    "ip": "IP地址",
+    "kernelChangesAfterReboot": "重启后内核变更",
+    "lastScan": "上次扫描",
+    "message": {
+      "atLeastOneHost": "请至少选择一组主机!",
+      "exportSuccess": "导出成功",
+      "scanAllHost": "确定扫描全部主机?",
+      "scanFollowHost": "确定扫描以下主机?"
+    },
+    "notScaned": "未扫描",
+    "notSet": "未设置",
+    "patchRemove": "热补丁移除",
+    "remove": "移除",
+    "repo": {
+      "newRepo": "新增REPO",
+      "placeHolder": {
+        "repoContent": "请输入REPO源名称，20个字符以内",
+        "repoDesc": "请输入REPO内容，512个字符以内",
+        "searchBy": "按REPO搜索"
+      },
+      "repoContent": "REPO内容",
+      "repoName": "REPO源名称",
+      "sentence": {
+        "deleteConfirm": "你确定删除repo源吗?"
+      }
+    },
+    "repoSet": "repo设置",
+    "rpmFixStatus": "RPM修复情况:",
+    "rpmList": "RPM-主机列表",
+    "sa": {
+      "fileSize": "文件需小于20M、压缩包内文件数小于100",
+      "fileType": "支持类型: xml、zip"
+    },
+    "scan": "漏洞扫描",
+    "scanning": "扫描中",
+    "sentence": {
+      "clickToList": "点击跳转至任务列表查看任务",
+      "countDown": "{0}秒后回到原页面",
+      "fileSize": "文件大于20M",
+      "fileType": "文件类型不符合规定！",
+      "isScanning": "当前有{count}台主机正在扫描",
+      "repoSetSuccess": "REPO SET 任务创建成功"
+    },
+    "setRepo": "设置REPO",
+    "severityStatus": {
+      "critical": "严重",
+      "high": "高风险",
+      "low": "低风险",
+      "medium": "中风险",
+      "unknown": "未知"
+    },
+    "task": {
+      "affectedRpm": "受影响rpm",
+      "availableRpm": "待安装rpm",
+      "checkItem": "检查项:",
+      "coldpatchCompilation": "冷补丁收编",
+      "cveCount": "CVE数量",
+      "excuteResult": "任务结果:",
+      "fixStatus": "修复状态",
+      "generateRollback": "生成回滚任务",
+      "generateSucceed": "任务创建成功",
+      "generateTime": "任务生成时间",
+      "hostCount": "主机数",
+      "hostIp": "主机地址",
+      "hotpatch": "热补丁修复",
+      "hotpatchRemoveResult": "热补丁移除情况:",
+      "installedRpm": "已安装rpm",
+      "isAccept": "是否accept",
+      "lastExcute": "上次执行时间",
+      "message": {
+        "allExecuteFailed": "{0}执行失败",
+        "atLeastOne": "请至少选择一个cve下的一台主机进行{0}!",
+        "atLeastOneRepo": "至少选择一个主机进行repo设置",
+        "atleastOneTask": "请选择至少一个任务进行删除！",
+        "createFailed": "任务创建失败",
+        "excuteFailed": "任务执行失败",
+        "exectueSucceed": "{0}执行成功",
+        "generateFailed": "{0}创建失败",
+        "generateSucceed": "{0}创建成功",
+        "isExcuting": "当前选中有正在执行的任务，请稍后重试！",
+        "partialExcuteFailed": "{0}部分执行成功",
+        "partialGenerateSucceed": "{0}部分创建成功",
+        "taskIsExcuting": "当前任务正在执行中，请等待执行完毕后操作"
+      },
+      "package": "解决方案",
+      "placeHolder": {
+        "desc": "请输入任务描述",
+        "repo": "请选择repo",
+        "searchBy": "按任务名搜索",
+        "searchByCve": "按CVE ID搜索",
+        "searchByHost": "按主机名或IP搜索",
+        "taskName": "请输入任务名称"
+      },
+      "progress": "执行进度（已处理/总数）",
+      "removeStatus": "移除状态",
+      "repoSetTask": "REPO设置任务",
+      "rollbackStatus": "回滚状态",
+      "selectRepo": "选择REPO",
+      "sentence": {
+        "deleteConfim": "确定删除以下任务?",
+        "deleteTask": "你确定删除这个任务吗?",
+        "excuteConfirm": "确定执行任务{0}",
+        "excuteTask": " 你确定执行这个任务吗?",
+        "fixDesc": "修复以下{0} 个CVE:{1}",
+        "removeDesc": "移除以下{0} 个CVE:{1}",
+        "repoDesc": "为以下{count}个主机设置REPO:{str}...",
+        "rollbackConfirm": "确定生成CVE回滚任务？",
+        "rollbackSucceed": "回滚任务创建成功"
+      },
+      "status": "状态",
+      "targetRpm": "目标rpm",
+      "taskCount": "主机个数",
+      "taskDesc": "任务描述",
+      "taskName": "任务名称",
+      "taskStatus": {
+        "fixFailed": "修复失败",
+        "fixRunning": "待修复",
+        "fixSucceed": "修复成功",
+        "removeFailed": "移除失败",
+        "removeRunning": "待移除",
+        "removeSucceed": "移除成功",
+        "repoFailed": "设置失败",
+        "repoRunning": "运行中",
+        "repoSucceed": "已设置",
+        "rollbackFailed": "回滚失败",
+        "rollbackRunning": "待回滚",
+        "rollbacklSucceed": "回滚成功",
+        "unknown": "未知"
+      },
+      "taskType": "任务类型",
+      "taskTypeEnum": {
+        "cveFix": "CVE修复",
+        "cveRollback": "CVE回滚",
+        "hotPatchRemove": "热补丁移除",
+        "repoSet": "REPO设置"
+      },
+      "tips": {
+        "accept": "如使用热补丁修复，accept后会在重启时自动应用热补丁，不勾选则重启时失效",
+        "compilation": "仅针对内核：应用热补丁后会同步安装最新冷补丁。 若收编失败会自动accept热补丁",
+        "noteOne": "1. 冷、热补丁将拆分成2个任务分别执行",
+        "noteThree": "3. 冷补丁任务执行完毕后，需重启才能生效",
+        "noteTwo": "2. 同一主机，热补丁任务需在冷补丁修复任务前执行"
+      },
+      "uptodate": "最新状态",
+      "validateMsg": {
+        "taskDesc": "请输入任务描述",
+        "taskName": "请输入任务名称"
+      },
+      "viewReport": "查看报告"
+    },
+    "unaffected": "不受影响",
+    "unaffectedCve": "不受影响的CVE数量",
+    "unfixed": "未修复",
+    "unfixedCve": "未修复的CVE数量",
+    "uploadFile": "上传文件",
+    "uploadSA": "上传安全公告",
+    "viewRepo": "查看REPO源"
+  }
+}

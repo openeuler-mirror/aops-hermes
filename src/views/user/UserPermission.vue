@@ -2,10 +2,12 @@
 import { useRoute, useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import { computed, onMounted, reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import type { HostGroup } from '@/api'
 import { api } from '@/api'
 import PageWrapper from '@/components/PageWrapper.vue'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
@@ -24,7 +26,7 @@ const unAssignedPermission = ref<
     host_groups: HostGroup[]
     assigned_host_groups?: HostGroup[]
   }[]
-  >([])
+>([])
 
 const state = reactive<{
   username: string
@@ -120,7 +122,7 @@ async function configurationPermission() {
 
   const [_] = await api.registerPermission(state.username, permission.length === 0 ? undefined : permission)
   if (!_) {
-    message.success('配置成功')
+    message.success(t('common.succeed'))
     setTimeout(() => {
       router.replace('/user/users')
     }, 500)
@@ -146,7 +148,7 @@ onMounted(async () => {
             <a-input-search
               v-model:value="state.searchKey"
               :maxlength="40"
-              placeholder="按集群名搜索"
+              :placeholder="$t('users.placeHolder.searchByCluster')"
             />
           </a-col>
         </a-row>
@@ -182,10 +184,10 @@ onMounted(async () => {
               <a-col>
                 <a-space>
                   <a-button @click="$router.back()">
-                    取消
+                    {{ t('common.cancel') }}
                   </a-button>
                   <a-button type="primary" :loading="isSubmiting" @click="configurationPermission">
-                    确认
+                    {{ t('common.confirm') }}
                   </a-button>
                 </a-space>
               </a-col>

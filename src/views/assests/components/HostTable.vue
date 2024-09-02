@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { api } from '@/api'
 import type { HostsTableItem } from '@/api/paths/assests'
 
@@ -7,23 +8,24 @@ const props = defineProps<{
   hostGroup: string
 }>()
 
+const { t } = useI18n()
 const isLoading = ref(false)
 
 const hostsTableColums = [
   {
-    title: '主机名称',
+    title: t('assests.hostName'),
     dataIndex: 'host_name',
   },
   {
-    title: 'IP地址',
+    title: t('assests.ip'),
     dataIndex: 'host_ip',
   },
   {
-    title: 'SSH登录端口',
+    title: t('assests.sshPort'),
     dataIndex: 'ssh_port',
   },
   {
-    title: '管理节点',
+    title: t('assests.management'),
     dataIndex: 'management',
   },
 ]
@@ -56,7 +58,7 @@ onMounted(() => {
   >
     <template #bodyCell="{ record, column }">
       <template v-if="column.dataIndex === 'management'">
-        {{ record.management ? '是' : '否' }}
+        {{ record.management ? t('common.yes') : t('common.no') }}
       </template>
     </template>
   </a-table>

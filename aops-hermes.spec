@@ -22,7 +22,7 @@ Web for an intelligent diagnose frame
 
 %build
 npm install -g pnpm@6
-pnpm install 
+pnpm install
 
 pnpm build
 
@@ -40,7 +40,8 @@ cp -r deploy/aops-hermes.service %{buildroot}/usr/lib/systemd/system/
 
 %changelog
 * Tue May 28 2024 Hugang<18768366022@163.com> - v2.0.0-1
-- Refactor Aops-hermes
+- Refactor Aops-hermes，upgrading the Vue framework
+- Support cluster management,add operations on sub-cluster hosts, vulnerabilities, users, and configurations
 
 * Wed Jan 17 2024 Hu gang<18768366022@163.com> - v1.4.0-7
 - Modify the task description copy of the create hot patch removal task

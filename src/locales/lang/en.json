@@ -1,0 +1,697 @@
+{
+  "account": {
+    "authorizing": "Gitee Authorizing...",
+    "bindAccount": "Bind local account",
+    "clickToRegsiter": "Register",
+    "jump": "To Home",
+    "loaclAccount": "Local Account",
+    "login": "Login",
+    "password": "Password",
+    "register": "Register",
+    "noAccount": "No Account?",
+    "useGitee": "Login with Gitee",
+    "currentPass": "Old Password",
+    "newPass": "New Password",
+    "reNewPass": "Confirm Password",
+    "message": {
+      "bindSuccess": "Bind Successfully",
+      "cancelAuth": "Cancel Authorizing",
+      "denyAuth": "Deny authorization",
+      "registerSuccess": "Register Successfully"
+    },
+    "palceHolder": {
+      "email": "Email: eg:xxxx{'@'}163.com",
+      "password": "6-20 characters, including letters or numbers",
+      "rePassword": "Confirm password",
+      "username": "5-20 characters, including letters or numbers"
+    },
+    "sentence": {
+      "backLogin": "Back",
+      "bindGitee": "The current gitee account has not been bound to a local account! Bind a local account to continue login",
+      "countDown": "Authorization successful! Redirect to home page in {0} seconds",
+      "hasAccount": "Already have an account?",
+      "welcome": "Welcome",
+      "welcomeBack": "Welcome Back",
+      "validationFailed": "User validation failed"
+    },
+    "validateMsg": {
+      "email": "Please enter the correct email format!",
+      "passwordOne": "Please enter a password consisting of 6-20 letters or numbers!",
+      "passwordTwo": "Please make sure the password you enter twice is consistent!",
+      "username": "Please enter a username consisting of 5-20 letters or numbers!",
+      "diffPass": "The new password cannot be the same as the current password!"
+    }
+  },
+  "assests": {
+    "addHost": "Add Host",
+    "addHostBatch": "Batch Add",
+    "addHostGroup": "Add Host Group",
+    "addResult": "Result",
+    "architecture": "Architecture",
+    "bigData": "Big Data",
+    "biosVersion": "Bios Version",
+    "capacity": "Capacity",
+    "certification": "Certification",
+    "cloud": "Cloud",
+    "cluster": "Cluster",
+    "coreCount": "core",
+    "cpu": "Cpu",
+    "description": "Description",
+    "disk": "Disk",
+    "diskCount": "Count",
+    "edge": "Edge",
+    "hostCount": "Host Count",
+    "hostGroup": "Host Group",
+    "hostGroupName": "Group Name",
+    "hostGroupTotal": "{count} host group infomation in total",
+    "hostInGroup": "Hosts in group",
+    "hostName": "Host Name",
+    "hostsTotal": "{count} host infomation in total",
+    "ip": "IP",
+    "kernel": "Kernel",
+    "l1dCache": "L1d_cache",
+    "l1iCache": "L1d_cache",
+    "l2cCche": "L2_cache",
+    "l3Cache": "L3_cache",
+    "management": "Management",
+    "managementCheck": "Management/Monitor",
+    "manufacturer": "Manufacturer",
+    "memory": "Memory",
+    "memoryCount": "Count",
+    "memorySize": "Size",
+    "model": "Model",
+    "modelName": "Model",
+    "monitor": "Monitor",
+    "normal": "Normal",
+    "offline": "Offline",
+    "online": "Online",
+    "os": "Os",
+    "osVersion": "OS Version",
+    "overview": "Overview",
+    "ownHost": "Hosts",
+    "password": "Password",
+    "plugin": "Plugin",
+    "scenes": "Scenes",
+    "searchBy": "host name or ip",
+    "size": "Size",
+    "speed": "Speed",
+    "sshPkey": "ssh_pkey",
+    "sshPort": "Port",
+    "status": "Status",
+    "type": "Type",
+    "unknown": "Unknown",
+    "username": "Username",
+    "web": "Web Server",
+    "placeHolder": {
+      "cluster": "Please select a cluster",
+      "desc": "Enter a description within 60 characters",
+      "hostGroup": "Please select a host group",
+      "hostGroupInput": "Enter the host group name within 50 characters",
+      "hostName": "Please enter the host name within 50 characters",
+      "ip": "Please enter a valid IP address, e.g. 192.168.0.1",
+      "password": "Please set the host login password",
+      "password_require": "Please enter the host login password. If the host username or port is not modified, it can be left blank.",
+      "sshPort": "Please enter the port number",
+      "ssh_pkey": "Please set the host ssh_pkey",
+      "ssh_pkey_require": "Please enter the ssh_pkey. If the host username or port is not modified, it can be left blank.",
+      "username": "Please enter the host username"
+    },
+    "sentence": {
+      "deleteConfim": "After deletion, it cannot be restored. Please confirm to delete the following host",
+      "fileError": "The file type does not match the specification!",
+      "fileParamsError": "The file parameters do not comply with the regulations!",
+      "hasHosts": "Cannot delete a host group when there are hosts in it",
+      "hostGroupDeleteConfirm": "After deletion, it cannot be restored. Please confirm to delete the following host group",
+      "noChange": "There is no modification at present, please modify and try again",
+      "partialSuccess": "Partial Success",
+      "supportFile": "Support types: xls, xlsx, csv"
+    },
+    "tips": {
+      "hostGroupName": "The maximum length is 50 characters, consisting of numbers, lowercase letters, and English underscores_. \nIt starts with a lowercase letter and cannot end with an English underscore_",
+      "hostName": "The maximum length is 50 characters, no spaces at the beginning or end, and all spaces are not allowed",
+      "refresh": "Query the latest data of the host",
+      "username": "Username used to log in to the host"
+    },
+    "validateMsg": {
+      "cluster": "Please select a cluster",
+      "description": "Please enter a host group description",
+      "descriptionOne": "Maximum length: 60 characters",
+      "descriptionTwo": "There cannot be a >< symbol",
+      "hostGroup": "Please select the host group",
+      "hostGroup_input": "Please enter a host group name",
+      "hostGroup_one": "It must start with a lowercase letter and cannot end with an underscore.",
+      "hostGroup_three": "The name should consist of numbers, lowercase letters, and underscores.",
+      "hostGroup_two": "It must start with a lowercase letter and cannot end with an underscore.",
+      "hostName": "The host name length should be less than 50",
+      "hostName_one": "No leading or trailing spaces are allowed",
+      "hostName_two": "No full spaces allowed",
+      "identificaWay": "Please select the authentication method",
+      "ip": "Please enter an IP address between 0.0.0.0 and 255.255.255.255",
+      "management": "Please select management or monitoring node",
+      "password": "Please set the host login password",
+      "sshPort": "Please enter a positive integer between 0 and 65535",
+      "ssh_pkey": "Please set the host ssh_pkey",
+      "username": "please enter user name",
+      "username_one": "Usernames are composed of numbers, English letters or special characters. They cannot contain spaces and the following special characters: :<>&,'\"\\/%.",
+      "username_three": "The user name consists of numbers, English letters or special characters. It cannot contain spaces and the following special characters: :<>",
+      "username_two": "The first character cannot be \"#\", \"+\" or \"-\""
+    }
+  },
+  "common": {
+    "ImportFile": "Import File",
+    "add": "Add",
+    "cancel": "Cancel",
+    "changePass": "Change Password",
+    "clear": "Clear",
+    "close": "Close",
+    "confirm": "Confirm",
+    "copyright": "Copyright © 2024 openEuler All rights reserved",
+    "count": " ",
+    "create": "Create",
+    "createFail": "Create Failed",
+    "createSuccess": "Create Successfully",
+    "delete": "Delete",
+    "deleteBatch": "Batch Delete",
+    "deleteFail": "Delete Failed",
+    "deleteSuccess": "Delete Succeed",
+    "detail": "detail",
+    "downloadFail": "Download Failed",
+    "downloadTemp": "Template",
+    "edit": "Edit",
+    "excute": "Excute",
+    "excuteSuccess": "Excute Sucessfully",
+    "excuting": "Excuting",
+    "execute": "Excute",
+    "export": "Export",
+    "fail": "Failed",
+    "help": "Help",
+    "helpDoc": "Docs",
+    "host": "Host :{0}",
+    "ip": "IP: {0}",
+    "message": {
+      "partialDelete": "Delivered successfully, partially deleted successfully"
+    },
+    "modify": "Update",
+    "more": "More",
+    "no": "No",
+    "none": "None",
+    "notExcute": "Not Implemented",
+    "operation": "Operation",
+    "palceHolder": {
+      "selectDoc": "Please select file"
+    },
+    "refresh": "Refresh",
+    "result": "Result: [0]",
+    "selectDoc": "Select",
+    "selectItems": "{count} item has been selected",
+    "sentence": {
+      "fileSize": "The file size must not exceed 1M"
+    },
+    "signOut": "Sign out",
+    "submitting": "Submitting",
+    "succeed": "Succeed",
+    "total": "{count} in total",
+    "upload": "Upload",
+    "uploadSuccess": "Upload Succeed",
+    "uploading": "Uploading",
+    "validateMsg": {
+      "LeadingAndTrailingNoSpaces": "No leading or trailing spaces are allowed"
+    },
+    "welcomeAops": "Welcome to A-Ops",
+    "yes": "Yes",
+    "sync": "Sync"
+  },
+  "conftrace": {
+    "domain": {
+      "addDomain": "Add Domain",
+      "cluster": "Cluster",
+      "deleteConfirm": "Are you sure you want to delete this business domain?",
+      "domainConf": "Conf",
+      "domainDetail": "Detail",
+      "domainList": "Domain List",
+      "domainName": "Domain",
+      "domainTotal": "{count} domain in total",
+      "placeHolder": {
+        "domainName": "Please enter the business domain name, within 26 characters",
+        "priority": "Settings not open"
+      },
+      "priority": "priority",
+      "validateMsg": {
+        "cluster": "Please select a cluster",
+        "domainName": "Please enter the business domain name",
+        "domainNameOne": "Name length should not exceed 26 characters",
+        "domainNameTwo": "The name can only enter uppercase and lowercase letters, underscores, dashes and decimal points."
+      }
+    },
+    "domainConf": {
+      "addConf": "New configuration",
+      "auto": "Import from host",
+      "batchDelete": "Batch Delete",
+      "belongDomain": "Domain",
+      "changeAuthor": "Author",
+      "changeDate": "Date",
+      "changeDetail": "Detail",
+      "changeHistory": "Change Log:",
+      "changeId": "ID",
+      "changeLog": "Change Log",
+      "changeReason": "Reason",
+      "confContent": "Content",
+      "confCount": "{count} configurations in total",
+      "confPath": "Path",
+      "confRegion": "Source",
+      "deleteConfirm": "Are you sure you want to delete this line?",
+      "detail": "Configuration Detail",
+      "editConf": "Edit",
+      "expectedConfiguration": "Expected Configuration",
+      "file": "Configuration Files",
+      "fileImport": "Import from local",
+      "hostSide": "Host Side (actual configuration)",
+      "manuel": "Manual import",
+      "configurationItem": "Item",
+      "message": {
+        "noDomain": "No domain is selected, return to the management list page",
+        "noFile": "Please select a profile to delete"
+      },
+      "placeHolder": {
+        "confContent": "Please enter the configuration content",
+        "confPath": "Please enter the configuration path",
+        "confRegion": "Please select the configuration source",
+        "domain": "Please select a domain!",
+        "host": "Please select a host"
+      },
+      "selectHost": "Host",
+      "sentence": {
+        "addSuccess": "Succeed",
+        "fileSize": "File size must not exceed 1MB",
+        "partialAddSuccess": "Partial Succeed"
+      },
+      "tips": {
+        "confRegion": "Choose one of the three configuration sources. Manual input is recommended."
+      },
+      "view": "View"
+    },
+    "domainDetail": {
+      "addHost": "Add",
+      "attributes": "Attributes",
+      "batchSync": "Batch Sync",
+      "beloneDomain": "Domain",
+      "confContent": "Content",
+      "currentConf": "Current Conf",
+      "currentHostConf": "Current Host Conf",
+      "differences": "Differences",
+      "domainSide": "Domain Side (default configuration)",
+      "hosts": "{count} host info in total",
+      "ip": "IP",
+      "ipProtocol": "Protocol",
+      "message": {
+        "atLeastOneFile": "Please make sure there is at least one file to sync",
+        "leastOne": "Select at least one host to add!",
+        "syncFailed": "Sync Failed",
+        "syncSucceed": "Sync Succeed"
+      },
+      "sentence": {
+        "deleteConfirm": "Are you sure you want to delete this host?",
+        "hostIp": "Host IP: {ip}",
+        "inconsistency": "Inconsistent with domain configuration",
+        "missing": "Host missing configuration",
+        "noConf": "This configuration is not available in the host",
+        "same": "Consistent with the  domain configuration",
+        "selectHost": "Select the host to add:",
+        "sureSyncConf": "Are you sure you want to synchronize this configuration to this host?",
+        "sureSyncDomain": "Are you sure you want to synchronize the current business domain configuration to this host?",
+        "syncAll": "Sync All",
+        "syncConfirmContent": "The configuration cannot be restored after synchronization, but the records can be viewed from the configuration log. Do you still want to continue?",
+        "syncConfirmTitle": "Are you sure you want to synchronize the configuration of the current business domain to the selected host?",
+        "syncGoon": "Continue"
+      },
+      "statusDetail": "Detail",
+      "syncStatus": "Sync Status",
+      "unknownStatus": "Unknown",
+      "synchronized": "synchronized",
+      "unsynchronized": "unsynchronized"
+    }
+  },
+  "dashboard": {
+    "alertCount": "Alerts",
+    "alerts": {
+      "alertsCount": "Alerts",
+      "hostGroupName": "Host Group Name",
+      "loadMore": "More",
+      "rank": "Rank",
+      "statistics": "Alarm information statistics",
+      "tips": {
+        "alertTable": "Display the top 5 host groups with the most alarm information"
+      },
+      "total": "{total} warning messages in total"
+    },
+    "alertsTable": {
+      "title": "Statistics"
+    },
+    "clusterCount": "Clusters",
+    "cveRisk": "CVE",
+    "domainUnSync": "Domain Unsync",
+    "domianSync": "Domain Sync",
+    "hostCount": "Hosts"
+  },
+  "router": {
+    "assests": {
+      "createHost": "Create Host",
+      "editHost": "Edit Host",
+      "hostDetail": "Host Detail",
+      "hostGroupManagement": "Host Group",
+      "hostsManagement": "Host Management",
+      "self": "Assests",
+      "sentence": {
+        "hostGroupManagement": "Manage the managed host groups.",
+        "hostManagement": "Manage the managed hosts."
+      }
+    },
+    "configuration": {
+      "configurationManagement": "Domain configuration",
+      "domain": "Domain",
+      "domainDetail": "Domain Detail",
+      "self": "Conf Trace"
+    },
+    "dashboard": "Dashboard",
+    "index": "Home",
+    "user": {
+      "cluster": "Clusters",
+      "clusterManagement": "Clsuter Management",
+      "editCluster": "Edit Cluster",
+      "registerCluster": "Register Cluster",
+      "self": "User",
+      "userPermission": "Permission Assignment",
+      "users": "Users"
+    },
+    "account": {
+      "self": "Account"
+    },
+    "vulnerability": {
+      "cveDetail": "Cve Detail",
+      "cves": "CVEs",
+      "cvesManagement": "CVEs",
+      "host": "Hosts",
+      "hostDetail": "Host Detail",
+      "self": "Vulnerability",
+      "task": "Task",
+      "taskDetail": "Task Detail",
+      "taskList": "Tasks",
+      "taskReport": "Task Report"
+    }
+  },
+  "sentence": {
+    "sureForOut": "Sign out?"
+  },
+  "user": {
+    "clusterStatus": "Sync status"
+  },
+  "users": {
+    "addCluster": "Add cluster",
+    "administrator": "administrator",
+    "cluster": "Cluster",
+    "clusterDes": "Description",
+    "clusterIp": "Cluster IP",
+    "clusterName": "ClusterName",
+    "clusters": {
+      "fail": "Sync failed",
+      "password": "Password",
+      "running": "synchronizing",
+      "succeed": "Synchronization successful"
+    },
+    "email": "Email",
+    "hostGroup": "HostGroup",
+    "normal": "general user",
+    "permissions": "Assign",
+    "placeHolder": {
+      "clsuterIp": "Please enter the cluster IP",
+      "clsuterName": "Please enter the cluster name",
+      "clusterDesc": "Please enter a cluster description",
+      "password": "Please enter the subcluster administrator password",
+      "searchBy": "Search by username",
+      "searchByCluster": "Search by cluster name",
+      "username": "Please enter the subcluster username"
+    },
+    "resetPassword": "Reset Password",
+    "role": "Role",
+    "sentence": {
+      "deleteCluster": "Are you sure you want to cancel the management of this cluster?",
+      "resetPassword": "Are you sure you want to reset this user's password to changeme?",
+      "syncConfirm": "Are you sure you want to sync the data?",
+      "syncStart": "Start synchronization task"
+    },
+    "syncData": "Sync",
+    "tips": {
+      "password": "Subcluster administrator login password",
+      "username": "Subcluster administrator username"
+    },
+    "username": "Username",
+    "validateMsg": {
+      "clusterDesc": "Description length should be less than 60",
+      "clusterDescTwo": "Please enter a cluster description",
+      "clusterIp": "Please enter the IP address in the range 0.0.0.0~255.255.255.255",
+      "clusterName": "No leading or trailing spaces are allowed",
+      "clusterNameOne": "Cluster length should be less than 20",
+      "clusterNameTwo": "Please enter the cluster name",
+      "passwordOne": "Only uppercase and lowercase letters, numbers and special characters are allowed, no spaces or commas",
+      "passwordThree": "Please enter password",
+      "passwordTwo": "Length should be 1-255 characters",
+      "usernameOne": "The user name consists of numbers, English letters or special characters. It cannot contain spaces and the following special characters: :<>",
+      "usernameThree": "Username length should be less than 20",
+      "usernameTwo": "The first character cannot be '#'、'+'或'-'"
+    }
+  },
+  "vul": {
+    "affected": "Affected",
+    "cluster": "Cluster",
+    "cveDetail": {
+      "affectedHost": "Affected Host",
+      "affectedProduct": "Affected Product",
+      "associateCVE": "Associate CVE",
+      "cveDesc": "Cve Description:",
+      "cveName": "Cve Name",
+      "fixWay": "Fix Way",
+      "fixed": {
+        "rpms": {
+          "installedRpm": "Installed Rpm"
+        }
+      },
+      "hostNum": "Host Num",
+      "index": "Index",
+      "message": {
+        "atLeastOne": "Select at least one CVE for {type}!"
+      },
+      "package": "Package",
+      "palceHolder": {
+        "searchBy": "host name"
+      },
+      "product": "Product",
+      "publishTime": "Publish Time",
+      "severity": "Severity:",
+      "unfixed": {
+        "rpms": {
+          "availableRpm": "Available Rpm",
+          "installedRpm": "Affected Rpm"
+        }
+      }
+    },
+    "cveFix": "cve fix",
+    "cveFixTask": "Cve Fix",
+    "cves": {
+      "cvssScore": "CVSS Score",
+      "cvssScore3": "CVSS 3.0 Score",
+      "fixed": {
+        "rpms": {
+          "installedRpm": "Installed Rpm"
+        }
+      },
+      "hostNum": "Host Num",
+      "hosts": "Hosts",
+      "ip": "IP",
+      "message": {
+        "atLeastOne": "Select at least one CVE for {type}!"
+      },
+      "note": "Note",
+      "package": "Package",
+      "placeHolder": {
+        "searchBy": "cve id or package"
+      },
+      "publishTime": "Publish Time",
+      "sentence": {
+        "hostCount": "Number of hosts corresponding to the repair method selected by CVE"
+      },
+      "severity": "Severity",
+      "supportWay": "Fix Way",
+      "unfixed": {
+        "rpms": {
+          "availableRpm": "Available Rpm",
+          "installedRpm": "Affected Rpm"
+        }
+      }
+    },
+    "exportCve": "Export",
+    "fix": "fix",
+    "fixed": "Fixed",
+    "fixedCve": "Fixed CVE",
+    "generateFixTask": "Cve Fix",
+    "hostGroup": "Host Group",
+    "hostName": "Host Name",
+    "hotPatchRemove": "Hot Patch Remove",
+    "ip": "IP",
+    "kernelChangesAfterReboot": "Kernel change after reboot",
+    "lastScan": "Last Scan",
+    "message": {
+      "atLeastOneHost": "Please select at least one set of hosts! ",
+      "exportSuccess": "Export Succeed",
+      "scanAllHost": "Are you sure to scan all hosts? ",
+      "scanFollowHost": "Are you sure to scan the following hosts?"
+    },
+    "notScaned": "Not Scaned",
+    "notSet": "Not Set",
+    "patchRemove": "hot patch remove",
+    "remove": "remove",
+    "repo": {
+      "newRepo": "New Repo",
+      "placeHolder": {
+        "repoContent": "Please enter the REPO source name, within 20 characters",
+        "repoDesc": "Please enter the REPO content, within 512 characters",
+        "searchBy": "repo"
+      },
+      "repoContent": "Repo Content",
+      "repoName": "Repo Name",
+      "sentence": {
+        "deleteConfirm": "Are you sure to delete the repo source?"
+      }
+    },
+    "repoSet": "Repo Set",
+    "rpmFixStatus": "Rpm Fix Status",
+    "rpmList": "RPM-Hosts",
+    "sa": {
+      "fileSize": "The file size should be less than 20M, and the number of files in the compressed file should be less than 100",
+      "fileType": "Supported types: XML, Zip"
+    },
+    "scan": "Scan",
+    "scanning": "Scanning",
+    "sentence": {
+      "clickToList": "Click to jump to the task list to view tasks",
+      "countDown": "Return to the original page in {0} seconds",
+      "fileSize": "File size greater than 20M",
+      "fileType": "The file type does not comply with regulations!",
+      "isScanning": "There are currently {count} hosts being scanned",
+      "repoSetSuccess": "Repo Set Task Generate Succeed"
+    },
+    "setRepo": "Set Repo",
+    "severityStatus": {
+      "critical": "Critical",
+      "high": "High",
+      "low": "Low",
+      "medium": "Medium",
+      "unknown": "Unknown"
+    },
+    "task": {
+      "affectedRpm": "Affected Rpm",
+      "availableRpm": "Available Rpm",
+      "checkItem": "Check Items",
+      "coldpatchCompilation": "Compilation",
+      "cveCount": "Cve Num",
+      "excuteResult": "Result",
+      "fixStatus": "Fix Status",
+      "generateRollback": "Generate Rollback",
+      "generateSucceed": "Generate task successfully",
+      "generateTime": "Generate Time",
+      "hostCount": "Hosts",
+      "hostIp": "Host IP",
+      "hotpatch": "Hot Patch Fix",
+      "hotpatchRemoveResult": "Remove Status:",
+      "installedRpm": "Installed Rpm",
+      "isAccept": "Accepted",
+      "lastExcute": "Last Excute",
+      "message": {
+        "allExecuteFailed": "{0} executed failed",
+        "atLeastOne": "Please select at least one host under CVE for {0}!  ",
+        "atLeastOneRepo": "Select at least one host for repo setup",
+        "atleastOneTask": "Please select at least one task to delete!",
+        "createFailed": "Generate failed",
+        "excuteFailed": "Execution failed",
+        "exectueSucceed": "{0} executed succeed",
+        "generateFailed": "{0} generate failed",
+        "generateSucceed": "{0} generate succeed",
+        "isExcuting": "There are currently executing tasks selected, please try again later!",
+        "partialExcuteFailed": "{0} partially executed successfully",
+        "partialGenerateSucceed": "{0} partially generate successfully",
+        "taskIsExcuting": "The current task is being executed, please wait until the execution is completed."
+      },
+      "package": "Package",
+      "placeHolder": {
+        "desc": "Please enter the task description",
+        "repo": "Please select repo",
+        "searchBy": "task name",
+        "searchByCve": "cve id",
+        "searchByHost": "host name or ip",
+        "taskName": "Please enter the task name"
+      },
+      "progress": "Progress",
+      "removeStatus": "Remove Status",
+      "repoSetTask": "Repo Set",
+      "rollbackStatus": "Rollback Status",
+      "selectRepo": "Select REPO",
+      "sentence": {
+        "deleteConfim": "Are you sure you want to delete the following tasks?",
+        "deleteTask": "Are you sure you want to delete this task?",
+        "excuteConfirm": "Confirm to execute task {0}",
+        "excuteTask": "Are you sure you want to perform this task?",
+        "fixDesc": "FIx the following {0} CVEs: {1}",
+        "removeDesc": "Remove the hot patch in following {0} CVEs: {1}",
+        "repoDesc": "Set REPO for the following {count} hosts: {str}...",
+        "rollbackConfirm": "Are you sure to generate a CVE rollback task?",
+        "rollbackSucceed": "Rollback task created successfully"
+      },
+      "status": "Status",
+      "targetRpm": "Available Rpm",
+      "taskCount": "Hosts",
+      "taskDesc": "Description",
+      "taskName": "Task Name",
+      "taskStatus": {
+        "fixFailed": "Failed",
+        "fixRunning": "Running",
+        "fixSucceed": "Succeed",
+        "removeFailed": "Failed",
+        "removeRunning": "Running",
+        "removeSucceed": "Succeed",
+        "repoFailed": "Not Set",
+        "repoRunning": "Running",
+        "repoSucceed": "Succeed",
+        "rollbackFailed": "Failed",
+        "rollbackRunning": "Running",
+        "rollbacklSucceed": "Succeed",
+        "unknown": "Unknown"
+      },
+      "taskType": "Task Type",
+      "taskTypeEnum": {
+        "cveFix": "CVE fix",
+        "cveRollback": "CVE rollback",
+        "hotPatchRemove": "Hot patch remove",
+        "repoSet": "Repo set"
+      },
+      "tips": {
+        "accept": "If hot patching is used for fix, the hot patch will be automatically applied upon reboot after acceptance. If not checked, it will become invalid upon reboot",
+        "compilation": "Only for the kernel: After applying the hot patch, the latest cold patch will be synchronously installed. If the compilation fails, it will automatically accept the hot patch",
+        "noteOne": "1. Cold and hot patches will be split into two tasks to be executed separately",
+        "noteThree": "3. After the cold patch task is completed, it needs to be restarted to take effect",
+        "noteTwo": "2. On the same host, the hot patch task must be executed before the cold patch repair task"
+      },
+      "uptodate": "Status",
+      "validateMsg": {
+        "taskDesc": "Please enter the task descriptionp",
+        "taskName": "Please enter the task name"
+      },
+      "viewReport": "Report"
+    },
+    "unaffected": "Unaffected",
+    "unaffectedCve": "Unaffected CVE",
+    "unfixed": "Unfixed",
+    "unfixedCve": "Unfixed CVE",
+    "uploadFile": "Upload",
+    "uploadSA": "UploadSA",
+    "viewRepo": "View Repo"
+  }
+}

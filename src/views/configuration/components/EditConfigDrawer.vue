@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { CloseOutlined, QuestionCircleOutlined, UploadOutlined } from '@ant-design/icons-vue'
 import { type FormInstance, type UploadProps, message } from 'ant-design-vue'
+import { useI18n } from 'vue-i18n'
 
 import { reactive, ref } from 'vue'
 import { type HostInDomain, api } from '@/api'
@@ -20,9 +21,11 @@ const props = withDefaults(
 
 const emit = defineEmits(['success'])
 
-enum TypeEnum {
-  edit = '编辑配置',
-  add = '新增配置',
+const { t } = useI18n()
+
+const TypeEnum = {
+  edit: t('conftrace.domainConf.editConf'),
+  add: t('conftrace.domainConf.addConf'),
 }
 
 interface confForm {
@@ -42,15 +45,15 @@ function open() {
 const sourceOption = [
   {
     value: 'manuel',
-    label: '手动输入',
+    label: t('conftrace.domainConf.manuel'),
   },
   {
     value: 'auto',
-    label: '从主机导入',
+    label: t('conftrace.domainConf.auto'),
   },
   {
     value: 'file',
-    label: '从本地导入',
+    label: t('conftrace.domainConf.fileImport'),
   },
 ]
 
@@ -86,13 +89,13 @@ async function handleSubmit() {
 
       const [, res] = await api.uploadDomainConfig(formData)
       if (res && res[props.clusterId].label === 'Succeed') {
-        message.success('修改成功')
+        message.success(t('common.succeed'))
         emit('success')
         visible.value = false
         onClose()
       }
       else {
-        message.error('修改失败')
+        message.error(t('common.fail'))
       }
     }
     else {
@@ -109,13 +112,13 @@ async function handleSubmit() {
         params,
       )
       if (res && res[props.clusterId].label === 'Succeed') {
-        message.success('修改成功')
+        message.success(t('common.succeed'))
         emit('success')
         visible.value = false
         onClose()
       }
       else {
-        message.error('修改失败')
+        message.error(t('common.fail'))
       }
     }
   }
@@ -152,7 +155,7 @@ const preUpload: UploadProps['beforeUpload'] = async (file) => {
 
   const fileSize = file.size
   if (fileSize > 1024 * 1024 * 1) {
-    message.error('文件大于1M')
+    message.error(t('common.sentence.fileSize'))
     setTimeout(() => {
       removeFile(file)
     }, 0)
@@ -164,7 +167,7 @@ const preUpload: UploadProps['beforeUpload'] = async (file) => {
 
 function validateFile() {
   if (fileList.value?.length === 0)
-    return Promise.reject(new Error('请选择文件'))
+    return Promise.reject(new Error(t('common.palceHolder.selectDoc')))
   return Promise.resolve()
 }
 
@@ -190,42 +193,42 @@ function OnImportWayChanged(_value: string) {
     </template>
     <a-form ref="formRef" :model="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }">
       <div v-for="(conf, index) in form.confs" :key="index">
-        <a-form-item :name="['confs', index, 'domainName']" label="所属业务域">
+        <a-form-item :name="['confs', index, 'domainName']" :label="t('conftrace.domainConf.belongDomain')">
           <a-input v-model:value="conf.domainName" disabled :default-value="domainName" />
         </a-form-item>
         <a-form-item
-          label="配置路径"
-          :rules="[{ required: true, message: '请输入配置路径', trigger: 'change' }]"
+          :label="t('conftrace.domainConf.confPath')"
+          :rules="[{ required: true, message: t('conftrace.domainConf.placeHolder.confPath'), trigger: 'change' }]"
         >
           <a-input v-model:value="conf.filePath" disabled :default-value="filePath" />
         </a-form-item>
         <a-form-item
           :name="['confs', index, 'importWay']"
-          :rules="[{ required: true, message: '请选择来源', trigger: 'change' }]"
+          :rules="[{ required: true, message: t('conftrace.domainConf.placeHolder.confRegion'), trigger: 'change' }]"
         >
           <template #label>
-            <a-tooltip title="配置来源三选一，推荐使用手动输入">
+            <a-tooltip :title="t('conftrace.domainConf.tips.confRegion')">
               <QuestionCircleOutlined />
             </a-tooltip>
-            &nbsp;配置来源
+            {{ t('conftrace.domainConf.confRegion') }}
           </template>
           <a-select v-model:value="conf.importWay" :options="sourceOption" @change="OnImportWayChanged" />
         </a-form-item>
         <a-form-item
           v-if="conf.importWay === 'manuel'"
           :name="['confs', index, 'configContent']"
-          label="配置内容"
-          :rules="[{ required: true, message: '请输入配置路径', trigger: 'change' }]"
+          :label="t('conftrace.domainConf.confContent')"
+          :rules="[{ required: true, message: t('conftrace.domainConf.placeHolder.confContent'), trigger: 'change' }]"
         >
-          <a-textarea v-model:value="conf.configContent" :rows="8" placeholder="请输入配置内容" />
+          <a-textarea v-model:value="conf.configContent" :rows="8" :placeholder="t('conftrace.domainConf.placeHolder.confContent')" />
         </a-form-item>
         <a-form-item
           v-if="conf.importWay === 'auto'"
           :name="['confs', index, 'configHostId']"
-          label="选择主机"
-          :rules="[{ required: true, message: '请选择主机', trigger: 'change' }]"
+          :label="t('conftrace.domainConf.selectHost')"
+          :rules="[{ required: true, message: t('conftrace.domainConf.placeHolder.host'), trigger: 'change' }]"
         >
-          <a-select v-model:value="conf.configHostId" placeholder="请选择主机">
+          <a-select v-model:value="conf.configHostId" :placeholder="t('conftrace.domainConf.placeHolder.host')">
             <a-select-option v-for="item in hostList" :key="item.hostId" :value="item.hostId">
               {{
                 item.ip
@@ -233,7 +236,7 @@ function OnImportWayChanged(_value: string) {
             </a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item v-if="conf.importWay === 'file'" label="选择文件" :name="['confs', index, 'confs']" :rules="[{ validator: validateFile }]">
+        <a-form-item v-if="conf.importWay === 'file'" :label="t('common.selectDoc')" :name="['confs', index, 'confs']" :rules="[{ validator: validateFile }]">
           <a-upload
             :file-list="fileList"
             :before-upload="preUpload"
@@ -241,10 +244,10 @@ function OnImportWayChanged(_value: string) {
           >
             <a-button>
               <UploadOutlined />
-              选择文件
+              {{ t('common.selectDoc') }}
             </a-button>
             <span class="upload-tip">
-              <p>文件大小不超过1MB</p>
+              <p>{{ t('conftrace.domainConf.sentence.fileSize') }}</p>
             </span>
           </a-upload>
         </a-form-item>
@@ -253,10 +256,10 @@ function OnImportWayChanged(_value: string) {
     <div class="operate-button">
       <a-space>
         <a-button @click="visible = false">
-          取消
+          {{ t('common.cancel') }}
         </a-button>
         <a-button type="primary" html-type="submit" @click="handleSubmit">
-          确定
+          {{ t('common.confirm') }}
         </a-button>
       </a-space>
     </div>
@@ -269,9 +272,7 @@ function OnImportWayChanged(_value: string) {
   right: 0;
   bottom: 0;
   width: 100%;
-  border-top: 1px solid #e9e9e9;
   padding: 10px 16px;
-  background: #fff;
   text-align: right;
   z-index: 1;
 }

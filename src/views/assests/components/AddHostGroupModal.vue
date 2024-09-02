@@ -3,6 +3,7 @@ import { InfoCircleOutlined } from '@ant-design/icons-vue'
 import type { Rule } from 'ant-design-vue/es/form'
 import { reactive, ref } from 'vue'
 import { message, notification } from 'ant-design-vue'
+import { useI18n } from 'vue-i18n'
 import { api } from '@/api'
 import type { Cluster } from '@/api'
 
@@ -25,6 +26,8 @@ const emits = defineEmits<{
   (e: 'success'): void
 }>()
 
+const { t } = useI18n()
+
 const formRef = ref()
 const visible = ref(false)
 const isLoading = ref(false)
@@ -42,11 +45,11 @@ const form = reactive<Form>({
  */
 function validateGroupName(_rule: Rule, value: string) {
   if (/[^0-9a-z_]/.test(value))
-    return Promise.reject(new Error('名称应由数字、小写字母、英文下划线组成'))
+    return Promise.reject(new Error(t('assests.validateMsg.hostGroup_one')))
   if (/^[^a-z]/.test(value))
-    return Promise.reject(new Error('以小写字母开头，且结尾不能是英文下划线'))
+    return Promise.reject(new Error(t('assests.validateMsg.hostGroup_two')))
   if (value.endsWith('_'))
-    return Promise.reject(new Error('以小写字母开头，且结尾不能是英文下划线'))
+    return Promise.reject(new Error(t('assests.validateMsg.hostGroup_three')))
   return Promise.resolve()
 }
 
@@ -57,9 +60,9 @@ function validateGroupName(_rule: Rule, value: string) {
  */
 function validateDesc(_rule: Rule, value: string) {
   if (value.length > 60)
-    return Promise.reject(new Error('长度不超过60个字符'))
+    return Promise.reject(new Error(t('assests.validateMsg.descriptionOne')))
   if (/[<>]/.test(value))
-    return Promise.reject(new Error('不能有><符号'))
+    return Promise.reject(new Error(t('assests.validateMsg.descriptionTwo')))
   return Promise.resolve()
 }
 
@@ -85,19 +88,19 @@ async function addNewHostGroup() {
     if (res) {
       if (Object.values(res)[0].label !== 'Succeed') {
         notification.error({
-          message: '添加失败',
+          message: t('common.fail'),
           description: Object.values(res)[0].label,
         })
       }
       else {
-        message.success('添加成功')
+        message.success(t('common.succeed'))
       }
       visible.value = false
       emits('success')
       formRef.value.resetFields()
     }
   }
-  catch (error) {
+  catch {
     isLoading.value = false
   }
   finally {
@@ -121,19 +124,19 @@ function handleClose() {
     </div>
     <a-modal
       v-model:open="visible"
-      title="添加主机组"
+      :title="t('assests.addHostGroup')"
       :confirm-loading="isLoading"
       destroy-on-close
       @ok="addNewHostGroup"
       @cancel="handleClose"
     >
-      <a-form ref="formRef" :model="form" :label-col="{ span: 5 }">
+      <a-form ref="formRef" :model="form" :label-col="{ span: 6 }">
         <a-form-item
-          label="集群"
+          :label="t('assests.cluster')"
           name="cluster_id"
-          :rules="[{ required: true, message: '请选择集群' }]"
+          :rules="[{ required: true, message: t('assests.placeHolder.cluster') }]"
         >
-          <a-select v-model:value="form.cluster_id" placeholder="请选择集群">
+          <a-select v-model:value="form.cluster_id" :placeholder="t('assests.placeHolder.cluster')">
             <template v-for="cluster in clusters" :key="cluster.cluster_id">
               <a-select-option :value="cluster.cluster_id">
                 {{
@@ -144,10 +147,10 @@ function handleClose() {
           </a-select>
         </a-form-item>
         <a-form-item
-          label="主机组名称"
+          :label="t('assests.hostGroupName')"
           name="hostName"
           :rules="[
-            { required: true, message: '请输入主机组名称' },
+            { required: true, message: t('assests.validateMsg.hostGroup_input') },
             {
               validator: validateGroupName,
               trigger: 'change',
@@ -156,12 +159,13 @@ function handleClose() {
         >
           <a-input
             v-model:value="form.hostName"
+            autocomplete="off"
             :max-length="50"
-            placeholder="请输入主机组名称，50个字符以内"
+            :placeholder="t('assests.placeHolder.hostGroupInput')"
           >
             <template #suffix>
               <a-tooltip
-                title="最大长度50个字符，由数字、小写字母、英文下划线_组成。以小写字母开头，且结尾不能是英文下划线_"
+                :title="$t('assests.tips.hostGroupName')"
               >
                 <InfoCircleOutlined style="color: rgba(0, 0, 0, 0.45)" />
               </a-tooltip>
@@ -169,17 +173,17 @@ function handleClose() {
           </a-input>
         </a-form-item>
         <a-form-item
-          label="主机组描述"
+          :label="t('assests.description')"
           name="desc"
           :rules="[
-            { required: true, message: '请输入主机组描述' },
+            { required: true, message: t('assests.validateMsg.description') },
             {
               validator: validateDesc,
               trigger: 'change',
             },
           ]"
         >
-          <a-textarea v-model:value="form.desc" placeholder="请输入描述，60个字符以内" :rows="4" />
+          <a-textarea v-model:value="form.desc" :placeholder="t('assests.placeHolder.desc')" :rows="4" />
         </a-form-item>
       </a-form>
     </a-modal>

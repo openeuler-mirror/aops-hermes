@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons-vue'
 import { Table } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { api } from '@/api'
 import type { ChangeLog, ConfBaseInfo, ConfFile } from '@/api'
 
@@ -12,16 +13,18 @@ const props = defineProps<{
   clusterId: string
 }>()
 
+const { t } = useI18n()
+
 const logIsLoading = ref(false)
 const confChangeColumns = [
-  { title: '变更ID', dataIndex: 'changeId', key: 'changeId' },
+  { title: t('conftrace.domainConf.changeId'), dataIndex: 'changeId', key: 'changeId' },
   {
-    title: '变更时间',
+    title: t('conftrace.domainConf.changeDate'),
     dataIndex: 'date',
     key: 'date',
   },
-  { title: '变更人', dataIndex: 'author', key: 'author' },
-  { title: '变更原因', dataIndex: 'changeReason', key: 'changeReason' },
+  { title: t('conftrace.domainConf.changeAuthor'), dataIndex: 'author', key: 'author' },
+  { title: t('conftrace.domainConf.changeReason'), dataIndex: 'changeReason', key: 'changeReason' },
   Table.EXPAND_COLUMN,
 ]
 
@@ -58,7 +61,9 @@ async function queryDomainConfLog() {
  * expand table row for display config detail
  */
 function expand(expanded: boolean, record: ChangeLog) {
-  if (!expanded) { tableState.expandedRowKeys.push(record.changeId) }
+  if (!expanded) {
+    tableState.expandedRowKeys.push(record.changeId)
+  }
   else {
     tableState.expandedRowKeys = tableState.expandedRowKeys.filter(
       item => item !== record.changeId,
@@ -74,20 +79,20 @@ onMounted(() => {
 <template>
   <a-spin :spinning="logIsLoading">
     <a-descriptions :column="1" layout="horizontal">
-      <a-descriptions-item label="所属业务域">
+      <a-descriptions-item :label="$t('conftrace.domainConf.belongDomain')">
         {{ domainName }}
       </a-descriptions-item>
     </a-descriptions>
     <a-descriptions :column="1" layout="vertical" bordered>
-      <a-descriptions-item :label="`配置文件：${manageConfChange?.filePath}`">
+      <a-descriptions-item :label="`${t('conftrace.domainConf.file')}：${manageConfChange?.filePath}`">
         <p class="pContent">
-          期望配置文本：
+          {{ $t('conftrace.domainConf.expectedConfiguration') }}
         </p>
         <div class="contentBox">
           <span class="diffContent"> {{ manageConfChange?.expectedContents }} </span>
         </div>
         <p class="pLog">
-          变更历史：
+          {{ $t('conftrace.domainConf.changeHistory') }}
         </p>
         <a-table
           v-model:expandedRowKeys="tableState.expandedRowKeys"
@@ -103,14 +108,14 @@ onMounted(() => {
               style="color: #1677ff; cursor: pointer"
               @click="expand(expanded, record)"
             >
-              更多<ArrowDownOutlined />
+              {{ $t('common.more') }}<ArrowDownOutlined />
             </span>
             <span v-else style="color: #1677ff; cursor: pointer" @click="expand(expanded, record)">
-              收起<ArrowUpOutlined />
+              {{ $t('common.close') }}<ArrowUpOutlined />
             </span>
           </template>
           <template #expandColumnTitle>
-            <span style="white-space: nowrap">变更详情</span>
+            <span style="white-space: nowrap">{{ $t('conftrace.domainConf.changeDetail') }}</span>
           </template>
           <template #expandedRowRender="{ record }">
             <p>preValue:</p>

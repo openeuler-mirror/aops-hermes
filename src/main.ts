@@ -10,15 +10,21 @@
 import 'ant-design-vue/dist/reset.css'
 import '@/assets/styles/main.css'
 import '@/assets/styles/global.less'
+import 'nprogress/nprogress.css'
 
 import { createApp } from 'vue'
 import Antd from 'ant-design-vue'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import { createHead } from '@unhead/vue'
 import App from './App.vue'
 import router from './router'
 import Vuei18n from '@/locales'
 
-const app = createApp(App)
-app.use(Antd).use(createPinia().use(piniaPluginPersistedstate)).use(Vuei18n).use(router)
-app.mount('#app')
+createApp(App)
+  .use(Antd)
+  .use(createHead())
+  .use(createPinia().use(piniaPluginPersistedstate))
+  .use(Vuei18n)
+  .use(router)
+  .mount('#app')

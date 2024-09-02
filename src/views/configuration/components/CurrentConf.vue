@@ -102,16 +102,16 @@ onMounted(() => {
 <template>
   <a-spin :spinning="isConfsLoading">
     <div v-if="hostInfo" class="conf-section">
-      <h1>主机当前配置</h1>
-      <div>主机：{{ hostInfo.hostId }}</div>
+      <h1>{{ $t('conftrace.domainDetail.currentHostConf') }}</h1>
+      <div>{{ $t('common.host', [hostInfo.hostId]) }}</div>
       <div style="margin-bottom: 5px">
-        IP地址：{{ hostInfo.ip }}
+        {{ $t('common.ip', [hostInfo.ip]) }}
       </div>
 
       <a-collapse>
-        <a-collapse-panel v-for="item in allConfs.exitingConfs" :key="item.filePath" :header="`配置项：${item.filePath}`">
+        <a-collapse-panel v-for="item in allConfs.exitingConfs" :key="item.filePath" :header="`${$t('conftrace.domainConf.configurationItem')}：${item.filePath}`">
           <div class="conf-description">
-            <a-descriptions title="属性" :column="2">
+            <a-descriptions :title="$t('conftrace.domainDetail.attributes')" :column="2">
               <a-descriptions-item label="fileAttr">
                 {{ item.fileAttr }}
               </a-descriptions-item>
@@ -136,12 +136,12 @@ onMounted(() => {
             <a-row type="flex" justify="space-between" class="conf-content-header">
               <a-col>
                 <h3 style="font-weight: bold;">
-                  文本内容：
+                  {{ $t('conftrace.domainDetail.confContent') }}
                 </h3>
               </a-col>
               <a-col v-if="item.syncStatus === 'NOT SYNC'">
                 <a-button type="primary" @click="showCompareDrawer(item)">
-                  差异对比
+                  {{ $t('conftrace.domainDetail.differences') }}
                 </a-button>
               </a-col>
             </a-row>
@@ -152,25 +152,25 @@ onMounted(() => {
           <template #extra>
             <div v-if="item.syncStatus === 'NOT SYNC'">
               <CloseCircleTwoTone two-tone-color="#ff0000" />
-              <span style="color: #ff0000">&nbsp;与业务域配置不一致</span>
+              <span style="color: #ff0000">{{ $t('conftrace.domainDetail.sentence.inconsistency') }}</span>
             </div>
             <div v-if="item.syncStatus === 'SYNC'">
               <CheckCircleTwoTone two-tone-color="#52c41a" />
-              <span>&nbsp;与业务域配置一致</span>
+              <span>{{ $t('conftrace.domainDetail.sentence.same') }}</span>
             </div>
           </template>
         </a-collapse-panel>
       </a-collapse>
     </div>
     <div v-if="allConfs.notExitingConf.length" class="conf-section">
-      <h1>主机缺失配置</h1>
+      <h1>{{ $t('conftrace.domainDetail.sentence.missing') }}</h1>
       <a-collapse>
-        <a-collapse-panel v-for="item in allConfs.notExitingConf" :key="item.filePath" :header="`配置项：${item.filePath}`">
+        <a-collapse-panel v-for="item in allConfs.notExitingConf" :key="item.filePath" :header="`${$t('conftrace.domainConf.configurationItem')}:${item.filePath}`">
           <div class="conf-content">
             <a-row type="flex" justify="space-between" class="conf-content-header">
               <a-col>
                 <div class="ant-descriptions-title">
-                  文本内容：
+                  {{ $t('conftrace.domainDetail.confContent') }}
                 </div>
               </a-col>
             </a-row>
@@ -180,14 +180,14 @@ onMounted(() => {
           </div>
           <template #extra>
             <ExclamationCircleTwoTone two-tone-color="#f00" />
-            <span style="color: #f00">&nbsp;主机中无该项配置</span>
+            <span style="color: #f00"> {{ $t('conftrace.domainDetail.sentence.noConf') }}</span>
           </template>
         </a-collapse-panel>
       </a-collapse>
     </div>
   </a-spin>
 
-  <Drawer v-model:visible="isCompareVisibale" :width="800" title="差异对比">
+  <Drawer :key="$t('conftrace.domainDetail.differences')" v-model:visible="isCompareVisibale" :width="800">
     <template #content>
       <CompareDiff :diff-result="selectedCompareConf" />
     </template>

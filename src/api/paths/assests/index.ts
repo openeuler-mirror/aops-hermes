@@ -24,18 +24,18 @@ import { http } from '@/api/request'
  * @param params
  */
 export function createNewHost(params: Record<
-    string,
-    {
-      host_name: string
-      host_group_id: string
-      host_ip: string
-      management: boolean
-      ssh_user: string
-      ssh_port: number
-      ssh_pkey?: string
-      password?: string
-    }
-  >) {
+  string,
+  {
+    host_name: string
+    host_group_id: string
+    host_ip: string
+    management: boolean
+    ssh_user: string
+    ssh_port: number
+    ssh_pkey?: string
+    password?: string
+  }
+>) {
   return http.post<Record<string, { data: any, label: string }>>('/distribute/hosts', params)
 }
 /**
@@ -44,18 +44,18 @@ export function createNewHost(params: Record<
  * @param params
  */
 export function updateHost(hostId: string, params: Record<
-    string,
-    {
-      host_name: string
-      host_group_id: string
-      host_ip: string
-      management: boolean
-      ssh_user: string
-      ssh_port: number
-      ssh_pkey?: string
-      password?: string
-    }
-  >) {
+  string,
+  {
+    host_name: string
+    host_group_id: string
+    host_ip: string
+    management: boolean
+    ssh_user: string
+    ssh_port: number
+    ssh_pkey?: string
+    password?: string
+  }
+>) {
   return http.put(`/distribute/hosts/${hostId}`, params)
 }
 /**
@@ -98,7 +98,7 @@ export function getHostsStatus(params: DistributionParams<{ host_ids: string[] }
       data: { host_id: string, status: number }[]
       label: string
     }>
-    >('/distribute/hosts/status', { params })
+  >('/distribute/hosts/status', { params })
 }
 // #endregion
 

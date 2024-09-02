@@ -15,8 +15,12 @@ import type {
 } from 'axios'
 import axios from 'axios'
 import { message as Message, notification } from 'ant-design-vue'
-import { useAccountStore } from '@/store'
+import { useAccountStore, useLangStore } from '@/store'
 import { downloadBlobFile, isArrayOrObject } from '@/utils'
+import i18n from '@/locales'
+
+
+const { t } = i18n.global
 
 export interface Result<T = any> {
   code: number
@@ -40,21 +44,33 @@ const request = axios.create({
   timeout: 60 * 1000,
 })
 
-const formDataUrl = ['/vulnerabilities/cve/advisory/upload', '/vulnerabilities/cve/unaffected/upload', '/distribute/conftrace/management/uploadManagementConf', '/conftrace/management/uploadManagementConf']
+const formDataUrl = [
+  '/vulnerabilities/cve/advisory/upload',
+  '/vulnerabilities/cve/unaffected/upload',
+  '/distribute/conftrace/management/uploadManagementConf',
+  '/conftrace/management/uploadManagementConf',
+]
 
 request.interceptors.request.use(
   (
     config: InternalAxiosRequestConfig<any>,
   ): InternalAxiosRequestConfig<any> | Promise<InternalAxiosRequestConfig<any>> => {
-    if (config.url && formDataUrl.includes(config.url))
-      config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-    else config.headers['Content-Type'] = 'application/json; charset=UTF-8'
+    if (!config.headers['Content-Type']) {
+      if (config.url && formDataUrl.includes(config.url))
+        config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+      else config.headers['Content-Type'] = 'application/json; charset=UTF-8'
+    }
+
+    const { lang } = useLangStore()
+    config.headers['Accept-Language'] = lang === 'zh_cn' ? 'zh' : 'en'
+
     const aopsInfo = localStorage.getItem('aops')
     if (aopsInfo) {
       const { userInfo } = JSON.parse(aopsInfo)
       if (userInfo) {
         const { token } = userInfo
-        token && (config.headers['Access-Token'] = token)
+        if (token)
+          config.headers['Access-Token'] = token
       }
     }
     if (config.method === 'get') {
@@ -121,7 +137,7 @@ request.interceptors.response.use(
       switch (Number(code)) {
         case 1201:
           notification.error({
-            message: '用户校验失败',
+            message: `${t('account.sentence.validationFailed')}`,
             description: response.data.message,
           })
           setTimeout(() => {
@@ -165,7 +181,7 @@ request.interceptors.response.use(
           }
           else {
             notification.error({
-              message: '用户校验失败',
+              message: `${t('account.sentence.validationFailed')}`,
               description: response.data.message,
             })
             setTimeout(() => {
@@ -186,7 +202,7 @@ request.interceptors.response.use(
     return data
   },
   (error: AxiosError) => {
-    const message = error.message || '请求错误'
+    const message = error.message || 'Network Error'
     Message.error(message)
     return Promise.reject(error)
   },
@@ -230,6 +246,15 @@ export const http = {
   delete: async <T>(url: string, data?: object, params?: object): Promise<[any, T | undefined]> => {
     try {
       const result = await request.delete(url, { data, params })
+      return [null, result as T]
+    }
+    catch (error) {
+      return [error, undefined]
+    }
+  },
+  patch: async <T>(url: string, data?: object, params?: object): Promise<[any, T | undefined]> => {
+    try {
+      const result = await request.patch(url, data, { params })
       return [null, result as T]
     }
     catch (error) {

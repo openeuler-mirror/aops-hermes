@@ -1,7 +1,7 @@
-import type { MockMethod } from 'vite-plugin-mock';
+import type { MockMethod } from 'vite-plugin-mock'
 
-const USER = ['admin', 'normal'];
-const PASSWORD = ['changeme'];
+const USER = ['admin', 'normal']
+const PASSWORD = ['changeme']
 
 export const accountMock: Array<MockMethod> = [
   {
@@ -22,14 +22,15 @@ export const accountMock: Array<MockMethod> = [
           },
           label: 'Succeed',
           message: 'operation succeed',
-        };
-      } else {
+        }
+      }
+      else {
         return {
           code: 1201,
           data: {},
           label: 'Login.Error',
           message: 'incorrect username or password',
-        };
+        }
       }
     },
   },
@@ -46,7 +47,7 @@ export const accountMock: Array<MockMethod> = [
         },
         label: 'Succeed',
         message: 'operation succeed',
-      };
+      }
     },
   },
   {
@@ -58,7 +59,7 @@ export const accountMock: Array<MockMethod> = [
         code: 200,
         data: {},
         message: 'OK',
-      };
+      }
     },
   },
-];
+]

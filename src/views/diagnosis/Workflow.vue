@@ -1,1 +1,3 @@
-<template>workflow</template>
+<template>
+  workflow
+</template>

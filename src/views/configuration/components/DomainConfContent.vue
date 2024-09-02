@@ -8,7 +8,7 @@ defineProps<{
 
 <template>
   <a-descriptions v-if="configContent" :column="1" layout="horizontal">
-    <a-descriptions-item label="配置文件">
+    <a-descriptions-item :label="$t('conftrace.domainConf.file')">
       {{ configContent.filePath }}
     </a-descriptions-item>
     <a-descriptions-item>
