@@ -140,10 +140,14 @@ request.interceptors.response.use(
             message: `${t('account.sentence.validationFailed')}`,
             description: response.data.message,
           })
-          setTimeout(() => {
+          setTimeout(async () => {
             const { clearInfo } = useAccountStore()
-            clearInfo()
-            window.location.reload()
+            const { getAuthRedirectUrl } = useAccountStore()
+            const url = await getAuthRedirectUrl()
+            if (url) {
+              clearInfo()
+              window.location.href = url
+            }
           }, 1000)
           break
         case 1207:
@@ -151,9 +155,9 @@ request.interceptors.response.use(
             if (!isRefreshing) {
               isRefreshing = true
 
-              const { refreshToken } = useAccountStore()
+              const { refreshAuthToken } = useAccountStore()
               try {
-                const newToken = await refreshToken()
+                const newToken = await refreshAuthToken()
 
                 if (newToken) {
                   requestQueue.forEach(({ config, resolve }) => {

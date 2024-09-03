@@ -36,7 +36,6 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
           icon: h(DashboardOutlined),
         },
       },
-
       {
         path: '/assests',
         name: 'assests',
@@ -655,6 +654,11 @@ export const staticRoutes: Array<RouteRecordRaw> = [
         name: 'account',
         component: () => import('@/views/account/Account.vue'),
       },
+      {
+        path: '/user/auth',
+        name: 'auth',
+        component: () => import('@/views/account/Auth.vue'),
+      },
     ],
   },
   {
@@ -673,7 +677,7 @@ export const staticRoutes: Array<RouteRecordRaw> = [
     component: () => import('@/views/exception/403.vue'),
   },
   {
-    path: '/500',
+    path: '/error',
     meta: {
       title: '500',
       hidden: true,

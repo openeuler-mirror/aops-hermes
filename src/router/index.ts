@@ -26,7 +26,7 @@ const { t } = i18n.global
 const LOGIN_ROUTE_PATH = '/user/login'
 const DEFAULT_ROUTE_PATH = '/dashboard'
 const ALLOW_ROUTES: RouteRecordName[] = ['login', 'register']
-const reg = /^\/user\/(?:login|register|account)/
+const reg = /^\/user\/(?:login|register|account|auth)|error/
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -70,9 +70,15 @@ function noAuthGuard(to: RouteLocationNormalized, from: RouteLocationNormalized,
  * @param {NavigationGuardNext} next - The function to call to continue the navigation.
  * @return {void} This function does not return anything.
  */
-function authGuard(to: RouteLocationNormalized, next: NavigationGuardNext): void {
+async function authGuard(to: RouteLocationNormalized, next: NavigationGuardNext): Promise<void> {
   if (to.name && ALLOW_ROUTES.includes(to.name)) {
-    next()
+    const { getAuthRedirectUrl } = useAccountStore()
+    const url = await getAuthRedirectUrl()
+    if (url) {
+      window.location.href = url
+    } else {
+      router.push('/error')
+    }
   }
   else {
     reg.test(to.path)
