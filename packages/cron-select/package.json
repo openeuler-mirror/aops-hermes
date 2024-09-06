@@ -1,0 +1,27 @@
+{
+  "author": "",
+  "dependencies": {
+    "element-plus": "^2.8.1"
+  },
+  "description": "",
+  "devDependencies": {},
+  "exports": {
+    ".": {
+      "import": "./index.ts"
+    }
+  },
+  "license": "ISC",
+  "main": "copilot.umd.js",
+  "module": "copilot.es.js",
+  "name": "@aops/cron-select",
+  "peerDependencies": {
+    "element-plus": "2.3.12",
+    "vue": "3.2.47"
+  },
+  "scripts": {
+    "build": "vite build"
+  },
+  "style": "style.css",
+  "types": "types/index.d.ts",
+  "version": "1.0.0"
+}
