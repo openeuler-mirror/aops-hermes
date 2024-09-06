@@ -8,10 +8,12 @@
 // PURPOSE.
 // See the Mulan PSL v2 for more details.
 
+
 /**
- * download blob file
- * @param blobData
- * @param fileName
+ * Downloads a Blob object as a file.
+ *
+ * @param {Blob} blobData - The Blob object to download.
+ * @param {string} fileName - The name of the file to be downloaded.
  */
 export function downloadBlobFile(blobData: Blob, fileName: string) {
   const blob = new Blob([blobData])

@@ -19,25 +19,54 @@ export const useClusterStore = defineStore('clusterStore', () => {
   const hostGroups = ref<HostGroupInfo[]>([])
   const permissions = ref<{ cluster_id: string, cluster_name: string, host_groups: HostGroup[] }[]>([])
 
-  async function queryClusters() {
+  /**
+   * Queries the clusters by making an API call to the server and updates the state
+   * with the response if successful.
+   *
+   * @return {Promise<void>} A promise that resolves when the API call is complete.
+   */
+  async function queryClusters(): Promise<void> {
     const [_, res] = await api.getClusters()
     if (res)
       clusters.value = res
   }
 
-  async function queryHostGroups() {
+  /**
+   * Asynchronously queries the host groups by making an API call to the server and updates the state
+   * with the response if successful.
+   *
+   * @return {Promise<void>} A promise that resolves when the API call is complete.
+   */
+  async function queryHostGroups(): Promise<void> {
     const [_, res] = await api.getHostGroups()
     if (res)
       hostGroups.value = res.host_group_infos
   }
 
-  async function queryPermission() {
+  /**
+   * Asynchronously queries the user's permission by making an API call to the server and updates the state
+   * with the response if successful.
+   *
+   * @return {Promise<void>} A promise that resolves when the API call is complete.
+   */
+  async function queryPermission(): Promise<void> {
     const { userInfo } = useAccountStore()
     const [_, res] = await api.getAccountPermission(userInfo?.username)
     if (res)
       permissions.value = res
   }
 
+  /**
+   * Registers a new cluster with the given parameters.
+   *
+   * @param {object} params - The parameters for registering the cluster.
+   * @param {string} params.cluster_name - The name of the cluster.
+   * @param {string} params.description - The description of the cluster.
+   * @param {string} params.cluster_ip - The IP address of the cluster.
+   * @param {string} params.cluster_username - The username for accessing the cluster.
+   * @param {string} params.cluster_password - The password for accessing the cluster.
+   * @return {Promise<boolean>} A promise that resolves to true if the cluster was registered successfully, false otherwise.
+   */
   async function registerCluster(params: {
     cluster_name: string
     description: string
@@ -49,6 +78,16 @@ export const useClusterStore = defineStore('clusterStore', () => {
     return !_
   }
 
+  /**
+   * Updates a cluster with the given parameters.
+   *
+   * @param {object} params - The parameters for updating the cluster.
+   * @param {string} params.cluster_id - The ID of the cluster.
+   * @param {string} params.cluster_name - The new name of the cluster.
+   * @param {string} params.description - The new description of the cluster.
+   * @param {string} params.cluster_ip - The new IP address of the cluster.
+   * @return {Promise<boolean>} A promise that resolves to true if the cluster was updated successfully, false otherwise.
+   */
   async function updateCluster(params: {
     cluster_id: string
     cluster_name: string
@@ -61,7 +100,9 @@ export const useClusterStore = defineStore('clusterStore', () => {
 
   onMounted(() => {
     queryClusters()
+    queryHostGroups()
     queryPermission()
   })
+
   return { clusters, hostGroups, permissions, queryClusters, queryHostGroups, registerCluster, updateCluster, queryPermission }
 })

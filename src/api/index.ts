@@ -8,7 +8,7 @@
 // PURPOSE.
 // See the Mulan PSL v2 for more details.
 
-import { accountApi, assestsApi, domainApi, hostApi, userApi, vulnerabilityApi } from './paths'
+import { accountApi, assestsApi, domainApi, exectionApi, hostApi, userApi, vulnerabilityApi } from './paths'
 
 export const api = {
   ...accountApi,
@@ -17,6 +17,7 @@ export const api = {
   ...userApi,
   ...domainApi,
   ...hostApi,
+  ...exectionApi,
 }
 
 export * from './paths'

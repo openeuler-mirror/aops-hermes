@@ -12,6 +12,7 @@ import {
   accountMock,
   assestsMock,
   domainMock,
+  executionMock,
   hostMock,
   userMock,
   vulnerabilityMock,
@@ -24,4 +25,5 @@ export default [
   ...userMock,
   ...hostMock,
   ...domainMock,
+  ...executionMock,
 ] as MockMethod[]

@@ -3,43 +3,43 @@
     "authorizing": "gitee授权登录中...",
     "bindAccount": "绑定本地账户",
     "clickToRegsiter": "点此注册",
+    "currentPass": "当前密码",
     "jump": "点击立即跳转",
     "loaclAccount": "本地账号",
     "login": "登录",
-    "password": "密码",
-    "register": "立即注册",
-    "noAccount": "没有账号?",
-    "useGitee": "使用gitee账号登录",
-    "currentPass": "当前密码",
-    "newPass": "新密码",
-    "reNewPass": "确认密码",
     "message": {
       "bindSuccess": "绑定成功！",
       "cancelAuth": "取消第三方授权！",
       "denyAuth": "拒绝授权！",
       "registerSuccess": "注册成功"
     },
+    "newPass": "新密码",
+    "noAccount": "没有账号?",
     "palceHolder": {
-      "email": "输入邮箱地址: eg: xxxx{'@'}163.com",
+      "email": "输入邮箱地址: 例如:xxxx{'@'}163.com",
       "password": "密码长度6-20位,包含字母或数字",
       "rePassword": "确认前后两次输入的密码保持一致",
       "username": "用户名5-20位,包含字母或数字"
     },
+    "password": "密码",
+    "reNewPass": "确认密码",
+    "register": "立即注册",
     "sentence": {
       "backLogin": "返回登录",
       "bindGitee": "当前gitee账号尚未绑定本地账号! 绑定一个本地账号以继续登录",
       "countDown": "授权成功!{0}秒后跳转到首页",
       "hasAccount": "已有账号？",
+      "validationFailed": "用户校验失败",
       "welcome": "欢迎",
-      "welcomeBack": "欢迎回来",
-      "validationFailed": "用户校验失败"
+      "welcomeBack": "欢迎回来"
     },
+    "useGitee": "使用gitee账号登录",
     "validateMsg": {
+      "diffPass": "新密码和当前密码不能相同!",
       "email": "请输入正确的邮箱格式!",
       "passwordOne": "请输入6-20位字母或数字组成的密码!",
       "passwordTwo": "请确保前后两次输入的密码保持一致！",
-      "username": "请输入5-20位字母或数字组成的用户名!",
-      "diffPass": "新密码和当前密码不能相同!"
+      "username": "请输入5-20位字母或数字组成的用户名!"
     }
   },
   "assests": {
@@ -90,18 +90,6 @@
     "overview": "概览",
     "ownHost": "拥有主机",
     "password": "主机登录密码",
-    "plugin": "插件",
-    "scenes": "场景",
-    "searchBy": "按主机或IP搜索",
-    "size": "大小",
-    "speed": "速度",
-    "sshPkey": "主机登录密钥",
-    "sshPort": "SSH登录端口",
-    "status": "运行状态",
-    "type": "类型",
-    "unknown": "未确认",
-    "username": "主机用户名",
-    "web": "web服务",
     "placeHolder": {
       "cluster": "请选择集群",
       "desc": "请输入描述，60个字符以内",
@@ -116,6 +104,9 @@
       "ssh_pkey_require": "请输入主机登录密钥, 若未修改主机用户名或端口可以为空",
       "username": "请输入主机用户名"
     },
+    "plugin": "插件",
+    "scenes": "场景",
+    "searchBy": "按主机或IP搜索",
     "sentence": {
       "deleteConfim": "删除后无法恢复,请确认删除以下主机",
       "fileError": "文件类型不符合规定！",
@@ -126,12 +117,20 @@
       "partialSuccess": "部分主机添加成功",
       "supportFile": "支持类型: xls、xlsx、csv"
     },
+    "size": "大小",
+    "speed": "速度",
+    "sshPkey": "主机登录密钥",
+    "sshPort": "SSH登录端口",
+    "status": "运行状态",
     "tips": {
       "hostGroupName": "最大长度50个字符，由数字、小写字母、英文下划线_组成。以小写字母开头，且结尾不能是英文下划线_",
       "hostName": "最大长度50个字符，首尾不能为空格，不允许全空格",
       "refresh": "查询主机最新的数据",
       "username": "登录主机时使用的用户名"
     },
+    "type": "类型",
+    "unknown": "未确认",
+    "username": "主机用户名",
     "validateMsg": {
       "cluster": "请选择集群",
       "description": "请输入主机组描述",
@@ -155,11 +154,13 @@
       "username_one": "用户名为数字、英文字母或特殊字符组成，不能包含空格和以下特殊字符：:<>&,'\"\\/%。",
       "username_three": "用户名为数字、英文字母或特殊字符组成，不能包含空格和以下特殊字符：:<>&,\\'\"\\\\/%。",
       "username_two": "首字符不能是“#”、“+”或“-”"
-    }
+    },
+    "web": "web服务"
   },
   "common": {
     "ImportFile": "导入文件",
     "add": "添加",
+    "arch": "架构",
     "cancel": "取消",
     "changePass": "修改密码",
     "clear": "清除选择",
@@ -170,6 +171,7 @@
     "create": "创建",
     "createFail": "创建失败",
     "createSuccess": "创建成功",
+    "createTime": "创建时间",
     "delete": "删除",
     "deleteBatch": "批量删除",
     "deleteFail": "删除失败",
@@ -178,6 +180,7 @@
     "downloadFail": "下载失败",
     "downloadTemp": "下载模板",
     "edit": "编辑",
+    "editSuccess": "编辑成功",
     "excute": "执行",
     "excuteSuccess": "执行成功",
     "excuting": "执行中",
@@ -197,19 +200,26 @@
     "none": "暂无",
     "notExcute": "暂未执行",
     "operation": "操作",
+    "os": "操作系统",
     "palceHolder": {
       "selectDoc": "请选择文件"
     },
     "refresh": "刷新",
     "result": "结果： {0}",
+    "secends": "秒",
     "selectDoc": "选择文件",
     "selectItems": "已选择{count}项",
     "sentence": {
+      "confirmDelete": "确认删除吗?",
       "fileSize": "文件不得大于1M"
     },
     "signOut": "退出登录",
+    "startTime": "开始{type}时间",
+    "status": "状态",
     "submitting": "提交中",
     "succeed": "成功",
+    "sync": "同步",
+    "timeout": "超时时间",
     "total": "总计{count}项",
     "upload": "上传",
     "uploadSuccess": "上传成功",
@@ -217,9 +227,9 @@
     "validateMsg": {
       "LeadingAndTrailingNoSpaces": "首尾不允许空格"
     },
+    "viewDetail": "查看详情",
     "welcomeAops": "欢迎来到A-Ops系统",
-    "yes": "是",
-    "sync": "同步"
+    "yes": "是"
   },
   "conftrace": {
     "domain": {
@@ -259,6 +269,7 @@
       "confCount": "共获取到{count}条配置信息",
       "confPath": "配置路径",
       "confRegion": "配置来源",
+      "configurationItem": "配置项",
       "deleteConfirm": "你确定删除这行配置吗?",
       "detail": "配置详情",
       "editConf": "编辑配置",
@@ -267,7 +278,6 @@
       "fileImport": "从本地导入",
       "hostSide": "主机端（实际配置）",
       "manuel": "手动输入",
-      "configurationItem": "配置项",
       "message": {
         "noDomain": "未选择业务域，返回管理列表页",
         "noFile": "请选择要删除的配置文件"
@@ -326,8 +336,8 @@
       },
       "statusDetail": "状态详情",
       "syncStatus": "同步状态",
-      "unknownStatus": "未知状态",
       "synchronized": "已同步",
+      "unknownStatus": "未知状态",
       "unsynchronized": "未同步"
     }
   },
@@ -353,7 +363,128 @@
     "domianSync": "业务域同步率",
     "hostCount": "主机数量"
   },
+  "execution": {
+    "command": {
+      "commandContent": "命令内容",
+      "commandExeuction": "命令执行",
+      "commandManagement": "命令管理",
+      "commandName": "命令名称",
+      "executionUser": "执行用户",
+      "newCommand": "新建命令",
+      "placeHolder": {
+        "requireCommandContent": "请输入命令行及参数",
+        "requireCommandName": "请输入命令名称",
+        "timeoutRange": "请输入超时时间【1-86400】"
+      },
+      "validate": {
+        "requireCommandContent": "请输入命令内容",
+        "requireCommandName": "请输入命令名称",
+        "requireTimeout": "请输入超时时间",
+        "timeoutRange": "超时时间需在1-86400之间"
+      }
+    },
+    "operate": {
+      "editCommond": "编辑命令",
+      "newCommand": "新建命令",
+      "operateName": "操作名称"
+    },
+    "script": {
+      "arch": "架构",
+      "command": "执行脚本命令",
+      "editOperate": "编辑操作",
+      "editScript": "修改脚本",
+      "newOperate": "新建操作",
+      "newScript": "新建脚本",
+      "operateName": "操作名称",
+      "operationManagement": "操作管理",
+      "osName": "操作系统",
+      "placeHolder": {
+        "requireArch": "请选择架构",
+        "requireCommandContent": "请输入脚本内容",
+        "requireOperate": "请选择操作",
+        "requireOs": "请选择操作系统",
+        "requireScriptName": "请输入脚本名称"
+      },
+      "scriptExeuction": "脚本执行",
+      "scriptFile": "脚本文件",
+      "scriptManagement": "脚本管理",
+      "scriptName": "脚本名称",
+      "sentence": {
+        "fileOversize": "{fileName} 文件大小超过2G,已经自动删除"
+      },
+      "updateScript": "修改脚本",
+      "uploadScript": "上传脚本",
+      "validate": {
+        "requireArch": "请选择架构",
+        "requireCommand": "请输入脚本内容",
+        "requireFiles": "请选择至少一个文件",
+        "requireInputOperate": "请输入操作名称",
+        "requireOperateName": "请选择操作名称",
+        "requireOs": "请选择操作系统",
+        "requireScriptName": "请输入脚本名称",
+        "requireTimeout": "请输入超时时间"
+      }
+    },
+    "task": {
+      "batchImportHost": "批量导入主机",
+      "cancelBatchImport": "取消批量导入",
+      "cancelExecute": "取消执行",
+      "commandContent": "命令内容",
+      "commandName": "命令名称",
+      "commandSelect": "命令选择",
+      "cycleExecution": "周期执行",
+      "duration": "执行用时",
+      "editTask": "编辑任务",
+      "executeIndex": "执行顺序",
+      "executeResult": "执行结果",
+      "executionStrategy": "执行策略",
+      "host": "主机",
+      "hostImport": "主机导入",
+      "hostSelect": "主机选择",
+      "moveDown": "下移",
+      "moveUp": "上移",
+      "newTask": "新建任务",
+      "operateSelect": "操作选择",
+      "taskDetail": "任务详情",
+      "placeHolder": {
+        "requireExecutiontime": "请选择执行时间",
+        "requireHost": "请选择主机",
+        "requireHostArea": "请输入主机ip列表,每个ip使用英文逗号「,」分割，按下回车后解析ip列表",
+        "requireHostGroup": "请选择主机组",
+        "requireTaskName": "请输入任务名称",
+        "requireRemotePath": "请输入推送目录"
+      },
+      "progress": "进度",
+      "pushOnly": "仅推送",
+      "remotePath": "推送目录",
+      "retry": "重新执行",
+      "scheduledTask": "定时任务",
+      "sentence": {
+        "atLeastOneTaskDelete": "请选择至少一个任务进行删除",
+        "filterHostIp": "未找到以下IP的主机{ipStr}已帮您自动剔除未找到的主机",
+        "noHostInGroup": "当前选择主机组下没有主机，请选择其他主机组",
+        "taskNotFinish": "任务尚未执行或未完成"
+      },
+      "singleExecution": "单次执行",
+      "startExecute": "开始执行",
+      "taskName": "任务名称",
+      "validate": {
+        "remotePath": "推送目录不能以.或..开头,请填写绝对路径",
+        "requireCommandList": "请选择",
+        "requireCron": "请选择周期执时表达式",
+        "requireExecutiontime": "请选择定时任务执行时间",
+        "requireHostGroup": "请选择主机组",
+        "requireHostIps": "请输入主机ip列表",
+        "requireHosts": "请选择主机",
+        "requireRemotePath": "请输入推送目录",
+        "requireTaskName": "请输入任务名称"
+      }
+    }
+  },
   "router": {
+    "account": {
+      "self": "用户"
+    },
     "assests": {
       "createHost": "创建主机",
       "editHost": "编辑主机",
@@ -373,6 +504,12 @@
       "self": "配置溯源"
     },
     "dashboard": "工作台",
+    "execution": {
+      "commamdManagement": "命令管理",
+      "scriptExecution": "批量执行",
+      "scriptManagement": "脚本管理",
+      "self": "自动化批量执行"
+    },
     "index": "主页",
     "user": {
       "cluster": "集群列表",
@@ -382,9 +519,6 @@
       "self": "用户管理",
       "userPermission": "权限分配",
       "users": "用户列表"
-    },
-    "account": {
-      "self": "用户"
     },
     "vulnerability": {
       "cveDetail": "Cve 详情",
