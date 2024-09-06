@@ -21,10 +21,11 @@ import { useAccountStore, useRouteStore } from '@/store'
 import { staticRoutes } from '@/conf/routeSettings'
 import i18n from '@/locales'
 
+
 const { t } = i18n.global
 
 const LOGIN_ROUTE_PATH = '/user/login'
-const DEFAULT_ROUTE_PATH = '/dashboard'
+const DEFAULT_ROUTE_PATH = '/eulercopilot'
 const ALLOW_ROUTES: RouteRecordName[] = ['login', 'register']
 const reg = /^\/user\/(?:login|register|account|auth)|error/
 

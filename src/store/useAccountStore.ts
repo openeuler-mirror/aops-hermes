@@ -68,12 +68,14 @@ export const useAccountStore = defineStore(
      * account logout
      */
     const logout = async (): Promise<boolean> => {
-      const [_] = await api.logout()
+      const [_, res] = await api.logout()
       if (_)
         return false
-      clearInfo()
-      window.location.href = authRedirectUrl.value
-
+      if (res) {
+        clearInfo()
+        const url = `${res}?redirect_uri=${location.href}`
+        window.location.href = url
+      }
       return true
     }
     function saveInfo(info: typeof userInfo.value) {

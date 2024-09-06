@@ -11,7 +11,9 @@ import { URL, fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { viteMockServe } from 'vite-plugin-mock'
-import { visualizer } from 'rollup-plugin-visualizer'
+
+
+const BASE_PROXY_URL = 'http://localhost:81'
 
 export default () => {
   return defineConfig({
@@ -22,6 +24,9 @@ export default () => {
     },
     envPrefix: 'A_OPS',
     plugins: [
+      // legacy({
+      //   targets: ['Chrome >= 84']
+      // }),
       vue(),
       // https://github.com/anncwb/vite-plugin-mock/tree/master/#readme
       viteMockServe({
@@ -29,7 +34,6 @@ export default () => {
         mockPath: 'mock',
         localEnabled: false,
       }),
-      visualizer({ open: true }),
     ],
     build: {
       minify: 'terser',
@@ -67,37 +71,51 @@ export default () => {
     server: {
       host: '0.0.0.0',
       hmr: true,
-      port: 8080,
+      port: 80,
       proxy: {
         '/accounts': {
-          target: 'http://localhost:11111',
+          target: BASE_PROXY_URL,
           secure: false,
           changeOrigin: true,
           ws: false,
         },
         '/hosts': {
-          target: 'http://localhost:11111',
+          target: BASE_PROXY_URL,
           secure: false,
           changeOrigin: true,
           ws: false,
         },
         '/distribute': {
-          target: 'http://localhost:11111',
+          target: BASE_PROXY_URL,
           secure: false,
           changeOrigin: true,
           ws: false,
         },
         '/vulnerabilities': {
-          target: 'http://localhost:11111',
+          target: BASE_PROXY_URL,
           secure: false,
           changeOrigin: true,
           ws: false,
         },
         '/conftrace': {
-          target: 'http://localhost:11111',
+          target: BASE_PROXY_URL,
           secure: false,
           changeOrigin: true,
           ws: false,
+        },
+        '/operations': {
+          target: BASE_PROXY_URL,
+          secure: false,
+          changeOrigin: true,
+          ws: false,
+          rewrite: (path: string) => path,
+        },
+        "/api": {
+          target: 'http://116.63.144.61:21579',
+          changeOrigin: true,
+          ws: false,
+          rewrite: (path: string) => path,
+          cookieDomainRewrite: '.euler-copilot-master.test.osinfra.cn'
         },
       },
     },
