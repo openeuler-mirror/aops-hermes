@@ -87,7 +87,7 @@ function onBreadCrumbClick(route: Breadcrumb): void {
 <style lang="less" scoped>
 .page-wrapper {
   &-content {
-    padding: 20px;
+    padding: 15px;
   }
   &-breadcrumb {
     padding: 12px 24px;

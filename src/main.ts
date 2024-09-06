@@ -11,6 +11,7 @@ import 'ant-design-vue/dist/reset.css'
 import '@/assets/styles/main.css'
 import '@/assets/styles/global.less'
 import 'nprogress/nprogress.css'
+import '@/assets/styles/tailwind.css'
 
 import { createApp } from 'vue'
 import Antd from 'ant-design-vue'

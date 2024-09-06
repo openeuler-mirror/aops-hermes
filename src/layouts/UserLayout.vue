@@ -5,8 +5,9 @@ import LangCheck from '@/components/GlobalHeader/LangCheck.vue'
 
 <template>
   <div id="userLayout" class="user-layout-wrapper">
-    <div class="container">
-      <LangCheck class="lang" />      <a-row style="height: 100vh" type="flex">
+    <div class="w-full min-h-full relative">
+      <LangCheck class="lang" />
+      <a-row style="height: 100vh" type="flex">
         <a-col class="left-side" :xs="{ span: 24, order: 2 }" :lg="{ span: 12, order: 1 }">
           <img src="@/assets/imgs/loginPage.png">
         </a-col>
@@ -35,12 +36,6 @@ import LangCheck from '@/components/GlobalHeader/LangCheck.vue'
 <style lang="less" scoped>
 #userLayout.user-layout-wrapper {
   height: 100%;
-
-  .container {
-    width: 100%;
-    min-height: 100%;
-    background-size: 100%;
-    position: relative;
 
     .lang {
       position: absolute;
@@ -97,7 +92,6 @@ import LangCheck from '@/components/GlobalHeader/LangCheck.vue'
         width: 400px;
         margin: 0 auto;
       }
-    }
 
     .footer {
       bottom: 0;

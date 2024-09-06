@@ -37,13 +37,22 @@ const form = reactive<{
 })
 
 const formRules: Record<string, Rule[]> = {
-  selectedCluster: [{ required: true, message: t('assests.placeHolder.cluster'), trigger: 'change' }],
+  selectedCluster: [
+    {
+      required: true,
+      message: t('assests.placeHolder.cluster'),
+      trigger: 'change',
+    },
+  ],
 }
 
 const { permissions } = storeToRefs(useClusterStore())
 
 const clusterOptions = computed(() =>
-  permissions.value.map(({ cluster_id, cluster_name }) => ({ cluster_id, cluster_name })),
+  permissions.value.map(({ cluster_id, cluster_name }) => ({
+    cluster_id,
+    cluster_name,
+  })),
 )
 
 const modalState = reactive({
@@ -52,7 +61,7 @@ const modalState = reactive({
   expandedRowKeys: [],
 })
 // #region ----------------------------------------< table >----------------------------------------
-const tableColumn = computed(() => ([
+const tableColumn = computed(() => [
   {
     title: t('assests.ip'),
     dataIndex: 'host_ip',
@@ -94,7 +103,7 @@ const tableColumn = computed(() => ([
     title: t('assests.addResult'),
     dataIndex: 'result',
   },
-]))
+])
 
 const tableData = ref<HostItem[]>([])
 
@@ -119,13 +128,11 @@ const fileList = ref<UploadProps['fileList']>([])
 
 function deleteHost(ind: number) {
   tableData.value.splice(ind, 1)
-  if (tableData.value.length === 0)
-    fileList.value = []
+  if (tableData.value.length === 0) fileList.value = []
 }
 
 const removeFile: UploadProps['onRemove'] = (file) => {
-  if (!fileList.value)
-    return
+  if (!fileList.value) return
   const index = fileList.value.indexOf(file)
   const newFileList = fileList.value.slice()
   newFileList.splice(index, 1)
@@ -146,14 +153,13 @@ const beforeUpload: UploadProps['beforeUpload'] = async (file) => {
   const workbook = read(fileData, { type: 'buffer' })
   const worksheet = workbook.Sheets[workbook.SheetNames[0]]
   const result = utils.sheet_to_json(worksheet)
-  if (!result)
-    return
+  if (!result) return
 
   const defaultkeys = tableColumn.value
-    .filter(item => !excludeList.includes(item.dataIndex))
-    .map(item => item.dataIndex)
-  const isSatisfactory = result.every((obj: object) =>
-    defaultkeys.every(key => Object.prototype.hasOwnProperty.call(obj, key)),
+    .filter((item) => !excludeList.includes(item.dataIndex))
+    .map((item) => item.dataIndex)
+  const isSatisfactory = result.every((obj: any) =>
+    defaultkeys.every((key) => Object.prototype.hasOwnProperty.call(obj, key)),
   )
   if (!isSatisfactory) {
     message.error(t('assests.sentence.fileParamsError'))
@@ -182,7 +188,7 @@ const beforeUpload: UploadProps['beforeUpload'] = async (file) => {
 async function readFile(file: File): Promise<unknown> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
-    reader.onload = event => resolve(event.target!.result)
+    reader.onload = (event) => resolve(event.target!.result)
     reader.onerror = reject
     reader.readAsArrayBuffer(file)
   })
@@ -216,16 +222,7 @@ async function handleSubmit() {
     }> = {}
     const hosts: HostParams[] = []
     tableData.value.forEach(
-      ({
-        host_name,
-        host_group_name,
-        host_ip,
-        management,
-        password,
-        ssh_pkey,
-        ssh_port,
-        ssh_user,
-      }) => {
+      ({ host_name, host_group_name, host_ip, management, password, ssh_pkey, ssh_port, ssh_user }) => {
         hosts.push({
           host_ip,
           host_group_name,
@@ -245,34 +242,27 @@ async function handleSubmit() {
       let success: number = 0
       tableData.value.forEach((item) => {
         const row = res[form.selectedCluster!].data.find(
-          t => `${t.host_ip}${t.ssh_port}` === `${item.host_ip}${item.ssh_port}`,
+          (t) => `${t.host_ip}${t.ssh_port}` === `${item.host_ip}${item.ssh_port}`,
         )
         if (row) {
           item.reason = row.reason
           item.result = row.result
-        }
-        else {
+        } else {
           item.result = 'succeed'
         }
-        if (item.result === 'succeed')
-          success += 1
+        if (item.result === 'succeed') success += 1
       })
-      if (success === tableData.value.length)
-        message.success(t('common.succeed'))
-      else if (success > 0 && success < tableData.value.length)
-        message.warning(t('assests.sentence.partialSuccess'))
+      if (success === tableData.value.length) message.success(t('common.succeed'))
+      else if (success > 0 && success < tableData.value.length) message.warning(t('assests.sentence.partialSuccess'))
       else message.error(t('common.fail'))
-    }
-    else {
+    } else {
       message.success(t('common.succeed'))
       closeModal()
       emit('success')
     }
-  }
-  catch {
+  } catch {
     modalState.isLoading = false
-  }
-  finally {
+  } finally {
     modalState.isLoading = false
   }
 }
@@ -282,7 +272,7 @@ const editableKeys = ref<string[]>([])
 
 function handleSave(key: string, value: string, index: number) {
   tableData.value[index][key] = value
-  editableKeys.value = editableKeys.value.filter(item => item !== key)
+  editableKeys.value = editableKeys.value.filter((item) => item !== key)
   isEditing.value = false
 }
 
@@ -378,13 +368,12 @@ function handleEdit(key: string) {
             <a-row :gutter="8">
               <a-col>
                 <CheckCircleTwoTone v-if="record.result === 'succeed'" two-tone-color="#52c41a" />
-                <ExclamationCircleTwoTone
-                  v-else-if="record.result === 'failed'"
-                  two-tone-color="#ff0000"
-                />
+                <ExclamationCircleTwoTone v-else-if="record.result === 'failed'" two-tone-color="#ff0000" />
                 <InfoCircleTwoTone v-else two-tone-color="#CDCD00" />
               </a-col>
-              <a-col> {{ addStatusEnum[record.result] || t('common.notExcute') }} </a-col>
+              <a-col>
+                {{ addStatusEnum[record.result] || t('common.notExcute') }}
+              </a-col>
             </a-row>
           </template>
         </template>
@@ -410,11 +399,14 @@ function handleEdit(key: string) {
   top: 5px;
   white-space: nowrap;
 }
+
 .form-item {
   margin: 0;
 }
+
 .editable-cell {
   position: relative;
+
   .editable-cell-input-wrapper,
   .editable-cell-text-wrapper {
     padding-right: 10px;
@@ -451,7 +443,9 @@ function handleEdit(key: string) {
     margin-bottom: 8px;
   }
 }
+
 .editable-cell:hover .editable-cell-icon {
   display: inline-block;
 }
 </style>
+

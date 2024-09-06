@@ -77,7 +77,7 @@ async function queryCveOverview() {
 }
 
 function setChartData() {
-  option.series![0].data = Object.keys(dashboardData.cveRiskOverview).map((key) => {
+  ;(option.series! as any)[0].data = Object.keys(dashboardData.cveRiskOverview).map(key => {
     return {
       value: dashboardData.cveRiskOverview[key],
       name: t(`vul.severityStatus.${key.toLowerCase()}`),
@@ -91,25 +91,26 @@ function setChartData() {
 
 async function queryClusters() {
   const [_, res] = await api.getClusters()
-  if (res)
-    dashboardData.clusters = res
+  if (res) dashboardData.clusters = res
 }
 
-watch(() => lang.value, () => {
-  queryCveOverview()
-})
+watch(
+  () => lang.value,
+  () => {
+    queryCveOverview()
+  },
+)
 
 onMounted(() => {
   queryHostsCount()
   queryHostsAlarms()
   queryClusters()
-  queryCveOverview()
+  // queryCveOverview()
   chart = init(cvePieRef.value)
 })
 
 onBeforeUnmount(() => {
-  if (chart)
-    chart.dispose()
+  if (chart) chart.dispose()
 })
 </script>
 
@@ -121,7 +122,7 @@ onBeforeUnmount(() => {
           <a-row class="dash-card-samll" type="flex" justify="space-between" align="middle">
             <a-col>
               <a-space>
-                <img class="card-icon" src="@/assets/imgs/dash-host.png" alt="">
+                <img class="card-icon" src="@/assets/imgs/dash-host.png" alt="" />
                 <span> {{ $t('dashboard.hostCount') }}</span>
               </a-space>
             </a-col>
@@ -134,7 +135,7 @@ onBeforeUnmount(() => {
           <a-row class="dash-card-samll" type="flex" justify="space-between" align="middle">
             <a-col>
               <a-space>
-                <img class="card-icon" src="@/assets/imgs/dash-fault.png" alt="">
+                <img class="card-icon" src="@/assets/imgs/dash-fault.png" alt="" />
                 <span> {{ $t('dashboard.alertCount') }}</span>
               </a-space>
             </a-col>
@@ -147,7 +148,7 @@ onBeforeUnmount(() => {
           <a-row class="dash-card-samll" type="flex" justify="space-between" align="middle">
             <a-col>
               <a-space>
-                <img class="card-icon" src="@/assets/imgs/dash-host.png" alt="">
+                <img class="card-icon" src="@/assets/imgs/dash-host.png" alt="" />
                 <span> {{ $t('dashboard.clusterCount') }}</span>
               </a-space>
             </a-col>
@@ -161,13 +162,7 @@ onBeforeUnmount(() => {
         <a-card>
           <a-row class="sync-card" type="flex" align="middle" justify="space-between">
             <a-col>
-              <a-progress
-                type="circle"
-                :percent="100"
-                :stroke-width="20"
-                :size="150"
-                :show-info="false"
-              />
+              <a-progress type="circle" :percent="100" :stroke-width="20" :size="150" :show-info="false" />
             </a-col>
             <a-col>
               <div class="dash-sync-card-desc">
@@ -182,9 +177,7 @@ onBeforeUnmount(() => {
                   <a-badge status="error" />
                   {{ $t('dashboard.domainUnSync') }}
                 </span>
-                <div class="data-number">
-                  0
-                </div>
+                <div class="data-number">0</div>
               </div>
             </a-col>
           </a-row>
@@ -205,16 +198,19 @@ onBeforeUnmount(() => {
 
 <style lang="less" scoped>
 .dash-card-samll {
-  height: 35px;
+  height: 42px;
+
   .card-icon {
     width: 48px;
     height: 48px;
   }
+
   .card-value {
     font-size: 30px;
     font-weight: bold;
   }
 }
+
 .sync-card {
   height: 241px;
   padding: 5px;
@@ -225,14 +221,17 @@ onBeforeUnmount(() => {
   font-size: 14px;
   vertical-align: middle;
   margin-left: 4px;
+
   &-icon {
     margin-left: 2px;
   }
+
   &.short-length {
     display: inline-block;
     width: 60px;
   }
 }
+
 .data-number {
   display: block;
   font-size: 32px;
@@ -243,11 +242,13 @@ onBeforeUnmount(() => {
   height: 241px;
   display: block;
   padding-top: 1px;
+
   h3 {
     font-weight: bold;
     font-size: 24px;
     margin-bottom: 0;
   }
+
   .cve-pie-chart {
     width: 87%;
     height: 170px;
@@ -255,3 +256,4 @@ onBeforeUnmount(() => {
   }
 }
 </style>
+

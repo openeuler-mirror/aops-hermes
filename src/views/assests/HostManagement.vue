@@ -95,18 +95,18 @@ const hostsTableColums = computed(() => {
     {
       title: t('assests.hostGroup'),
       dataIndex: 'host_group_name',
-      filters: permissions.value.filter((item) => {
-        if (!filterMap.cluster_list || filterMap.cluster_list?.length === 0)
-          return item
-        else
-          return filterMap.cluster_list?.includes(item.cluster_id)
-      }).map(({ cluster_id, cluster_name, host_groups }) => {
-        return {
-          text: cluster_name,
-          value: cluster_id,
-          children: host_groups.map(h => ({ text: h.host_group_name, value: h.host_group_id })),
-        }
-      }),
+      filters: permissions.value
+        .filter((item) => {
+          if (!filterMap.cluster_list || filterMap.cluster_list?.length === 0) return item
+          else return filterMap.cluster_list?.includes(item.cluster_id)
+        })
+        .map(({ cluster_id, cluster_name, host_groups }) => {
+          return {
+            text: cluster_name,
+            value: cluster_id,
+            children: host_groups.map((h) => ({ text: h.host_group_name, value: h.host_group_id })),
+          }
+        }),
       filterMode: 'tree',
       filterSearch: true,
     },
@@ -159,8 +159,7 @@ async function queryHosts(searchKey?: string) {
     cluster_list: filterMap.cluster_list,
   }
   const [_, res] = await api.getHosts(params)
-  if (!res)
-    return
+  if (!res) return
   const { host_infos, total_count } = res
   hostTableData.value = host_infos
 
@@ -170,7 +169,11 @@ async function queryHosts(searchKey?: string) {
   await queryHostStatus()
 }
 
-function handleTableChange(page: TablePaginationConfig, filters: Record<string, string[] | null>, sorter: SorterResult<HostsTableItem>) {
+function handleTableChange(
+  page: TablePaginationConfig,
+  filters: Record<string, string[] | null>,
+  sorter: SorterResult<HostsTableItem>,
+) {
   page.current && (pagination.current = page.current)
   page.pageSize && (pagination.pageSize = page.pageSize)
   sorterMap.sortKey = sorter.column && (sorter.columnKey as string)
@@ -212,7 +215,7 @@ function handleDelete(record: HostsTableItem) {
  * delete hosts with host id
  */
 async function deleteHost(hostId: string) {
-  const host = hostTableData.value.find(item => hostId === item.host_id)!
+  const host = hostTableData.value.find((item) => hostId === item.host_id)!
   const params: DistributionParams<{ host_id: string }> = {}
   params[host.cluster_id] = { host_id: host.host_id }
 
@@ -225,8 +228,7 @@ async function deleteHost(hostId: string) {
           queryHosts()
           reject(new Error('failed'))
         }, 2000)
-      }
-      else {
+      } else {
         setTimeout(() => {
           queryHosts()
           resolve('succeed')
@@ -250,24 +252,22 @@ function refresh() {
  * query hosts status by host id
  */
 async function queryHostStatus() {
-  if (hostTableData.value.length === 0)
-    return
+  if (hostTableData.value.length === 0) return
   const params: DistributionParams<{ host_ids: string[] }> = {}
   hostTableData.value.forEach(({ cluster_id, host_id }) => {
-    if (params[cluster_id])
-      params[cluster_id].host_ids.push(host_id)
-    else
-      params[cluster_id] = { host_ids: [host_id] }
+    if (params[cluster_id]) params[cluster_id].host_ids.push(host_id)
+    else params[cluster_id] = { host_ids: [host_id] }
   })
   const [, res] = await api.getHostsStatus(params)
   if (res) {
-    Object.keys(res).reduce((acc: { host_id: string, status: number }[], key) => {
-      return acc.concat(...res[key].data)
-    }, []).forEach((item) => {
-      const table = hostTableData.value.find(t => t.host_id === item.host_id)
-      if (table)
-        table.status = item.status
-    })
+    Object.keys(res)
+      .reduce((acc: { host_id: string; status: number }[], key) => {
+        return acc.concat(...res[key].data)
+      }, [])
+      .forEach((item) => {
+        const table = hostTableData.value.find((t) => t.host_id === item.host_id)
+        if (table) table.status = item.status
+      })
   }
 }
 // #endregion
@@ -331,9 +331,7 @@ onMounted(() => {
         <template #bodyCell="{ record, column }">
           <template v-if="column.dataIndex === 'host_name'">
             <router-link :to="`/assests/hosts/host-detail/${record.host_id}`">
-              {{
-                record.host_name
-              }}
+              {{ record.host_name }}
             </router-link>
           </template>
           <template v-if="column.dataIndex === 'management'">
@@ -344,7 +342,7 @@ onMounted(() => {
             <span v-else>{{ statusMap[record.status] }}</span>
           </template>
           <template v-if="column.dataIndex === 'scene'">
-            {{ sceneMap[record.scene] || t("common.none") }}
+            {{ sceneMap[record.scene] || t('common.none') }}
           </template>
           <template v-if="column.dataIndex === 'operation'">
             <a-row :gutter="8" class="operation">
