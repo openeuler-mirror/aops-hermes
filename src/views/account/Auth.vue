@@ -21,7 +21,7 @@ async function auth(code: string) {
       type: res.type || "",
     });
     setTimeout(() => {
-      router.push("/dashboard");
+      router.push("/eulercopilot");
       isAuthing.value = false;
     }, 1000);
   } else {

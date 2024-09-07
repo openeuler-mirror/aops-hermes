@@ -1,15 +1,21 @@
-@import url('./theme.css');
-@import url('./antd.css');
+@import url("./theme.css");
+@import url("./antd.css");
+
+*,
+p {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
 
 html,
-body
-{
+body {
   height: 100%;
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
   background-color: var(--scrollbar-color);
@@ -17,7 +23,7 @@ body
 
 ::-webkit-scrollbar-thumb {
   background-color: var(--scrollbar-color-hover);
-  border-radius: 10px;
+  border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-color-hover);

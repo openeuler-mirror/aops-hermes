@@ -30,19 +30,18 @@ const openKeys = ref<string[]>([])
  */
 function generateMenu(tree: RouteRecordRaw[]): ItemType[] {
   return tree
-    .filter((item) => {
+    .filter(item => {
       const { hidden } = item.meta || {}
       return !hidden
     })
-    .map((item) => {
+    .map(item => {
       const { title, icon, hiddenChildren } = item.meta || {}
       const result = {
         key: item.path,
         icon,
         label: t(title as string),
       }
-      if (item.children && !hiddenChildren)
-        (result as any).children = generateMenu(item.children)
+      if (item.children && !hiddenChildren) (result as any).children = generateMenu(item.children)
 
       return result
     }) as ItemType[]
@@ -55,8 +54,7 @@ const selectedKeys = ref<string[]>([])
 function initMenu() {
   const { matched } = router.currentRoute.value
   for (let i = matched.length - 1; i >= 0; i--) {
-    if (matched[i].meta.hidden)
-      continue
+    if (matched[i].meta.hidden) continue
     selectedKeys.value = [matched[i].path as string]
     const path = matched[i].path.split('/')[1]
     openKeys.value = [`/${path}`]
@@ -79,8 +77,7 @@ const rootSubmenuKeys = computed(() => menu.value.map(item => item?.key))
  * @param e
  */
 const onMenuItemClick: MenuProps['onClick'] = (e: MenuInfo): void => {
-  if (rootSubmenuKeys.value.includes(e.key))
-    openKeys.value = []
+  if (rootSubmenuKeys.value.includes(e.key)) openKeys.value = []
   router.push(e.key as RouteLocationRaw)
 }
 
@@ -90,10 +87,8 @@ const onMenuItemClick: MenuProps['onClick'] = (e: MenuInfo): void => {
  */
 function onOpenMenu(keys: string[]) {
   const latestOpenKey = keys.find(key => !openKeys.value.includes(key))
-  if (!rootSubmenuKeys.value.includes(latestOpenKey))
-    openKeys.value = keys
-  else
-    openKeys.value = latestOpenKey ? [latestOpenKey] : []
+  if (!rootSubmenuKeys.value.includes(latestOpenKey)) openKeys.value = keys
+  else openKeys.value = latestOpenKey ? [latestOpenKey] : []
 }
 
 watch(
@@ -191,7 +186,7 @@ onBeforeMount(() => {
     text-align: center;
     cursor: pointer;
     &:hover {
-      background-color: var(--bg-basic-layout-hover );
+      background-color: var(--bg-basic-layout-hover);
     }
   }
   &__right {
@@ -228,6 +223,7 @@ onBeforeMount(() => {
   display: flex;
   flex-direction: column;
   transition: all 0.5s;
+  overflow: auto;
 }
 .basic-layout-footer {
   padding: 24px 50px 25px 50px;
@@ -255,3 +251,4 @@ onBeforeMount(() => {
   height: 75vh;
 }
 </style>
+

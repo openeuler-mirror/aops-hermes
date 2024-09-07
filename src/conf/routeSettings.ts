@@ -16,8 +16,10 @@ import {
   DashboardOutlined,
   FormOutlined,
   UserOutlined,
+  MessageOutlined
 } from '@ant-design/icons-vue'
 import Index from '@/views/Index.vue'
+import Copilot from '@/views/Copilot.vue'
 
 export const dynamicRoutes: Array<RouteRecordRaw> = [
   {
@@ -25,8 +27,17 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
     name: 'index',
     meta: { title: 'router.index', hidden: true },
     component: Index,
-    redirect: '/dashboard',
+    redirect: '/eulercopilot',
     children: [
+      {
+        path: '/eulercopilot',
+        name: 'eulercopilot',
+        component: Copilot,
+        meta: {
+          title: 'router.copilot',
+          icon: h(MessageOutlined),
+        },
+      },
       {
         path: '/dashboard',
         name: 'dashboard',

@@ -11,6 +11,7 @@ import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
+import actions from '@/actions'
 
 export const useLangStore = defineStore('langStore', () => {
   const lang = ref()
@@ -29,6 +30,7 @@ export const useLangStore = defineStore('langStore', () => {
   watch(() => lang.value, (val) => {
     if (val) {
       i18n.locale.value = val
+      actions.setGlobalState({ lang: val })
       if (route.meta.title)
         setDoctitle(route.meta.title as string)
     }
