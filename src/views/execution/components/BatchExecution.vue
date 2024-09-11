@@ -80,38 +80,61 @@ const form = reactive<Form>({
 })
 
 function remotePath(_rule: Rule, value: string) {
-  const regex = /^(?!\.{1,2}\/).+/i
+  if (!value) return Promise.reject(new Error(t('execution.task.validate.requireRemotePath')))
+  const regex = /^(?!.*(?:\.|\.\.)).+$/
   if (!regex.test(value)) {
     return Promise.reject(new Error(t('execution.task.validate.remotePath')))
   }
   return Promise.resolve()
 }
 
-const rules: Record<string, Rule[]> = {
-  task_name: [{ required: true, message: t('execution.task.validate.requireTaskName') }],
-  host_group: [{ required: true, message: t('execution.task.validate.requireHostGroup') }],
-  hosts: [{ required: true, message: t('execution.task.validate.requireHosts') }],
-  command_list: [{ required: true, message: t('execution.task.validate.requireCommandList') }],
-  onlyPush: [{ required: true }],
-  hostIps: [{ required: true, message: t('execution.task.validate.requireHostIps') }],
-  isDelay: [{ required: true }],
-  exection_time: [{ required: true, message: t('execution.task.validate.requireExecutiontime') }],
-  cron: [{ required: true, message: t('execution.task.validate.requireCron') }],
-  strategy: [{ required: true }],
-  remotePath: [
-    { required: true, message: t('execution.task.validate.requireRemotePath') },
-    {
-      validator: remotePath,
-      trigger: 'blur',
-    },
-  ],
+function exectionTimeValidate(_rule: Rule, value: string) {
+  if (!value) return Promise.reject(new Error(t('execution.task.validate.requireExecutiontime')))
+  console.log(value)
+  if (dayjs(value) < dayjs()) {
+    return Promise.reject(new Error(t('execution.task.validate.executeTimeLimit')))
+  }
+
+  return Promise.resolve()
 }
+
+const rules = computed<Record<string, Rule[]>>(() => {
+  return {
+    task_name: [{ required: true, message: t('execution.task.validate.requireTaskName') }],
+    host_group: [{ required: true, message: t('execution.task.validate.requireHostGroup') }],
+    hosts: [{ required: true, message: t('execution.task.validate.requireHosts') }],
+    command_list: [{ required: true, message: t('execution.task.validate.requireCommandList') }],
+    onlyPush: [{ required: true }],
+    hostIps: [{ required: true, message: t('execution.task.validate.requireHostIps') }],
+    isDelay: [{ required: true }],
+    exection_time: [
+      { required: true, message: '' },
+      {
+        validator: exectionTimeValidate,
+        trigger: 'blur',
+      },
+    ],
+    cron: [{ required: true, message: t('execution.task.validate.requireCron') }],
+    strategy: [{ required: true }],
+    remotePath: [
+      { required: true, message: '' },
+      {
+        validator: remotePath,
+        trigger: 'blur',
+      },
+    ],
+  }
+})
 
 const hostTableColumn = computed(() => {
   const columns = [
     {
       title: t('execution.task.host'),
-      dataIndex: 'host',
+      dataIndex: 'host_name',
+    },
+    {
+      title: t('execution.task.hostIp'),
+      dataIndex: 'host_ip',
     },
   ]
   if (!props.taskId) {
@@ -139,7 +162,7 @@ const commandTableColumn = computed<TableColumnsType>(() => {
     {
       title: t('execution.task.commandContent'),
       dataIndex: 'content',
-      width: '60%',
+      width: '50%',
     },
   ]
   if (props.taskType === 'COMMAND_EXECUTION' && !props.taskId) {
@@ -203,7 +226,9 @@ async function getHostsByGroup(hostGroupId: string): Promise<void> {
   }
 }
 
-const hostTableData = ref<{ host_id: string; host: string; host_group_id: string; host_group: string }[]>([])
+const hostTableData = ref<
+  { host_id: string; host_name: string; host_ip: string; host_group_id: string; host_group: string }[]
+>([])
 
 /**
  * Updates the host table data based on the selected host IDs.
@@ -216,7 +241,8 @@ function handleHostChange(value: string[]): void {
     .filter((i) => value.includes(i.host_id))
     .map((host) => ({
       host_id: host.host_id,
-      host: host.host_name,
+      host_ip: host.host_ip,
+      host_name: host.host_name,
       host_group_id: form.host_group!,
       host_group: host.host_group_name,
     }))
@@ -295,10 +321,10 @@ function move(type: 'up' | 'down', id: string) {
  * @param {KeyboardEvent} e - The keyboard event triggered by the enter key press.
  * @return {Promise<void>} A promise that resolves when the host IP query is complete.
  */
-async function handleIpsEnter(e: KeyboardEvent): Promise<void> {
-  e.preventDefault()
+async function handleIpsEnter(e?: KeyboardEvent): Promise<void> {
+  e && e.preventDefault()
   if (!form.hostIps) return
-  const ipList = form.hostIps.split(',')
+  const ipList = form.hostIps.split(',').map((i) => i.trim())
   const [_, res] = await api.queryHostInfobyHostIps(ipList)
   if (res) {
     const exitedHost = res.hosts
@@ -309,7 +335,8 @@ async function handleIpsEnter(e: KeyboardEvent): Promise<void> {
     }
     hostTableData.value = exitedHost.map((host) => ({
       host_id: host.host_id,
-      host: host.host_ip,
+      host_name: host.host_name,
+      host_ip: host.host_ip,
       host_group_id: host.host_group_name,
       host_group: host.host_group_name,
     }))
@@ -326,6 +353,7 @@ async function handleConfirm(type: 'create' | 'update') {
     } else {
       await updateTask()
     }
+  } catch {
   } finally {
     isSubmiting.value = false
   }
@@ -339,7 +367,7 @@ async function handleConfirm(type: 'create' | 'update') {
  * complete.
  */
 async function createTask(): Promise<void> {
-  const { task_name, isDelay, exection_time, hosts, onlyPush, strategy, cron } = form
+  const { task_name, isDelay, exection_time, onlyPush, strategy, cron } = form
   let cronInfo: any = {}
   if (strategy === 'cron' && cron) {
     cron.split(' ').forEach((i, idx: number) => {
@@ -352,9 +380,13 @@ async function createTask(): Promise<void> {
     })
   }
 
+  if (hostTableData.value.map((i) => i.host_id).length === 0) {
+    handleIpsEnter()
+  }
+
   const taskParams = {
     task_name: task_name,
-    host_ids: hosts,
+    host_ids: hostTableData.value.map((i) => i.host_id),
     action_ids: commandTableData.value.map((i) => i.action_id),
     task_type: props.taskType,
     only_push: props.taskType === 'SCRIPT_EXECUTION' ? onlyPush : undefined,
@@ -422,7 +454,10 @@ async function updateTask() {
 }
 
 function onCancelBatchImport() {
-  initTaskFromData()
+  isBatchImport.value = false
+  form.hosts = []
+  hostTableData.value = []
+  form.host_group = undefined
 }
 
 function onBatchImport() {
@@ -452,6 +487,10 @@ function initTaskFromData() {
 const datePicker = computed(() => {
   return form.exection_time ? dayjs(form.exection_time) : null
 })
+
+const disabledDate = (current: Dayjs) => {
+  return current && current < dayjs().subtract(1, 'day').endOf('day')
+}
 
 async function getTaskInfoByTaskId(taskId: string) {
   const [, res] = await api.quyerTaskInfoByTaskId(taskId)
@@ -493,7 +532,7 @@ async function getTaskInfoByTaskId(taskId: string) {
 
     if (form.strategy === 'cron') {
       const cornParams = taskDetail.ext_props.scheduler_info?.params
-      form.cron = `${cornParams.second} ${cornParams.minute} ${cornParams.hour} ${cornParams.day || '?'} ${cornParams.month} ${cornParams.day_of_week ? String(Number(cornParams.day_of_week) + 1) : '?'} ${cornParams.year}`
+      form.cron = `${cornParams.second} ${cornParams.minute} ${cornParams.hour} ${cornParams.day || '?'} ${cornParams.month || '?'} ${cornParams.day_of_week ? String(Number(cornParams.day_of_week) + 1) : '?'} ${cornParams.year || ''}`
     } else if (form.strategy === 'single') {
       form.exection_time = taskDetail.ext_props.scheduler_info?.params.run_date
     }
@@ -583,6 +622,7 @@ watch(
                 :autoSize="{ minRows: 2, maxRows: 5 }"
                 :placeholder="t('execution.task.placeHolder.requireHostArea')"
                 @pressEnter="handleIpsEnter"
+                @blur="handleIpsEnter"
               />
             </a-form-item>
 
@@ -619,7 +659,7 @@ watch(
         </a-form-item>
 
         <div class="flex items-start w-[100%] gap-2" v-if="form.isDelay">
-          <a-form-item name="strategy" :label="t('execution.task.executionStrategy')" class="w-[40%]">
+          <a-form-item name="strategy" :label="t('execution.task.executionStrategy')" class="w-[70%]">
             <a-radio-group v-model:value="form.strategy" button-style="solid">
               <a-radio-button value="single">{{ t('execution.task.singleExecution') }}</a-radio-button>
               <a-radio-button value="cron">{{ t('execution.task.cycleExecution') }}</a-radio-button>
@@ -628,6 +668,8 @@ watch(
               <a-date-picker
                 :value="datePicker"
                 show-time
+                :showNow="false"
+                :disabled-date="disabledDate"
                 :placeholder="t('execution.task.placeHolder.requireExecutiontime')"
                 @change="handleDateChange"
               />

@@ -49,6 +49,7 @@ function queryHostInfobyHostIps(hostIps: string[]) {
   return http.get<{
     hosts: {
       host_id: string
+      host_name: string
       host_ip: string
       cluster_id: string
       cluster_name: string

@@ -135,7 +135,7 @@ const handleChange = (value: any) => {
 
 <template>
   <el-radio-group v-model="radio" @change="handleChange">
-    <el-radio :value="1">{{ t('perDay') }}</el-radio>
+    <el-radio :value="1">{{ t('perWeek') }}</el-radio>
     <el-radio :value="2">{{ t('unspecified') }}</el-radio>
     <el-radio :value="3">
       <el-space>

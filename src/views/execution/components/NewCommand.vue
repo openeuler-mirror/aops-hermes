@@ -100,7 +100,14 @@ function validateTimeout(_rule: Rule, value: any) {
 }
 
 const rules = computed(() => ({
-  command_name: [{ required: true, message: t('execution.command.validate.requireCommandName'), trigger: 'change' }],
+  command_name: [
+    { required: true, message: t('execution.command.validate.requireCommandName'), trigger: 'change' },
+    {
+      max: 128,
+      trigger: 'change',
+      message: t('execution.command.validate.commandNameOverSize'),
+    },
+  ],
   timeout: [
     {
       required: true,

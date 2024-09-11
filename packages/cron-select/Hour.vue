@@ -105,6 +105,7 @@ const handleChange = (value: any) => {
 }
 
 const handleChangeCheckbox = () => {
+  radio.value = 4
   if (radio.value === 4) {
     handleChange(4)
   }
@@ -142,7 +143,7 @@ const handleChangeCheckbox = () => {
         <el-text>{{ t('from') }}</el-text>
         <el-input-number
           v-model="_initiationCycle.initiation"
-          :max="23"
+          :max="22"
           :min="0"
           controls-position="right"
           size="small"

@@ -1,6 +1,6 @@
 {
   "day": "日",
-  "dayOfWeek": "轴",
+  "dayOfWeek": "周",
   "designation": "指定",
   "every": "每",
   "executeOnce": "执行一次",
@@ -12,6 +12,7 @@
   "perHour": "每小时",
   "perMinute": "每分钟",
   "perMonth": "每月",
+  "perWeek": "每周",
   "perSeconds": "每秒",
   "perYear": "每年",
   "period": "周期",

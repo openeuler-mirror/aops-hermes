@@ -85,7 +85,7 @@
     "normal": "Normal",
     "offline": "Offline",
     "online": "Online",
-    "os": "Os",
+    "os": "OS",
     "osVersion": "OS Version",
     "overview": "Overview",
     "ownHost": "Hosts",
@@ -227,7 +227,6 @@
     "validateMsg": {
       "LeadingAndTrailingNoSpaces": "No leading or trailing spaces are allowed"
     },
-    "viewDetail": "Detail",
     "welcomeAops": "Welcome to A-Ops",
     "yes": "Yes"
   },
@@ -377,6 +376,7 @@
         "timeoutRange": "Please enter timeout between 1 and 86400"
       },
       "validate": {
+        "commandNameOverSize": "The command name cannot exceed 128 characters",
         "requireCommandContent": "Please enter the command content",
         "requireCommandName": "Please enter the command name",
         "requireTimeout": "Please enter the timeout",
@@ -400,7 +400,7 @@
       "osName": "OS Name",
       "placeHolder": {
         "requireArch": "Please select the arch",
-        "requireCommandContent": "Please enter the command",
+        "requireCommandContent": "Please enter the command to execute the script",
         "requireOperate": "Please enter the operate name",
         "requireOs": "Please select the os",
         "requireScriptName": "Please enter the script name"
@@ -414,8 +414,10 @@
       },
       "uploadScript": "Upload Script",
       "validate": {
+        "limit100Files": "Limit 100 files",
+        "notOver128Character": "{key} cannot exceed 128 characters",
         "requireArch": "Please select the arch",
-        "requireCommand": "Please enter the command",
+        "requireCommand": "Please enter the command to execute the script",
         "requireFiles": "Please select at least one file",
         "requireInputOperate": "Please enter the operate",
         "requireOperateName": "Please select the operate name",
@@ -439,9 +441,10 @@
       "executionStrategy": "Execution Strategy",
       "host": "Host",
       "hostImport": "Hosts",
+      "hostIp": "IP",
       "hostSelect": "Hosts",
-      "moveDown": "Move Down",
-      "moveUp": "Move Up",
+      "moveDown": "Down",
+      "moveUp": "Up",
       "newTask": "New Task",
       "operateSelect": "Operate Select",
       "placeHolder": {
@@ -461,6 +464,7 @@
         "atLeastOneTaskDelete": "Please select at least one task to delete",
         "filterHostIp": "The following hosts with IP addresses {ipStr} were not found. The hosts that were not found have been automatically removed for you.",
         "noHostInGroup": "There are no hosts in the currently selected host group. Please select another host group.",
+        "taskDetailSearchkey": "Please Enter Hostname",
         "taskNotFinish": "The task has not been executed or completed"
       },
       "singleExecution": "Single Execution",
@@ -468,7 +472,8 @@
       "taskDetail": "Task Detail",
       "taskName": "Name",
       "validate": {
-        "remotePath": "The push directory cannot start with . or .., please fill in the absolute path",
+        "executeTimeLimit": "The task execution time cannot be earlier than the current time",
+        "remotePath": "The push path cannot contain . or .., please fill in the absolute path",
         "requireCommandList": "Please select",
         "requireCron": "Please select the cron",
         "requireExecutiontime": "Please select the execution time",

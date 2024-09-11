@@ -174,7 +174,7 @@ const handleChange = (value: any) => {
         <el-text>{{ t('from') }}</el-text>
         <el-input-number
           v-model="_initiationCycle.initiation"
-          :max="31"
+          :max="30"
           :min="1"
           controls-position="right"
           size="small"

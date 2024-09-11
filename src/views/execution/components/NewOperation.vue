@@ -27,7 +27,14 @@ const form = reactive<Form>({
 const formRef = ref()
 
 const rules = computed<Record<string, Rule[]>>(() => ({
-  operate_name: [{ required: true, message: t('execution.script.validate.requireInputOperate'), trigger: 'blur' }],
+  operate_name: [
+    { required: true, message: t('execution.script.validate.requireInputOperate'), trigger: 'blur' },
+    {
+      max: 128,
+      trigger: 'change',
+      message: t('execution.script.validate.notOver128Character', { key: t('execution.operate.operateName') }),
+    },
+  ],
 }))
 
 const isSubmiting = ref(false)

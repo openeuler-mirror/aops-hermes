@@ -41,22 +41,24 @@ watch(
     _value.value = props.value
     if (props.value === '*') {
       radio.value = 1
+    } else if (props.value === '?') {
+      radio.value = 2
     } else if (props.value.includes('-')) {
       const arr = props.value.split('-')
       if (arr.length === 2) {
-        radio.value = 2
+        radio.value = 3
         _cycle.start = !isNaN(parseInt(arr[0])) ? parseInt(arr[0]) : 1
         _cycle.end = !isNaN(parseInt(arr[1])) ? parseInt(arr[1]) : 2
       }
     } else if (props.value.includes('/')) {
       const arr = props.value.split('/')
       if (arr.length === 2) {
-        radio.value = 3
+        radio.value = 4
         _initiationCycle.initiation = !isNaN(parseInt(arr[0])) ? parseInt(arr[0]) : 1
         _initiationCycle.cycle = !isNaN(parseInt(arr[1])) ? parseInt(arr[1]) : 1
       }
     } else {
-      radio.value = 4
+      radio.value = 5
       checkList.value = []
       const strings = props.value.split(',')
       strings.forEach((item) => {
@@ -82,18 +84,26 @@ const handleChange = (value: any) => {
       checkList.value = []
       break
     case 2:
-      _value.value = `${_cycle.start}-${_cycle.end}`
+      _value.value = '?'
+      _cycle.start = 1
+      _cycle.end = 2
       _initiationCycle.initiation = 1
       _initiationCycle.cycle = 1
       checkList.value = []
       break
     case 3:
+      _value.value = `${_cycle.start}-${_cycle.end}`
+      _initiationCycle.initiation = 1
+      _initiationCycle.cycle = 1
+      checkList.value = []
+      break
+    case 4:
       _value.value = `${_initiationCycle.initiation}/${_initiationCycle.cycle}`
       _cycle.start = 1
       _cycle.end = 2
       checkList.value = []
       break
-    case 4:
+    case 5:
       _value.value = checkList.value.sort((a, b) => a - b).join(',')
       _cycle.start = 1
       _cycle.end = 2
@@ -108,7 +118,8 @@ const handleChange = (value: any) => {
 <template>
   <el-radio-group v-model="radio" @change="handleChange">
     <el-radio :value="1">{{ t('perMonth') }}</el-radio>
-    <el-radio :value="2">
+    <el-radio :value="2">{{ t('unspecified') }}</el-radio>
+    <el-radio :value="3">
       <el-space>
         <el-text>{{ t('period') }}</el-text>
         <el-input-number
@@ -131,7 +142,7 @@ const handleChange = (value: any) => {
         <el-text>{{ t('month') }}</el-text>
       </el-space>
     </el-radio>
-    <el-radio :value="3">
+    <el-radio :value="4">
       <el-space>
         <el-text>{{ t('from') }}</el-text>
         <el-input-number
@@ -154,8 +165,8 @@ const handleChange = (value: any) => {
         <el-text>{{ t('month') }} {{ t('executeOnce') }}</el-text>
       </el-space>
     </el-radio>
-    <el-radio :value="4">{{ t('designation') }}</el-radio>
-    <el-checkbox-group v-model="checkList" @change="handleChange(4)">
+    <el-radio :value="5">{{ t('designation') }}</el-radio>
+    <el-checkbox-group v-model="checkList" @change="handleChange(5)">
       <el-checkbox v-for="index in 12" :key="index" :value="index">{{ index }}</el-checkbox>
     </el-checkbox-group>
   </el-radio-group>

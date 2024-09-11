@@ -106,7 +106,9 @@ onMounted(() => {
     <a-col> </a-col>
     <a-col>
       <a-space>
-        <a-button type="primary" :icon="h(PlusOutlined)" @click="isCreateModalVisible = true"> 新建操作 </a-button>
+        <a-button type="primary" :icon="h(PlusOutlined)" @click="isCreateModalVisible = true">
+          {{ t('execution.script.newOperate') }}
+        </a-button>
       </a-space>
     </a-col>
   </a-row>
@@ -119,6 +121,14 @@ onMounted(() => {
     @change="handleTableChange"
   >
     <template #bodyCell="{ record, column }">
+      <template v-if="column.dataIndex === 'operate_name'">
+        <a-tooltip placement="topLeft">
+          <template #title>
+            <div>{{ record.operate_name }}</div>
+          </template>
+          <div class="w-[320px] truncate">{{ record.operate_name }}</div>
+        </a-tooltip>
+      </template>
       <template v-if="column.dataIndex === 'create_time'">
         {{ dayjs(record.create_time).format('YYYY-MM-DD HH:mm:ss') }}
       </template>

@@ -52,6 +52,10 @@ const osOptions = ref<{ label: string; value: string }[]>([])
 
 const archOptions = ref<{ label: string; value: string }[]>([])
 
+const operationOptions = computed(() =>
+  operations.value.map((item) => ({ label: item.operate_name, value: item.operate_id })),
+)
+
 async function newScript() {
   try {
     await formRef.value!.validate()
@@ -156,9 +160,26 @@ function validateTimeout(_rule: Rule, value: any): Promise<void> {
   return Promise.resolve()
 }
 
+function validateFileList(_rule: Rule, value: any): Promise<void> {
+  if (!value) {
+    return Promise.resolve()
+  }
+  if (value.length >= 100) {
+    return Promise.reject(new Error(t('execution.script.validate.limit100Files')))
+  }
+  return Promise.resolve()
+}
+
 const rules = computed(() => ({
   operate_id: [{ required: true, message: t('execution.script.validate.requireOperateName'), trigger: 'blur' }],
-  script_name: [{ required: true, message: t('execution.script.validate.requireScriptName'), trigger: 'blur' }],
+  script_name: [
+    { required: true, message: t('execution.script.validate.requireScriptName'), trigger: 'blur' },
+    {
+      max: 128,
+      message: t('execution.script.validate.notOver128Character', { key: t('execution.script.scriptName') }),
+      trigger: 'change',
+    },
+  ],
   timeout: [
     {
       required: true,
@@ -173,7 +194,13 @@ const rules = computed(() => ({
   arch: [{ required: true, message: t('execution.script.validate.requireArch'), trigger: 'blur' }],
   os_name: [{ required: true, message: t('execution.script.validate.requireOs'), trigger: 'blur' }],
   command: [{ required: true, message: t('execution.script.validate.requireCommand'), trigger: 'blur' }],
-  fileList: [{ required: true, message: t('execution.script.validate.requireFiles'), trigger: 'blur' }],
+  fileList: [
+    { required: true, message: t('execution.script.validate.requireFiles'), trigger: 'blur' },
+    {
+      validator: validateFileList,
+      trigger: 'change',
+    },
+  ],
 }))
 
 async function geySpecificScript(scriptId: string) {
@@ -205,6 +232,10 @@ const isNewOperateVisible = ref(false)
 function handleCreateSuccess() {
   isNewOperateVisible.value = false
   queryOperations()
+}
+
+function filterOption(input: string, option: any) {
+  return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
 }
 
 watch(
@@ -242,13 +273,14 @@ watch(
       >
         <a-form-item name="operate_id" :label="t('execution.script.operateName')" v-if="!props.scriptId">
           <div class="flex gap-2">
-            <a-select v-model:value="form.operate_id" :placeholder="t('execution.script.placeHolder.requireOperate')">
-              <template v-for="operate in operations" :key="operate.operate_id">
-                <a-select-option :value="operate.operate_id">
-                  {{ operate.operate_name }}
-                </a-select-option>
-              </template>
-            </a-select>
+            <a-select
+              class="max-w-[280px]"
+              v-model:value="form.operate_id"
+              show-search
+              :filter-option="filterOption"
+              :options="operationOptions"
+              :placeholder="t('execution.script.placeHolder.requireOperate')"
+            />
             <a-button type="primary" @click="isNewOperateVisible = true">{{
               t('execution.script.newOperate')
             }}</a-button>

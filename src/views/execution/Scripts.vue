@@ -135,6 +135,14 @@ onMounted(() => {
     :loading="tableState.loading"
   >
     <template #bodyCell="{ record, column }">
+      <template v-if="column.dataIndex === 'script_name'">
+        <a-tooltip placement="topLeft">
+          <template #title>
+            <div>{{ record.script_name }}</div>
+          </template>
+          <div class="w-[120px] truncate">{{ record.script_name }}</div>
+        </a-tooltip>
+      </template>
       <template v-if="column.dataIndex === 'operation'">
         <a @click="handleEdit(record.script_id)">{{ t('common.edit') }}</a>
         <a-divider type="vertical" />
