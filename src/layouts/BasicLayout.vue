@@ -219,6 +219,7 @@ onBeforeMount(() => {
   }
 }
 .basic-layout-content {
+  height: calc(100vh - 64px);
   min-height: calc(100vh - 213px);
   display: flex;
   flex-direction: column;
