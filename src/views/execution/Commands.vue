@@ -35,10 +35,6 @@ const tableColumn = computed(() => [
     width: 400,
   },
   {
-    title: t('execution.command.executionUser'),
-    dataIndex: 'execution_user',
-  },
-  {
     title: t('common.createTime'),
     dataIndex: 'create_time',
     align: 'center',
@@ -138,6 +134,14 @@ onMounted(() => {
     @change="handleTableChange"
   >
     <template #bodyCell="{ record, column }">
+      <template v-if="column.dataIndex === 'command_name'">
+        <a-tooltip placement="topLeft">
+          <template #title>
+            <div>{{ record.command_name }}</div>
+          </template>
+          <div class="w-[120px] truncate">{{ record.command_name }}</div>
+        </a-tooltip>
+      </template>
       <template v-if="column.dataIndex === 'content'">
         <a-tooltip placement="topLeft">
           <template #title>

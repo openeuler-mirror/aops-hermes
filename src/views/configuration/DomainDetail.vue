@@ -277,7 +277,7 @@ onMounted(() => {
                 two-tone-color="#ff0000"
               />
               <QuestionCircleOutlined v-else style="font-size: 16px" />
-              {{ record.isSynced ? t(`conftrace.domainDetail.${DOMAN_STATUS_LABEL_ENUM[record.isSynced]}`) : t('conftrace.domainDetail.unknownStatus') }}
+              {{ record.syncStatus ? t(`conftrace.domainDetail.${DOMAN_STATUS_LABEL_ENUM[record.syncStatus]}`) : t('conftrace.domainDetail.unknownStatus') }}
               <span v-if="record.syncStatus.notSyncCount > 0">{{ record.syncStatus.notSyncCount }}</span>
             </a-space>
           </template>

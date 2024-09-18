@@ -30,7 +30,7 @@ const hostList = ref<
 >([])
 
 const filteredHostList = computed(() =>
-  hostList.value.length === 0 ? [] : hostList.value.filter(i => i.host_name.includes(searchKey.value)),
+  hostList.value.length === 0 ? [] : hostList.value.filter((i) => i.host_name.includes(searchKey.value)),
 )
 
 async function getHostByTaskId(taskId: string) {
@@ -86,13 +86,13 @@ watch(
 <template>
   <div class="task-detail">
     <a-modal width="60%" :open="visible" :footer="null" destory-on-close @cancel="handleClose">
-      <p class="text-base">{{ t('execution.task.taskDetail') }}{{ taskName }}</p>
+      <p class="text-base">{{ t('execution.task.taskDetail') }} : {{ taskName }}</p>
 
       <div class="flex gap-3 h-[500px]">
         <div class="w-[30%] border-1 border-[--border-color] border-solid">
           <p class="text-center py-2 bg-[--background-third-color] m-0">{{ t('execution.task.host') }}</p>
           <div class="p-[5px]">
-            <a-input-search v-model:value="searchKey" placeholder="Input" />
+            <a-input-search v-model:value="searchKey" :placeholder="t('execution.task.sentence.taskDetailSearchkey')" />
 
             <template v-for="host in filteredHostList" :key="host.host_id">
               <div

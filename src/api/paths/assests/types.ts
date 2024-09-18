@@ -27,7 +27,7 @@ export interface HostsParams {
 export type QueryHostsParams = HostsParams & Partial<PageNation> & Partial<Sort> & Partial<Search>
 export interface HostsTableItem {
   host_id: string
-  host_ip: number
+  host_ip: string
   host_name: string
   host_group_name: string
   management: boolean

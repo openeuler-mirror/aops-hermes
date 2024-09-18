@@ -9,8 +9,9 @@ import {
   CaretRightOutlined,
   PauseCircleOutlined,
   FileOutlined,
+  ExclamationCircleOutlined,
 } from '@ant-design/icons-vue'
-import { type TablePaginationConfig, message } from 'ant-design-vue'
+import { Modal, type TablePaginationConfig, message } from 'ant-design-vue'
 import dayjs from 'dayjs'
 import BatchExecution from './components/BatchExecution.vue'
 import ExecutionTaskDetail from './components/ExecutionTaskDetail.vue'
@@ -140,6 +141,29 @@ async function deleteTasks(taskList?: string[]) {
   }
 }
 
+const isDeleting = ref(false)
+async function handleBatchDelete() {
+  const taskList = commandTasks.value.filter(({ task_id }) => tableState.selectedRowKeys.includes(task_id))
+
+  Modal.confirm({
+    title: t('vul.task.sentence.deleteConfim'),
+    icon: h(ExclamationCircleOutlined),
+    content: `${taskList.map(({ task_name }) => task_name).join(',')}`,
+    okType: 'danger',
+    okText: t('common.confirm'),
+    onOk: async () => {
+      try {
+        isDeleting.value = true
+        await deleteTasks(tableState.selectedRowKeys)
+        tableState.selectedRowKeys = []
+      } catch {
+      } finally {
+        isDeleting.value = false
+      }
+    },
+  })
+}
+
 function handleRefresh() {
   pagination.current = 1
   pagination.pageSize = 10
@@ -236,7 +260,7 @@ onBeforeUnmount(() => {
     <a-col>
       <a-space>
         <a-button type="primary" @click="isBatchVisible = true"> {{ t('execution.task.newTask') }} </a-button>
-        <a-button type="primary" @click="deleteTasks()"> {{ t('common.deleteBatch') }} </a-button>
+        <a-button type="primary" @click="handleBatchDelete"> {{ t('common.deleteBatch') }} </a-button>
         <a-button :icon="h(RedoOutlined)" @click="handleRefresh">
           {{ t('common.refresh') }}
         </a-button>
@@ -257,6 +281,14 @@ onBeforeUnmount(() => {
     @change="handleTableChange"
   >
     <template #bodyCell="{ column, record }">
+      <template v-if="column.dataIndex === 'task_name'">
+        <a-tooltip placement="topLeft">
+          <template #title>
+            <div>{{ record.task_name }}</div>
+          </template>
+          <div class="w-[120px] truncate">{{ record.task_name }}</div>
+        </a-tooltip>
+      </template>
       <template v-if="column.dataIndex === 'status'">
         {{ taskExecutionStatusEnum[record.status] || t('common.none') }}
       </template>
@@ -304,7 +336,7 @@ onBeforeUnmount(() => {
           <a-divider type="vertical" />
           <a-tooltip placement="top">
             <template #title>
-              <span>{{ t('common.viewDetail') }}</span>
+              <span>{{ t('execution.task.editTask') }}</span>
             </template>
             <a-button size="small" type="text" @click="viewDetail(record)">
               <template #icon>

@@ -194,7 +194,7 @@ onMounted(() => {
         <a-col v-show="domainConfState.selectedRowKeys.length > 0">
           <a-alert type="info" show-icon class="delete-alert">
             <template #message>
-              <span>{{ `已选择${domainConfState.selectedRowKeys.length}项` }}
+              <span>{{ t('common.selectItems',{count: domainConfState.selectedRowKeys.length}) }}
                 <a @click="deleteBatch">{{ $t('conftrace.domainConf.batchDelete') }}</a>
                 <a-divider type="vertical" />
                 <a @click="domainConfState.selectedRowKeys = []">{{ $t('common.clear') }}</a>
