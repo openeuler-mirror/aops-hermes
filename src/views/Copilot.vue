@@ -2,5 +2,9 @@
 <template>
   <div id="copilot-container"></div>
 </template>
-<style scoped></style>
+<style scoped>
+#copilot-container {
+  height: 100%;
+}
+</style>
 

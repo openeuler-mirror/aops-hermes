@@ -38,3 +38,7 @@ html {
   background: var(--background-color);
   color: var(--text-color);
 }
+
+#__qiankun_microapp_wrapper_for_copilot__ {
+  height: 100%;
+}
