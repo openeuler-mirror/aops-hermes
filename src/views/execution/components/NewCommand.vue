@@ -116,7 +116,7 @@ const rules = computed(() => ({
     },
     {
       validator: validateTimeout,
-      trigger: 'change',
+      trigger: 'blur',
     },
   ],
   content: [{ required: true, message: t('execution.command.validate.requireCommandContent'), trigger: 'change' }],

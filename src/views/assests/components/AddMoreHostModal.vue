@@ -372,7 +372,7 @@ function handleEdit(key: string) {
                 <InfoCircleTwoTone v-else two-tone-color="#CDCD00" />
               </a-col>
               <a-col>
-                {{ addStatusEnum[record.result] || t('common.notExcute') }}
+                {{ addStatusEnum[record.result] || t('common.notExecute') }}
               </a-col>
             </a-row>
           </template>

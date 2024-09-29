@@ -65,7 +65,7 @@ const tableColumn = computed(() => [
     width: 200,
   },
   {
-    title: t('common.startTime', { type: t('common.excute') }),
+    title: t('common.startTime', { type: t('common.execute') }),
     dataIndex: 'start_time',
   },
   {
