@@ -31,7 +31,7 @@ const rules = computed<Record<string, Rule[]>>(() => ({
     { required: true, message: t('execution.script.validate.requireInputOperate'), trigger: 'blur' },
     {
       max: 128,
-      trigger: 'change',
+      trigger: 'blur',
       message: t('execution.script.validate.notOver128Character', { key: t('execution.operate.operateName') }),
     },
   ],

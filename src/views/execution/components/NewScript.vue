@@ -177,7 +177,7 @@ const rules = computed(() => ({
     {
       max: 128,
       message: t('execution.script.validate.notOver128Character', { key: t('execution.script.scriptName') }),
-      trigger: 'change',
+      trigger: 'blur',
     },
   ],
   timeout: [
@@ -188,7 +188,7 @@ const rules = computed(() => ({
     },
     {
       validator: validateTimeout,
-      trigger: 'change',
+      trigger: 'blur',
     },
   ],
   arch: [{ required: true, message: t('execution.script.validate.requireArch'), trigger: 'blur' }],

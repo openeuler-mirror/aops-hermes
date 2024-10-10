@@ -90,7 +90,6 @@ function remotePath(_rule: Rule, value: string) {
 
 function exectionTimeValidate(_rule: Rule, value: string) {
   if (!value) return Promise.reject(new Error(t('execution.task.validate.requireExecutiontime')))
-  console.log(value)
   if (dayjs(value) < dayjs()) {
     return Promise.reject(new Error(t('execution.task.validate.executeTimeLimit')))
   }
@@ -100,7 +99,14 @@ function exectionTimeValidate(_rule: Rule, value: string) {
 
 const rules = computed<Record<string, Rule[]>>(() => {
   return {
-    task_name: [{ required: true, message: t('execution.task.validate.requireTaskName') }],
+    task_name: [
+      { required: true, message: t('execution.task.validate.requireTaskName') },
+      {
+        max: 128,
+        trigger: 'blur',
+        message: t('execution.script.validate.notOver128Character', { key: t('execution.task.taskName') }),
+      },
+    ],
     host_group: [{ required: true, message: t('execution.task.validate.requireHostGroup') }],
     hosts: [{ required: true, message: t('execution.task.validate.requireHosts') }],
     command_list: [{ required: true, message: t('execution.task.validate.requireCommandList') }],
@@ -154,7 +160,7 @@ const commandTableData = ref<
   }[]
 >([])
 const commandTableColumn = computed<TableColumnsType>(() => {
-  const colunms = [
+  const columns = [
     {
       title: t('execution.task.commandName'),
       dataIndex: 'name',
@@ -166,16 +172,16 @@ const commandTableColumn = computed<TableColumnsType>(() => {
     },
   ]
   if (props.taskType === 'COMMAND_EXECUTION' && !props.taskId) {
-    colunms.unshift({
+    columns.unshift({
       title: t('execution.task.executeIndex'),
       dataIndex: 'order',
     })
-    colunms.push({
+    columns.push({
       title: t('common.operation'),
       dataIndex: 'operation',
     })
   }
-  return colunms
+  return columns
 })
 
 /**
@@ -205,6 +211,8 @@ async function getAllOperations() {
 
 function handleSelectedHostGroupChange(value: string) {
   if (!value) return
+  form.hosts = []
+  hostTableData.value = []
   getHostsByGroup(value)
 }
 
@@ -287,7 +295,7 @@ function handleCommandChange(value: string | string[], _option: Selectoption | A
   }
 }
 
-/** cancel to create exection task */
+/** cancel to create exectution task */
 function handleCancel() {
   initTaskFromData()
   emits('update:visible', false)
@@ -502,7 +510,8 @@ async function getTaskInfoByTaskId(taskId: string) {
 
     hostTableData.value = taskDetail.node_list.map((i: any) => ({
       host_id: i.host_id,
-      host: i.ip,
+      host_ip: i.ip,
+      host_name: i.host_name,
       host_group_id: i.host_group_name,
       host_group: i.host_group_name,
     }))
@@ -667,11 +676,11 @@ watch(
             <a-form-item name="exection_time" v-if="form.strategy === 'single'">
               <a-date-picker
                 :value="datePicker"
-                show-time
                 :showNow="false"
                 :disabled-date="disabledDate"
                 :placeholder="t('execution.task.placeHolder.requireExecutiontime')"
                 @change="handleDateChange"
+                :show-time="{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }"
               />
             </a-form-item>
             <a-form-item name="cron" v-else>
@@ -714,6 +723,9 @@ watch(
               <div>{{ t('common.none') }}</div>
             </template>
             <template #bodyCell="{ column, record, index }">
+              <template v-if="column.dataIndex === 'name'">
+                <div class="truncate w-[100px]">{{ record.name }}</div>
+              </template>
               <template v-if="column.dataIndex === 'content'">
                 <div class="truncate">{{ record.content }}</div>
               </template>
