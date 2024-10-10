@@ -692,7 +692,6 @@ watch(
         </div>
 
         <a-form-item
-          v-if="!Boolean(taskId)"
           name="command_list"
           :label="
             taskType === 'SCRIPT_EXECUTION' ? t('execution.task.operateSelect') : t('execution.task.commandSelect')
@@ -705,6 +704,7 @@ watch(
             :options="commandOptions"
             :mode="taskType === 'SCRIPT_EXECUTION' ? '' : 'multiple'"
             :max-tag-count="4"
+            :disabled="Boolean(taskId)"
             @change="handleCommandChange"
           />
         </a-form-item>

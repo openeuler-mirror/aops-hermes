@@ -182,7 +182,7 @@
     "edit": "Edit",
     "editSuccess": "Update Succeed",
     "execute": "Execute",
-    "executeSuccess": "Execute Sucessfully",
+    "executeSuccess": "Execute Successfully",
     "executing": "Executing",
     "executeImmediately": "Execute",
     "export": "Export",
@@ -405,7 +405,7 @@
         "requireOs": "Please select the os",
         "requireScriptName": "Please enter the script name"
       },
-      "scriptExeuction": "Script Exeuction",
+      "scriptExecution": "Script Execution",
       "scriptFile": "Script File",
       "scriptManagement": "Script Management",
       "scriptName": "Script Name",
@@ -495,7 +495,7 @@
       "hostDetail": "Host Detail",
       "hostGroupManagement": "Host Group",
       "hostsManagement": "Host Management",
-      "self": "Assests",
+      "self": "Assets",
       "sentence": {
         "hostGroupManagement": "Manage the managed host groups.",
         "hostManagement": "Manage the managed hosts."
@@ -819,7 +819,7 @@
       },
       "uptodate": "Status",
       "validateMsg": {
-        "taskDesc": "Please enter the task descriptionp",
+        "taskDesc": "Please enter the task description",
         "taskName": "Please enter the task name"
       },
       "viewReport": "Report"
