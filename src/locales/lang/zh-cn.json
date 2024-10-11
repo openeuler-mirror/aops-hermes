@@ -405,7 +405,7 @@
         "requireOs": "请选择操作系统",
         "requireScriptName": "请输入脚本名称"
       },
-      "scriptExeuction": "脚本执行",
+      "scriptExecution": "脚本执行",
       "scriptFile": "脚本文件",
       "scriptManagement": "脚本管理",
       "scriptName": "脚本名称",

@@ -16,8 +16,8 @@ const tabList = computed<{ key: string; value: string }[]>(() => [
     value: t('execution.script.scriptManagement'),
   },
   {
-    key: 'scriptExeuction',
-    value: t('execution.script.scriptExeuction'),
+    key: 'scriptExecution',
+    value: t('execution.script.scriptExecution'),
   },
   {
     key: 'operationManagement',
@@ -32,7 +32,7 @@ const tabList = computed<{ key: string; value: string }[]>(() => [
       <a-tabs v-model:activeKey="activeKey" destroy-inactive-tab-pane>
         <a-tab-pane v-for="item in tabList" :key="item.key" :tab="item.value" destroy-inactive-tab-pane>
           <ScriptTable v-if="activeKey === 'scriptManagement'" />
-          <OperationTask v-if="activeKey === 'scriptExeuction'" task-type="SCRIPT_EXECUTION" />
+          <OperationTask v-if="activeKey === 'scriptExecution'" task-type="SCRIPT_EXECUTION" />
           <OperationManagement v-if="activeKey === 'operationManagement'" />
         </a-tab-pane>
       </a-tabs>
