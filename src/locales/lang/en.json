@@ -150,6 +150,7 @@
       "password": "Please set the host login password",
       "sshPort": "Please enter a positive integer between 0 and 65535",
       "ssh_pkey": "Please set the host ssh_pkey",
+      "requireHostName": "Please enter the host name",
       "username": "please enter user name",
       "username_one": "Usernames are composed of numbers, English letters or special characters. They cannot contain spaces and the following special characters: :<>&,'\"\\/%.",
       "username_three": "The user name consists of numbers, English letters or special characters. It cannot contain spaces and the following special characters: :<>",

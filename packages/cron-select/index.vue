@@ -7,7 +7,7 @@ import Month from './Month.vue'
 import Weeks from './Week.vue'
 import Seconds from './Seconds.vue'
 import Year from './Year.vue'
-import { ElInput, ElPopover, ElTabPane, ElTabs } from 'element-plus'
+import { ElInput, ElPopover, ElTabPane, ElTabs, ElMessage } from 'element-plus'
 import 'element-plus/es/components/tabs/style/css'
 import 'element-plus/es/components/tab-pane/style/css'
 import 'element-plus/es/components/popover/style/css'
@@ -54,6 +54,17 @@ const emits = defineEmits(['change'])
 const handleChange = (index: number, value: string) => {
   if (_cron.value) {
     _cron.value[index] = value
+    if (index === 3 && value !== '?') {
+      if (_cron.value[5] !== '?') {
+        ElMessage.warning(t('conflictWarning'))
+        _cron.value[5] = '?'
+      }
+    } else if (index === 5 && value !== '?') {
+      if (_cron.value[3] !== '?') {
+        ElMessage.warning(t('conflictWarning'))
+        _cron.value[3] = '?'
+      }
+    }
   } else {
     _cron.value = [value]
   }
