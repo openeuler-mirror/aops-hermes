@@ -21,5 +21,6 @@
   "start": "Start",
   "unspecified": "Unspecified",
   "week": "Week",
-  "year": "Year"
+  "year": "Year",
+  "conflictWarning" : "Week and day conflict, the other has been set to unspecified"
 }

@@ -92,7 +92,8 @@ function validateHostUsername(_rule: Rule, value: string) {
  * @param value
  */
 function validateHostName(_rule: Rule, value: string) {
-  if (/^\S?$/.test(value))
+  if (value.length === 0) return Promise.resolve()
+  if (/^\s|.*\s$/.test(value))
     return Promise.reject(new Error(t('assests.validateMsg.hostName_one')))
   if (!/^(?!\s*$).+/.test(value))
     return Promise.reject(new Error(t('assests.validateMsg.hostName_two')))
@@ -102,6 +103,7 @@ function validateHostName(_rule: Rule, value: string) {
 // form validate rules
 const rules = computed<Record<string, Rule[]>>(() => ({
   host_name: [
+    { required: true, message: t('assests.validateMsg.requireHostName'), trigger: 'blur' },
     { max: 50, message: t('assests.validateMsg.hostName'), trigger: 'blur' },
     {
       validator: validateHostName,

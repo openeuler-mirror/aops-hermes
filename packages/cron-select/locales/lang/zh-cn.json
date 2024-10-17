@@ -20,5 +20,6 @@
   "select": "选择",
   "unspecified": "不指定",
   "week": "星期",
-  "year": "年"
+  "year": "年",
+  "conflictWarning" : "周与日冲突，已将另一个设置为不指定"
 }

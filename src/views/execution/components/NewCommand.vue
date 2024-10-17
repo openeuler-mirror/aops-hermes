@@ -93,7 +93,8 @@ function validateTimeout(_rule: Rule, value: any) {
   if (!value) {
     return Promise.resolve()
   }
-  if (Number(value) < 1 || Number(value) > 86400) {
+  const val = Number(value)
+  if (val < 1 || val > 86400 || isNaN(val)) {
     return Promise.reject(new Error(t('execution.command.validate.timeoutRange')))
   }
   return Promise.resolve()
