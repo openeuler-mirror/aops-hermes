@@ -21,7 +21,7 @@ interface Form {
   command_list: string[]
   onlyPush?: boolean
   isDelay?: boolean
-  exection_time?: string
+  execution_time?: string
   cron?: string
   strategy: 'single' | 'cron'
   remotePath?: string
@@ -46,7 +46,7 @@ const { t } = useI18n()
 const { lang } = storeToRefs(useLangStore())
 const { hostGroups: hostGroupOptions } = storeToRefs(useClusterStore())
 
-const isModalVsiible = computed(() => props.visible)
+const isModalVisible = computed(() => props.visible)
 const isBatchImport = ref(false)
 
 const commandList = ref<Command[]>([])
@@ -54,11 +54,11 @@ const operationList = ref<Operation[]>([])
 
 const commandOptions = computed<Selectoption[]>(() =>
   props.taskType === 'COMMAND_EXECUTION'
-    ? commandList.value.map((i) => ({
+    ? commandList.value.map(i => ({
         label: i.command_name,
         value: i.command_id,
       }))
-    : operationList.value.map((i) => ({
+    : operationList.value.map(i => ({
         label: i.operate_name,
         value: i.operate_id,
       })),
@@ -73,7 +73,7 @@ const form = reactive<Form>({
   command_list: [],
   onlyPush: false,
   isDelay: false,
-  exection_time: '',
+  execution_time: '',
   strategy: 'single',
   cron: '0 0 0 * * ? *',
   remotePath: '',
@@ -88,7 +88,7 @@ function remotePath(_rule: Rule, value: string) {
   return Promise.resolve()
 }
 
-function exectionTimeValidate(_rule: Rule, value: string) {
+function executionTimeValidate(_rule: Rule, value: string) {
   if (!value) return Promise.reject(new Error(t('execution.task.validate.requireExecutiontime')))
   if (dayjs(value) < dayjs()) {
     return Promise.reject(new Error(t('execution.task.validate.executeTimeLimit')))
@@ -113,10 +113,10 @@ const rules = computed<Record<string, Rule[]>>(() => {
     onlyPush: [{ required: true }],
     hostIps: [{ required: true, message: t('execution.task.validate.requireHostIps') }],
     isDelay: [{ required: true }],
-    exection_time: [
+    execution_time: [
       { required: true, message: '' },
       {
-        validator: exectionTimeValidate,
+        validator: executionTimeValidate,
         trigger: 'blur',
       },
     ],
@@ -246,8 +246,8 @@ const hostTableData = ref<
  */
 function handleHostChange(value: string[]): void {
   const hosts = hostOptions.value
-    .filter((i) => value.includes(i.host_id))
-    .map((host) => ({
+    .filter(i => value.includes(i.host_id))
+    .map(host => ({
       host_id: host.host_id,
       host_ip: host.host_ip,
       host_name: host.host_name,
@@ -258,15 +258,15 @@ function handleHostChange(value: string[]): void {
 }
 
 function handleHostDelete(hostId: string) {
-  hostTableData.value = hostTableData.value.filter((i) => i.host_id !== hostId)
-  form.hosts = form.hosts.filter((i) => i !== hostId)
+  hostTableData.value = hostTableData.value.filter(i => i.host_id !== hostId)
+  form.hosts = form.hosts.filter(i => i !== hostId)
 }
 
 /** delete command with command id  */
 function handleCommandDelete(actionId: string) {
-  commandTableData.value = commandTableData.value.filter((i) => i.action_id !== actionId)
+  commandTableData.value = commandTableData.value.filter(i => i.action_id !== actionId)
   if (props.taskType === 'COMMAND_EXECUTION') {
-    form.command_list = form.command_list.filter((i) => i !== actionId)
+    form.command_list = form.command_list.filter(i => i !== actionId)
   } else {
     form.command_list = []
   }
@@ -279,16 +279,16 @@ function handleCommandChange(value: string | string[], _option: Selectoption | A
 
   if (props.taskType === 'COMMAND_EXECUTION') {
     commandTableData.value = commandList.value
-      .filter((i) => value.includes(i.command_id))
-      .map((i) => ({
+      .filter(i => value.includes(i.command_id))
+      .map(i => ({
         action_id: i.command_id,
         name: i.command_name,
         content: i.content,
       }))
   } else {
     commandTableData.value = operationList.value
-      .filter((i) => value.includes(i.operate_id))
-      .map((i) => ({
+      .filter(i => value.includes(i.operate_id))
+      .map(i => ({
         action_id: i.operate_id,
         name: i.operate_name,
       }))
@@ -308,7 +308,7 @@ function handleCancel() {
  */
 function move(type: 'up' | 'down', id: string) {
   if (!type) return
-  const idx = commandTableData.value.findIndex((i) => i.action_id === id)
+  const idx = commandTableData.value.findIndex(i => i.action_id === id)
   if (idx === -1) return
   if (type === 'up') {
     ;[commandTableData.value[idx], commandTableData.value[idx - 1]] = [
@@ -332,16 +332,16 @@ function move(type: 'up' | 'down', id: string) {
 async function handleIpsEnter(e?: KeyboardEvent): Promise<void> {
   e && e.preventDefault()
   if (!form.hostIps) return
-  const ipList = form.hostIps.split(',').map((i) => i.trim())
-  const [_, res] = await api.queryHostInfobyHostIps(ipList)
+  const ipList = form.hostIps.split(',').map(i => i.trim())
+  const [_, res] = await api.queryHostInfoByHostIps(ipList)
   if (res) {
     const exitedHost = res.hosts
     const notExitedHost = res.not_found_ips
     if (notExitedHost.length > 0) {
       message.warning(t('execution.task.sentence.filterHostIp', { ipStr: notExitedHost.join(',') }))
-      form.hostIps = exitedHost.map((host) => host.host_ip).join(',')
+      form.hostIps = exitedHost.map(host => host.host_ip).join(',')
     }
-    hostTableData.value = exitedHost.map((host) => ({
+    hostTableData.value = exitedHost.map(host => ({
       host_id: host.host_id,
       host_name: host.host_name,
       host_ip: host.host_ip,
@@ -375,7 +375,7 @@ async function handleConfirm(type: 'create' | 'update') {
  * complete.
  */
 async function createTask(): Promise<void> {
-  const { task_name, isDelay, exection_time, onlyPush, strategy, cron } = form
+  const { task_name, isDelay, execution_time, onlyPush, strategy, cron } = form
   let cronInfo: any = {}
   if (strategy === 'cron' && cron) {
     cron.split(' ').forEach((i, idx: number) => {
@@ -404,7 +404,7 @@ async function createTask(): Promise<void> {
         ? {
             type: strategy,
             params: {
-              run_date: exection_time,
+              run_date: execution_time,
             },
           }
         : {
@@ -424,7 +424,7 @@ async function createTask(): Promise<void> {
 }
 
 async function updateTask() {
-  const { isDelay, exection_time, strategy, cron } = form
+  const { isDelay, execution_time, strategy, cron } = form
   let cronInfo: any = {}
   if (strategy === 'cron' && cron) {
     cron.split(' ').forEach((i, idx: number) => {
@@ -442,7 +442,7 @@ async function updateTask() {
       ? {
           type: strategy,
           params: {
-            run_date: exection_time,
+            run_date: execution_time,
           },
         }
       : {
@@ -476,7 +476,7 @@ function onBatchImport() {
 
 function handleDateChange(_value: Dayjs, dateString: string) {
   if (!dateString) return
-  form.exection_time = dateString
+  form.execution_time = dateString
 }
 
 function initTaskFromData() {
@@ -489,11 +489,12 @@ function initTaskFromData() {
   form.isDelay = false
   form.command_list = []
   form.hosts = []
+  form.execution_time = ''
   ;(form.cron = '0 0 0 * * ? *'), (form.strategy = 'single')
 }
 
 const datePicker = computed(() => {
-  return form.exection_time ? dayjs(form.exection_time) : null
+  return form.execution_time ? dayjs(form.execution_time) : null
 })
 
 const disabledDate = (current: Dayjs) => {
@@ -501,7 +502,7 @@ const disabledDate = (current: Dayjs) => {
 }
 
 async function getTaskInfoByTaskId(taskId: string) {
-  const [, res] = await api.quyerTaskInfoByTaskId(taskId)
+  const [, res] = await api.queryTaskInfoByTaskId(taskId)
 
   if (res) {
     const taskDetail = JSON.parse(res.task_detail)
@@ -543,7 +544,7 @@ async function getTaskInfoByTaskId(taskId: string) {
       const cornParams = taskDetail.ext_props.scheduler_info?.params
       form.cron = `${cornParams.second} ${cornParams.minute} ${cornParams.hour} ${cornParams.day || '?'} ${cornParams.month || '?'} ${cornParams.day_of_week ? String(Number(cornParams.day_of_week) + 1) : '?'} ${cornParams.year || ''}`
     } else if (form.strategy === 'single') {
-      form.exection_time = taskDetail.ext_props.scheduler_info?.params.run_date
+      form.execution_time = taskDetail.ext_props.scheduler_info?.params.run_date
     }
   }
 }
@@ -565,9 +566,9 @@ watch(
 </script>
 
 <template>
-  <div class="batch-exectuion">
+  <div class="batch-execution">
     <a-modal
-      :open="isModalVsiible"
+      :open="isModalVisible"
       :title="props.taskId ? t('execution.task.editTask') : t('execution.task.newTask')"
       :style="{ width: '60%' }"
       :confirmLoading="isSubmiting"
@@ -673,7 +674,7 @@ watch(
               <a-radio-button value="single">{{ t('execution.task.singleExecution') }}</a-radio-button>
               <a-radio-button value="cron">{{ t('execution.task.cycleExecution') }}</a-radio-button>
             </a-radio-group>
-            <a-form-item name="exection_time" v-if="form.strategy === 'single'">
+            <a-form-item name="execution_time" v-if="form.strategy === 'single'">
               <a-date-picker
                 :value="datePicker"
                 :showNow="false"
@@ -785,4 +786,3 @@ watch(
   font-size: 12px;
 }
 </style>
-

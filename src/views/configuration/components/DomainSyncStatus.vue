@@ -1,20 +1,20 @@
-<script setup lang='ts'>
+<script setup lang="ts">
 import { CheckCircleTwoTone, CloseCircleTwoTone, QuestionCircleOutlined, SyncOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { DOMAN_STATUS_ENUM, DOMAN_STATUS_LABEL_ENUM } from '../constants'
+import { DOMAIN_STATUS_ENUM, DOMAIN_STATUS_LABEL_ENUM } from '../constants'
 import { type HostInDomain, api } from '@/api'
 
-const props = withDefaults(defineProps<
-  {
+const props = withDefaults(
+  defineProps<{
     syncHost?: HostInDomain
     clusterId: string
     domainName: string
     isStatusLoading: boolean
-  }
->(), {
-})
+  }>(),
+  {},
+)
 
 const emit = defineEmits(['success'])
 
@@ -34,16 +34,20 @@ const columns = [
   },
 ]
 
-const confStatusList = ref<{
-  file_path: string
-  isSynced: string
-}[]>([])
+const confStatusList = ref<
+  {
+    file_path: string
+    isSynced: string
+  }[]
+>([])
 
-const isSyncAllDisable = computed(() => confStatusList.value.filter(item => item.isSynced === 'NOT SYNCHRONIZE').length === 0)
+const isSyncAllDisable = computed(
+  () => confStatusList.value.filter((item) => item.isSynced === 'NOT SYNCHRONIZE').length === 0,
+)
 
 const isSyncingAll = ref(false)
 async function syncAll() {
-  const fileList = confStatusList.value.filter(item => item.isSynced === 'NOT SYNCHRONIZE')
+  const fileList = confStatusList.value.filter((item) => item.isSynced === 'NOT SYNCHRONIZE')
   if (fileList.length === 0) {
     message.info(t('conftrace.domainDetail.message.atLeastOneFile'))
     return
@@ -53,25 +57,30 @@ async function syncAll() {
   isSyncingAll.value = false
 }
 
-async function syncConfigConfirm(records: {
-  file_path: string
-  isSynced: string
-}[]) {
+async function syncConfigConfirm(
+  records: {
+    file_path: string
+    isSynced: string
+  }[],
+) {
   const params = {}
   params[props.clusterId] = {
     domainName: props.domainName,
-    syncList: [{
-      hostId: props.syncHost?.hostId,
-      syncConfigs: records.map(i => i.file_path),
-    }],
+    syncList: [
+      {
+        hostId: props.syncHost?.hostId,
+        syncConfigs: records.map((i) => i.file_path),
+      },
+    ],
   }
   const [, res] = await api.syncConfs(params)
   if (res && res[props.clusterId].label === 'Succeed') {
     message.success(t('conftrace.domainDetail.message.syncSucceed'))
     queryDomainStatus()
     emit('success')
+  } else {
+    message.error(t('conftrace.domainDetail.message.syncFailed'))
   }
-  else { message.error(t('conftrace.domainDetail.message.syncFailed')) }
 }
 
 const isLoading = ref(false)
@@ -110,11 +119,11 @@ onMounted(() => {
             @confirm="syncAll"
           >
             <a-button type="primary" size="small">
-              <SyncOutlined :spin="isSyncingAll" />{{ t("conftrace.domainDetail.sentence.syncAll") }}
+              <SyncOutlined :spin="isSyncingAll" />{{ t('conftrace.domainDetail.sentence.syncAll') }}
             </a-button>
           </a-popconfirm>
           <a-button v-else type="primary" size="small" :disabled="isSyncAllDisable">
-            <SyncOutlined :spin="isSyncingAll" />{{ t("conftrace.domainDetail.sentence.syncAll") }}
+            <SyncOutlined :spin="isSyncingAll" />{{ t('conftrace.domainDetail.sentence.syncAll') }}
           </a-button>
         </div>
       </a-col>
@@ -134,17 +143,17 @@ onMounted(() => {
             <template v-if="column.dataIndex === 'isSynced'">
               <span>
                 <CheckCircleTwoTone
-                  v-if="record.isSynced === DOMAN_STATUS_ENUM.sync"
+                  v-if="record.isSynced === DOMAIN_STATUS_ENUM.sync"
                   style="font-size: 16px"
                   two-tone-color="#52c41a"
                 />
                 <CloseCircleTwoTone
-                  v-else-if="record.isSynced === DOMAN_STATUS_ENUM.notSync"
+                  v-else-if="record.isSynced === DOMAIN_STATUS_ENUM.notSync"
                   style="font-size: 16px"
                   two-tone-color="#ff0000"
                 />
                 <QuestionCircleOutlined v-else style="font-size: 16px" />
-                {{ t(`conftrace.domainDetail.${DOMAN_STATUS_LABEL_ENUM[record.isSynced]}`) }}
+                {{ t(`conftrace.domainDetail.${DOMAIN_STATUS_LABEL_ENUM[record.isSynced]}`) }}
               </span>
             </template>
             <template v-if="column.dataIndex === 'operation'">
@@ -156,7 +165,9 @@ onMounted(() => {
                   :disabled="record.isSynced !== 'NOT SYNCHRONIZE'"
                   @confirm="syncConfigConfirm([record])"
                 >
-                  <a-button type="link" :disabled="record.isSynced !== 'NOT SYNCHRONIZE'">{{ t('common.sync') }}</a-button>
+                  <a-button type="link" :disabled="record.isSynced !== 'NOT SYNCHRONIZE'">{{
+                    t('common.sync')
+                  }}</a-button>
                 </a-popconfirm>
               </span>
             </template>
@@ -166,3 +177,4 @@ onMounted(() => {
     </a-row>
   </div>
 </template>
+

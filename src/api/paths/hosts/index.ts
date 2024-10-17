@@ -45,7 +45,7 @@ function addHostsBatch(params: DistributionParams<{
   )
 }
 
-function queryHostInfobyHostIps(hostIps: string[]) {
+function queryHostInfoByHostIps(hostIps: string[]) {
   return http.get<{
     hosts: {
       host_id: string
@@ -66,5 +66,5 @@ export const hostApi = {
   getDomainRate,
   downLoadHostTemplate,
   addHostsBatch,
-  queryHostInfobyHostIps
+  queryHostInfoByHostIps,
 }

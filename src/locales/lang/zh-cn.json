@@ -108,7 +108,7 @@
     "scenes": "场景",
     "searchBy": "按主机或IP搜索",
     "sentence": {
-      "deleteConfim": "删除后无法恢复,请确认删除以下主机",
+      "deleteConfirm": "删除后无法恢复,请确认删除以下主机",
       "fileError": "文件类型不符合规定！",
       "fileParamsError": "文件参数不符合规定!",
       "hasHosts": "主机组内有主机时无法删除",
@@ -183,9 +183,9 @@
     "edit": "编辑",
     "editSuccess": "编辑成功",
     "execute": "执行",
+    "executeImmediately": "立即执行",
     "executeSuccess": "执行成功",
     "executing": "执行中",
-    "executeImmediately": "立即执行",
     "export": "导出",
     "fail": "失败",
     "help": "帮助",
@@ -385,7 +385,7 @@
       }
     },
     "operate": {
-      "editCommond": "编辑命令",
+      "editCommand": "编辑命令",
       "newCommand": "新建命令",
       "operateName": "操作名称"
     },
@@ -442,8 +442,8 @@
       "executeResult": "执行结果",
       "executionStrategy": "执行策略",
       "host": "主机名",
-      "hostIp":"IP",
       "hostImport": "主机导入",
+      "hostIp": "IP",
       "hostSelect": "主机选择",
       "moveDown": "下移",
       "moveUp": "上移",
@@ -509,6 +509,7 @@
       "domainDetail": "业务域详情",
       "self": "配置溯源"
     },
+    "copilot": "智能运维助手",
     "dashboard": "工作台",
     "execution": {
       "commamdManagement": "命令管理",
@@ -749,10 +750,10 @@
         "allExecuteFailed": "{0}执行失败",
         "atLeastOne": "请至少选择一个cve下的一台主机进行{0}!",
         "atLeastOneRepo": "至少选择一个主机进行repo设置",
-        "atleastOneTask": "请选择至少一个任务进行删除！",
+        "atLeastOneTask": "请选择至少一个任务进行删除！",
         "createFailed": "任务创建失败",
-        "executeFailed": "任务执行失败",
         "exectueSucceed": "{0}执行成功",
+        "executeFailed": "任务执行失败",
         "generateFailed": "{0}创建失败",
         "generateSucceed": "{0}创建成功",
         "isExecuting": "当前选中有正在执行的任务，请稍后重试！",
@@ -775,7 +776,7 @@
       "rollbackStatus": "回滚状态",
       "selectRepo": "选择REPO",
       "sentence": {
-        "deleteConfim": "确定删除以下任务?",
+        "deleteConfirm": "确定删除以下任务?",
         "deleteTask": "你确定删除这个任务吗?",
         "executeConfirm": "确定执行任务{0}",
         "executeTask": " 你确定执行这个任务吗?",
@@ -802,7 +803,7 @@
         "repoSucceed": "已设置",
         "rollbackFailed": "回滚失败",
         "rollbackRunning": "待回滚",
-        "rollbacklSucceed": "回滚成功",
+        "rollbackSucceed": "回滚成功",
         "unknown": "未知"
       },
       "taskType": "任务类型",

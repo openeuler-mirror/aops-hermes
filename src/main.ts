@@ -21,6 +21,9 @@ import { createHead } from '@unhead/vue'
 import App from './App.vue'
 import router from './router'
 import Vuei18n from '@/locales'
+import { addGlobalUncaughtErrorHandler, registerMicroApps, start as qiankunStart } from 'qiankun'
+
+import actions, { getCurrentState } from './actions'
 
 createApp(App)
   .use(Antd)
@@ -29,3 +32,32 @@ createApp(App)
   .use(Vuei18n)
   .use(router)
   .mount('#app')
+
+const apps = [
+  {
+    name: 'copilot',
+    entry: import.meta.env.MODE === 'development' ? '//localhost:3000' : '/copilot/',
+    container: '#copilot-container',
+    activeRule: '/eulercopilot',
+    props: { actions, inittailData: getCurrentState },
+  },
+]
+
+registerMicroApps(apps, {
+  beforeLoad: app => {
+    return Promise.resolve()
+  },
+  afterMount: app => {
+    if (app.name === 'copilot') {
+      actions.setGlobalState(getCurrentState())
+    }
+
+    return Promise.resolve()
+  },
+})
+
+addGlobalUncaughtErrorHandler(event => {
+  // console.error("qiankun全局异常", event);
+})
+
+qiankunStart()

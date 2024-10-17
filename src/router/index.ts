@@ -7,15 +7,8 @@
 // IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR
 // PURPOSE.
 // See the Mulan PSL v2 for more details.
-import type {
-  NavigationGuardNext,
-  RouteLocationNormalized,
-  RouteRecordName,
-} from 'vue-router'
-import {
-  createRouter,
-  createWebHistory,
-} from 'vue-router'
+import type { NavigationGuardNext, RouteLocationNormalized, RouteRecordName } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import NProgress from 'nprogress'
 import { useAccountStore, useRouteStore } from '@/store'
 import { staticRoutes } from '@/conf/routeSettings'
@@ -26,7 +19,7 @@ const { t } = i18n.global
 const LOGIN_ROUTE_PATH = '/user/login'
 const DEFAULT_ROUTE_PATH = '/dashboard'
 const ALLOW_ROUTES: RouteRecordName[] = ['login', 'register']
-const reg = /^\/user\/(?:login|register|account)/
+const reg = /^\/user\/(?:login|register|account|auth)|error/
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -55,10 +48,10 @@ function noAuthGuard(to: RouteLocationNormalized, from: RouteLocationNormalized,
       const redirect = decodeURIComponent((from.query.redirect as string) || to.path)
 
       to.path === redirect ? next({ ...to, replace: true }) : next({ path: redirect })
+    } else {
+      next()
     }
-    else { next() }
-  }
-  else {
+  } else {
     next({ path: DEFAULT_ROUTE_PATH })
   }
 }
@@ -70,31 +63,32 @@ function noAuthGuard(to: RouteLocationNormalized, from: RouteLocationNormalized,
  * @param {NavigationGuardNext} next - The function to call to continue the navigation.
  * @return {void} This function does not return anything.
  */
-function authGuard(to: RouteLocationNormalized, next: NavigationGuardNext): void {
+async function authGuard(to: RouteLocationNormalized, next: NavigationGuardNext): Promise<void> {
   if (to.name && ALLOW_ROUTES.includes(to.name)) {
-    next()
-  }
-  else {
-    reg.test(to.path)
-      ? next()
-      : next({ path: LOGIN_ROUTE_PATH, query: { redirect: to.fullPath } })
+    const { getAuthRedirectUrl } = useAccountStore()
+    const url = await getAuthRedirectUrl()
+    if (url) {
+      window.location.href = url
+    } else {
+      router.push('/error')
+    }
+  } else {
+    reg.test(to.path) ? next() : next({ path: LOGIN_ROUTE_PATH, query: { redirect: to.fullPath } })
   }
   NProgress.done()
 }
 
-router.beforeEach(
-  (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-    NProgress.start()
-    to.meta && typeof to.meta.title !== 'undefined' && (document.title = `${t(to.meta.title as string)} - A-OPS` as string)
+router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+  NProgress.start()
+  to.meta &&
+    typeof to.meta.title !== 'undefined' &&
+    (document.title = `${t(to.meta.title as string)} - A-OPS` as string)
 
-    const { userInfo } = useAccountStore()
-    const token = userInfo && userInfo.token
-    if (token && token !== 'undefined')
-      noAuthGuard(to, from, next)
-    else
-      authGuard(to, next)
-  },
-)
+  const { userInfo } = useAccountStore()
+  const token = userInfo && userInfo.token
+  if (token && token !== 'undefined') noAuthGuard(to, from, next)
+  else authGuard(to, next)
+})
 
 router.afterEach(() => {
   NProgress.done()

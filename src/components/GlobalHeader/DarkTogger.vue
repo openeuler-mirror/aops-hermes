@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import { isDark, toggleDark } from '@/composables/dark'
+import actions from '@/actions'
+
+function changeTheme(e: MouseEvent) {
+  toggleDark(e)
+  actions.setGlobalState({ theme: isDark.value ? 'light' : 'dark' })
+}
 </script>
 
 <template>
-  <button class="button" @click="toggleDark">
+  <button class="button" @click="changeTheme">
     <Icon v-if="isDark" icon="carbon-moon" />
     <Icon v-else icon="carbon-sun" />
   </button>
@@ -27,7 +33,7 @@ import { isDark, toggleDark } from '@/composables/dark'
   border-radius: 8px;
   transition: all 0.5s ease;
   &:hover {
-    background-color: var(--bg-hover )
+    background-color: var(--bg-hover);
   }
 }
 </style>

@@ -54,7 +54,7 @@ const selectedHost = ref()
 async function handleSelectHost(host: { node_index: number; host_id: string; host_name: string; ip: string }) {
   selectedHost.value = host.host_id
   isLoading.value = true
-  const [_, res] = await api.queryTaskExectionResult({
+  const [_, res] = await api.queryTaskExecutionResult({
     taskId: props.taskId!,
     nodeIndex: host.node_index,
     caseIndex: 0,

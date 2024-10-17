@@ -20,18 +20,17 @@ export const useAccountStore = defineStore(
       username: string
       type: string
       token: string
-      refreshToken: string
+      refreshToken?: string
     } | null>()
 
-    const accountRole = computed(() => userInfo.value ? userInfo.value.type : '')
+    const accountRole = computed(() => (userInfo.value ? userInfo.value.type : ''))
 
     /**
      * login with username and password
      */
     const login = async (params: LoginParams): Promise<boolean> => {
       const [_, res] = await api.login(params)
-      if (!res)
-        return false
+      if (!res) return false
       const { username, token, refresh_token, type } = res
       userInfo.value = {
         username,
@@ -68,10 +67,13 @@ export const useAccountStore = defineStore(
      * account logout
      */
     const logout = async (): Promise<boolean> => {
-      const [_] = await api.logout()
-      if (_)
-        return false
-      clearInfo()
+      const [_, res] = await api.logout()
+      if (_) return false
+      if (res) {
+        clearInfo()
+        const url = `${res}?redirect_uri=${location.href}`
+        window.location.href = url
+      }
       return true
     }
     function saveInfo(info: typeof userInfo.value) {
@@ -88,9 +90,8 @@ export const useAccountStore = defineStore(
      * refresh login status by refresh_token
      */
     const refreshToken = async (): Promise<string | null> => {
-      const [_, res] = await api.refreshToken({ refresh_token: userInfo.value!.refreshToken })
-      if (!res)
-        return null
+      const [_, res] = await api.refreshToken({ refresh_token: userInfo.value!.refreshToken! })
+      if (!res) return null
       const { token, refresh_token } = res
       userInfo.value = {
         ...userInfo.value!,
@@ -99,7 +100,43 @@ export const useAccountStore = defineStore(
       }
       return token
     }
-    return { userInfo, accountRole, login, logout, refreshToken, authorizeLogin, clearInfo, saveInfo }
+
+    const refreshAuthToken = async (): Promise<string | null> => {
+      const [_, res] = await api.refreshAuthToken()
+      if (!res) return null
+      const { token } = res
+      userInfo.value = {
+        ...userInfo.value!,
+        token,
+      }
+
+      return token
+    }
+
+    const authRedirectUrl = ref('')
+
+    async function getAuthRedirectUrl() {
+      const [, res] = await api.queryAuthRedirectUrl()
+      if (res) {
+        authRedirectUrl.value = res
+        return res
+      }
+      return ''
+    }
+
+    return {
+      userInfo,
+      accountRole,
+      authRedirectUrl,
+      login,
+      logout,
+      refreshToken,
+      authorizeLogin,
+      clearInfo,
+      saveInfo,
+      refreshAuthToken,
+      getAuthRedirectUrl,
+    }
   },
   {
     persist: {

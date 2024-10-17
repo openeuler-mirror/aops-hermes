@@ -15,10 +15,12 @@ import {
   BugOutlined,
   DashboardOutlined,
   FormOutlined,
-  PlaySquareOutlined,
   UserOutlined,
+  MessageOutlined,
+  PlaySquareOutlined,
 } from '@ant-design/icons-vue'
 import Index from '@/views/Index.vue'
+import Copilot from '@/views/Copilot.vue'
 
 export const dynamicRoutes: Array<RouteRecordRaw> = [
   {
@@ -28,6 +30,15 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
     component: Index,
     redirect: '/dashboard',
     children: [
+      // {
+      //   path: '/eulercopilot',
+      //   name: 'eulercopilot',
+      //   component: Copilot,
+      //   meta: {
+      //     title: 'router.copilot',
+      //     icon: h(MessageOutlined),
+      //   },
+      // },
       {
         path: '/dashboard',
         name: 'dashboard',
@@ -478,7 +489,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
         children: [
           {
             path: '/execution/command-management',
-            name: 'commanndManagement',
+            name: 'commandManagement',
             component: () => import('@/views/execution/CommandManagement.vue'),
             meta: {
               title: 'router.execution.commamdManagement',
@@ -593,7 +604,6 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                       breadcrumbName: 'router.user.clusterManagement',
                       path: '/user/cluster',
                     },
-
                   ],
                 },
               },
@@ -682,11 +692,11 @@ export const staticRoutes: Array<RouteRecordRaw> = [
         name: 'account',
         component: () => import('@/views/account/Account.vue'),
       },
-      // {
-      //   path: '/user/auth',
-      //   name: 'auth',
-      //   component: () => import('@/views/account/Auth.vue'),
-      // },
+      {
+        path: '/user/auth',
+        name: 'auth',
+        component: () => import('@/views/account/Auth.vue'),
+      },
     ],
   },
   {
@@ -705,7 +715,7 @@ export const staticRoutes: Array<RouteRecordRaw> = [
     component: () => import('@/views/exception/403.vue'),
   },
   {
-    path: '/500',
+    path: '/error',
     meta: {
       title: '500',
       hidden: true,

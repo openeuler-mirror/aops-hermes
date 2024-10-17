@@ -71,8 +71,8 @@ const tableState = reactive<{
   loading: false,
 })
 
-// hosts table colums
-const hostsTableColums = computed(() => {
+// hosts table columns
+const hostsTableColumns = computed(() => {
   const arr = [
     {
       key: 'host_name',
@@ -193,7 +193,7 @@ function onSearch(searchValue: string) {
 function handleDelete(record: HostsTableItem) {
   const { host_id, host_name } = record
   modal.confirm({
-    title: t('assests.sentence.deleteConfim'),
+    title: t('assests.sentence.deleteConfirm'),
     icon: h(ExclamationCircleOutlined),
     content: `${host_name}`,
     okType: 'danger',
@@ -322,7 +322,7 @@ onMounted(() => {
       </a-row>
       <a-table
         row-key="host_id"
-        :columns="hostsTableColums"
+        :columns="hostsTableColumns"
         :data-source="hostTableData"
         :loading="tableState.loading"
         :pagination="pagination"
