@@ -7,18 +7,12 @@
 // IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR
 // PURPOSE.
 // See the Mulan PSL v2 for more details.
-import type {
-  AxiosError,
-  AxiosRequestConfig,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from 'axios'
+import type { AxiosError, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import axios from 'axios'
 import { message as Message, notification } from 'ant-design-vue'
 import { useAccountStore, useLangStore } from '@/store'
 import { downloadBlobFile, isArrayOrObject } from '@/utils'
 import i18n from '@/locales'
-
 
 const { t } = i18n.global
 
@@ -69,18 +63,15 @@ request.interceptors.request.use(
       const { userInfo } = JSON.parse(aopsInfo)
       if (userInfo) {
         const { token } = userInfo
-        if (token)
-          config.headers['Access-Token'] = token
+        if (token) config.headers['Access-Token'] = token
       }
     }
     if (config.method === 'get') {
       const { params } = config
-      if (!params)
-        return config
+      if (!params) return config
 
-      Object.keys(params).forEach((key) => {
-        if (isArrayOrObject(params[key]))
-          params[key] = encodeURI(JSON.stringify(params[key]))
+      Object.keys(params).forEach(key => {
+        if (isArrayOrObject(params[key])) params[key] = encodeURI(JSON.stringify(params[key]))
       })
 
       return config
@@ -101,8 +92,7 @@ function dealBlobResponse(resp: AxiosResponse<any, any>) {
   if (disposition && disposition.includes('attachment')) {
     const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
     const matches = filenameRegex.exec(disposition)
-    if (matches != null && matches[1])
-      filename = matches[1].replace(/['"]/g, '')
+    if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '')
   }
   downloadBlobFile(resp.data, filename)
 }
@@ -124,8 +114,7 @@ request.interceptors.response.use(
           data: response.data.msg,
         }
       }
-    }
-    else if (!response.data.code) {
+    } else if (!response.data.code) {
       result = {
         code: response.status,
         data: response.data,
@@ -140,10 +129,14 @@ request.interceptors.response.use(
             message: `${t('account.sentence.validationFailed')}`,
             description: response.data.message,
           })
-          setTimeout(() => {
+          setTimeout(async () => {
             const { clearInfo } = useAccountStore()
-            clearInfo()
-            window.location.reload()
+            const { getAuthRedirectUrl } = useAccountStore()
+            const url = await getAuthRedirectUrl()
+            if (url) {
+              clearInfo()
+              window.location.href = url
+            }
           }, 1000)
           break
         case 1207:
@@ -151,9 +144,9 @@ request.interceptors.response.use(
             if (!isRefreshing) {
               isRefreshing = true
 
-              const { refreshToken } = useAccountStore()
+              const { refreshAuthToken } = useAccountStore()
               try {
-                const newToken = await refreshToken()
+                const newToken = await refreshAuthToken()
 
                 if (newToken) {
                   requestQueue.forEach(({ config, resolve }) => {
@@ -163,23 +156,20 @@ request.interceptors.response.use(
                   requestQueue.length = 0
                   return await request(response.config)
                 }
-              }
-              catch (error) {
+              } catch (error) {
                 requestQueue.forEach(({ reject }) => reject(error))
                 const { clearInfo } = useAccountStore()
                 clearInfo()
                 window.location.reload()
                 return Promise.reject(error)
-              }
-              finally {
+              } finally {
                 isRefreshing = false
               }
             }
             return new Promise((resolve, reject) => {
               requestQueue.push({ config: response.config, resolve, reject })
             })
-          }
-          else {
+          } else {
             notification.error({
               message: `${t('account.sentence.validationFailed')}`,
               description: response.data.message,
@@ -213,22 +203,16 @@ export const http = {
     try {
       const result = await request.get(url, params)
       return [null, result as T]
-    }
-    catch (error) {
+    } catch (error) {
       return [error, undefined]
     }
   },
 
-  post: async <T>(
-    url: string,
-    data?: object,
-    params?: AxiosRequestConfig,
-  ): Promise<[any, T | undefined]> => {
+  post: async <T>(url: string, data?: object, params?: AxiosRequestConfig): Promise<[any, T | undefined]> => {
     try {
       const result = await request.post(url, data, params)
       return [null, result as T]
-    }
-    catch (error) {
+    } catch (error) {
       return [error, undefined]
     }
   },
@@ -237,8 +221,7 @@ export const http = {
     try {
       const result = await request.put(url, data, { params })
       return [null, result as T]
-    }
-    catch (error) {
+    } catch (error) {
       return [error, undefined]
     }
   },
@@ -247,8 +230,7 @@ export const http = {
     try {
       const result = await request.delete(url, { data, params })
       return [null, result as T]
-    }
-    catch (error) {
+    } catch (error) {
       return [error, undefined]
     }
   },
@@ -256,8 +238,7 @@ export const http = {
     try {
       const result = await request.patch(url, data, { params })
       return [null, result as T]
-    }
-    catch (error) {
+    } catch (error) {
       return [error, undefined]
     }
   },

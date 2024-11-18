@@ -191,7 +191,7 @@ onBeforeMount(() => {
     text-align: center;
     cursor: pointer;
     &:hover {
-      background-color: var(--bg-basic-layout-hover );
+      background-color: var(--bg-basic-layout-hover);
     }
   }
   &__right {
@@ -224,10 +224,12 @@ onBeforeMount(() => {
   }
 }
 .basic-layout-content {
+  height: calc(100vh - 64px);
   min-height: calc(100vh - 213px);
   display: flex;
   flex-direction: column;
   transition: all 0.5s;
+  overflow: auto;
 }
 .basic-layout-footer {
   padding: 24px 50px 25px 50px;

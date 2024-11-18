@@ -27,7 +27,7 @@ const emits = defineEmits(['success', 'cancel'])
 const { t } = useI18n()
 
 const modalTitle = computed(() =>
-  props.commandId ? t('execution.operate.editCommond') : t('execution.operate.newCommand'),
+  props.commandId ? t('execution.operate.editCommand') : t('execution.operate.newCommand'),
 )
 const formRef = ref()
 const isSubmiting = ref(false)
@@ -198,4 +198,3 @@ watch(
 </template>
 
 <style scoped></style>
-

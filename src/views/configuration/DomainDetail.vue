@@ -13,7 +13,7 @@ import { useRoute } from 'vue-router'
 import { Modal, message } from 'ant-design-vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
-import { DOMAN_STATUS_ENUM, DOMAN_STATUS_LABEL_ENUM } from './constants'
+import { DOMAIN_STATUS_ENUM, DOMAIN_STATUS_LABEL_ENUM } from './constants'
 import AddHostModal from './components/AddHostModal.vue'
 import CurrentConf from './components/CurrentConf.vue'
 import DomainSyncStatus from './components/DomainSyncStatus.vue'
@@ -74,24 +74,17 @@ const domainHostState = reactive<{
 async function queryHostsInDomain() {
   domainHostState.loading = true
   const [, res] = await api.getHostsInDomain(domainDetail.domainName)
-  if (res)
-    domainDetail.domainHosts = res
+  if (res) domainDetail.domainHosts = res
 
   domainHostState.loading = false
   queryHostSyncStatus()
 }
 
-/**
- * select one of cves include this cve's all rpms
- */
 function onSelect(record: HostInDomain, selected: boolean) {
   if (selected) {
     domainHostState.selectedRowKeys.push(record.hostId)
-  }
-  else {
-    domainHostState.selectedRowKeys = domainHostState.selectedRowKeys.filter(
-      item => item !== record.hostId,
-    )
+  } else {
+    domainHostState.selectedRowKeys = domainHostState.selectedRowKeys.filter(item => item !== record.hostId)
   }
 }
 
@@ -110,32 +103,29 @@ function refresh() {
 async function handleDelete(record: HostInDomain) {
   const params = {}
   params[domainDetail.clusterId] = { domainName: domainDetail.domainName, hostInfos: [{ hostId: record.hostId }] }
-  const [,res] = await api.deleteDomainHosts(params)
+  const [, res] = await api.deleteDomainHosts(params)
   if (res && res[domainDetail.clusterId].label === 'Succeed') {
     message.success(t('common.succeed'))
     refresh()
+  } else {
+    message.error(t('common.fail'))
   }
-
-  else { message.error(t('common.fail')) }
 }
 
-const isStatusLoaidng = ref(false)
+const isStatusLoading = ref(false)
 
 async function queryHostSyncStatus() {
   const [, res] = await api.getDomainSyncStatus({
     domainName: domainDetail.domainName,
   })
   if (res) {
-    domainDetail.domainHosts.forEach((d) => {
+    domainDetail.domainHosts.forEach(d => {
       const item = res.find(s => s.host_id === d.hostId)
-      if (item)
-        d.syncStatus = item.sync_status === 0 ? 'NOT SYNCHRONIZE' : 'SYNCHRONIZED'
-      else
-        d.syncStatus = 'NOT FOUND'
+      if (item) d.syncStatus = item.sync_status === 0 ? 'NOT SYNCHRONIZE' : 'SYNCHRONIZED'
+      else d.syncStatus = 'NOT FOUND'
     })
-  }
-  else {
-    domainDetail.domainHosts.forEach((d) => {
+  } else {
+    domainDetail.domainHosts.forEach(d => {
       d.syncStatus = 'NOT FOUND'
     })
   }
@@ -145,8 +135,7 @@ const managementConf = ref<ConfFile[]>([])
 
 async function queryManagementConf() {
   const [, res] = await api.getDomainManagementConf(domainDetail.domainName)
-  if (res)
-    managementConf.value = res.confFiles
+  if (res) managementConf.value = res.confFiles
 }
 
 const isCurrentConfVisible = ref(false)
@@ -174,17 +163,20 @@ async function handleSyncALl() {
           domainName: domainDetail.domainName,
           hostIds: domainHostState.selectedRowKeys,
         }
-        const [_, res] = await api.syncConfsBatchly(params)
+        const [, res] = await api.syncConfsBatchly(params)
         if (res && res[domainDetail.clusterId].label === 'Succeed')
           message.success(t('conftrace.domainDetail.message.syncSucceed'))
-        else
-          message.error(t('conftrace.domainDetail.message.syncFailed'))
-      }
-      catch (error) {
+        else message.error(t('conftrace.domainDetail.message.syncFailed'))
+      } catch (error) {
         message.error(error as any)
       }
     },
   })
+}
+
+function handleConfClick(record: HostInDomain) {
+  currentConfHostInfo.value = record
+  isCurrentConfVisible.value = true
 }
 
 onMounted(() => {
@@ -213,7 +205,12 @@ onMounted(() => {
         </a-col>
         <a-col>
           <a-space>
-            <AddHostModal v-if="userInfo?.type === 'administrator'" :host-list="domainDetail.domainHosts" :domain-name="domainDetail.domainName" @success="queryHostsInDomain">
+            <AddHostModal
+              v-if="userInfo?.type === 'administrator'"
+              :host-list="domainDetail.domainHosts"
+              :domain-name="domainDetail.domainName"
+              @success="queryHostsInDomain"
+            >
               <template #trigger>
                 <a-button type="primary" :icon="h(PlusOutlined)">
                   {{ $t('assests.addHost') }}
@@ -221,7 +218,11 @@ onMounted(() => {
               </template>
             </AddHostModal>
 
-            <a-button :icon="h(ReloadOutlined)" :disabled="!domainHostState.selectedRowKeys.length" @click="handleSyncALl">
+            <a-button
+              :icon="h(ReloadOutlined)"
+              :disabled="!domainHostState.selectedRowKeys.length"
+              @click="handleSyncALl"
+            >
               {{ $t('conftrace.domainDetail.batchSync') }}
             </a-button>
             <a-button :icon="h(RedoOutlined)" @click="refresh">
@@ -245,7 +246,9 @@ onMounted(() => {
       >
         <template #bodyCell="{ record, column }">
           <template v-if="column.dataIndex === 'operation'">
-            <a @click="currentConfHostInfo = record; isCurrentConfVisible = true"> {{ $t('conftrace.domainDetail.currentConf') }} </a>
+            <a @click="handleConfClick(record)">
+              {{ $t('conftrace.domainDetail.currentConf') }}
+            </a>
             <a-divider type="vertical" />
             <a @click="showSyncStatus(record)"> {{ $t('conftrace.domainDetail.statusDetail') }} </a>
             <template v-if="userInfo?.type === 'administrator'">
@@ -267,17 +270,21 @@ onMounted(() => {
             <a-spin v-if="!record.syncStatus" size="small" />
             <a-space v-else>
               <CheckCircleTwoTone
-                v-if="record.syncStatus === DOMAN_STATUS_ENUM.sync"
+                v-if="record.syncStatus === DOMAIN_STATUS_ENUM.sync"
                 style="font-size: 16px"
                 two-tone-color="#52c41a"
               />
               <CloseCircleTwoTone
-                v-else-if="record.syncStatus === DOMAN_STATUS_ENUM.notSync"
+                v-else-if="record.syncStatus === DOMAIN_STATUS_ENUM.notSync"
                 style="font-size: 16px"
                 two-tone-color="#ff0000"
               />
               <QuestionCircleOutlined v-else style="font-size: 16px" />
-              {{ record.syncStatus ? t(`conftrace.domainDetail.${DOMAN_STATUS_LABEL_ENUM[record.syncStatus]}`) : t('conftrace.domainDetail.unknownStatus') }}
+              {{
+                record.syncStatus
+                  ? t(`conftrace.domainDetail.${DOMAIN_STATUS_LABEL_ENUM[record.syncStatus]}`)
+                  : t('conftrace.domainDetail.unknownStatus')
+              }}
               <span v-if="record.syncStatus.notSyncCount > 0">{{ record.syncStatus.notSyncCount }}</span>
             </a-space>
           </template>
@@ -288,7 +295,12 @@ onMounted(() => {
 
   <Drawer v-model:visible="isCurrentConfVisible">
     <template #content>
-      <CurrentConf :host-info="currentConfHostInfo" :default-conf="managementConf" :domain-name="domainDetail.domainName" :cluster-id="domainDetail.clusterId" />
+      <CurrentConf
+        :host-info="currentConfHostInfo"
+        :default-conf="managementConf"
+        :domain-name="domainDetail.domainName"
+        :cluster-id="domainDetail.clusterId"
+      />
     </template>
     <template #footer>
       <a-row type="flex" justify="end">
@@ -305,7 +317,7 @@ onMounted(() => {
         :sync-host="selectedSyncHost"
         :cluster-id="domainDetail.clusterId"
         :domain-name="domainDetail.domainName"
-        :is-status-loading="isStatusLoaidng"
+        :is-status-loading="isStatusLoading"
         @success="queryHostSyncStatus"
       />
     </template>

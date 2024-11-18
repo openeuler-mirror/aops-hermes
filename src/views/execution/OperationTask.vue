@@ -146,7 +146,7 @@ async function handleBatchDelete() {
   const taskList = commandTasks.value.filter(({ task_id }) => tableState.selectedRowKeys.includes(task_id))
 
   Modal.confirm({
-    title: t('vul.task.sentence.deleteConfim'),
+    title: t('vul.task.sentence.deleteConfirm'),
     icon: h(ExclamationCircleOutlined),
     content: `${taskList.map(({ task_name }) => task_name).join(',')}`,
     okType: 'danger',

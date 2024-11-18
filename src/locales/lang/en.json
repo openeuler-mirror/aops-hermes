@@ -108,7 +108,7 @@
     "scenes": "Scenes",
     "searchBy": "host name or ip",
     "sentence": {
-      "deleteConfim": "After deletion, it cannot be restored. Please confirm to delete the following host",
+      "deleteConfirm": "After deletion, it cannot be restored. Please confirm to delete the following host",
       "fileError": "The file type does not match the specification!",
       "fileParamsError": "The file parameters do not comply with the regulations!",
       "hasHosts": "Cannot delete a host group when there are hosts in it",
@@ -183,9 +183,9 @@
     "edit": "Edit",
     "editSuccess": "Update Succeed",
     "execute": "Execute",
+    "executeImmediately": "Execute",
     "executeSuccess": "Execute Successfully",
     "executing": "Executing",
-    "executeImmediately": "Execute",
     "export": "Export",
     "fail": "Failed",
     "help": "Help",
@@ -385,7 +385,7 @@
       }
     },
     "operate": {
-      "editCommond": "Edit Command",
+      "editCommand": "Edit Command",
       "newCommand": "New Command",
       "operateName": "Operate Name"
     },
@@ -508,6 +508,7 @@
       "domainDetail": "Domain Detail",
       "self": "Conf Trace"
     },
+    "copilot": "OpenEuler Copilot System",
     "dashboard": "Dashboard",
     "execution": {
       "commamdManagement": "Command Management",
@@ -518,7 +519,7 @@
     "index": "Home",
     "user": {
       "cluster": "Clusters",
-      "clusterManagement": "Clsuter Management",
+      "clusterManagement": "Cluster Management",
       "editCluster": "Edit Cluster",
       "registerCluster": "Register Cluster",
       "self": "User",
@@ -748,10 +749,10 @@
         "allExecuteFailed": "{0} executed failed",
         "atLeastOne": "Please select at least one host under CVE for {0}!  ",
         "atLeastOneRepo": "Select at least one host for repo setup",
-        "atleastOneTask": "Please select at least one task to delete!",
+        "atLeastOneTask": "Please select at least one task to delete!",
         "createFailed": "Generate failed",
-        "executeFailed": "Execution failed",
         "exectueSucceed": "{0} executed succeed",
+        "executeFailed": "Execution failed",
         "generateFailed": "{0} generate failed",
         "generateSucceed": "{0} generate succeed",
         "isExecuting": "There are currently executing tasks selected, please try again later!",
@@ -774,7 +775,7 @@
       "rollbackStatus": "Rollback Status",
       "selectRepo": "Select REPO",
       "sentence": {
-        "deleteConfim": "Are you sure you want to delete the following tasks?",
+        "deleteConfirm": "Are you sure you want to delete the following tasks?",
         "deleteTask": "Are you sure you want to delete this task?",
         "executeConfirm": "Confirm to execute task {0}",
         "executeTask": "Are you sure you want to perform this task?",
@@ -801,7 +802,7 @@
         "repoSucceed": "Succeed",
         "rollbackFailed": "Failed",
         "rollbackRunning": "Running",
-        "rollbacklSucceed": "Succeed",
+        "rollbackSucceed": "Succeed",
         "unknown": "Unknown"
       },
       "taskType": "Task Type",

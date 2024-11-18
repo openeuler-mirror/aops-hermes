@@ -199,9 +199,19 @@ function queryHostByTaskId(task_id: string): Promise<[any, OperationTask | undef
  *   - `taskType` (string, optional): The type of the task.
  * @return {Promise} A promise that resolves to an array of strings containing the execution result.
  */
-function queryTaskExectionResult(params: { taskId: string, nodeIndex?: number, caseIndex?: number, taskType?: string }): Promise<[any, string[] | undefined]> {
+function queryTaskExecutionResult(params: {
+  taskId: string
+  nodeIndex?: number
+  caseIndex?: number
+  taskType?: string
+}): Promise<[any, string[] | undefined]> {
   const { taskId, nodeIndex, caseIndex, taskType } = params
-  return http.post<string[]>('/operations/tasks/host_items_result', { task_id: taskId, node_index: nodeIndex, case_index: caseIndex, task_type: taskType })
+  return http.post<string[]>('/operations/tasks/host_items_result', {
+    task_id: taskId,
+    node_index: nodeIndex,
+    case_index: caseIndex,
+    task_type: taskType,
+  })
 }
 /**
  * Executes a task by sending a POST request to the '/tasks/:task_id' endpoint with the provided action.
@@ -342,7 +352,7 @@ function querySystemInfo(): Promise<[any, { os_aarch: string[], os_name: string[
   }>('/operations/scripts/support_info')
 }
 
-function quyerTaskInfoByTaskId(taskId: string): Promise<[any, any | undefined]> {
+function queryTaskInfoByTaskId(taskId: string): Promise<[any, any | undefined]> {
   return http.get(`/operations/tasks/${taskId}`)
 }
 
@@ -356,7 +366,7 @@ function updateOperateTask(taskId: string, schedulerInfo?: {
 }
 
 export * from './types'
-export const exectionApi = {
+export const executionApi = {
   queryScripts,
   updateScript,
   deleteScript,
@@ -372,7 +382,7 @@ export const exectionApi = {
   deleteTask,
   executeOperationTask,
   queryHostByTaskId,
-  queryTaskExectionResult,
+  queryTaskExecutionResult,
   queryOperations,
   createNewOperation,
   deleteOperations,
@@ -382,6 +392,6 @@ export const exectionApi = {
   uploadScriptFile,
   querySpecificScript,
   querySystemInfo,
-  quyerTaskInfoByTaskId,
-  updateOperateTask
+  queryTaskInfoByTaskId,
+  updateOperateTask,
 }

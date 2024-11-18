@@ -1,17 +1,20 @@
 <script lang="ts" setup>
 import type { RouteRecordRaw } from 'vue-router'
-import { onBeforeMount, ref } from 'vue'
+import { computed } from 'vue'
 import BasicLayout from '@/layouts/BasicLayout.vue'
 import GlobalFooter from '@/components/GlobalFooter.vue'
 import RightContent from '@/components/GlobalHeader/RightContent.vue'
 import { useRouteStore } from '@/store'
 
 const { routeMap } = useRouteStore()
-const menus = ref<RouteRecordRaw[]>()
 
-onBeforeMount(() => {
+const menus = computed<RouteRecordRaw[]>(() => {
   const routes = routeMap.find(item => item.path === '/')
-  menus.value = routes && routes.children
+  if (routes) {
+    return routes.children as RouteRecordRaw[]
+  } else {
+    return []
+  }
 })
 </script>
 
@@ -20,8 +23,8 @@ onBeforeMount(() => {
     <template #menuHeaderLogo>
       <div class="logo">
         <div class="logo-content">
-          <img style="width: 22px;" src="@/assets/imgs/openeuler_logo.png" alt="logo">
-          <img class="openeuler" src="@/assets/imgs/openeuler.png" alt="logo">
+          <img style="width: 22px" src="@/assets/imgs/openeuler_logo.png" alt="logo" />
+          <img class="openeuler" src="@/assets/imgs/openeuler.png" alt="logo" />
         </div>
         <h1>A-Ops</h1>
       </div>
@@ -29,8 +32,8 @@ onBeforeMount(() => {
     <template #headerRight>
       <RightContent />
     </template>
-    <!-- <template v-if="$route.path !== '/dashboard'" #footer> -->
-    <template #footer>
+    <template v-if="$route.path !== '/eulercopilot/'" #footer>
+      <!-- <template #footer> -->
       <GlobalFooter />
     </template>
   </BasicLayout>
@@ -45,7 +48,7 @@ onBeforeMount(() => {
     flex-direction: column;
     align-items: center;
     .openeuler {
-      filter: var(--openeuler-logo-filter)
+      filter: var(--openeuler-logo-filter);
     }
   }
   img {
@@ -55,7 +58,12 @@ onBeforeMount(() => {
   h1 {
     font-size: 20px;
     margin: 0 0 0 25px;
-    font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
+    font-family:
+      Avenir,
+      Helvetica Neue,
+      Arial,
+      Helvetica,
+      sans-serif;
     font-weight: 600;
     vertical-align: middle;
     color: #3265f2;

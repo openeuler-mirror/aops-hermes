@@ -45,7 +45,7 @@ function getNotExitedHostList(params: { clusterId: string }) {
 
 // #region ------------------------------------ < distribution > ------------------------------------
 function getDomainSupportConfs(params: DistributionParams<{ domainName: string }>) {
-  return http.post<DistributionResponse<string[]> >('/distribute/conftrace/confs/querySupportedConfs', params)
+  return http.post<DistributionResponse<string[]>>('/distribute/conftrace/confs/querySupportedConfs', params)
 }
 
 function getDomainConfLog(params: DistributionParams<{ domainName: string, confFiles: { filePath: string }[] }>) {
@@ -96,15 +96,15 @@ function uploadDomainConfig(params: FormData) {
 }
 
 function syncConfs(params: DistributionParams<{ domainName: string, syncList: { hostId: string, syncConfigs: { hostId: string, syncConfigs: string[] }[] }[] }>) {
-  return http.put<DistributionResponse>('/distribute/conftrace/confs/syncConf', params)
+  return http.post<DistributionResponse>('/distribute/conftrace/confs/syncConf', params)
 }
 
-function syncConfsBatchly(params: DistributionParams<{ domainName: string, hostIds: string[] }>) {
-  return http.put<DistributionResponse>('/distribute/conftrace/confs/batch/syncConf', params)
+function syncConfsBatchly(params: DistributionParams<{ domainName: string; hostIds: string[] }>) {
+  return http.post<DistributionResponse>('/distribute/conftrace/confs/batch/syncConf', params)
 }
 
-function getDomainRealConf(params: DistributionParams<{ domainName: string, hostIds: { hostId: string }[] }>) {
-  return http.post<DistributionResponse<DomainConf[]> >('/distribute/conftrace/confs/queryRealConfs', params)
+function getDomainRealConf(params: DistributionParams<{ domainName: string; hostIds: { hostId: string }[] }>) {
+  return http.post<DistributionResponse<DomainConf[]>>('/distribute/conftrace/confs/queryRealConfs', params)
 }
 // #endregion
 

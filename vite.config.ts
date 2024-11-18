@@ -50,24 +50,21 @@ export default () => {
                 const name = id.split('node_modules/')[1].split('/')
                 if (name[0] === '.pnpm') {
                   return name[1]
-                }
-                else {
+                } else {
                   return name[0]
                 }
               }
-            }
-            catch (error) {
+            } catch (error) {
               console.error(error)
             }
           },
-
         },
       },
     },
     server: {
       host: '0.0.0.0',
       hmr: true,
-      port: 8080,
+      port: 80,
       proxy: {
         '/accounts': {
           target: BASE_PROXY_URL,
@@ -104,6 +101,14 @@ export default () => {
           secure: false,
           changeOrigin: true,
           ws: false,
+          rewrite: (path: string) => path,
+        },
+        '/api': {
+          target: 'http://116.63.144.61:21579',
+          changeOrigin: true,
+          ws: false,
+          rewrite: (path: string) => path,
+          cookieDomainRewrite: '.euler-copilot-master.test.osinfra.cn',
         },
       },
     },
