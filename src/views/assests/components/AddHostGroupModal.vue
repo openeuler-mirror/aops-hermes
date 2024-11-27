@@ -44,12 +44,15 @@ const form = reactive<Form>({
  * @param value
  */
 function validateGroupName(_rule: Rule, value: string) {
-  if (/[^0-9a-z_]/.test(value))
-    return Promise.reject(new Error(t('assests.validateMsg.hostGroup_one')))
-  if (/^[^a-z]/.test(value))
+  if (!value) {
+    return Promise.resolve()
+  }
+  if (value.length > 20) {
     return Promise.reject(new Error(t('assests.validateMsg.hostGroup_two')))
-  if (value.endsWith('_'))
-    return Promise.reject(new Error(t('assests.validateMsg.hostGroup_three')))
+  }
+  if (!/^[a-z](?:[^\n]{0,18})(?<!_)$/.test(value)) {
+    return Promise.reject(new Error(t('assests.validateMsg.hostGroup_one')))
+  }
   return Promise.resolve()
 }
 
@@ -59,10 +62,8 @@ function validateGroupName(_rule: Rule, value: string) {
  * @param value
  */
 function validateDesc(_rule: Rule, value: string) {
-  if (value.length > 60)
-    return Promise.reject(new Error(t('assests.validateMsg.descriptionOne')))
-  if (/[<>]/.test(value))
-    return Promise.reject(new Error(t('assests.validateMsg.descriptionTwo')))
+  if (value.length > 60) return Promise.reject(new Error(t('assests.validateMsg.descriptionOne')))
+  if (/[<>]/.test(value)) return Promise.reject(new Error(t('assests.validateMsg.descriptionTwo')))
   return Promise.resolve()
 }
 
@@ -74,10 +75,7 @@ async function addNewHostGroup() {
   try {
     await formRef.value.validate()
 
-    const params: Record<
-      string,
-      { host_group_name: string, description: string, cluster_id: string }
-    > = {}
+    const params: Record<string, { host_group_name: string; description: string; cluster_id: string }> = {}
     params[form.cluster_id!] = {
       description: form.desc,
       host_group_name: form.hostName,
@@ -91,19 +89,16 @@ async function addNewHostGroup() {
           message: t('common.fail'),
           description: Object.values(res)[0].label,
         })
-      }
-      else {
+      } else {
         message.success(t('common.succeed'))
       }
       visible.value = false
       emits('success')
       formRef.value.resetFields()
     }
-  }
-  catch {
+  } catch {
     isLoading.value = false
-  }
-  finally {
+  } finally {
     isLoading.value = false
   }
 }
@@ -139,9 +134,7 @@ function handleClose() {
           <a-select v-model:value="form.cluster_id" :placeholder="t('assests.placeHolder.cluster')">
             <template v-for="cluster in clusters" :key="cluster.cluster_id">
               <a-select-option :value="cluster.cluster_id">
-                {{
-                  cluster.cluster_name
-                }}
+                {{ cluster.cluster_name }}
               </a-select-option>
             </template>
           </a-select>
@@ -164,9 +157,7 @@ function handleClose() {
             :placeholder="t('assests.placeHolder.hostGroupInput')"
           >
             <template #suffix>
-              <a-tooltip
-                :title="$t('assests.tips.hostGroupName')"
-              >
+              <a-tooltip :title="$t('assests.tips.hostGroupName')">
                 <InfoCircleOutlined style="color: rgba(0, 0, 0, 0.45)" />
               </a-tooltip>
             </template>

@@ -108,6 +108,11 @@ function handleRefresh() {
   getScripts()
 }
 
+function handleNewScriptCanceled() {
+  tableState.selectedScriptId = ''
+  isModalVisible.value = false
+}
+
 onMounted(() => {
   getScripts()
 })
@@ -168,9 +173,8 @@ onMounted(() => {
     :visible="isModalVisible"
     :script-id="tableState.selectedScriptId"
     @success="handleSuccess"
-    @cancel="isModalVisible = false"
+    @cancel="handleNewScriptCanceled"
   />
 </template>
 
 <style scoped></style>
-
