@@ -32,5 +32,8 @@ module.exports = {
     indent: ["error", 2],
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unused-expressions": 'off',
+    "vue/valid-define-props": "off",
+    "vue/valid-define-emits": "off",
+    "vue/multi-word-component-names": "off"
   },
 }
