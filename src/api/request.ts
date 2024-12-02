@@ -56,7 +56,7 @@ request.interceptors.request.use(
     }
 
     const { lang } = useLangStore()
-    config.headers['Accept-Language'] = lang === 'zh_cn' ? 'zh' : 'en'
+    config.headers['Accept-Language'] = lang === 'en' ? 'en' : 'zh'
 
     const aopsInfo = localStorage.getItem('aops')
     if (aopsInfo) {
@@ -96,6 +96,7 @@ function dealBlobResponse(resp: AxiosResponse<any, any>) {
   }
   downloadBlobFile(resp.data, filename)
 }
+let isAuthing = false
 
 request.interceptors.response.use(
   async (response: AxiosResponse<any, any>): Promise<any> => {
@@ -125,19 +126,23 @@ request.interceptors.response.use(
     if (!code.toString().match(/^2\d{2}$/)) {
       switch (Number(code)) {
         case 1201:
-          notification.error({
-            message: `${t('account.sentence.validationFailed')}`,
-            description: response.data.message,
-          })
-          setTimeout(async () => {
-            const { clearInfo } = useAccountStore()
-            const { getAuthRedirectUrl } = useAccountStore()
-            const url = await getAuthRedirectUrl()
-            if (url) {
-              clearInfo()
-              window.location.href = url
-            }
-          }, 1000)
+          if (!isAuthing) {
+            notification.error({
+              message: `${t('account.sentence.validationFailed')}`,
+              description: response.data.message,
+            })
+            isAuthing = true
+            setTimeout(async () => {
+              const { clearInfo } = useAccountStore()
+              const { getAuthRedirectUrl } = useAccountStore()
+              const url = await getAuthRedirectUrl()
+              if (url) {
+                clearInfo()
+                window.location.href = url
+              }
+            }, 1000)
+          }
+
           break
         case 1207:
           if (response.config.url !== `/accounts/refreshtoken`) {
@@ -189,6 +194,7 @@ request.interceptors.response.use(
       }
       return Promise.reject(result)
     }
+    isAuthing = false
     return data
   },
   (error: AxiosError) => {
