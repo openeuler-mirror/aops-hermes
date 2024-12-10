@@ -626,7 +626,7 @@
         "searchBy": "按主机名搜索"
       },
       "product": "产品",
-      "publishTime": "发布时间：",
+      "publishTime": "发布时间",
       "severity": "严重性:",
       "unfixed": {
         "rpms": {
