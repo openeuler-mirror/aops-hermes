@@ -91,6 +91,7 @@ const isModalVisible = ref(false)
 
 function handleSuccess() {
   isModalVisible.value = false
+  tableState.selectedScriptId = ''
   getScripts()
 }
 
