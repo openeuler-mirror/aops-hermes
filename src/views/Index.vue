@@ -9,7 +9,7 @@ import { useRouteStore } from '@/store'
 const { routeMap } = useRouteStore()
 
 const menus = computed<RouteRecordRaw[]>(() => {
-  const routes = routeMap.find(item => item.path === '/')
+  const routes = routeMap.find((item) => item.path === '/')
   if (routes) {
     return routes.children as RouteRecordRaw[]
   } else {
@@ -32,7 +32,7 @@ const menus = computed<RouteRecordRaw[]>(() => {
     <template #headerRight>
       <RightContent />
     </template>
-    <template v-if="$route.path !== '/eulercopilot/'" #footer>
+    <template v-if="$route.path !== '/eulercopilot/' && $route.path !== '/assistant'" #footer>
       <!-- <template #footer> -->
       <GlobalFooter />
     </template>

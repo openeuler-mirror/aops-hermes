@@ -24,11 +24,23 @@ export interface SyncStatus {
   }[]
 }
 export interface HostInDomain {
+  domain_name: string
   hostId: string
   ip: string
   ipv6: string
-  syncStatus?: string
+  syncStatus: string
 }
+
+export interface ConfTrace {
+  UUID: string
+  domain_name: string
+  host_id: string
+  conf_name: string
+  info: string
+  create_time: string
+  ptrace: string
+}
+
 export interface ConfFile {
   contents: string
   filePath: string
@@ -59,4 +71,16 @@ export interface DomainConf {
   confBaseInfos: RealConfFile[]
   domainName: string
   hostID: string
+}
+
+export interface ConfChangeRecord {
+  UUID: string
+  cluster_id: string
+  cluster_name: string
+  conf_change_record: string
+  conf_name: string
+  create_time: string
+  domain_name: string
+  host_id: string
+  host_ip: string
 }

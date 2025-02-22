@@ -173,6 +173,7 @@
     "createFail": "创建失败",
     "createSuccess": "创建成功",
     "createTime": "创建时间",
+    "updateTime": "更新时间",
     "delete": "删除",
     "deleteBatch": "批量删除",
     "deleteFail": "删除失败",
@@ -192,6 +193,7 @@
     "helpDoc": "帮助文档",
     "host": "主机：{0}",
     "ip": "IP地址：{0}",
+    "hostIp": "IP",
     "message": {
       "partialDelete": "下发成功,部分删除成功"
     },
@@ -241,6 +243,10 @@
       "domainList": "业务域列表",
       "domainName": "业务域名称",
       "domainTotal": "共有业务域{count}个",
+      "isTrace": "文件追溯",
+      "isMonitor": "文件监控",
+      "updateTime": "配置修改时间",
+      "changeRecord": "配置变更记录",
       "placeHolder": {
         "domainName": "请输入业务域名称，26个字符以内",
         "priority": "未开放设置"
@@ -313,6 +319,9 @@
       "hosts": "共获取到{count}条主机信息",
       "ip": "IP地址",
       "ipProtocol": "IP协议",
+      "confTrace": "进程追溯",
+      "record": "监控记录",
+      "operateTrace" : "操作记录",
       "message": {
         "atLeastOneFile": "请确保有至少有一个文件可同步",
         "leastOne": "至少选择一个主机添加！",
@@ -332,7 +341,9 @@
         "syncAll": "全部同步",
         "syncConfirmContent": "同步后配置将无法恢复，但可从配置日志中查看记录,你还要继续吗?",
         "syncConfirmTitle": "你确定要将当前业务域的配置同步到已选主机吗？",
-        "syncGoon": "继续同步"
+        "syncGoon": "继续同步",
+        "enterHostIp": "请输入主机IP",
+        "traceCount": "当前显示{count}条监控信息"
       },
       "statusDetail": "状态详情",
       "syncStatus": "同步状态",
@@ -507,6 +518,7 @@
       "configurationManagement": "业务域配置管理",
       "domain": "业务域管理",
       "domainDetail": "业务域详情",
+      "changeLog": "配置变更日志",
       "self": "配置溯源"
     },
     "copilot": "智能运维助手",

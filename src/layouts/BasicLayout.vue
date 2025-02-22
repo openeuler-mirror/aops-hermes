@@ -18,11 +18,13 @@ const route = useRoute()
 
 const slots = useSlots()
 
-const collapsed = ref<boolean>(false)
+const collapsed = ref<boolean>(true)
 const menuWidth = computed(() => (collapsed.value ? 80 : 256))
 
 // #region ----------------------------------------< menu >----------------------------------------
 const openKeys = ref<string[]>([])
+
+const expendOpenKeys = computed(() => (collapsed.value ? [] : openKeys.value))
 
 /**
  * generate menu by routes map
@@ -41,8 +43,7 @@ function generateMenu(tree: RouteRecordRaw[]): ItemType[] {
         icon,
         label: t(title as string),
       }
-      if (item.children && !hiddenChildren)
-        (result as any).children = generateMenu(item.children)
+      if (item.children && !hiddenChildren) (result as any).children = generateMenu(item.children)
 
       return result
     }) as ItemType[]
@@ -55,8 +56,7 @@ const selectedKeys = ref<string[]>([])
 function initMenu() {
   const { matched } = router.currentRoute.value
   for (let i = matched.length - 1; i >= 0; i--) {
-    if (matched[i].meta.hidden)
-      continue
+    if (matched[i].meta.hidden) continue
     selectedKeys.value = [matched[i].path as string]
     const path = matched[i].path.split('/')[1]
     openKeys.value = [`/${path}`]
@@ -72,15 +72,14 @@ const menu = computed<ItemType[]>(() => {
   return menuTree
 })
 
-const rootSubmenuKeys = computed(() => menu.value.map(item => item?.key))
+const rootSubmenuKeys = computed(() => menu.value.map((item) => item?.key))
 
 /**
  * Click to jump to the specified page
  * @param e
  */
 const onMenuItemClick: MenuProps['onClick'] = (e: MenuInfo): void => {
-  if (rootSubmenuKeys.value.includes(e.key))
-    openKeys.value = []
+  if (rootSubmenuKeys.value.includes(e.key)) openKeys.value = []
   router.push(e.key as RouteLocationRaw)
 }
 
@@ -89,11 +88,9 @@ const onMenuItemClick: MenuProps['onClick'] = (e: MenuInfo): void => {
  * @param keys
  */
 function onOpenMenu(keys: string[]) {
-  const latestOpenKey = keys.find(key => !openKeys.value.includes(key))
-  if (!rootSubmenuKeys.value.includes(latestOpenKey))
-    openKeys.value = keys
-  else
-    openKeys.value = latestOpenKey ? [latestOpenKey] : []
+  const latestOpenKey = keys.find((key) => !openKeys.value.includes(key))
+  if (!rootSubmenuKeys.value.includes(latestOpenKey)) openKeys.value = keys
+  else openKeys.value = latestOpenKey ? [latestOpenKey] : []
 }
 
 watch(
@@ -127,7 +124,7 @@ onBeforeMount(() => {
         theme="light"
         mode="inline"
         :items="menu"
-        :open-keys="openKeys"
+        :open-keys="expendOpenKeys"
         @click="onMenuItemClick"
         @open-change="onOpenMenu"
       />

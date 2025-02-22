@@ -9,7 +9,7 @@
 // See the Mulan PSL v2 for more details.
 import type { HostsTableItem } from '../assests'
 import type { DistributionParams, DistributionResponse, PageNation, Sort } from '../types'
-import type { ConfBaseInfo, ConfFile, Domain, DomainConf, HostInDomain } from './types'
+import type { ConfBaseInfo, ConfChangeRecord, ConfFile, ConfTrace, Domain, DomainConf, HostInDomain } from './types'
 import { http } from '@/api/request'
 
 function getDomains(params: Partial<PageNation & Sort>) {
@@ -20,8 +20,18 @@ function getDomains(params: Partial<PageNation & Sort>) {
   }>('/conftrace/domain/queryDomain', params)
 }
 
-function getHostsInDomain(domainName: string) {
-  return http.post<HostInDomain[]>('/conftrace/host/getHost', { domainName })
+function getHostsInDomain(params: {
+  domainName: string
+  hostIp?: string
+  sync_status?: number
+  page?: number
+  per_page?: number
+}) {
+  return http.post<{
+    hostlist: HostInDomain[]
+    total_page: number
+    total_count: number
+  }>('/conftrace/host/getHost', params)
 }
 
 function getDomainManagementConf(domainName: string) {
@@ -32,11 +42,13 @@ function getDomainManagementConf(domainName: string) {
 }
 
 function getDomainSyncStatus(params: { domainName: string }) {
-  return http.post<{
-    host_id: string
-    host_ip: string
-    sync_status: number
-  }[]>('/conftrace/host/sync/status/get', params)
+  return http.post<
+    {
+      host_id: string
+      host_ip: string
+      sync_status: number
+    }[]
+  >('/conftrace/host/sync/status/get', params)
 }
 
 function getNotExitedHostList(params: { clusterId: string }) {
@@ -48,46 +60,42 @@ function getDomainSupportConfs(params: DistributionParams<{ domainName: string }
   return http.post<DistributionResponse<string[]>>('/distribute/conftrace/confs/querySupportedConfs', params)
 }
 
-function getDomainConfLog(params: DistributionParams<{ domainName: string, confFiles: { filePath: string }[] }>) {
-  return http.post<DistributionResponse<{
+function createDomain(
+  params: DistributionParams<{
     domainName: string
-    confBaseInfos: ConfBaseInfo[]
-  }>>('/distribute/conftrace/management/queryManageConfChange', params)
-}
-function getDomainStatus(params: DistributionParams<{ domainName: string, ip: string }>) {
-  return http.post<DistributionResponse<{
-    domainName: string
-    hostStatus: {
-      hostId: string
-      syncStatus: {
-        file_path: string
-        isSynced: string
-      }[]
-    }[]
-  }>>('/distribute/conftrace/confs/getDomainStatus', params)
-}
-
-function createDomain(params: DistributionParams<{ domainName: string, priority?: number, clusterId?: string }>) {
+    conf_change_flag: boolean
+    report_flag: boolean
+    priority?: number
+    clusterId?: string
+  }>,
+) {
   return http.post<DistributionResponse>('/distribute/conftrace/domain/createDomain', params)
 }
 
-function deleteDomain(params: DistributionParams<{ domainId: string, domainName: string }>) {
+function deleteDomain(params: DistributionParams<{ domainId: string; domainName: string }>) {
   return http.delete<DistributionResponse>('/distribute/conftrace/domain/deleteDomain', params)
 }
 
-function addHost(params: DistributionParams<{ domainName: string, hostInfos: { ipv6: string, ip: string, hostId: string }[] }>) {
+function addHost(
+  params: DistributionParams<{ domainName: string; hostInfos: { ipv6: string; ip: string; hostId: string }[] }>,
+) {
   return http.post<DistributionResponse>('/distribute/conftrace/host/addHost', params)
 }
 
-function deleteDomainHosts(params: DistributionParams<{ domainName: string, hostInfos: { hostId: string }[] }>) {
+function deleteDomainHosts(params: DistributionParams<{ domainName: string; hostInfos: { hostId: string }[] }>) {
   return http.delete<DistributionResponse>('/distribute/conftrace/host/deleteHost', params)
 }
 
-function addDomainConfig(params: DistributionParams<{ domainName: string, confFiles: { filePath?: string, contents?: string, hostId?: number }[] }>) {
+function addDomainConfig(
+  params: DistributionParams<{
+    domainName: string
+    confFiles: { filePath?: string; contents?: string; hostId?: number }[]
+  }>,
+) {
   return http.post<DistributionResponse>('/distribute/conftrace/management/addManagementConf', params)
 }
 
-function deleteDomainConfig(params: DistributionParams<{ domainName: string, confFiles: { filePath: string }[] }>) {
+function deleteDomainConfig(params: DistributionParams<{ domainName: string; confFiles: { filePath: string }[] }>) {
   return http.delete('/distribute/conftrace/management/deleteManagementConf', params)
 }
 
@@ -95,7 +103,22 @@ function uploadDomainConfig(params: FormData) {
   return http.post('/distribute/conftrace/management/uploadManagementConf', params)
 }
 
-function syncConfs(params: DistributionParams<{ domainName: string, syncList: { hostId: string, syncConfigs: { hostId: string, syncConfigs: string[] }[] }[] }>) {
+function queryConfsOperationTrace(
+  params: Partial<PageNation & Sort & { domain_name: string; host_id: string; conf_name: string }>,
+) {
+  return http.post<{
+    conf_trace_infos: ConfTrace[]
+    total_count: number
+    total_page: number
+  }>('/conftrace/query', params)
+}
+
+function syncConfs(
+  params: DistributionParams<{
+    domainName: string
+    syncList: { hostId: string; syncConfigs: { hostId: string; syncConfigs: string[] }[] }[]
+  }>,
+) {
   return http.post<DistributionResponse>('/distribute/conftrace/confs/syncConf', params)
 }
 
@@ -106,9 +129,53 @@ function syncConfsBatchly(params: DistributionParams<{ domainName: string; hostI
 function getDomainRealConf(params: DistributionParams<{ domainName: string; hostIds: { hostId: string }[] }>) {
   return http.post<DistributionResponse<DomainConf[]>>('/distribute/conftrace/confs/queryRealConfs', params)
 }
+
+function getDomainConfLog(params: DistributionParams<{ domainName: string; confFiles: { filePath: string }[] }>) {
+  return http.post<
+    DistributionResponse<{
+      domainName: string
+      confBaseInfos: ConfBaseInfo[]
+    }>
+  >('/distribute/conftrace/management/queryManageConfChange', params)
+}
+
+function getDomainStatus(params: DistributionParams<{ domainName: string; ip: string }>) {
+  return http.post<
+    DistributionResponse<{
+      domainName: string
+      hostStatus: {
+        hostId: string
+        syncStatus: {
+          file_path: string
+          isSynced: string
+        }[]
+      }[]
+    }>
+  >('/distribute/conftrace/confs/getDomainStatus', params)
+}
+
+function queryDomainStatistics() {
+  return http.get<{
+    domain_sync_rate: number
+    no_sync_domain_count: number
+  }>('/conftrace/domain/statistics')
+}
+
+function queryChangeRecord(params: Partial<PageNation & Sort & { domain_name: string; host_ip: string }>) {
+  return http.get<{
+    conf_change_records: ConfChangeRecord[]
+    total_count: number
+    total_page: number
+  }>('/conftrace/conf/change/record', { params })
+}
+
+function batchSyncConfs(params: { aiReqParams: { domainName: string; hostIds: string[] }[] }) {
+  return http.post('/conftrace/ai/confs/batch/syncConf', params)
+}
 // #endregion
 
 export * from './types'
+
 export const domainApi = {
   getDomains,
   getHostsInDomain,
@@ -128,4 +195,8 @@ export const domainApi = {
   getDomainSyncStatus,
   syncConfsBatchly,
   getNotExitedHostList,
+  queryConfsOperationTrace,
+  queryDomainStatistics,
+  queryChangeRecord,
+  batchSyncConfs,
 }

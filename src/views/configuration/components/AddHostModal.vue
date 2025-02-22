@@ -1,4 +1,4 @@
-<script setup lang='ts'>
+<script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { CloseOutlined } from '@ant-design/icons-vue'
 import { useRoute } from 'vue-router'
@@ -34,7 +34,7 @@ const selectedHostKeys = computed(() => props.hostList.map(item => item.hostId))
 const targetKeys = ref<string[]>(props.hostList.map(item => item.hostId))
 // 全部主机列表
 const sourceHosts = computed<Item[]>(() =>
-  allHosts.value.map((item) => {
+  allHosts.value.map(item => {
     if (selectedHostKeys.value.includes(item.host_id)) {
       targetKeys.value.push(item.host_id)
       return {
@@ -42,8 +42,7 @@ const sourceHosts = computed<Item[]>(() =>
         title: item.host_name,
         disabled: true,
       }
-    }
-    else {
+    } else {
       return {
         key: item.host_id,
         title: item.host_name,
@@ -59,8 +58,7 @@ async function getAllHost() {
   const [, res] = await api.getNotExitedHostList({
     clusterId: clusterId.value,
   })
-  if (res)
-    allHosts.value = res
+  if (res) allHosts.value = res
   isLoading.value = false
 }
 
@@ -81,11 +79,13 @@ async function handleSubmit() {
 
   params[clusterId.value] = {
     domainName: props.domainName,
-    hostInfos: allHosts.value.filter(h => hostList.includes(h.host_id)).map(item => ({
-      ipv6: 'ipv6',
-      ip: item.host_ip,
-      hostId: item.host_id,
-    })),
+    hostInfos: allHosts.value
+      .filter(h => hostList.includes(h.host_id))
+      .map(item => ({
+        ipv6: 'ipv6',
+        ip: item.host_ip,
+        hostId: item.host_id,
+      })),
   }
 
   const [, res] = await api.addHost(params)
@@ -94,15 +94,15 @@ async function handleSubmit() {
     visible.value = false
     emit('success')
     getAllHost()
+  } else {
+    message.error(t('common.fail'))
   }
-  else { message.error(t('common.fail')) }
 
   isSubmiting.value = false
 }
 
 function afterOpenChange(open: boolean) {
-  if (open)
-    getAllHost()
+  if (open) getAllHost()
 }
 
 onMounted(() => {
@@ -115,7 +115,14 @@ onMounted(() => {
   <span @click="visible = true">
     <slot name="trigger" />
   </span>
-  <a-drawer v-model:open="visible" :title="$t('conftrace.domainDetail.addHost')" :width="700" :closable="false" destroy-on-close @after-open-change="afterOpenChange">
+  <a-drawer
+    v-model:open="visible"
+    :title="$t('conftrace.domainDetail.addHost')"
+    :width="700"
+    :closable="false"
+    destroy-on-close
+    @after-open-change="afterOpenChange"
+  >
     <template #extra>
       <CloseOutlined style="cursor: pointer" @click="visible = false" />
     </template>
@@ -126,7 +133,7 @@ onMounted(() => {
         </a-form-item>
       </a-form>
 
-      <h4 style="margin: 40px 0 20px 0;">
+      <h4 style="margin: 40px 0 20px 0">
         {{ $t('conftrace.domainDetail.sentence.selectHost') }}
       </h4>
       <a-transfer
@@ -134,7 +141,6 @@ onMounted(() => {
         v-model:selected-keys="selectedKeys"
         :data-source="sourceHosts"
         :render="item => item.title"
-        :show-select-all="false"
         show-search
         :list-style="{
           width: '350px',
@@ -158,5 +164,4 @@ onMounted(() => {
   </a-drawer>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

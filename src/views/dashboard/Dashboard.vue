@@ -10,6 +10,7 @@ import { api } from '@/api'
 import { severityColorMap } from '@/conf'
 import type { Cluster, CveCount } from '@/api'
 import { useLangStore } from '@/store'
+import router from '@/router'
 
 let chart: EChartsType | null = null
 
@@ -59,17 +60,17 @@ const option: EChartsOption = {
 }
 
 async function queryHostsCount() {
-  const [_, res] = await api.getHostCount()
+  const [, res] = await api.getHostCount()
   res && (dashboardData.hostCount = res.host_count)
 }
 
 async function queryHostsAlarms() {
-  const [_, res] = await api.getHostAlarms()
+  const [, res] = await api.getHostAlarms()
   res && (dashboardData.hostAlarms = res.count)
 }
 
 async function queryCveOverview() {
-  const [_, res] = await api.getCveOverview()
+  const [, res] = await api.getCveOverview()
   if (res) {
     dashboardData.cveRiskOverview = res
     setChartData()
@@ -90,7 +91,7 @@ function setChartData() {
 }
 
 async function queryClusters() {
-  const [_, res] = await api.getClusters()
+  const [, res] = await api.getClusters()
   if (res) dashboardData.clusters = res
 }
 
@@ -101,11 +102,24 @@ watch(
   },
 )
 
+const domainSyncStatistic = reactive({
+  syncRate: 0,
+  notSyncCount: 0,
+})
+
+async function getDomainSyncStatistic() {
+  const [, res] = await api.queryDomainStatistics()
+  if (res) {
+    domainSyncStatistic.syncRate = res.domain_sync_rate
+    domainSyncStatistic.notSyncCount = res.no_sync_domain_count
+  }
+}
+
 onMounted(() => {
   queryHostsCount()
   queryHostsAlarms()
   queryClusters()
-  // queryCveOverview()
+  getDomainSyncStatistic()
   chart = init(cvePieRef.value)
 })
 
@@ -159,10 +173,16 @@ onBeforeUnmount(() => {
         </a-card>
       </a-col>
       <a-col :xs="24" :md="12" :xl="8" style="margin-bottom: 20px">
-        <a-card>
+        <a-card class="cursor-pointer" @click="router.push('/configuration')">
           <a-row class="sync-card" type="flex" align="middle" justify="space-between">
             <a-col>
-              <a-progress type="circle" :percent="100" :stroke-width="20" :size="150" :show-info="false" />
+              <a-progress
+                type="circle"
+                :percent="domainSyncStatistic.syncRate * 100"
+                :stroke-width="20"
+                :size="150"
+                :show-info="false"
+              />
             </a-col>
             <a-col>
               <div class="dash-sync-card-desc">
@@ -170,14 +190,14 @@ onBeforeUnmount(() => {
                   <a-badge status="processing" />
                   {{ $t('dashboard.domianSync') }}
                 </span>
-                <span class="data-number">100%</span>
+                <span class="data-number">{{ Math.round(domainSyncStatistic.syncRate * 100)}}%</span>
               </div>
               <div class="dash-sync-card-desc">
                 <span class="small-title">
                   <a-badge status="error" />
                   {{ $t('dashboard.domainUnSync') }}
                 </span>
-                <div class="data-number">0</div>
+                <div class="data-number">{{ Math.round((100 - domainSyncStatistic.syncRate * 100) ) }}%</div>
               </div>
             </a-col>
           </a-row>
@@ -256,4 +276,3 @@ onBeforeUnmount(() => {
   }
 }
 </style>
-

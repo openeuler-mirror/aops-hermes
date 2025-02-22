@@ -173,6 +173,7 @@
     "createFail": "Create Failed",
     "createSuccess": "Create Successfully",
     "createTime": "Create Time",
+    "updateTime": "Update Time",
     "delete": "Delete",
     "deleteBatch": "Batch Delete",
     "deleteFail": "Delete Failed",
@@ -192,6 +193,7 @@
     "helpDoc": "Docs",
     "host": "Host :{0}",
     "ip": "IP: {0}",
+    "hostIp": "IP",
     "message": {
       "partialDelete": "Delivered successfully, partially deleted successfully"
     },
@@ -241,6 +243,10 @@
       "domainList": "Domain List",
       "domainName": "Domain",
       "domainTotal": "{count} domain in total",
+      "isTrace": "File Trace",
+      "isMonitor": "File Monitor",
+      "updateTime": "Update Time",
+      "changeRecord": "Record",
       "placeHolder": {
         "domainName": "Please enter the business domain name, within 26 characters",
         "priority": "Settings not open"
@@ -313,6 +319,9 @@
       "hosts": "{count} host info in total",
       "ip": "IP",
       "ipProtocol": "Protocol",
+      "confTrace": "Process Tracing",
+      "record": "Monitoring records",
+      "operateTrace" : "Operation Tracing",
       "message": {
         "atLeastOneFile": "Please make sure there is at least one file to sync",
         "leastOne": "Select at least one host to add!",
@@ -332,7 +341,9 @@
         "syncAll": "Sync All",
         "syncConfirmContent": "The configuration cannot be restored after synchronization, but the records can be viewed from the configuration log. Do you still want to continue?",
         "syncConfirmTitle": "Are you sure you want to synchronize the configuration of the current business domain to the selected host?",
-        "syncGoon": "Continue"
+        "syncGoon": "Continue",
+        "enterHostIp": "please enter the host IP",
+        "traceCount": "displaying {count} monitoring information"
       },
       "statusDetail": "Detail",
       "syncStatus": "Sync Status",
@@ -506,6 +517,7 @@
       "configurationManagement": "Domain configuration",
       "domain": "Domain",
       "domainDetail": "Domain Detail",
+      "changeLog": "Configuration Log",
       "self": "Conf Trace"
     },
     "copilot": "OpenEuler Copilot System",

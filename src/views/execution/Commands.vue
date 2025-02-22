@@ -7,7 +7,6 @@ import dayjs from 'dayjs'
 import NewCommand from './components/NewCommand.vue'
 import type { Command } from '@/api'
 import { api } from '@/api'
-import { SorterResult } from 'ant-design-vue/es/table/interface'
 
 const { t } = useI18n()
 
@@ -71,11 +70,7 @@ async function handleDeleteCommand(commandIds: string[]) {
   }
 }
 
-function handleTableChange(
-  page: TablePaginationConfig,
-  _filters: any,
-  _sorter: SorterResult<Command> | SorterResult<Command>[],
-) {
+function handleTableChange(page: TablePaginationConfig) {
   page.current && (pagination.current = page.current)
   page.pageSize && (pagination.pageSize = page.pageSize)
   getCommands()
@@ -182,4 +177,3 @@ onMounted(() => {
 </template>
 
 <style scoped></style>
-
