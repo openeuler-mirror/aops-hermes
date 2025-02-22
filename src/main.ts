@@ -12,6 +12,7 @@ import '@/assets/styles/main.css'
 import '@/assets/styles/global.less'
 import 'nprogress/nprogress.css'
 import '@/assets/styles/tailwind.css'
+import 'animate.css'
 
 import { createApp } from 'vue'
 import Antd from 'ant-design-vue'
@@ -44,10 +45,10 @@ const apps = [
 ]
 
 registerMicroApps(apps, {
-  beforeLoad: app => {
+  beforeLoad: (app) => {
     return Promise.resolve()
   },
-  afterMount: app => {
+  afterMount: (app) => {
     if (app.name === 'copilot') {
       actions.setGlobalState(getCurrentState())
     }
@@ -56,7 +57,7 @@ registerMicroApps(apps, {
   },
 })
 
-addGlobalUncaughtErrorHandler(event => {
+addGlobalUncaughtErrorHandler((event) => {
   // console.error("qiankun全局异常", event);
 })
 
