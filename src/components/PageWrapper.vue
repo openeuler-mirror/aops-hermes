@@ -20,15 +20,14 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const breadcrumb = computed<Breadcrumb[]>(() => {
-  if (props.breadcrumb)
-    return props.breadcrumb
+  if (props.breadcrumb) return props.breadcrumb
   const { matched } = route
   if (matched[matched.length - 1].meta.diyBreadcrumb)
     return matched[matched.length - 1].meta.diyBreadcrumb as Breadcrumb[]
 
   return matched
-    .filter(item => !item.meta.hiddenChildren)
-    .map(item => ({
+    .filter((item) => !item.meta.hiddenChildren)
+    .map((item) => ({
       breadcrumbName: item.meta.title,
       path: item.path,
       label: item.meta.title,
@@ -60,10 +59,7 @@ function onBreadCrumbClick(route: Breadcrumb): void {
       </a-breadcrumb>
       <div class="page-wrapper-breadcrumb__title">
         <span>
-          {{
-            t(breadcrumb[breadcrumb.length - 1].label
-              || breadcrumb[breadcrumb.length - 1].breadcrumbName)
-          }}
+          {{ t(breadcrumb[breadcrumb.length - 1].label || breadcrumb[breadcrumb.length - 1].breadcrumbName) }}
         </span>
         <a-tooltip
           v-if="breadcrumb[breadcrumb.length - 1].desc"
@@ -87,7 +83,7 @@ function onBreadCrumbClick(route: Breadcrumb): void {
 <style lang="less" scoped>
 .page-wrapper {
   &-content {
-    padding: 15px;
+    padding: 12px;
   }
   &-breadcrumb {
     padding: 12px 24px;

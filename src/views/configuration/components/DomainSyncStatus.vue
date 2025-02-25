@@ -3,7 +3,7 @@ import { CheckCircleTwoTone, CloseCircleTwoTone, QuestionCircleOutlined, SyncOut
 import { message } from 'ant-design-vue'
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { DOMAIN_STATUS_ENUM, DOMAIN_STATUS_LABEL_ENUM } from '../constants'
+import { DOMAIN_STATUS_ENUM, DOMAIN_STATUS_LABEL } from '../constants'
 import { type HostInDomain, api } from '@/api'
 
 const props = withDefaults(
@@ -42,7 +42,7 @@ const confStatusList = ref<
 >([])
 
 const isSyncAllDisable = computed(
-  () => confStatusList.value.filter((item) => item.isSynced === 'NOT SYNCHRONIZE').length === 0,
+  () => confStatusList.value.filter(item => item.isSynced === 'NOT SYNCHRONIZE').length === 0,
 )
 
 const isSyncingAll = ref(false)
@@ -69,7 +69,7 @@ async function syncConfigConfirm(
     syncList: [
       {
         hostId: props.syncHost?.hostId,
-        syncConfigs: records.map((i) => i.file_path),
+        syncConfigs: records.map(i => i.file_path),
       },
     ],
   }
@@ -153,7 +153,7 @@ onMounted(() => {
                   two-tone-color="#ff0000"
                 />
                 <QuestionCircleOutlined v-else style="font-size: 16px" />
-                {{ t(`conftrace.domainDetail.${DOMAIN_STATUS_LABEL_ENUM[record.isSynced]}`) }}
+                {{ t(`conftrace.domainDetail.${DOMAIN_STATUS_LABEL[record.isSynced]}`) }}
               </span>
             </template>
             <template v-if="column.dataIndex === 'operation'">

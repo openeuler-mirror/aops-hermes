@@ -7,7 +7,6 @@ import dayjs from 'dayjs'
 import NewScript from './components/NewScript.vue'
 import type { Script } from '@/api'
 import { api } from '@/api'
-import { SorterResult } from 'ant-design-vue/es/table/interface'
 
 const { t } = useI18n()
 
@@ -72,11 +71,7 @@ async function getScripts() {
   tableState.loading = false
 }
 
-function handleTableChange(
-  page: TablePaginationConfig,
-  _filters: any,
-  _sorter: SorterResult<Script> | SorterResult<Script>[],
-) {
+function handleTableChange(page: TablePaginationConfig) {
   page.current && (pagination.current = page.current)
   page.pageSize && (pagination.pageSize = page.pageSize)
   getScripts()
@@ -89,10 +84,16 @@ function handleEdit(scriptId: string) {
 
 const isModalVisible = ref(false)
 
-function handleSuccess() {
+function handleCreateOperation() {
+  tableState.selectedScriptId = ''
   isModalVisible.value = false
   tableState.selectedScriptId = ''
   getScripts()
+}
+
+function handleCancelCreateOperation() {
+  tableState.selectedScriptId = ''
+  isModalVisible.value = false
 }
 
 async function handleDeleteScript(scriptIds: string[]) {
@@ -173,8 +174,8 @@ onMounted(() => {
   <NewScript
     :visible="isModalVisible"
     :script-id="tableState.selectedScriptId"
-    @success="handleSuccess"
-    @cancel="handleNewScriptCanceled"
+    @cancel="handleCancelCreateOperation"
+    @success="handleCreateOperation"
   />
 </template>
 

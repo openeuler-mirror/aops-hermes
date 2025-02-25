@@ -6,7 +6,6 @@ import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons-vue'
 import NewOperationModal from './components/NewOperation.vue'
 import { api, Operation } from '@/api'
 import dayjs from 'dayjs'
-import { SorterResult } from 'ant-design-vue/es/table/interface'
 
 const { t } = useI18n()
 
@@ -87,11 +86,7 @@ function handleCreateOperation() {
   getOperations()
 }
 
-function handleTableChange(
-  page: TablePaginationConfig,
-  _filters: any,
-  _sorter: SorterResult<Operation> | SorterResult<Operation>[],
-) {
+function handleTableChange(page: TablePaginationConfig) {
   page.current && (pagination.current = page.current)
   page.pageSize && (pagination.pageSize = page.pageSize)
   getOperations()
@@ -159,4 +154,3 @@ onMounted(() => {
   />
 </template>
 <style scoped></style>
-

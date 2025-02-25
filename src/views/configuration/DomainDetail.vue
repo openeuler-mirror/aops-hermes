@@ -10,7 +10,7 @@ import {
   ReloadOutlined,
 } from '@ant-design/icons-vue'
 import { useRoute } from 'vue-router'
-import { Modal, message } from 'ant-design-vue'
+import { Modal, TableProps, message } from 'ant-design-vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import { DOMAIN_STATUS_ENUM, DOMAIN_STATUS_LABEL_ENUM } from './constants'
@@ -22,6 +22,7 @@ import { api } from '@/api'
 import type { ConfFile, HostInDomain } from '@/api'
 import Drawer from '@/components/Drawer.vue'
 import { useAccountStore } from '@/store'
+import type { TablePaginationConfig } from 'ant-design-vue/es/table/interface'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -61,6 +62,17 @@ const domainHostColumns = computed(() => [
   },
 ])
 
+const searchKey = ref()
+
+const pagination = reactive<TablePaginationConfig>({
+  total: 0,
+  current: 1,
+  pageSize: 10,
+  showTotal: (total: number) => `${t('common.total', { count: total })}`,
+  showSizeChanger: true,
+  pageSizeOptions: ['10', '20', '30', '40'],
+})
+
 const domainHostState = reactive<{
   selectedRowKeys: string[]
   loading: boolean
@@ -73,13 +85,36 @@ const domainHostState = reactive<{
 
 async function queryHostsInDomain() {
   domainHostState.loading = true
-  const [, res] = await api.getHostsInDomain(domainDetail.domainName)
-  if (res) domainDetail.domainHosts = res
-
+  const [, res] = await api.getHostsInDomain({
+    domainName: domainDetail.domainName,
+    hostIp: searchKey.value || undefined,
+    page: pagination.current,
+    per_page: pagination.pageSize,
+  })
+  if (res) {
+    domainDetail.domainHosts = res.hostlist
+    // domainDetail.domainHosts = []
+    pagination.total = res.total_count
+  }
   domainHostState.loading = false
-  queryHostSyncStatus()
 }
 
+/**
+ * re request when conditions changed
+ * @param page
+ * @param filters
+ * @param sorter
+ */
+const handleTableChange: TableProps<HostInDomain>['onChange'] = page => {
+  page.current && (pagination.current = page.current)
+  page.pageSize && (pagination.pageSize = page.pageSize)
+
+  queryHostsInDomain()
+}
+
+/**
+ * select one of cves include this cve's all rpms
+ */
 function onSelect(record: HostInDomain, selected: boolean) {
   if (selected) {
     domainHostState.selectedRowKeys.push(record.hostId)
@@ -113,23 +148,6 @@ async function handleDelete(record: HostInDomain) {
 }
 
 const isStatusLoading = ref(false)
-
-async function queryHostSyncStatus() {
-  const [, res] = await api.getDomainSyncStatus({
-    domainName: domainDetail.domainName,
-  })
-  if (res) {
-    domainDetail.domainHosts.forEach(d => {
-      const item = res.find(s => s.host_id === d.hostId)
-      if (item) d.syncStatus = item.sync_status === 0 ? 'NOT SYNCHRONIZE' : 'SYNCHRONIZED'
-      else d.syncStatus = 'NOT FOUND'
-    })
-  } else {
-    domainDetail.domainHosts.forEach(d => {
-      d.syncStatus = 'NOT FOUND'
-    })
-  }
-}
 
 const managementConf = ref<ConfFile[]>([])
 
@@ -191,10 +209,17 @@ onMounted(() => {
 <template>
   <PageWrapper>
     <a-card>
+      <a-row>
+        <span class="domain-detail-title">{{ `${domainDetail.domainName}` }}</span>
+      </a-row>
       <a-row type="flex" justify="space-between">
         <a-col>
-          <span class="domain-detail-title">{{ `${domainDetail.domainName}` }}</span>
-          <span>{{ t('conftrace.domainDetail.hosts', { count: domainDetail.domainHosts.length }) }}</span>
+          <a-input-search
+            v-model:value="searchKey"
+            :placeholder="t('conftrace.domainDetail.sentence.enterHostIp')"
+            style="width: 200px"
+            @search="queryHostsInDomain"
+          />
         </a-col>
         <a-col v-show="domainHostState.selectedRowKeys.length > 0">
           <a-alert type="info" show-icon class="delete-alert">
@@ -237,16 +262,17 @@ onMounted(() => {
         :columns="domainHostColumns"
         :data-source="domainDetail.domainHosts"
         :loading="domainHostState.loading"
-        :pagination="false"
+        :pagination="pagination"
         :row-selection="{
           selectedRowKeys: domainHostState.selectedRowKeys,
           onSelect,
           onSelectAll,
         }"
+        @change="handleTableChange"
       >
         <template #bodyCell="{ record, column }">
           <template v-if="column.dataIndex === 'operation'">
-            <a @click="handleConfClick(record)">
+            <a @click="((currentConfHostInfo = record), (isCurrentConfVisible = true))">
               {{ $t('conftrace.domainDetail.currentConf') }}
             </a>
             <a-divider type="vertical" />
@@ -267,25 +293,25 @@ onMounted(() => {
             </template>
           </template>
           <template v-if="column.dataIndex === 'syncStatus'">
-            <a-spin v-if="!record.syncStatus" size="small" />
+            <a-spin v-if="!record.sync_status && record.sync_status !== 0" size="small" />
             <a-space v-else>
               <CheckCircleTwoTone
-                v-if="record.syncStatus === DOMAIN_STATUS_ENUM.sync"
+                v-if="record.sync_status === DOMAIN_STATUS_ENUM.sync"
                 style="font-size: 16px"
                 two-tone-color="#52c41a"
               />
               <CloseCircleTwoTone
-                v-else-if="record.syncStatus === DOMAIN_STATUS_ENUM.notSync"
+                v-else-if="record.sync_status === DOMAIN_STATUS_ENUM.notSync"
                 style="font-size: 16px"
                 two-tone-color="#ff0000"
               />
               <QuestionCircleOutlined v-else style="font-size: 16px" />
               {{
-                record.syncStatus
-                  ? t(`conftrace.domainDetail.${DOMAIN_STATUS_LABEL_ENUM[record.syncStatus]}`)
+                record.sync_status
+                  ? t(`conftrace.domainDetail.${DOMAIN_STATUS_LABEL_ENUM[record.sync_status]}`)
                   : t('conftrace.domainDetail.unknownStatus')
               }}
-              <span v-if="record.syncStatus.notSyncCount > 0">{{ record.syncStatus.notSyncCount }}</span>
+              <!-- <span v-if="record.syncStatus.notSyncCount > 0">{{ record.syncStatus.notSyncCount }}</span> -->
             </a-space>
           </template>
         </template>
@@ -296,7 +322,8 @@ onMounted(() => {
   <Drawer v-model:visible="isCurrentConfVisible">
     <template #content>
       <CurrentConf
-        :host-info="currentConfHostInfo"
+        :host-id="currentConfHostInfo!.hostId"
+        :host-ip="currentConfHostInfo!.ip"
         :default-conf="managementConf"
         :domain-name="domainDetail.domainName"
         :cluster-id="domainDetail.clusterId"
@@ -318,7 +345,6 @@ onMounted(() => {
         :cluster-id="domainDetail.clusterId"
         :domain-name="domainDetail.domainName"
         :is-status-loading="isStatusLoading"
-        @success="queryHostSyncStatus"
       />
     </template>
   </Drawer>

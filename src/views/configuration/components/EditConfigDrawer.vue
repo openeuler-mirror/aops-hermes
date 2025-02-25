@@ -82,7 +82,7 @@ async function handleSubmit() {
       const formData = new FormData()
       formData.append('filePath', form.confs[0].filePath)
       formData.append('domainName', form.confs[0].domainName)
-      fileList.value?.forEach((file) => {
+      fileList.value?.forEach(file => {
         formData.append('file', file as any)
       })
       formData.append('cluster_id', props.clusterId)
@@ -93,12 +93,10 @@ async function handleSubmit() {
         emit('success')
         visible.value = false
         onClose()
-      }
-      else {
+      } else {
         message.error(t('common.fail'))
       }
-    }
-    else {
+    } else {
       params[props.clusterId] = {
         domainName: props.domainName,
         confFiles: form.confs.map(({ filePath, configHostId: hostId, configContent }) => ({
@@ -108,38 +106,31 @@ async function handleSubmit() {
         })),
       }
 
-      const [, res] = await api.addDomainConfig(
-        params,
-      )
+      const [, res] = await api.addDomainConfig(params)
       if (res && res[props.clusterId].label === 'Succeed') {
         message.success(t('common.succeed'))
         emit('success')
         visible.value = false
         onClose()
-      }
-      else {
+      } else {
         message.error(t('common.fail'))
       }
     }
-  }
-  catch {
-  }
-  finally {
+  } finally {
     isSubmiting.value = false
   }
 }
 
 function onClose() {
-  form.confs.forEach((item) => {
+  form.confs.forEach(item => {
     item.configContent = undefined
     item.configHostId = undefined
   })
   fileList.value = []
 }
 
-const removeFile: UploadProps['onRemove'] = (file) => {
-  if (!fileList.value)
-    return
+const removeFile: UploadProps['onRemove'] = file => {
+  if (!fileList.value) return
   const index = fileList.value.indexOf(file)
   const newFileList = fileList.value.slice()
   newFileList.splice(index, 1)
@@ -150,7 +141,7 @@ const removeFile: UploadProps['onRemove'] = (file) => {
  * examine file before upload
  * @param file
  */
-const preUpload: UploadProps['beforeUpload'] = async (file) => {
+const preUpload: UploadProps['beforeUpload'] = async file => {
   fileList.value = [file]
 
   const fileSize = file.size
@@ -166,12 +157,11 @@ const preUpload: UploadProps['beforeUpload'] = async (file) => {
 }
 
 function validateFile() {
-  if (fileList.value?.length === 0)
-    return Promise.reject(new Error(t('common.palceHolder.selectDoc')))
+  if (fileList.value?.length === 0) return Promise.reject(new Error(t('common.palceHolder.selectDoc')))
   return Promise.resolve()
 }
 
-function OnImportWayChanged(_value: string) {
+function OnImportWayChanged() {
   onClose()
 }
 </script>
@@ -220,7 +210,11 @@ function OnImportWayChanged(_value: string) {
           :label="t('conftrace.domainConf.confContent')"
           :rules="[{ required: true, message: t('conftrace.domainConf.placeHolder.confContent'), trigger: 'change' }]"
         >
-          <a-textarea v-model:value="conf.configContent" :rows="8" :placeholder="t('conftrace.domainConf.placeHolder.confContent')" />
+          <a-textarea
+            v-model:value="conf.configContent"
+            :rows="8"
+            :placeholder="t('conftrace.domainConf.placeHolder.confContent')"
+          />
         </a-form-item>
         <a-form-item
           v-if="conf.importWay === 'auto'"
@@ -230,18 +224,17 @@ function OnImportWayChanged(_value: string) {
         >
           <a-select v-model:value="conf.configHostId" :placeholder="t('conftrace.domainConf.placeHolder.host')">
             <a-select-option v-for="item in hostList" :key="item.hostId" :value="item.hostId">
-              {{
-                item.ip
-              }}
+              {{ item.ip }}
             </a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item v-if="conf.importWay === 'file'" :label="t('common.selectDoc')" :name="['confs', index, 'confs']" :rules="[{ validator: validateFile }]">
-          <a-upload
-            :file-list="fileList"
-            :before-upload="preUpload"
-            @remove="removeFile"
-          >
+        <a-form-item
+          v-if="conf.importWay === 'file'"
+          :label="t('common.selectDoc')"
+          :name="['confs', index, 'confs']"
+          :rules="[{ validator: validateFile }]"
+        >
+          <a-upload :file-list="fileList" :before-upload="preUpload" @remove="removeFile">
             <a-button>
               <UploadOutlined />
               {{ t('common.selectDoc') }}
@@ -258,7 +251,7 @@ function OnImportWayChanged(_value: string) {
         <a-button @click="visible = false">
           {{ t('common.cancel') }}
         </a-button>
-        <a-button type="primary" html-type="submit" @click="handleSubmit">
+        <a-button type="primary" html-type="submit" @click="handleSubmit" :loading="isSubmiting">
           {{ t('common.confirm') }}
         </a-button>
       </a-space>
@@ -283,6 +276,5 @@ function OnImportWayChanged(_value: string) {
   position: absolute;
   font-size: 15px;
   width: 170px;
-
 }
 </style>

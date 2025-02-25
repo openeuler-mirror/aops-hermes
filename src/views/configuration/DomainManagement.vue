@@ -1,17 +1,17 @@
 <script lang="ts" setup>
 import { PlusOutlined, QuestionCircleOutlined, RedoOutlined } from '@ant-design/icons-vue'
 import { computed, onMounted, reactive, ref } from 'vue'
-import type { TableColumnProps, TablePaginationConfig, TableProps } from 'ant-design-vue'
 import { message } from 'ant-design-vue'
 import { storeToRefs } from 'pinia'
-import type { SorterResult } from 'ant-design-vue/es/table/interface'
 import { useI18n } from 'vue-i18n'
 import AddDomainModal from './components/AddDomainModal.vue'
 import PageWrapper from '@/components/PageWrapper.vue'
-import type { Domain } from '@/api'
 import { api } from '@/api'
-import type { DistributionParams } from '@/api/paths/types'
 import { useAccountStore } from '@/store'
+import { DOMAIN_STATUS_LABEL_ENUM } from './constants'
+import type { TableColumnProps, TablePaginationConfig, TableProps } from 'ant-design-vue'
+import type { Domain } from '@/api'
+import type { DistributionParams } from '@/api/paths/types'
 
 const { t } = useI18n()
 
@@ -26,7 +26,7 @@ const pagination = reactive<TablePaginationConfig>({
   pageSizeOptions: ['10', '20', '30', '40'],
 })
 
-const tableColumns = computed< TableColumnProps[]>(() => [
+const tableColumns = computed<TableColumnProps[]>(() => [
   {
     dataIndex: 'domain_name',
     title: t('conftrace.domain.domainName'),
@@ -34,6 +34,10 @@ const tableColumns = computed< TableColumnProps[]>(() => [
   {
     dataIndex: 'cluster_name',
     title: t('conftrace.domain.cluster'),
+  },
+  {
+    dataIndex: 'sync_status',
+    title: t('conftrace.domainDetail.syncStatus'),
   },
   {
     dataIndex: 'operation',
@@ -62,11 +66,7 @@ async function queryDomains() {
  * re request when conditions changed
  * @param page
  */
-const handleTableChange: TableProps<Domain>['onChange'] = (
-  page,
-  _filters,
-  _sorter: SorterResult<Domain>,
-) => {
+const handleTableChange: TableProps<Domain>['onChange'] = page => {
   page.current && (pagination.current = page.current)
   page.pageSize && (pagination.pageSize = page.pageSize)
 
@@ -74,23 +74,20 @@ const handleTableChange: TableProps<Domain>['onChange'] = (
 }
 
 async function handleDelete(record: Domain) {
-  const params: DistributionParams<{ domainId: string, domainName: string }> = {}
+  const params: DistributionParams<{ domainId: string; domainName: string }> = {}
   params[record.cluster_id] = {
     domainId: record.domain_id,
     domainName: record.domain_name,
   }
   const [, res] = await api.deleteDomain(params)
-  if (res && res[record.cluster_id].label === 'Succeed')
-    refresh(t('common.fail'))
-
+  if (res && res[record.cluster_id].label === 'Succeed') refresh(t('common.succeed'))
   else message.error(t('common.fail'))
 }
 
 function refresh(msg?: string) {
   pagination.current = 1
   setTimeout(() => {
-    if (msg)
-      message.success(msg)
+    if (msg) message.success(msg)
 
     queryDomains()
   }, 1000)
@@ -129,14 +126,31 @@ onMounted(() => {
         </a-col>
       </a-row>
 
-      <a-table :columns="tableColumns" :data-source="domains" :loading="tableLoading" :pagination="pagination" @change="handleTableChange">
+      <a-table
+        :columns="tableColumns"
+        :data-source="domains"
+        :loading="tableLoading"
+        :pagination="pagination"
+        @change="handleTableChange"
+      >
         <template #bodyCell="{ record, column }">
+          <template v-if="column.dataIndex === 'sync_status'">{{
+            t(`conftrace.domainDetail.${DOMAIN_STATUS_LABEL_ENUM[record.sync_status]}`)
+          }}</template>
           <template v-if="column.dataIndex === 'operation'">
-            <router-link :to="{ path: `/configuration/domain-management/detail/${record.domain_id}/${record.domain_name}/${record.cluster_id}` }">
+            <router-link
+              :to="{
+                path: `/configuration/domain-management/detail/${record.domain_id}/${record.domain_name}/${record.cluster_id}`,
+              }"
+            >
               {{ $t('conftrace.domain.domainDetail') }}
             </router-link>
             <a-divider type="vertical" />
-            <router-link :to="{ path: `/configuration/domain-management/conf-list/${record.domain_id}/${record.domain_name}/${record.cluster_id}` }">
+            <router-link
+              :to="{
+                path: `/configuration/domain-management/conf-list/${record.domain_id}/${record.domain_name}/${record.cluster_id}`,
+              }"
+            >
               {{ $t('conftrace.domain.domainConf') }}
             </router-link>
             <template v-if="userInfo?.type === 'administrator'">

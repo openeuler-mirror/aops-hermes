@@ -4,7 +4,6 @@ import { useRoute } from 'vue-router'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined, QuestionCircleOutlined, RedoOutlined } from '@ant-design/icons-vue'
-import type { SorterResult } from 'ant-design-vue/es/table/interface'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import DomainConfContent from './components/DomainConfContent.vue'
@@ -21,7 +20,12 @@ const { t } = useI18n()
 const { userInfo } = storeToRefs(useAccountStore())
 
 const route = useRoute()
-const domainConfig = reactive<{ domainId: string, domainName: string, clusterId: string, isSelectDomainModalVisible: boolean }>({
+const domainConfig = reactive<{
+  domainId: string
+  domainName: string
+  clusterId: string
+  isSelectDomainModalVisible: boolean
+}>({
   domainId: (route.params.domainId as string) || '',
   domainName: (route.params.domainName as string) || '',
   clusterId: (route.params.clusterId as string) || '',
@@ -72,8 +76,7 @@ async function queryDomainConf() {
   if (res) {
     domainConfs.value = res.confFiles
     pagination.total = res.confFiles.length
-  }
-  else {
+  } else {
     domainConfs.value = []
     pagination.total = 0
   }
@@ -83,9 +86,8 @@ async function queryDomainConf() {
 
 const domainHosts = ref<HostInDomain[]>([])
 async function queryHostsInDomain() {
-  const [, res] = await api.getHostsInDomain(domainConfig.domainName)
-  if (res)
-    domainHosts.value = res
+  const [, res] = await api.getHostsInDomain({ domainName: domainConfig.domainName })
+  if (res) domainHosts.value = res.hostlist
 }
 
 /**
@@ -94,11 +96,8 @@ async function queryHostsInDomain() {
 function onSelect(record: ConfFile, selected: boolean) {
   if (selected) {
     domainConfState.selectedRowKeys.push(record.filePath)
-  }
-  else {
-    domainConfState.selectedRowKeys = domainConfState.selectedRowKeys.filter(
-      item => item !== record.filePath,
-    )
+  } else {
+    domainConfState.selectedRowKeys = domainConfState.selectedRowKeys.filter(item => item !== record.filePath)
   }
 }
 
@@ -115,8 +114,7 @@ function onSelectAll(_selected: boolean, selectedRows: ConfFile[]) {
 function refresh(msg?: string) {
   domainConfState.selectedRowKeys = []
   setTimeout(() => {
-    if (msg)
-      message.success(msg)
+    if (msg) message.success(msg)
 
     queryDomainConf()
   }, 1000)
@@ -126,17 +124,15 @@ async function confirmDelete(record: ConfFile) {
   const params = {}
   params[domainConfig.clusterId] = {
     domainName: domainConfig.domainName,
-    confFiles: [
-      { filePath: record.filePath },
-    ],
+    confFiles: [{ filePath: record.filePath }],
   }
   const [, res] = await api.deleteDomainConfig(params)
   if (res && res[domainConfig.clusterId].label === 'Succeed') {
     message.success(t('common.succeed'))
     refresh()
+  } else {
+    message.error(t('common.fail'))
   }
-
-  else { message.error(t('common.fail')) }
 }
 
 async function deleteBatch() {
@@ -154,18 +150,18 @@ async function deleteBatch() {
   if (res && res[domainConfig.clusterId].label === 'Succeed') {
     message.success(t('common.succeed'))
     refresh()
+  } else {
+    message.error(t('common.fail'))
   }
-
-  else { message.error(t('common.fail')) }
 }
 
-function handleTableChange(page: TablePaginationConfig, _filters: Record<string, string[] | null>, _sorter: SorterResult<ConfFile>) {
+function handleTableChange(page: TablePaginationConfig) {
   page.current && (pagination.current = page.current)
   page.pageSize && (pagination.pageSize = page.pageSize)
 }
 
-const isEditingDrawerVisibale = ref(false)
-const isConfContentDrawerVisibale = ref(false)
+const isEditingDrawerVisible = ref(false)
+const isConfContentDrawerVisible = ref(false)
 const isConfChangeLogVisible = ref(false)
 
 const currentConfContent = ref<ConfFile>()
@@ -194,7 +190,8 @@ onMounted(() => {
         <a-col v-show="domainConfState.selectedRowKeys.length > 0">
           <a-alert type="info" show-icon class="delete-alert">
             <template #message>
-              <span>{{ t('common.selectItems',{count: domainConfState.selectedRowKeys.length}) }}
+              <span
+                >{{ t('common.selectItems', { count: domainConfState.selectedRowKeys.length }) }}
                 <a @click="deleteBatch">{{ $t('conftrace.domainConf.batchDelete') }}</a>
                 <a-divider type="vertical" />
                 <a @click="domainConfState.selectedRowKeys = []">{{ $t('common.clear') }}</a>
@@ -204,9 +201,13 @@ onMounted(() => {
         </a-col>
         <a-col>
           <a-space>
-            <Drawer v-if="userInfo?.type === 'administrator'" v-model:visible="isEditingDrawerVisibale" :title="$t('conftrace.domainConf.addConf')">
+            <Drawer
+              v-if="userInfo?.type === 'administrator'"
+              v-model:visible="isEditingDrawerVisible"
+              :title="$t('conftrace.domainConf.addConf')"
+            >
               <template #trigger>
-                <a-button type="primary" :icon="h(PlusOutlined)" @click="isEditingDrawerVisibale = true">
+                <a-button type="primary" :icon="h(PlusOutlined)" @click="isEditingDrawerVisible = true">
                   {{ $t('conftrace.domainConf.addConf') }}
                 </a-button>
               </template>
@@ -214,7 +215,10 @@ onMounted(() => {
                 <AddNewConfig
                   :domain-name="domainConfig.domainName"
                   :host-list="domainHosts"
-                  :cluster-id="domainConfig.clusterId" type="add" @cancel="isEditingDrawerVisibale = false" @success="isEditingDrawerVisibale = false;refresh()"
+                  :cluster-id="domainConfig.clusterId"
+                  type="add"
+                  @cancel="isEditingDrawerVisible = false"
+                  @success="((isEditingDrawerVisible = false), refresh())"
                 />
               </template>
             </Drawer>
@@ -241,7 +245,7 @@ onMounted(() => {
           <template v-if="column.dataIndex === 'contents'">
             <a-popover :title="$t('conftrace.domainConf.detail')">
               <template #content>
-                <div style="width: 350px;word-break: break-all">
+                <div style="width: 350px; word-break: break-all">
                   {{ record.contents }}
                 </div>
               </template>
@@ -251,9 +255,13 @@ onMounted(() => {
             </a-popover>
           </template>
           <template v-if="column.dataIndex === 'operation'">
-            <a @click="currentConfContent = record; isConfContentDrawerVisibale = true">{{ $t('conftrace.domainConf.view') }}</a>
+            <a @click="((currentConfContent = record), (isConfContentDrawerVisible = true))">{{
+              $t('conftrace.domainConf.view')
+            }}</a>
             <a-divider type="vertical" />
-            <a @click="currentConfContent = record; isConfChangeLogVisible = true">{{ $t('conftrace.domainConf.changeLog') }}</a>
+            <a @click="((currentConfContent = record), (isConfChangeLogVisible = true))">{{
+              $t('conftrace.domainConf.changeLog')
+            }}</a>
             <template v-if="userInfo?.type === 'administrator'">
               <a-divider type="vertical" />
               <EditConfigDrawer
@@ -285,14 +293,18 @@ onMounted(() => {
         </template>
       </a-table>
     </a-card>
-    <Drawer v-model:visible="isConfContentDrawerVisibale" :title="$t('conftrace.domainConf.confContent')">
+    <Drawer v-model:visible="isConfContentDrawerVisible" :title="$t('conftrace.domainConf.confContent')">
       <template #content>
         <DomainConfContent :config-content="currentConfContent" />
       </template>
     </Drawer>
     <Drawer v-model:visible="isConfChangeLogVisible" :title="$t('conftrace.domainConf.changeLog')" :width="1100">
       <template #content>
-        <DomainConfLog :domain-name="domainConfig.domainName" :conf-file="currentConfContent" :cluster-id="domainConfig.clusterId" />
+        <DomainConfLog
+          :domain-name="domainConfig.domainName"
+          :conf-file="currentConfContent"
+          :cluster-id="domainConfig.clusterId"
+        />
       </template>
     </Drawer>
   </PageWrapper>
