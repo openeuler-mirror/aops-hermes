@@ -12,13 +12,15 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { viteMockServe } from 'vite-plugin-mock'
 
-const BASE_PROXY_URL = 'http://localhost:11111'
+// const BASE_PROXY_URL = 'http://localhost:11111'
+const BASE_PROXY_URL = 'http://172.168.140.44'
 
 export default () => {
   return defineConfig({
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
+        '@aops-assistant': path.resolve(__dirname, './packages/ops-assistant/src'),
       },
     },
     envPrefix: 'A_OPS',
@@ -64,7 +66,7 @@ export default () => {
     server: {
       host: '0.0.0.0',
       hmr: true,
-      port: 80,
+      port: 8080,
       proxy: {
         '/accounts': {
           target: BASE_PROXY_URL,
@@ -108,7 +110,6 @@ export default () => {
           changeOrigin: true,
           ws: false,
           rewrite: (path: string) => path,
-          cookieDomainRewrite: '.euler-copilot-master.test.osinfra.cn',
         },
       },
     },

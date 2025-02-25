@@ -29,10 +29,14 @@ module.exports = {
   },
   plugins: ["@typescript-eslint", "vue"],
   rules: {
+    "prettier/prettier":"off",
+    "no-empty":"off",
+    "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/no-unused-expressions": 'off',
+    "no-unused-expressions": "off",
+    "@typescript-eslint/no-unused-expressions": "off",
+    "vue/multi-word-component-names": "off",
     "vue/valid-define-props": "off",
     "vue/valid-define-emits": "off",
-    "vue/multi-word-component-names": "off"
   },
 }

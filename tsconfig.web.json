@@ -1,22 +1,16 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "lib": ["es2018","DOM","DOM.Iterable" ],
+    "lib": ["es2018", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "moduleResolution": "bundler",
     "types": ["vite/client", "node"],
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@aops-assistant/*": ["packages/ops-assistant/src/*"]
     },
     "noImplicitAny": false
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "packages"
-  ],
-  "exclude": [
-    "node_modules",
-  ]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "packages"],
+  "exclude": ["node_modules"]
 }

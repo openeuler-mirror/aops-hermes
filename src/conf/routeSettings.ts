@@ -20,7 +20,6 @@ import {
   PlaySquareOutlined,
 } from '@ant-design/icons-vue'
 import Index from '@/views/Index.vue'
-import Copilot from '@/views/Copilot.vue'
 
 export const dynamicRoutes: Array<RouteRecordRaw> = [
   {
@@ -28,7 +27,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
     name: 'index',
     meta: { title: 'router.index', hidden: true },
     component: Index,
-    redirect: '/dashboard',
+    redirect: '/assistant',
     children: [
       // {
       //   path: '/eulercopilot',
@@ -39,6 +38,15 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
       //     icon: h(MessageOutlined),
       //   },
       // },
+      {
+        path: '/assistant',
+        name: 'aopsCopilot',
+        component: () => import('@/views/Assistant.vue'),
+        meta: {
+          title: 'router.copilot',
+          icon: h(MessageOutlined),
+        },
+      },
       {
         path: '/dashboard',
         name: 'dashboard',
@@ -472,6 +480,26 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                       breadcrumbName: 'router.configuration.configurationManagement',
                     },
                   ],
+                },
+              },
+            ],
+          },
+          {
+            path: '/configuration/changelog',
+            name: 'changelog',
+            redirect: '/configuration/changelog/list',
+            meta: {
+              hiddenChildren: true,
+              title: 'router.configuration.changeLog',
+            },
+            children: [
+              {
+                path: '/configuration/changelog/list',
+                name: 'changelogList',
+                component: () => import('@/views/configuration/ConfRecord.vue'),
+                meta: {
+                  hidden: true,
+                  title: 'router.configuration.changeLog',
                 },
               },
             ],
