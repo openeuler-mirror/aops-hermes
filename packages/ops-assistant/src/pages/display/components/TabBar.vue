@@ -48,13 +48,13 @@ onBeforeUnmount(() => {
       >
         <div class="tab-item" :class="{ 'tab-item--active': activeKey === item.key }">
           <div
-            class="flex w-full rounded-[4px] pl-[16px] py-[8px] relative font-"
+            class="flex w-full rounded-[4px] pl-[16px] py-[8px] relative"
             :class="{
               'hover:bg-[var(--ops-tabbar-bg--active)]': activeKey !== item.key,
               'tab-item': activeKey !== item.key,
             }"
           >
-            {{ item.title }}
+            <div class="w-[85%] whitespace-nowrap text-ellipsis overflow-hidden">{{ item.title }}</div>
             <div
               @click.stop="emits('close', item.key)"
               class="absolute flex items-center right-[8px] hover:bg-[var(--ops-bg-color--secondary)]"

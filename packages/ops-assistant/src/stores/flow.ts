@@ -29,8 +29,7 @@ export const useFlow = defineStore('flowConversation', () => {
   }
 
   function setFlowRequestParams(params: any) {
-    if (!params) return
-    flowRequestParams.value = JSON.parse(JSON.stringify(params))
+    flowRequestParams.value = params ? JSON.parse(JSON.stringify(params)) : undefined
   }
 
   const currentFlowCustomContent = computed<string>(() => FLOW_CUSTOM_CONTENT[currentFlow.value] || '')

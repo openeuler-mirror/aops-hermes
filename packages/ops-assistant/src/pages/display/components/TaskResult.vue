@@ -2,7 +2,7 @@
 import { queryTaskResult } from '@aops-assistant/apis/host'
 import { ref, watch } from 'vue'
 import { ElDialog, ElIcon, ElDescriptions, ElDescriptionsItem, dayjs, ElCollapse, ElCollapseItem } from 'element-plus'
-import { CircleCheckFilled, CircleCloseFilled } from '@element-plus/icons-vue'
+import { CircleCheckFilled, CircleCloseFilled, Close } from '@element-plus/icons-vue'
 import type { CveTaskReport } from '@aops-assistant/apis/types'
 
 const CveStatus = {
@@ -62,7 +62,12 @@ function logFormat(str: string) {
     @close="emits('update:visible', false)"
   >
     <template #header>
-      <h1 class="font-bold px-[24px] py-[16px] dialog-header">任务报告</h1>
+      <div class="flex justify-between items-center dialog-header">
+        <h1 class="font-bold px-[24px] py-[16px]">任务报告</h1>
+        <div class="cursor-pointer">
+          <el-icon @click="() => emits('update:visible', false)"><Close /></el-icon>
+        </div>
+      </div>
     </template>
     <template #default>
       <div class="h-[45vh] px-[24px] overflow-y-scroll">

@@ -188,3 +188,13 @@ export interface ConfChangeRecord {
   host_id: string
   host_ip: string
 }
+
+export interface ConfTrace {
+  UUID: string
+  domain_name: string
+  host_id: string
+  conf_name: string
+  info: string
+  create_time: string
+  ptrace: string
+}

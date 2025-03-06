@@ -103,6 +103,10 @@ function queryTokenByAuthCode(code: string) {
   }>('/accounts/login', { code })
 }
 
+function logoutAssistant() {
+  return http.get('/api/auth/logout')
+}
+
 function refreshAuthToken() {
   return http.get<{
     token: string
@@ -127,4 +131,5 @@ export const accountApi = {
   queryTokenByAuthCode,
   refreshAuthToken,
   queryAuthRedirectUrl,
+  logoutAssistant,
 }

@@ -7,12 +7,11 @@ export enum DOMAIN_STATUS_ENUM {
 export enum DOMAIN_STATUS_LABEL_ENUM {
   unsynchronized = 0,
   synchronized,
-  unknownStatus,
+  partialSynchronization,
 }
 
 export enum DOMAIN_STATUS_LABEL {
   'SYNCHRONIZED' = 'synchronized',
   'NOT SYNCHRONIZE' = 'unsynchronized',
-  'NOT FOUND' = 'unknownStatus',
+  'NOT FOUND' = 'partialSynchronization',
 }
-

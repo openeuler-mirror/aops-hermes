@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElEmpty } from 'element-plus'
-import { onMounted, shallowRef } from 'vue'
+import { onMounted, shallowRef, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import TaskDetailPanel from './components/TaskDetailPanel.vue'
 import { useConversation } from '@aops-assistant/stores/conversation'
@@ -11,32 +11,53 @@ export interface CveTask {
   fix_way: 'coldpatch' | 'hotpatch'
 }
 
-const { currentRecordConversationList } = storeToRefs(useConversation())
+const { currentRecordConversationList, isGeneratingConversation } = storeToRefs(useConversation())
 
 const visibleTaskList = shallowRef<CveTask[]>([])
+let executeResultQueue: string[] = []
 
 async function onTaskFinish(fixWay: 'coldpatch' | 'hotpatch', status: 'succeed' | 'failed', desc: string) {
   const { scrollToBottom } = useConversation()
   if (fixWay === 'hotpatch') {
-    currentRecordConversationList.value[currentRecordConversationList.value.length - 1].contents +=
+    const content =
       status === 'succeed'
         ? `<div class="result result-success"><div class="label label-success">√</div><div class="desc">${desc}</div></div>`
         : `<div class="result result-fail"><div class="label label-fail">×</div><div class="desc">${desc}</div></div>`
-
-    currentRecordConversationList.value[currentRecordConversationList.value.length - 1].contents +=
-      `任务执行成功，热补丁正常启用.`
-    scrollToBottom()
+    const message = status === 'succeed' ? `任务执行成功，热补丁正常启用.` : `任务执行失败.`
+    if (isGeneratingConversation.value) {
+      executeResultQueue = [...executeResultQueue, ...[content, message]]
+    } else {
+      currentRecordConversationList.value[currentRecordConversationList.value.length - 1].contents += content
+      currentRecordConversationList.value[currentRecordConversationList.value.length - 1].contents += message
+    }
   } else {
-    currentRecordConversationList.value[currentRecordConversationList.value.length - 1].contents +=
+    const content =
       status === 'succeed'
         ? `<div class="result result-success"><div class="label label-success">√</div><div class="desc">${desc}</div></div>`
         : `<div class="result result-fail"><div class="label label-fail">×</div><div class="desc">${desc}</div></div>`
-
-    currentRecordConversationList.value[currentRecordConversationList.value.length - 1].contents +=
-      `任务执行成功，需重新启动机器使冷补丁生效.`
-    scrollToBottom()
+    const message = status === 'succeed' ? `任务执行成功，需重新启动机器使冷补丁生效.` : `任务执行失败.`
+    if (isGeneratingConversation.value) {
+      executeResultQueue = [...executeResultQueue, ...[content, message]]
+    } else {
+      currentRecordConversationList.value[currentRecordConversationList.value.length - 1].contents += content
+      currentRecordConversationList.value[currentRecordConversationList.value.length - 1].contents += message
+    }
   }
+  scrollToBottom()
 }
+
+watch(
+  () => isGeneratingConversation.value,
+  () => {
+    if (isGeneratingConversation.value) {
+      return
+    }
+    executeResultQueue.forEach(result => {
+      currentRecordConversationList.value[currentRecordConversationList.value.length - 1].contents += result
+    })
+    executeResultQueue = []
+  },
+)
 
 onMounted(() => {
   const { currentFlowOutput } = useFlow()

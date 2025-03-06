@@ -133,8 +133,8 @@ function useConfOperationRecord() {
 
   async function getConfsOperationTrace(confName?: string) {
     const [, res] = await api.queryConfsOperationTrace({
-      // page: pagination.current,
-      // per_page: pagination.pageSize,
+      sort: 'create_time',
+      direction: 'desc',
       domain_name: props.domainName,
       conf_name: confName,
       host_id: props.hostId,

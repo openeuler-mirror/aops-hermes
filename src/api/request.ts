@@ -35,7 +35,7 @@ const requestQueue: {
 }[] = []
 
 const request = axios.create({
-  timeout: 60 * 1000,
+  timeout: 60 * 3 * 1000,
 })
 
 const formDataUrl = [

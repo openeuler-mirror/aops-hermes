@@ -1,6 +1,7 @@
 import Cves from '../pages/display/Cves.vue'
 import TaskDetail from '../pages/display/TaskDetail.vue'
 import Domain from '../pages/display/Domain.vue'
+import SyncResult from '../pages/display/SyncResult.vue'
 import ConfRecord from '../pages/display/ConfRecord.vue'
 
 const FLOW_COMPONENT_MAP = {
@@ -78,7 +79,7 @@ const FLOW_COMPONENT_MAP = {
     plugin_id: 'aops-apollo',
     label: '业务域同步结果',
     componentKey: 'syncResult',
-    component: Domain,
+    component: SyncResult,
   },
   query_conf_record: {
     key: 'query_conf_record',

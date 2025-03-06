@@ -13,7 +13,7 @@ import type { HostSummary } from '@aops-assistant/apis/types'
 import type { RecommendItem } from '@aops-assistant/stores/conversation'
 
 const emits = defineEmits<{
-  (e: 'changePage', page: string, content?: string, pluginList?: string[]): void
+  (e: 'changePage', page: string, content?: string): void
 }>()
 const { selectedPlugins, pluginOptions } = storeToRefs(usePlugin())
 const { flowRequestParams, requestFlowId } = storeToRefs(useFlow())
@@ -125,8 +125,8 @@ const recommendList = ref<RecommendItem[]>([
   {
     plugin_id: 'aops-apollo',
     flow_id: 'query_conf_unsync_host',
-    flow_description: '查看未同步业务域的主机',
-    question: '查看未同步业务域的主机',
+    flow_description: '查看配置异常',
+    question: '查看配置异常',
     params: {
       sync_status: 0,
     },
@@ -141,13 +141,13 @@ const questionInput = ref()
 function onKeyDown(e: KeyboardEvent) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault()
-    emits('changePage', 'core', questionInput.value, [selectedPlugins.value])
+    emits('changePage', 'core', questionInput.value)
     currentQuestion.value = questionInput.value
   }
 }
 
 function onInputClick() {
-  emits('changePage', 'core', questionInput.value, [selectedPlugins.value])
+  emits('changePage', 'core', questionInput.value)
   currentQuestion.value = questionInput.value
 }
 
@@ -166,7 +166,7 @@ function onRecommendClick(recommend: RecommendItem) {
   if (params) flowRequestParams.value = params
   if (flow_id) requestFlowId.value = flow_id
   currentRecommend.value = recommend
-  emits('changePage', 'core', recommend.question, [selectedPlugins.value])
+  emits('changePage', 'core', recommend.question)
   currentQuestion.value = recommend.question
 }
 
@@ -179,7 +179,7 @@ onMounted(() => {
 <template>
   <div class="flex flex-col items-center justify-center w-full front-page">
     <div class="w-[54%] flex flex-col items-center">
-      <h1 class="text-[30px] font-bold mb-4 w-full">早上好，我是你的智能运维助手</h1>
+      <h1 class="text-[30px] font-bold mb-4 w-full">你好，我是你的智能运维助手</h1>
       <h1 ref="waringRef" class="text-[22px] leading-[22px] h-[22px] font-semibold mb-3 w-full"></h1>
       <div class="flex w-full justify-start min-h-[72px]">
         <transition
@@ -198,12 +198,19 @@ onMounted(() => {
           </ul>
         </transition>
       </div>
-      <div class="w-full mb-2 flex">
+      <div class="w-full mb-2 flex items-center">
         <span class="font-semibold flex items-center">
           <Icon class="w-[18px] h-[18px] mr-1" icon="mingcute:plugin-2-line" />
           插件：</span
         >
-        <el-select v-model="selectedPlugins" multiple placeholder="请选择插件" style="width: 60%" suffix-icon="">
+        <el-select
+          v-model="selectedPlugins"
+          collapse-tags
+          collapse-tags-tooltip
+          clearable
+          placeholder="请选择插件"
+          style="width: 20%"
+        >
           <el-option v-for="item in pluginOptions" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
       </div>

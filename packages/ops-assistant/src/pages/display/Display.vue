@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia'
 import { shallowRef, ref, watch } from 'vue'
 import { useDisplay } from '@aops-assistant/stores/display'
 import Skeleton from '@aops-assistant/components/Skeleton.vue'
+import Empty from './Empty.vue'
 import { FLOW_COMPONENT_MAP } from '@aops-assistant/conf/flow'
 import { useFlow } from '@aops-assistant/stores/flow'
 import TabBar from './components/TabBar.vue'
@@ -27,29 +28,34 @@ const displayDynamicComponent = shallowRef(
   })),
 )
 
-const { tabList, activeTab, addTab, removeTab } = useDisplayTab()
+const { tabList, activeTab, tabUniqueKeys, addTab, removeTab, clearTab } = useDisplayTab()
 
 watch(
   () => currentPage.value,
   () => {
     if (tabList.value.filter(item => item.key === currentPage.value).length === 0) {
+      const barLabel = displayDynamicComponent.value.find(item => item.key === currentPage.value)
+      if (!barLabel) return
       addTab({
         key: currentPage.value,
-        title: displayDynamicComponent.value.find(item => item.key === currentPage.value)?.label || '',
+        title: barLabel.label,
         flowId: currentFlow.value,
       })
     }
     activeTab.value = currentPage.value
-    dynamicComponentKey.value = `${currentPage.value}-${currentFlow.value}`
-    currentComponent.value =
-      displayDynamicComponent.value.find(page => page.key === currentPage.value)?.component || Skeleton
   },
 )
 
 watch(
   () => currentFlow.value,
   () => {
-    dynamicComponentKey.value = `${currentPage.value}-${currentFlow.value}`
+    const component = displayDynamicComponent.value.find(page => page.key === currentPage.value)?.component
+    dynamicComponentKey.value = `${currentPage.value}-${currentFlow.value}#${new Date().getTime()}`
+    if (!component) {
+      clearTab()
+      currentComponent.value = Empty
+      return
+    }
     currentComponent.value =
       displayDynamicComponent.value.find(page => page.key === currentPage.value)?.component || Skeleton
   },
@@ -66,10 +72,14 @@ function useDisplayTab() {
   const tabList = ref<Tab[]>([])
   function addTab(tab: Tab) {
     tabList.value.push(tab)
+    tabUniqueKeys.value.push(`${tab.key}-${tab.flowId}#${new Date().getTime()}`)
   }
 
   function removeTab(key: string) {
+    const tab = tabList.value.find(item => item.key === key)
+    if (!tab) return
     tabList.value = tabList.value.filter(item => item.key !== key)
+    tabUniqueKeys.value = tabUniqueKeys.value.filter(item => !item.startsWith(`${tab.key}-${tab.flowId}`))
     if (activeTab.value === tabList.value[tabList.value.length - 1]?.key) {
       return
     }
@@ -77,12 +87,23 @@ function useDisplayTab() {
     if (!activeTab.value) emits('change', activeTab.value)
   }
 
-  return { tabList, activeTab, addTab, removeTab }
+  function clearTab() {
+    tabList.value = []
+  }
+
+  const tabUniqueKeys = ref<string[]>([])
+
+  return { tabList, activeTab, tabUniqueKeys, addTab, removeTab, clearTab }
 }
 
 function onTabChange(tab: Tab) {
   activeTab.value = tab.key
-  dynamicComponentKey.value = `${tab.key}-${tab.flowId}`
+  const foundTab = tabList.value.find(item => item.key === tab.key)
+  if (!foundTab) return
+  const tabKey = tabUniqueKeys.value.find(item => item.startsWith(`${tab.key}-${tab.flowId}`))
+  if (tabKey) {
+    dynamicComponentKey.value = tabKey
+  }
   currentComponent.value =
     displayDynamicComponent.value.find(page => page.key === activeTab.value)?.component || Skeleton
 }
@@ -90,16 +111,19 @@ function onTabChange(tab: Tab) {
 <template>
   <div class="w-full display-page hide-scrollbar overflow-y-scroll">
     <TabBar class="px-[10px]" :active-key="activeTab" :tab-list="tabList" @change="onTabChange" @close="onTableClose" />
-    <main class="px-[10px] w-full">
+    <main class="px-[10px] w-full display-container">
       <transition name="slide" mode="out-in">
         <keep-alive>
-          <component :key="dynamicComponentKey" :active-flow="dynamicComponentKey" :is="currentComponent"></component>
+          <component :key="dynamicComponentKey" :is="currentComponent"></component>
         </keep-alive>
       </transition>
     </main>
   </div>
 </template>
 <style scoped>
+.display-container {
+  height: calc(100% - 36px);
+}
 .display-page {
   background: rgb(235, 239, 246);
 }

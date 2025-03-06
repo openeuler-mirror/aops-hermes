@@ -21,6 +21,7 @@ import type {
   PageNation,
   Sort,
   ConfChangeRecord,
+  ConfTrace,
 } from './types'
 
 export async function queryHostSummaryInfo() {
@@ -144,4 +145,14 @@ export function queryChangeRecord(params: Partial<PageNation & Sort & { domain_n
     total_count: number
     total_page: number
   }>('/conftrace/conf/change/record', { params })
+}
+
+export function queryConfsOperationTrace(
+  params: Partial<PageNation & Sort & { domain_name: string; host_id: string; conf_name: string }>,
+) {
+  return http.post<{
+    conf_trace_infos: ConfTrace[]
+    total_count: number
+    total_page: number
+  }>('/conftrace/query', params)
 }

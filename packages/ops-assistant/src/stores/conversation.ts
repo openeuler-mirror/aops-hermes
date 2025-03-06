@@ -16,6 +16,7 @@ import {
   queryRecordByConversationId,
   newConversation,
   queryPlugins,
+  updateConversationTitle,
 } from '../apis/conversation'
 import { ElMessage } from 'element-plus'
 import { FLOW_COMPONENT_MAP } from '@aops-assistant/conf/flow'
@@ -139,7 +140,7 @@ export const useConversation = defineStore('conversationStore', () => {
           conversationId: conversation_id,
           type: 'USER',
           createdTime: dayjs(created_at * 1000).format('YYYY-MM-DD HH:mm:ss'),
-          contents: content.answer,
+          contents: content.question,
         }
         const botRecord: ConversationRecordItem = {
           conversationId: conversation_id,
@@ -160,13 +161,16 @@ export const useConversation = defineStore('conversationStore', () => {
 
   async function changeSelectedConversationId(id: string) {
     selectedConversationId.value = id
+    const { setCurrentFlow, setFlowRequestParams } = useFlow()
+    setCurrentFlow('')
+    setFlowRequestParams(undefined)
     getSelectedConversationRecord(id)
   }
 
   async function generateNewSession() {
     const [error, res] = await newConversation()
     if (error) {
-      console.log(error.response.data.message === 'No need to create new conversation.')
+      console.error(error.response.data.message === 'No need to create new conversation.')
       ElMessage({
         message: '已是最新对话！',
         type: 'success',
@@ -243,7 +247,6 @@ export const useConversation = defineStore('conversationStore', () => {
         if (nextFlow) {
           const { setRequestFlowId } = useFlow()
           setRequestFlowId(nextFlow)
-          console.log(nextFlow)
         }
       }
 
@@ -279,44 +282,44 @@ export const useConversation = defineStore('conversationStore', () => {
           } catch {
             console.error('json parse error')
           }
-          if (message) {
-            const { setCurrentFlow, setCurrentFlowOutput } = useFlow()
-            if (message.event === 'flow.start') {
-              if (message.flow && message.flow.flow_id) {
-                nextFlow = FLOW_COMPONENT_MAP[message.flow.flow_id].nextFlow
-              }
-            }
-            if (message.event === 'step.output') {
-              setCurrentFlowOutput(message.content.output)
-              setCurrentFlow(message.flow.flow_id)
-            }
-            if (message.event === 'text.add') {
-              const content = message.content.text
-              conversation.contents += content
-              // console.log(message)
-            }
-
-            if (message.event === 'suggest') {
-              const suggestContent = message.content
-              const flow = FLOW_COMPONENT_MAP[message.content.flow_id]
-              const recommend: RecommendItem = {
-                plugin_id: flow ? flow.plugin_id : suggestContent.plugin_id,
-                flow_id: suggestContent.flow_id || '',
-                flow_description: flow
-                  ? flow.description || suggestContent.flow_description
-                  : suggestContent.flow_description,
-                question: flow ? flow.description || suggestContent.question : suggestContent.question,
-                params: flow ? flow.params : undefined,
-              }
-              recommendList.value.push(recommend)
+          if (!message) return
+          const { setCurrentFlow, setCurrentFlowOutput } = useFlow()
+          if (message.event === 'flow.start') {
+            if (message.flow && message.flow.flow_id) {
+              const flow = FLOW_COMPONENT_MAP[message.flow.flow_id]
+              if (flow) nextFlow = FLOW_COMPONENT_MAP[message.flow.flow_id].nextFlow
             }
           }
+          if (message.event === 'step.output') {
+            setCurrentFlowOutput(message.content.output)
+            setCurrentFlow(message.flow.flow_id)
+          }
+          if (message.event === 'text.add') {
+            const content = message.content.text
+            conversation.contents += content
+          }
+
+          if (message.event === 'suggest') {
+            const suggestContent = message.content
+            const flow = FLOW_COMPONENT_MAP[message.content.flow_id]
+            const recommend: RecommendItem = {
+              plugin_id: flow ? flow.plugin_id : suggestContent.plugin_id,
+              flow_id: suggestContent.flow_id || '',
+              flow_description: flow
+                ? flow.description || suggestContent.flow_description
+                : suggestContent.flow_description,
+              question: flow ? flow.description || suggestContent.question : suggestContent.question,
+              params: flow ? flow.params : undefined,
+            }
+            recommendList.value.push(recommend)
+          }
+
           if (tempMessage) tempMessage = ''
           scrollToBottom()
         })
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
       const conversation = currentRecordConversationList.value[currentRecordConversationList.value.length - 1]
       conversation.contents += '系统异常，请稍后重试'
       isGeneratingConversation.value = false
@@ -332,6 +335,10 @@ export const useConversation = defineStore('conversationStore', () => {
     if (!q) return
     if (isGeneratingConversation.value) return
     recommendList.value = []
+    if (currentRecordConversationList.value.length === 0) {
+      await updateConversationTitle(selectedConversationId.value, q)
+      await getHistoryConversation()
+    }
     const newItem: ConversationRecordItem[] = hasInput
       ? [
           {
@@ -365,7 +372,7 @@ export const useConversation = defineStore('conversationStore', () => {
           {
             plugin_id: selectedPlugins,
             flow_id: requestFlowId,
-            params: flowRequestParams,
+            params: flowRequestParams || {},
             auth: {},
           },
         ]

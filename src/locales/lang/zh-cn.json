@@ -228,7 +228,8 @@
     "uploadSuccess": "上传成功",
     "uploading": "上传中",
     "validateMsg": {
-      "LeadingAndTrailingNoSpaces": "首尾不允许空格"
+      "LeadingAndTrailingNoSpaces": "首尾不允许空格",
+      "noMoreThanCharacters": "不超过{count}个字符"
     },
     "welcomeAops": "欢迎来到A-Ops系统",
     "yes": "是"
@@ -348,7 +349,7 @@
       "statusDetail": "状态详情",
       "syncStatus": "同步状态",
       "synchronized": "已同步",
-      "unknownStatus": "未知状态",
+      "partialSynchronization": "部分同步",
       "unsynchronized": "未同步"
     }
   },
