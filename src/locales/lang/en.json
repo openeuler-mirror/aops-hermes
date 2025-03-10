@@ -228,7 +228,8 @@
     "uploadSuccess": "Upload Succeed",
     "uploading": "Uploading",
     "validateMsg": {
-      "LeadingAndTrailingNoSpaces": "No leading or trailing spaces are allowed"
+      "LeadingAndTrailingNoSpaces": "No leading or trailing spaces are allowed",
+      "noMoreThanCharacters": "No more than {count} characters"
     },
     "welcomeAops": "Welcome to A-Ops",
     "yes": "Yes"
@@ -348,7 +349,7 @@
       "statusDetail": "Detail",
       "syncStatus": "Sync Status",
       "synchronized": "synchronized",
-      "unknownStatus": "Unknown",
+      "partialSynchronization": "partial synchronization",
       "unsynchronized": "unsynchronized"
     }
   },

@@ -12,15 +12,7 @@ const emits = defineEmits<{
   (e: 'changeVisible', visible: boolean): void
 }>()
 
-const {
-  historyRecord,
-  selectedConversationId,
-  currentRecordConversationList,
-  isGeneratingConversation,
-  recommendList,
-} = storeToRefs(useConversation())
-const { generateNewSession, getRecordByConversationId, changeSelectedConversationId, getHistoryConversation } =
-  useConversation()
+const { isGeneratingConversation } = storeToRefs(useConversation())
 
 const pageType = ref('dialogue')
 const pageMap = shallowRef([
@@ -35,27 +27,12 @@ const pageMap = shallowRef([
 ])
 const currentComponent = computed(() => pageMap.value.find(page => page.key === pageType.value)?.component)
 
-async function handleGenerateSession() {
+function onPageSwitch(key: string) {
   if (isGeneratingConversation.value) {
-    ElMessage.warning('正在生成中')
+    ElMessage.warning('当前有任务正在执行中，请稍后再试')
     return
   }
-  if (
-    selectedConversationId.value === historyRecord.value[0].conversation_id &&
-    currentRecordConversationList.value.length === 0
-  ) {
-    ElMessage.success('已是最新对话')
-    pageType.value = 'dialogue'
-    return
-  }
-  const record = await getRecordByConversationId(historyRecord.value[0].conversation_id)
-  if (record.length === 0) changeSelectedConversationId(historyRecord.value[0].conversation_id)
-  else {
-    recommendList.value = []
-    const cId = await generateNewSession()
-    await getHistoryConversation()
-    await changeSelectedConversationId(cId)
-  }
+  pageType.value = key
 }
 </script>
 <template>
@@ -74,7 +51,7 @@ async function handleGenerateSession() {
           <Icon class="w-[16px] h-[16px]" icon="carbon:chevron-left" />
         </div>
       </div>
-      <Operations @switch="(key: string) => (pageType = key)" />
+      <Operations @switch="onPageSwitch" />
     </header>
 
     <div class="chat-main-container">
@@ -89,6 +66,7 @@ async function handleGenerateSession() {
   height: calc(100% - 61px);
   background-image: var(--ops-bg-image);
   background-repeat: no-repeat;
+  background-size: cover;
   background-position: center;
 }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onActivated, onDeactivated, onMounted, reactive, ref, watchEffect } from 'vue'
+import { computed, onMounted, reactive, ref, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ElTable, ElTableColumn, ElPagination, TableInstance, ElCheckbox } from 'element-plus'
 import { useCves } from '@aops-assistant/stores/cves'
@@ -81,6 +81,18 @@ async function getCves() {
   const [, res] = await queryCves(paginationConf.page, paginationConf.pageSize, cveFilterParams.value)
   if (res) {
     cves.value = res.cve_info || []
+    cves.value.forEach(cve => {
+      cve.isSelected = recommendedCveIds.value.includes(cve.cve_id)
+    })
+    const selectedCves = cves.value.filter(cve => cve.isSelected)
+    if (selectedCves.length > 0) {
+      const hosts = await getHostsAssociatedWithCves(selectedCves)
+      if (hosts) {
+        cves.value.forEach(cve => {
+          cve.hosts = hosts[cve.cve_id]
+        })
+      }
+    }
     fullCves.value[paginationConf.page] = cves.value
     if (cves.value && cves.value.length !== 0) {
       isCurrentPageSelectedAll.value = cves.value.every(cve => cve.isSelected)
@@ -162,6 +174,7 @@ function onRpmSelectedChange(cveId: string, rpm: UnfixedRpmItem) {
     isCurrentPageSelectedAll.value = cves.value.every(cve => cve.isSelected)
     isIndeterminate.value = cves.value.some(cve => cve.isSelected) && !isCurrentPageSelectedAll.value
   }
+  assembleParameters()
 }
 
 /**
@@ -229,18 +242,6 @@ async function initCvesData(data: RecommendSummary) {
   if (data) {
     cveChartData.value = data
     recommendedCveIds.value = data.recommend_cves
-    cves.value.forEach(cve => {
-      cve.isSelected = recommendedCveIds.value.includes(cve.cve_id)
-    })
-    const selectedCves = cves.value.filter(cve => cve.isSelected)
-    if (selectedCves.length > 0) {
-      const hosts = await getHostsAssociatedWithCves(selectedCves)
-      if (hosts) {
-        cves.value.forEach(cve => {
-          cve.hosts = hosts[cve.cve_id]
-        })
-      }
-    }
   }
 }
 
@@ -263,7 +264,7 @@ async function getHostsAssociatedWithCves(cves: CveItem[]) {
 
 async function assembleParameters() {
   const { setFlowRequestParams } = useFlow()
-  const selectedCves = cves.value.filter(cve => cve.isSelected)
+  const selectedCves = cves.value.filter(cve => cve.isSelected || cve.isIndeterminate)
   const params: GenerateTaskParams = {
     task_name: 'ai cve fix',
     description: 'ai cve fix',
@@ -274,14 +275,15 @@ async function assembleParameters() {
       cve_id: cve.cve_id,
       host_info: cve.hosts?.hosts.map(host => ({ host_id: host.host_id })) || [],
       rpms:
-        cve.rpms?.map(rpm => ({
-          available_rpm: rpm.available_rpm,
-          fix_way: rpm.support_way,
-          installed_rpm: rpm.installed_rpm,
-        })) || [],
+        cve.rpms
+          ?.filter(rpm => rpm.isSelected)
+          .map(rpm => ({
+            available_rpm: rpm.available_rpm,
+            fix_way: rpm.support_way,
+            installed_rpm: rpm.installed_rpm,
+          })) || [],
     })),
   }
-
   setFlowRequestParams(params)
 }
 
@@ -476,11 +478,11 @@ function useCveSeverityChart() {
   }
 }
 
-onMounted(async () => {
+onMounted(() => {
   initCveFilterParams()
-  await getCves()
-  await initCvesData(currentFlowOutput.value)
-  await assembleParameters()
+  initCvesData(currentFlowOutput.value)
+  getCves()
+  assembleParameters()
 })
 </script>
 <template>

@@ -119,6 +119,7 @@ onMounted(() => {
   queryHostsCount()
   queryHostsAlarms()
   queryClusters()
+  queryCveOverview()
   getDomainSyncStatistic()
   chart = init(cvePieRef.value)
 })
@@ -190,14 +191,14 @@ onBeforeUnmount(() => {
                   <a-badge status="processing" />
                   {{ $t('dashboard.domianSync') }}
                 </span>
-                <span class="data-number">{{ Math.round(domainSyncStatistic.syncRate * 100)}}%</span>
+                <span class="data-number">{{ Math.round(domainSyncStatistic.syncRate * 100) }}%</span>
               </div>
               <div class="dash-sync-card-desc">
                 <span class="small-title">
                   <a-badge status="error" />
                   {{ $t('dashboard.domainUnSync') }}
                 </span>
-                <div class="data-number">{{ Math.round((100 - domainSyncStatistic.syncRate * 100) ) }}%</div>
+                <div class="data-number">{{ Math.round(100 - domainSyncStatistic.syncRate * 100) }}%</div>
               </div>
             </a-col>
           </a-row>

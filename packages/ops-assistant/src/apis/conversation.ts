@@ -10,7 +10,6 @@
 import { http } from './request'
 import type { RecordItem, RecordConversationItem, Plugin } from './types'
 
-
 export async function queryHistoryConversation() {
   return http.get<{
     conversations: RecordItem[]
@@ -24,11 +23,11 @@ export async function newConversation() {
 export async function queryRecordByConversationId(conversationId: string) {
   return http.get<{
     records: RecordConversationItem[]
-  }>(`/api/record/${conversationId}`, )
+  }>(`/api/record/${conversationId}`)
 }
 
 export async function queryPlugins() {
-  return http.get<{plugins: Plugin[]}>('/api/plugin')
+  return http.get<{ plugins: Plugin[] }>('/api/plugin')
 }
 
 export async function updateConversationTitle(conversationId: string, title: string) {
@@ -36,7 +35,7 @@ export async function updateConversationTitle(conversationId: string, title: str
 }
 
 export async function deleteConversation(conversationIds: string[]) {
-  return http.post<{
+  return http.delete<{
     conversation_id_list: string[]
-  }>('/api/conversation/delete', { conversation_list: conversationIds })
+  }>('/api/conversation', { conversation_list: conversationIds })
 }

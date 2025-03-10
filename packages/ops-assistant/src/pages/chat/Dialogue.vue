@@ -15,19 +15,11 @@ const { contentRef, currentRecordConversationList, isGeneratingConversation, rec
 const { scrollToBottom, sendQuestion, generateNewSession } = useConversation()
 
 const { currentFlowCustomContent } = storeToRefs(useFlow())
+const { setRequestFlowId, setFlowRequestParams } = useFlow()
 
 const { selectedPlugins, pluginOptions } = storeToRefs(usePlugin())
 
 const questionInput = ref<string>('')
-
-async function onKeyDown(e: KeyboardEvent) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault()
-    if (isGeneratingConversation.value) return
-    sendQuestion(questionInput.value)
-    questionInput.value = ''
-  }
-}
 
 function handleSelectQuestion(recommend: RecommendItem) {
   if (recommend) {
@@ -49,6 +41,25 @@ async function initDefaultQuestion(q?: string) {
 
 function onInnerClick(desc: string) {
   sendQuestion(desc, false)
+}
+
+function onKeyDown(e: KeyboardEvent) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault()
+    if (isGeneratingConversation.value) return
+    setRequestFlowId('')
+    setFlowRequestParams({})
+    sendQuestion(questionInput.value)
+    questionInput.value = ''
+  }
+}
+
+function onSendButtonClick() {
+  if (isGeneratingConversation.value) return
+  setRequestFlowId('')
+  setFlowRequestParams({})
+  sendQuestion(questionInput.value)
+  questionInput.value = ''
 }
 
 onMounted(() => {
@@ -112,7 +123,7 @@ onMounted(() => {
             :class="{ disabled: isGeneratingConversation || !questionInput }"
             src="../../images/send.png"
             alt=""
-            @click="sendQuestion(questionInput)"
+            @click="onSendButtonClick"
           />
         </div>
       </div>

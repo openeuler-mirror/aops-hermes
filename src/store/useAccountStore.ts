@@ -67,6 +67,7 @@ export const useAccountStore = defineStore(
      * account logout
      */
     const logout = async (): Promise<boolean> => {
+      await api.logoutAssistant()
       const [_, res] = await api.logout()
       if (_) return false
       if (res) {

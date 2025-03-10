@@ -4,7 +4,7 @@ import FrontPage from './pages/FrontPage.vue'
 import CorePage from './Core.vue'
 import { useFlow } from '@aops-assistant/stores/flow'
 
-const { setCurrentFlow } = useFlow()
+const { setCurrentFlow, setFlowRequestParams } = useFlow()
 
 const currentPage = ref('frontPage')
 const currentComponent = computed(() => pages.value.find(page => page.key === currentPage.value)?.component)
@@ -20,6 +20,9 @@ const pages = shallowRef([
 ])
 
 function handleChangePage(page: string, _content?: string, _pluginList?: string[]) {
+  if (!page) {
+    setFlowRequestParams(undefined)
+  }
   currentPage.value = page || 'frontPage'
 }
 

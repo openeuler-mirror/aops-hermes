@@ -37,14 +37,14 @@ const isModalVisible = ref(false)
     </span>
     <template #overlay>
       <a-menu>
-        <a-menu-item key="center">
+        <!-- <a-menu-item key="center">
           <ChangePasswordModal v-model:visible="isModalVisible">
             <template #button>
               <span @click="isModalVisible = true"> <KeyOutlined /> {{ t('common.changePass') }} </span>
             </template>
           </ChangePasswordModal>
         </a-menu-item>
-        <a-menu-divider />
+        <a-menu-divider /> -->
         <a-menu-item key="logout" @click="handleLogout"> <LogoutOutlined /> {{ t('common.signOut') }} </a-menu-item>
       </a-menu>
     </template>

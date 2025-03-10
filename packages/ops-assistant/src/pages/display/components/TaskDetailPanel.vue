@@ -91,13 +91,11 @@ function useCveFix() {
 
 const centerDialogVisible = ref(false)
 
-onMounted(() => {
+onMounted(async () => {
   if (!props.taskId) return
-  setTimeout(() => {
-    getTaskDetail(props.taskId)
-    queryTaskStatus(props.taskId)
-    getCveFixInfo(props.taskId)
-  }, 1000)
+  await getCveFixInfo(props.taskId)
+  await getTaskDetail(props.taskId)
+  await queryTaskStatus(props.taskId)
 })
 </script>
 <template>
@@ -114,7 +112,10 @@ onMounted(() => {
               ? dayjs(Number(taskDetail.latest_execute_time) * 1000).format('YYYY-MM-DD HH:mm:ss')
               : '未执行'
           }}
-          <a class="ml-2" v-if="!taskStatus.running" @click="centerDialogVisible = true"
+          <a
+            class="ml-2"
+            v-if="!taskStatus.running && taskDetail.latest_execute_time"
+            @click="centerDialogVisible = true"
             >查看日志</a
           ></el-descriptions-item
         >
@@ -148,6 +149,12 @@ onMounted(() => {
                 class="px-[8px] bg-[#24ab36] inline-block text-[#fff] rounded-[2px]"
               >
                 修复成功
+              </div>
+              <div
+                v-else-if="scoped.row.status === 'unknown'"
+                class="bg-[#f1f2f6] inline-block text-[#fff] px-[8px] rounded-[2px]"
+              >
+                未知
               </div>
               <div v-else class="bg-[#E4211F] inline-block text-[#fff] px-[8px] rounded-[2px]">修复失败</div>
             </div>

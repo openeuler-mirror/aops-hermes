@@ -3,10 +3,14 @@ import { computed, onMounted, reactive, ref, watch } from 'vue'
 import * as Diff from 'diff'
 import { ElTable, ElTableColumn, TableInstance, ElPopover, ElDialog } from 'element-plus'
 import { useFlow } from '@aops-assistant/stores/flow'
-import { queryDomainSyncStatus, queryBaseConf, queryRealConf } from '@aops-assistant/apis/host'
+import {
+  queryDomainSyncStatus,
+  queryBaseConf,
+  queryRealConf,
+  queryConfsOperationTrace,
+} from '@aops-assistant/apis/host'
 import Chart from '@aops-assistant/components/Chart.vue'
 import { EChartsOption } from 'echarts'
-import { storeToRefs } from 'pinia'
 import { RealConfFile } from '@aops-assistant/apis/types'
 
 export interface HostInDomain {
@@ -54,55 +58,26 @@ interface SyncHostParams {
   aiReqParams: { domainName: string; hostIds: string[] }[]
 }
 
-const props = defineProps<{
-  activeFlow: string
-}>()
-
-const { currentFlow } = storeToRefs(useFlow())
-
 const { option, getDomainSyncStatus } = useDomainSyncChart()
 
 const hostList = ref<HostInDomain[]>([])
-const syncResultList = ref<SyncHost[]>([])
 function initData() {
-  const { currentFlowOutput, currentFlow } = useFlow()
+  const { currentFlowOutput } = useFlow()
   if (!currentFlowOutput) return
-  if (currentFlow === 'query_conf_unsync_host') {
-    hostList.value = currentFlowOutput.hostlist.map(item => ({
-      domain_name: item.domain_name,
-      hostId: item.hostId,
-      ip: item.ip,
-      ipv6: item.ipv6,
-      sync_status: item.sync_status,
-      focused: false,
-    }))
-    toggleSelection(hostList.value)
-    if (hostList.value.length > 0) {
-      focusedRowId.value = hostList.value[0].hostId
-      hostList.value[0].focused = true
-    }
-    assembleParameters()
-  } else if (currentFlow === 'host_batch_sync_conf') {
-    syncResultList.value = []
-    currentFlowOutput.forEach(item => {
-      const domain = item.domain
-      const host = item.data.map(
-        (host: {
-          host_id: string
-          host_ip: string
-          host_name: string
-          syncResult: { filePath: string; result: string }[]
-        }) => ({
-          domain_name: domain,
-          host_name: host.host_name || '',
-          host_ip: host.host_ip || '',
-          status: host.syncResult.every(({ result }) => result === 'SUCCESS') ? 'SUCCESS' : 'FAIL',
-          syncFileList: host.syncResult.map(({ filePath, result }) => ({ filePath, status: result })) || [],
-        }),
-      )
-      syncResultList.value = [...syncResultList.value, ...host]
-    })
+  hostList.value = currentFlowOutput.hostlist.map(item => ({
+    domain_name: item.domain_name,
+    hostId: item.hostId,
+    ip: item.ip,
+    ipv6: item.ipv6,
+    sync_status: item.sync_status,
+    focused: false,
+  }))
+  toggleSelection(hostList.value)
+  if (hostList.value.length > 0) {
+    focusedRowId.value = hostList.value[0].hostId
+    hostList.value[0].focused = true
   }
+  assembleParameters()
 }
 
 function useDomainSyncChart() {
@@ -122,6 +97,22 @@ function useDomainSyncChart() {
     setChartOption()
   }
   const setChartOption = () => {
+    const pieData = [
+      {
+        value: domainSyncStatus.sync,
+        name: '已同步',
+        itemStyle: {
+          color: '#017BFF',
+        },
+      },
+      {
+        value: domainSyncStatus.unsync,
+        name: '未同步',
+        itemStyle: {
+          color: '#E4211F',
+        },
+      },
+    ]
     option.value = {
       tooltip: {
         trigger: 'item',
@@ -154,16 +145,7 @@ function useDomainSyncChart() {
               borderColor: 'transparent',
             },
           },
-          data: [
-            {
-              value: domainSyncStatus.sync,
-              name: '已同步',
-            },
-            {
-              value: domainSyncStatus.unsync,
-              name: '未同步',
-            },
-          ],
+          data: pieData,
           label: {
             show: false,
           },
@@ -337,6 +319,11 @@ function onCellClick(row: HostInDomain) {
   })
   row.focused = true
   focusedRowId.value = row.hostId
+  allConfs.notSyncConfs.forEach(row => {
+    if (syncConfRef.value) {
+      syncConfRef.value.toggleRowExpansion(row, false)
+    }
+  })
 }
 
 const isContrastVisible = ref(false)
@@ -360,53 +347,42 @@ function setDiffClass(isAdd?: boolean, isRemoved?: boolean, isOrigin?: boolean) 
   return ''
 }
 
+/**
+ * 当未同步主机某个配置被点开时，获取操作记录
+ */
+async function onExpandChange(row: Conf, expandedRows: Conf[]) {
+  const host = hostList.value.find(item => item.hostId === focusedRowId.value)
+  if (!host) return
+  const [, res] = await queryConfsOperationTrace({
+    domain_name: host.domain_name,
+    host_id: host.hostId,
+    conf_name: row.filePath,
+    sort: 'create_time',
+    direction: 'desc',
+  })
+  if (!res) return
+  row.operationTrace = res.conf_trace_infos
+}
+
+const syncConfRef = ref<TableInstance>()
+
 onMounted(() => {
   getDomainSyncStatus()
   initData()
 })
 </script>
 <template>
-  <div>
-    <div
-      v-if="activeFlow === 'domain-query_conf_unsync_host'"
-      class="w-full flex gap-[10px] rounded-[4px] h-[272px] mb-[10px]"
-    >
-      <div class="w-[40%]">
+  <div class="w-full h-full flex gap-[8px] pb-[8px]">
+    <div class="w-[40%] flex flex-col h-full">
+      <div class="h-[272px]">
         <Chart
           :option="option"
           title="业务域同步率"
-          class="bg-[var(--ops-bg-color)] h-full rounded-tr-[4px] rounded-b-[4px]"
+          class="bg-[var(--ops-bg-color)] rounded-tr-[4px] rounded-b-[4px]"
         />
       </div>
-      <div class="w-[60%] bg-[var(--ops-bg-color)] h-full rounded-tr-[4px] rounded-b-[4px] p-[24px]">
-        <h3 class="font-semibold">未同步主机 (IP: {{ focusedRow?.ip }})</h3>
-        <el-table
-          :data="allConfs.notSyncConfs"
-          size="small"
-          :header-cell-style="{ backgroundColor: 'rgb(244, 246, 250)', color: 'rgb(72, 88, 101)' }"
-        >
-          <el-table-column prop="filePath" label="配置路径" />
-          <el-table-column prop="confContents" label="配置内容">
-            <template #default="scoped">
-              <el-popover placement="bottom" :width="200" trigger="hover" :content="scoped.row.confContents">
-                <template #reference>
-                  <div class="w-[200px] text-ellipsis whitespace-nowrap overflow-hidden">
-                    {{ scoped.row.confContents }}
-                  </div>
-                </template>
-              </el-popover>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作">
-            <template #default="scoped">
-              <a @click="onContrastClick(scoped.row)">差异对比</a>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-    </div>
-    <template v-if="activeFlow === 'domain-query_conf_unsync_host'">
       <el-table
+        class="mt-[8px] flex-1"
         ref="multipleTableRef"
         row-key="hostId"
         :data="hostList"
@@ -418,7 +394,6 @@ onMounted(() => {
         <el-table-column type="selection" width="55" />
         <el-table-column prop="ip" label="主机" />
         <el-table-column prop="domain_name" label="业务域" />
-        <el-table-column prop="ipv6" label="IP协议" />
         <el-table-column prop="sync_status" label="同步状态">
           <template #default="scoped">
             <span
@@ -436,63 +411,50 @@ onMounted(() => {
           </template>
         </el-table-column>
       </el-table>
-    </template>
-    <template v-else-if="activeFlow === 'domain-host_batch_sync_conf'">
+    </div>
+    <div class="flex-1 bg-[var(--ops-bg-color)] h-full rounded-tr-[4px] rounded-b-[4px] p-[24px]">
+      <h3 class="font-semibold">未同步主机 (IP: {{ focusedRow?.ip }})</h3>
       <el-table
-        ref="multipleTableRef"
-        row-key="host_ip"
-        :data="syncResultList"
+        :data="allConfs.notSyncConfs"
+        ref="syncConfRef"
+        row-key="filePath"
         :header-cell-style="{ backgroundColor: 'rgb(244, 246, 250)', color: 'rgb(72, 88, 101)' }"
-        @select="onTableSelect"
-        @cell-click="onCellClick"
+        @expand-change="onExpandChange"
       >
         <el-table-column type="expand">
           <template #default="props">
             <el-table
-              :data="props.row.syncFileList"
+              :data="props.row.operationTrace"
+              height="180"
+              size="small"
+              border
               :header-cell-style="{ backgroundColor: 'rgb(244, 246, 250)', color: 'rgb(72, 88, 101)' }"
             >
-              <el-table-column label="配置路径" prop="filePath" />
-              <el-table-column label="同步结果" prop="status">
-                <template #default="fileSync">
-                  <span
-                    v-if="fileSync.row.status === 'SUCCESS'"
-                    class="px-[8px] py-[1px] rounded-[2px] bg-[#24ab36] text-[#fff] text-[12px]"
-                  >
-                    同步成功
-                  </span>
-                  <span
-                    v-else-if="fileSync.row.status === 'FAIL'"
-                    class="px-[8px] py-[1px] rounded-[2px] text-[#fff] text-[12px] bg-[#e32020]"
-                  >
-                    成功失败
-                  </span>
-                </template>
-              </el-table-column>
+              <el-table-column prop="create_time" label="更新时间" sortable width="200" />
+              <el-table-column prop="info" label="监控记录" />
             </el-table>
           </template>
         </el-table-column>
-        <el-table-column prop="host_name" label="主机名" />
-        <el-table-column prop="host_ip" label="主机" />
-        <el-table-column prop="domain_name" label="业务域" />
-        <el-table-column prop="status" label="同步状态">
-          <template #default="hostSync">
-            <span
-              v-if="hostSync.row.status === 'SUCCESS'"
-              class="px-[8px] py-[1px] rounded-[2px] bg-[#24ab36] text-[#fff] text-[12px]"
-            >
-              同步成功
-            </span>
-            <span
-              v-else-if="hostSync.row.status === 'FAIL'"
-              class="px-[8px] py-[1px] rounded-[2px] text-[#fff] text-[12px] bg-[#e32020]"
-            >
-              成功失败
-            </span>
+        <el-table-column prop="filePath" label="配置路径" />
+        <el-table-column prop="confContents" label="配置内容">
+          <template #default="scoped">
+            <el-popover placement="bottom" :width="200" trigger="hover" :content="scoped.row.confContents">
+              <template #reference>
+                <div class="w-[200px] text-ellipsis whitespace-nowrap overflow-hidden">
+                  {{ scoped.row.confContents }}
+                </div>
+              </template>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template #default="scoped">
+            <a @click="onContrastClick(scoped.row)">差异对比</a>
           </template>
         </el-table-column>
       </el-table>
-    </template>
+    </div>
+
     <el-dialog v-model="isContrastVisible" :title="currentSelectedConf?.filePath">
       <div class="w-full flex justify-between">
         <div class="w-[50%]">
