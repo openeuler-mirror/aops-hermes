@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watchEffect } from 'vue'
+import { useDark } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { ElTable, ElTableColumn, ElPagination, TableInstance, ElCheckbox } from 'element-plus'
 import { useCves } from '@aops-assistant/stores/cves'
@@ -287,6 +288,11 @@ async function assembleParameters() {
   setFlowRequestParams(params)
 }
 
+const isDark = useDark({
+  storageKey: 'theme-appearance',
+  selector: 'html',
+})
+
 const { option: ClusterDistributionChartOption } = useClusterDistribution()
 const { option: cveSeverityChartOption } = useCveSeverityChart()
 
@@ -357,6 +363,9 @@ function useClusterDistribution() {
         top: 24,
         itemGap: 24,
         icon: 'rect',
+        textStyle: {
+          color: isDark.value ? '#ffffff' : '#282C33',
+        },
       },
       grid: {
         left: '3%',
@@ -398,6 +407,9 @@ function useCveSeverityChart() {
         left: 24,
         top: '40%',
         icon: 'circle',
+        textStyle: {
+          color: isDark.value ? '#ffffff' : '#282C33',
+        },
       },
       series: [
         {
@@ -413,10 +425,10 @@ function useCveSeverityChart() {
             shadowOffsetX: -5,
             shadowOffsetY: -5,
             borderWidth: 2,
-            borderColor: '#ffffff',
+            borderColor: isDark.value ? '#282C33' : '#ffffff',
           },
           emphasis: {
-            scaleSize: 12,
+            scaleSize: 4,
             itemStyle: {
               borderColor: 'transparent',
             },
@@ -428,7 +440,7 @@ function useCveSeverityChart() {
         },
         {
           type: 'pie',
-          radius: ['0%', '52%'],
+          radius: ['0%', '45%'],
           center: ['70%', '60%'],
           tooltip: {
             show: false,
@@ -437,24 +449,19 @@ function useCveSeverityChart() {
             {
               value: 0,
               itemStyle: {
-                color: '#fff',
-                borderColor: '#fff',
-                borderWidth: 2,
+                color: isDark.value ? '#3b3b3b' : '#ffffff',
               },
-
               label: {
                 show: true,
                 position: 'center',
-                color: '#000',
+                color: isDark.value ? '#ffffff' : '#3b3b3b',
                 formatter: `{total|cve总数}\n\n{count|${cveSeverity.reduce((pre, cur) => pre + cur.num, 0)}}`,
                 rich: {
                   total: {
-                    fontSize: 26,
-                    fontWeight: 'bold',
+                    fontSize: 14,
                   },
                   count: {
-                    fontSize: 20,
-                    fontWeight: 'bold',
+                    fontSize: 24,
                   },
                 },
               },
@@ -491,22 +498,15 @@ onMounted(() => {
       <Chart
         :option="ClusterDistributionChartOption"
         title="集群分布"
-        class="bg-[var(--ops-bg-color)] h-full bar-chart rounded-tr-[4px] rounded-b-[4px]"
+        class="bg-[var(--ops-bg-color--secondary)] h-full bar-chart rounded-tr-[4px] rounded-b-[4px]"
       />
       <Chart
         :option="cveSeverityChartOption"
         title="cve安全等级分布"
-        class="bg-[var(--ops-bg-color)] h-full pie-chart rounded-[4px]"
+        class="bg-[var(--ops-bg-color--secondary)] h-full pie-chart rounded-[4px]"
       />
     </div>
-    <el-table
-      ref="cveTableRef"
-      row-key="cve_id"
-      :data="cves"
-      size="small"
-      @expand-change="onTableExpand"
-      :header-cell-style="{ backgroundColor: 'rgb(244, 246, 250)', color: 'rgb(72, 88, 101)' }"
-    >
+    <el-table ref="cveTableRef" row-key="cve_id" :data="cves" size="small" @expand-change="onTableExpand">
       <el-table-column type="expand" width="40">
         <template #default="props">
           <div class="px-4">Description:</div>

@@ -50,7 +50,16 @@ watch(
   () => currentFlow.value,
   () => {
     const component = displayDynamicComponent.value.find(page => page.key === currentPage.value)?.component
-    dynamicComponentKey.value = `${currentPage.value}-${currentFlow.value}#${new Date().getTime()}`
+    const key = tabUniqueKeys.value.find(item => item.startsWith(`${currentPage.value}`))
+    const a = `${currentPage.value}-${currentFlow.value}#${new Date().getTime()}`
+    if (key) {
+      tabUniqueKeys.value = tabUniqueKeys.value.filter(item => !item.startsWith(`${currentPage.value}`))
+      const tab = tabList.value.find(item => item.key === currentPage.value)
+      tab!.flowId = currentFlow.value
+      tabUniqueKeys.value.push(a)
+    }
+    console.log(tabUniqueKeys.value)
+    dynamicComponentKey.value = a
     if (!component) {
       clearTab()
       currentComponent.value = Empty
@@ -125,7 +134,7 @@ function onTabChange(tab: Tab) {
   height: calc(100% - 36px);
 }
 .display-page {
-  background: rgb(235, 239, 246);
+  background: var(--ops-bg-color);
 }
 .hide-scrollbar {
   scrollbar-width: none;

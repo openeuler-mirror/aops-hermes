@@ -521,7 +521,7 @@
       "changeLog": "Configuration Log",
       "self": "Conf Trace"
     },
-    "copilot": "OpenEuler Copilot System",
+    "copilot": "EulerCopilot",
     "dashboard": "Dashboard",
     "execution": {
       "commamdManagement": "Command Management",

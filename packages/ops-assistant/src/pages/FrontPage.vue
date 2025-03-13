@@ -190,7 +190,7 @@ onMounted(() => {
             <li
               v-for="item in recommendList"
               :key="item.plugin_id"
-              class="cursor-pointer rounded-[25px] bg-[var(--ops-bg-color)] mr-[12px] px-[20px] py-[12px] recommend font-semibold"
+              class="cursor-pointer rounded-[25px] bg-[var(--ops-bg-color--secondary)] mr-[12px] px-[20px] py-[12px] recommend font-semibold"
               @click="onRecommendClick(item)"
             >
               {{ item.question }}
@@ -214,7 +214,7 @@ onMounted(() => {
           <el-option v-for="item in pluginOptions" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
       </div>
-      <div class="w-full bg-[var(--ops-bg-color)] rounded-[25px] pl-3 pr-[0] flex items-center relative">
+      <div class="w-full bg-[var(--ops-bg-color--secondary)] rounded-[25px] pl-3 pr-[0] flex items-center relative">
         <p
           ref="inputRef"
           contenteditable="true"
@@ -283,6 +283,9 @@ onMounted(() => {
 }
 :deep(.el-select__wrapper.is-focused) {
   box-shadow: none;
+}
+:deep(.el-select .el-select__wrapper) {
+  background: none;
 }
 .placeholder {
   position: relative;

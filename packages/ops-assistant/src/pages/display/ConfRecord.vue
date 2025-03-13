@@ -63,11 +63,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <el-table
-      :data="confRecords"
-      :header-cell-style="{ backgroundColor: 'rgb(244, 246, 250)', color: 'rgb(72, 88, 101)' }"
-      @sort-change="onSortChange"
-    >
+    <el-table :data="confRecords" @sort-change="onSortChange">
       <el-table-column prop="host_ip" label="主机IP" width="140" />
       <el-table-column prop="conf_name" label="配置" width="200" />
       <el-table-column prop="domain_name" label="业务域名称" width="200" />

@@ -12,6 +12,7 @@ import {
 import Chart from '@aops-assistant/components/Chart.vue'
 import { EChartsOption } from 'echarts'
 import { RealConfFile } from '@aops-assistant/apis/types'
+import { useDark } from '@vueuse/core'
 
 export interface HostInDomain {
   domain_name: string
@@ -57,6 +58,11 @@ interface Conf extends RealConfFile {
 interface SyncHostParams {
   aiReqParams: { domainName: string; hostIds: string[] }[]
 }
+
+const isDark = useDark({
+  storageKey: 'theme-appearance',
+  selector: 'html',
+})
 
 const { option, getDomainSyncStatus } = useDomainSyncChart()
 
@@ -122,6 +128,9 @@ function useDomainSyncChart() {
         left: 24,
         top: '60%',
         icon: 'circle',
+        textStyle: {
+          color: isDark.value ? '#ffffff' : '#282C33',
+        },
       },
       series: [
         {
@@ -137,10 +146,10 @@ function useDomainSyncChart() {
             shadowOffsetX: -5,
             shadowOffsetY: -5,
             borderWidth: 2,
-            borderColor: '#ffffff',
+            borderColor: isDark.value ? '#282C33' : '#ffffff',
           },
           emphasis: {
-            scaleSize: 12,
+            scaleSize: 4,
             itemStyle: {
               borderColor: 'transparent',
             },
@@ -152,7 +161,7 @@ function useDomainSyncChart() {
         },
         {
           type: 'pie',
-          radius: ['0%', '52%'],
+          radius: ['0%', '42%'],
           center: ['70%', '60%'],
           tooltip: {
             show: false,
@@ -161,24 +170,19 @@ function useDomainSyncChart() {
             {
               value: 0,
               itemStyle: {
-                color: '#fff',
-                borderColor: '#fff',
-                borderWidth: 2,
+                color: isDark.value ? '#3b3b3b' : '#ffffff',
               },
-
               label: {
                 show: true,
                 position: 'center',
-                color: '#000',
+                color: isDark.value ? '#ffffff' : '#3b3b3b',
                 formatter: `{total|同步率}\n\n{count|${Math.round(domainSyncStatus.syncRate * 100)} %}`,
                 rich: {
                   total: {
-                    fontSize: 22,
-                    fontWeight: 'bold',
+                    fontSize: 14,
                   },
                   count: {
-                    fontSize: 20,
-                    fontWeight: 'bold',
+                    fontSize: 24,
                   },
                 },
               },
@@ -191,6 +195,11 @@ function useDomainSyncChart() {
       ],
     }
   }
+
+  watch(
+    () => isDark.value,
+    () => setChartOption(),
+  )
 
   return { option, getDomainSyncStatus }
 }
@@ -378,16 +387,15 @@ onMounted(() => {
         <Chart
           :option="option"
           title="业务域同步率"
-          class="bg-[var(--ops-bg-color)] rounded-tr-[4px] rounded-b-[4px]"
+          class="bg-[var(--ops-bg-color--secondary)] rounded-tr-[4px] rounded-b-[4px]"
         />
       </div>
       <el-table
-        class="mt-[8px] flex-1"
+        class="mt-[8px] flex-1 bg-[var(--ops-bg-color--secondary)]"
         ref="multipleTableRef"
         row-key="hostId"
         :data="hostList"
         :row-class-name="tableRowClassName"
-        :header-cell-style="{ backgroundColor: 'rgb(244, 246, 250)', color: 'rgb(72, 88, 101)' }"
         @select="onTableSelect"
         @cell-click="onCellClick"
       >
@@ -412,24 +420,12 @@ onMounted(() => {
         </el-table-column>
       </el-table>
     </div>
-    <div class="flex-1 bg-[var(--ops-bg-color)] h-full rounded-tr-[4px] rounded-b-[4px] p-[24px]">
+    <div class="flex-1 bg-[var(--ops-bg-color--secondary)] h-full rounded-tr-[4px] rounded-b-[4px] p-[24px]">
       <h3 class="font-semibold">未同步主机 (IP: {{ focusedRow?.ip }})</h3>
-      <el-table
-        :data="allConfs.notSyncConfs"
-        ref="syncConfRef"
-        row-key="filePath"
-        :header-cell-style="{ backgroundColor: 'rgb(244, 246, 250)', color: 'rgb(72, 88, 101)' }"
-        @expand-change="onExpandChange"
-      >
+      <el-table :data="allConfs.notSyncConfs" ref="syncConfRef" row-key="filePath" @expand-change="onExpandChange">
         <el-table-column type="expand">
           <template #default="props">
-            <el-table
-              :data="props.row.operationTrace"
-              height="180"
-              size="small"
-              border
-              :header-cell-style="{ backgroundColor: 'rgb(244, 246, 250)', color: 'rgb(72, 88, 101)' }"
-            >
+            <el-table :data="props.row.operationTrace" height="180" size="small" border>
               <el-table-column prop="create_time" label="更新时间" sortable width="200" />
               <el-table-column prop="info" label="监控记录" />
             </el-table>
@@ -494,18 +490,19 @@ onMounted(() => {
   word-break: break-all;
   white-space: pre-wrap;
 }
+
 .diff-add {
-  background: rgb(236, 253, 240);
+  background: var(--ops-codediff-bg__t);
   &-blank {
-    background: rgb(236, 253, 240);
-    color: rgb(236, 253, 240);
+    background: var(--ops-codediff-bg__t);
+    color: var(--ops-codediff-bg__t);
   }
 }
 .diff-remove {
-  background: rgb(251, 233, 235);
+  background: var(--ops-codediff-bg__f);
   &-blank {
-    background: rgb(251, 233, 235);
-    color: rgb(251, 233, 235);
+    background: var(--ops-codediff-bg__f);
+    color: var(--ops-codediff-bg__f);
   }
 }
 </style>

@@ -71,13 +71,13 @@ onBeforeUnmount(() => {
 .tab-item {
   width: 96%;
   height: 94%;
-  background-color: rgb(244, 246, 250);
+  background-color: var(--ops-tabbar-bg);
+  color: var(--ops-text-color__base);
   display: flex;
   align-items: center;
 }
 .tab-item--active {
-  background-color: rgb(253, 254, 255);
-  color: rgb(0, 119, 255);
+  background-color: var(--ops-tabbar-bg--active);
   height: 100%;
   width: 100%;
 }

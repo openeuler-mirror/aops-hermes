@@ -1,10 +1,11 @@
 import Ops from './src/index.vue'
-import './src/styles/theme.css'
-import './src/styles/markdown.less'
-import './src/styles/flow.less'
 import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import 'highlight.js/styles/github-dark.css'
+import './src/styles/theme.css'
+import './src/styles/markdown.less'
+import './src/styles/flow.less'
+import './src/styles/element.less'
 
 import type { App, Plugin } from 'vue'
 
