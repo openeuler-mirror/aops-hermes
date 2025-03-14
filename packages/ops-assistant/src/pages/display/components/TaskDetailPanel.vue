@@ -99,7 +99,10 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <div v-if="taskDetail" class="flex flex-col bg-[var(--ops-bg-color)] rounded-tr-[4px] rounded-b-[4px] p-[24px]">
+  <div
+    v-if="taskDetail"
+    class="flex flex-col bg-[var(--ops-bg-color--secondary)] rounded-tr-[4px] rounded-b-[4px] p-[24px]"
+  >
     <div class="flex flex-col gap-3">
       <el-descriptions :column="1" border :label-width="120">
         <el-descriptions-item label="任务类型">{{ taskDetail.task_type }}</el-descriptions-item>
@@ -125,13 +128,7 @@ onMounted(async () => {
       </el-descriptions>
     </div>
     <div class="mt-[12px]">
-      <el-table
-        :data="cveFixTableData"
-        :header-cell-style="{
-          backgroundColor: 'rgb(244, 246, 250)',
-          color: 'rgb(78, 88, 101)',
-        }"
-      >
+      <el-table :data="cveFixTableData">
         <el-table-column prop="host_name" label="主机"></el-table-column>
         <el-table-column prop="host_ip" label="IP"></el-table-column>
         <el-table-column prop="cve_num" label="CVE数量"></el-table-column>

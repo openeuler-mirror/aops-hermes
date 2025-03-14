@@ -37,11 +37,11 @@ function onPageSwitch(key: string) {
 </script>
 <template>
   <div class="bg-[var(--ops-bg-color)]">
-    <header class="flex justify-between h-[60px] px-[26px] items-center bg-[#f4f6fa] header">
+    <header class="flex justify-between h-[60px] px-[26px] items-center bg-[var(--ops-bg-color--secondary)] header">
       <div class="font-semibold">
         <span v-if="pageType === 'dialogue'" class="flex items-center gap-2 text-[18px]">
           <img src="./images/logo.svg" alt="" />
-          <p class="font-bold">openEuler Copilot System</p>
+          <p class="font-bold">EulerCopilot</p>
         </span>
         <div
           v-else-if="pageType === 'history'"

@@ -23,6 +23,9 @@ html {
   --box-shadow-color: #e7e7e7;
 
   --openeuler-logo-filter: invert(0%);
+
+  --codediff-bg__t: #ecfdf0;
+  --codediff-bg__f: #fbe9eb;
 }
 
 html.dark {
@@ -50,4 +53,7 @@ html.dark {
   --box-shadow-color: #272626;
 
   --openeuler-logo-filter: invert(100%);
+
+  --codediff-bg__t: #2ea04326;
+  --codediff-bg__f: #f851494d;
 }

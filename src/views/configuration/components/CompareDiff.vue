@@ -1,29 +1,27 @@
-<script setup lang='ts'>
+<script setup lang="ts">
 import type * as Diff from 'diff'
 import { computed } from 'vue'
 
-const props = withDefaults(defineProps<{
-  diffResult: Diff.Change[]
-}>(), {
-  diffResult: () => [],
-})
+const props = withDefaults(
+  defineProps<{
+    diffResult: Diff.Change[]
+  }>(),
+  {
+    diffResult: () => [],
+  },
+)
 
 const diffPartList = computed(() => props.diffResult.map(part => part))
 
 function setDiffClass(isAdd?: boolean, isRemoved?: boolean, isOrigin?: boolean) {
   if (isOrigin) {
-    if (isAdd)
-      return 'diff-add-blank'
+    if (isAdd) return 'diff-add-blank'
 
-    if (isRemoved)
-      return 'diff-remove'
-  }
-  else {
-    if (isAdd)
-      return 'diff-add'
+    if (isRemoved) return 'diff-remove'
+  } else {
+    if (isAdd) return 'diff-add'
 
-    if (isRemoved)
-      return 'diff-remove-blank'
+    if (isRemoved) return 'diff-remove-blank'
   }
   return ''
 }
@@ -62,17 +60,17 @@ function setDiffClass(isAdd?: boolean, isRemoved?: boolean, isOrigin?: boolean) 
   white-space: pre-wrap;
 }
 .diff-add {
-  background: rgb(236, 253, 240);
+  background: var(--codediff-bg__t);
   &-blank {
-    background: rgb(236, 253, 240);
-    color: rgb(236, 253, 240);
+    background: var(--codediff-bg__t);
+    color: var(--codediff-bg__t);
   }
 }
 .diff-remove {
-  background: rgb(251, 233, 235);
+  background: var(--codediff-bg__f);
   &-blank {
-    background: rgb(251, 233, 235);
-    color: rgb(251, 233, 235);
+    background: var(--codediff-bg__f);
+    color: var(--codediff-bg__f);
   }
 }
 </style>

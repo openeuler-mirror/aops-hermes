@@ -1,36 +1,45 @@
 html {
   --ops-bg-image: url('../images/light_bg.png');
-  --ops-bg-color: #fefefe;
-  --ops-text-color__base: '#000';
-  --ops-bg-color--secondary: #f7f7f7;
+  --ops-bg-color: #ebeff6;
+  --ops-text-color__base: #000;
+  --ops-bg-color--secondary: #ffffff;
   --ops-record-bg-color: #f4f6fa;
   --ops-bg-color--panel: rgb(253, 254, 255);
-  --ops-bash-bg: #fafafa;
-  --ops-bash-toolbar-bg: #ece8e8;
+  --ops-bash-bg: #f4f6fa;
+  --ops-code-bg: #f0f0f0;
+  --ops-code-color: #4e5865;
   --ops-divider-color: rgb(223, 223, 229);
 
   --ops-table-header-bg-color: #fafafa;
+  --ops-table-header-color:#485865;
 
   --ops-tabbar-bg: #e6f4ff;
   --ops-tabbar-bg--active: #ffffff;
   --ops-tabbar-hover-bg: #b7bae7;
   --ops-tabbar-divider-color: #dddeeb;
+  --ops-codediff-bg__t: #ecfdf0;
+  --ops-codediff-bg__f: #fbe9eb;
 }
 
 html.dark {
   --ops-bg-image: url('../images/dark_bg.png');
-  --ops-bg-color: #1f2329;
-  --ops-text-color__base: '#fff';
+  --ops-bg-color: #141414;
+  --ops-text-color__base: #fff;
   --ops-bg-color--secondary: #2b2b2b;
   --ops-record-bg-color: #2a2f37;
-  --ops-bg-color--panel: #282c33;
-  --ops-bash-bg: #161618;
-  --ops-bash-toolbar-bg: #000000;
+  --ops-bg-color--panel: #1f2329;
+  --ops-bash-bg: #2a2f37;
+  --ops-code-bg: #161618;
+  --ops-code-color: #d3dce9;
   --ops-divider-color: #262729;
 
   --ops-table-header-bg-color: #1d1d1d;
-  --ops-tabbar-bg: #111111;
-  --ops-tabbar-bg--active: #3c3c3c;
+  --ops-table-header-color:#ffffff;
+
+  --ops-tabbar-bg: #202020;
+  --ops-tabbar-bg--active: #3b3b3b;
   --ops-tabbar-hover-bg: #171717;
   --ops-tabbar-divider-color: #373836;
+  --ops-codediff-bg__t: #2ea04326;
+  --ops-codediff-bg__f: #f851494d;
 }

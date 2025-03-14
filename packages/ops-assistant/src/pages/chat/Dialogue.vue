@@ -104,7 +104,7 @@ onMounted(() => {
             <el-option v-for="item in pluginOptions" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
           <div
-            class="w-[40px] h-[40px] flex justify-center items-center bg-[#fff] shadow-default rounded-[8px] cursor-pointer"
+            class="w-[40px] h-[40px] flex justify-center items-center bg-[var(--ops-bg-color--secondary)] shadow-default rounded-[8px] cursor-pointer"
             @click="generateNewSession"
           >
             <img class="w-[40px] h-[40px]" src="./images/new_chat.png" alt="" />

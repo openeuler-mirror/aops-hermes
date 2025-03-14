@@ -44,18 +44,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-table
-    :data="syncResultList"
-    ref="multipleTableRef"
-    row-key="host_ip"
-    :header-cell-style="{ backgroundColor: 'rgb(244, 246, 250)', color: 'rgb(72, 88, 101)' }"
-  >
+  <el-table :data="syncResultList" ref="multipleTableRef" row-key="host_ip">
     <el-table-column type="expand">
       <template #default="props">
-        <el-table
-          :data="props.row.syncFileList"
-          :header-cell-style="{ backgroundColor: 'rgb(244, 246, 250)', color: 'rgb(72, 88, 101)' }"
-        >
+        <el-table :data="props.row.syncFileList">
           <el-table-column label="配置路径" prop="filePath" />
           <el-table-column label="同步结果" prop="status">
             <template #default="fileSync">

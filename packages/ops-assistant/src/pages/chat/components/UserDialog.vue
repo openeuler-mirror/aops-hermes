@@ -7,7 +7,7 @@ defineProps<{
 <template>
   <div class="flex flex-col mt-3">
     <div class="flex justify-center text-[12px]">
-      <span class="bg-[rgb(223,229,239)] px-[8px] py-[1px] rounded-[12px] text-[rgb(78,88,101 )]">
+      <span class="bg-[var(--ops-bg-color--secondary)] px-[8px] py-[1px] rounded-[12px] text-[rgb(78,88,101 )]">
         {{ createTime }}
       </span>
     </div>
