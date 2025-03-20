@@ -54,7 +54,7 @@ onBeforeUnmount(() => {
               'tab-item': activeKey !== item.key,
             }"
           >
-            <div class="w-[85%] whitespace-nowrap text-ellipsis overflow-hidden">{{ item.title }}</div>
+            <div class="w-[75%] whitespace-nowrap text-ellipsis overflow-hidden">{{ item.title }}</div>
             <div
               @click.stop="emits('close', item.key)"
               class="absolute flex items-center right-[8px] hover:bg-[var(--ops-bg-color--secondary)]"
