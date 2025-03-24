@@ -3,6 +3,7 @@ import { computed, ref, shallowRef, onBeforeUnmount } from 'vue'
 import FrontPage from './pages/FrontPage.vue'
 import CorePage from './Core.vue'
 import { useFlow } from '@aops-assistant/stores/flow'
+import { stopConversation } from '@aops-assistant/apis/conversation'
 
 const { setCurrentFlow, setFlowRequestParams } = useFlow()
 
@@ -26,7 +27,14 @@ function handleChangePage(page: string, _content?: string, _pluginList?: string[
   currentPage.value = page || 'frontPage'
 }
 
+async function stopGeneration() {
+  try {
+    await stopConversation()
+  } catch {}
+}
+
 onBeforeUnmount(() => {
+  stopGeneration()
   setCurrentFlow('')
 })
 </script>

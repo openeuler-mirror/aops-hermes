@@ -39,3 +39,7 @@ export async function deleteConversation(conversationIds: string[]) {
     conversation_id_list: string[]
   }>('/api/conversation', { conversation_list: conversationIds })
 }
+
+export async function stopConversation() {
+  return http.post('/api/stop', {})
+}
