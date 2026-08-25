@@ -1,0 +1,5 @@
+[codespell]
+skip = .git,*.lock,node_modules,.next,coverage,build,dist,vendor,third_party
+# 项目术语/专有名词/标识符加入忽略列表；误报条目写配置而不是屏蔽代码。
+# pressEnter 为 Vue 自定义事件名（@pressEnter），非拼写错误。
+ignore-words-list = pressEnter

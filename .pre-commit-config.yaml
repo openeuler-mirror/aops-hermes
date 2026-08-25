@@ -1,0 +1,47 @@
+# 修复模式：仅对暂存区文件生效；存量仓库请勿运行 pre-commit run --all-files
+minimum_pre_commit_version: '4.0'
+
+repos:
+  # ===== 通用基础 hook（所有语言） =====
+  - repo: https://gitcode.com/gh_mirrors/pr/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace # 修复：移除行尾空白
+        exclude: ^(pnpm-lock\.yaml|package-lock\.json|.*\.lock)$
+      - id: end-of-file-fixer # 修复：确保文件以单个换行结尾
+        exclude: ^(pnpm-lock\.yaml|package-lock\.json|.*\.lock)$
+      - id: check-yaml
+      - id: check-json
+        # tsconfig*.json 为 JSONC（注释/尾逗号，TS 工具链合法），check-json 无法解析，精确排除
+        exclude: ^tsconfig.*\.json$
+      - id: check-xml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+      - id: detect-private-key
+
+  # ===== 密钥检测 =====
+  - repo: https://gitcode.com/gh_mirrors/gi/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+
+  # ===== 拼写检查 =====
+  - repo: https://gitcode.com/gh_mirrors/co/codespell
+    rev: v2.4.3
+    hooks:
+      - id: codespell
+        exclude: ^(vendor/|third_party/|generated/)
+
+  # ===== JS/TS/Vue：local hook 调用项目依赖（mirrors-prettier 已归档勿用） =====
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier
+        entry: npx prettier --write
+        language: system
+        files: \.(js|jsx|ts|tsx|vue|json|css|scss|less|html|md|yaml|yml)$
+      - id: eslint
+        name: eslint
+        entry: npx eslint --fix
+        language: system
+        files: \.(js|jsx|ts|tsx|vue)$
