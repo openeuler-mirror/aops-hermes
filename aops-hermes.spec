@@ -5,7 +5,7 @@ Version:	v2.0.0
 Release:	1
 Summary:	Web for an intelligent diagnose frame
 License:	MulanPSL2
-URL:		https://gitee.com/openeuler/%{name}
+URL:		https://atomgit.com/openeuler/%{name}
 Source:	%{name}-%{version}.tar.gz
 
 
