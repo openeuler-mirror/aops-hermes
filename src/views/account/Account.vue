@@ -77,7 +77,11 @@ async function handleOk() {
       }, 1000)
     }
   }
-  catch {}
+  catch (error: any) {
+    // 表单校验失败时 antd 会就地提示，其余异常需要明确反馈
+    if (!error?.errorFields)
+      message.error(error?.message || t('common.fail'))
+  }
   finally {
     confirmLoading.value = false
   }
