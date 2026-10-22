@@ -24,8 +24,6 @@ export const useRouteStore = defineStore('routeStore', () => {
     const { userInfo } = useAccountStore()
     const roleType = userInfo?.type || ''
     if (roleType === 'administrator') {
-      console.log([...staticRoutes, ...dynamicRoutes]);
-
       return (routeMap.value = [...staticRoutes, ...dynamicRoutes])
     }
     else {
@@ -59,10 +57,5 @@ export const useRouteStore = defineStore('routeStore', () => {
     routeMap.value = []
   }
 
-  function changeRoute() {
-    console.log('changeRoute', routeMap.value);
-
-  }
-
-  return { routeMap, generateRouter, clearRoutes, changeRoute }
+  return { routeMap, generateRouter, clearRoutes }
 })
