@@ -7,6 +7,7 @@ import { onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAccountStore } from '@/store'
 import { api } from '@/api'
+import giteeLogo from '@/assets/imgs/gitee-logo.svg'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -90,7 +91,7 @@ onMounted(() => {
       <a-form-item>
         <div class="login-gitee" style="text-align: center">
           <div style="cursor: pointer" @click="toGitee">
-            <img src="https://gitee.com/static/images/logo-black.svg?t=158106666" alt="">
+            <img :src="giteeLogo" alt="">
             <span class="login-gitee-text">{{ $t('account.useGitee') }}</span>
           </div>
         </div>
