@@ -295,7 +295,7 @@ function handleCommandChange(value: string | string[], _option: Selectoption | A
   }
 }
 
-/** cancel to create exectution task */
+/** cancel to create execution task */
 function handleCancel() {
   initTaskFromData()
   emits('update:visible', false)
