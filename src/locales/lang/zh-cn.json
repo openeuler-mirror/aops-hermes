@@ -833,7 +833,7 @@
         "noteThree": "3. 冷补丁任务执行完毕后，需重启才能生效",
         "noteTwo": "2. 同一主机，热补丁任务需在冷补丁修复任务前执行"
       },
-      "uptodate": "最新状态",
+      "upToDate": "最新状态",
       "validateMsg": {
         "taskDesc": "请输入任务描述",
         "taskName": "请输入任务名称"

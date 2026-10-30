@@ -832,7 +832,7 @@
         "noteThree": "3. After the cold patch task is completed, it needs to be restarted to take effect",
         "noteTwo": "2. On the same host, the hot patch task must be executed before the cold patch repair task"
       },
-      "uptodate": "Status",
+      "upToDate": "Status",
       "validateMsg": {
         "taskDesc": "Please enter the task description",
         "taskName": "Please enter the task name"
