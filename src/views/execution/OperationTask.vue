@@ -301,7 +301,7 @@ onBeforeUnmount(() => {
       <template v-if="column.dataIndex === 'duration'">
         <span v-if="record.start_time && record.end_time">
           {{
-            `${(dayjs(record.end_time).diff(dayjs(record.start_time), 'millisecond') / 1000).toFixed(2)}${t('common.secends')}` ||
+            `${(dayjs(record.end_time).diff(dayjs(record.start_time), 'millisecond') / 1000).toFixed(2)}${t('common.seconds')}` ||
             t('common.none')
           }}
         </span>
