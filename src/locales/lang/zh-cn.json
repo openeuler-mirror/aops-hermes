@@ -15,7 +15,7 @@
     },
     "newPass": "新密码",
     "noAccount": "没有账号?",
-    "palceHolder": {
+    "placeHolder": {
       "email": "输入邮箱地址: 例如:xxxx{'@'}163.com",
       "password": "密码长度6-20位,包含字母或数字",
       "rePassword": "确认前后两次输入的密码保持一致",
@@ -204,7 +204,7 @@
     "notExecute": "暂未执行",
     "operation": "操作",
     "os": "操作系统",
-    "palceHolder": {
+    "placeHolder": {
       "selectDoc": "请选择文件"
     },
     "refresh": "刷新",
@@ -635,7 +635,7 @@
         "atLeastOne": "至少选择一个CVE进行{type}!"
       },
       "package": "软件包",
-      "palceHolder": {
+      "placeHolder": {
         "searchBy": "按主机名搜索"
       },
       "product": "产品",

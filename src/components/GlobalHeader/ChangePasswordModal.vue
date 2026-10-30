@@ -128,21 +128,21 @@ function handleClose() {
           :label="$t('account.currentPass')"
           name="oldPassword"
         >
-          <a-input-password v-model:value="form.oldPassword" :placeholder="$t('account.palceHolder.password')" />
+          <a-input-password v-model:value="form.oldPassword" :placeholder="$t('account.placeHolder.password')" />
         </a-form-item>
 
         <a-form-item
           :label="$t('account.newPass')"
           name="password"
         >
-          <a-input-password v-model:value="form.password" :placeholder="$t('account.palceHolder.password')" />
+          <a-input-password v-model:value="form.password" :placeholder="$t('account.placeHolder.password')" />
         </a-form-item>
 
         <a-form-item
           :label="$t('account.reNewPass')"
           name="confirmPassword"
         >
-          <a-input-password v-model:value="form.confirmPassword" :placeholder="$t('account.palceHolder.rePassword')" />
+          <a-input-password v-model:value="form.confirmPassword" :placeholder="$t('account.placeHolder.rePassword')" />
         </a-form-item>
       </a-form>
     </a-modal>

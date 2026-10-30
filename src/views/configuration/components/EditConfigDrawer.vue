@@ -157,7 +157,7 @@ const preUpload: UploadProps['beforeUpload'] = async file => {
 }
 
 function validateFile() {
-  if (fileList.value?.length === 0) return Promise.reject(new Error(t('common.palceHolder.selectDoc')))
+  if (fileList.value?.length === 0) return Promise.reject(new Error(t('common.placeHolder.selectDoc')))
   return Promise.resolve()
 }
 

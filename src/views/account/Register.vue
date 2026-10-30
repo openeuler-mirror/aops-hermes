@@ -128,7 +128,7 @@ async function handlerRegister() {
         <a-input
           v-model:value="form.username"
           class="register-input"
-          :placeholder="t('account.palceHolder.username')"
+          :placeholder="t('account.placeHolder.username')"
         >
           <template #prefix>
             <UserOutlined />
@@ -140,7 +140,7 @@ async function handlerRegister() {
         <a-input-password
           v-model:value="form.password"
           class="register-input"
-          :placeholder="t('account.palceHolder.password')"
+          :placeholder="t('account.placeHolder.password')"
         >
           <template #prefix>
             <LockOutlined />
@@ -152,7 +152,7 @@ async function handlerRegister() {
         <a-input-password
           v-model:value="form.confirmPassword"
           class="register-input"
-          :placeholder="t('account.palceHolder.rePassword')"
+          :placeholder="t('account.placeHolder.rePassword')"
         >
           <template #prefix>
             <LockOutlined />
@@ -164,7 +164,7 @@ async function handlerRegister() {
         <a-input
           v-model:value="form.email"
           class="register-input"
-          :placeholder="t('account.palceHolder.email')"
+          :placeholder="t('account.placeHolder.email')"
         >
           <template #prefix>
             <UserOutlined />

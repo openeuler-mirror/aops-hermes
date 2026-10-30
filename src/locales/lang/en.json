@@ -15,7 +15,7 @@
     },
     "newPass": "New Password",
     "noAccount": "No Account?",
-    "palceHolder": {
+    "placeHolder": {
       "email": "Email: eg:xxxx{'@'}163.com",
       "password": "6-20 characters, including letters or numbers",
       "rePassword": "Confirm password",
@@ -204,7 +204,7 @@
     "notExecute": "Not Implemented",
     "operation": "Operation",
     "os": "Os",
-    "palceHolder": {
+    "placeHolder": {
       "selectDoc": "Please select file"
     },
     "refresh": "Refresh",
@@ -634,7 +634,7 @@
         "atLeastOne": "Select at least one CVE for {type}!"
       },
       "package": "Package",
-      "palceHolder": {
+      "placeHolder": {
         "searchBy": "host name"
       },
       "product": "Product",
