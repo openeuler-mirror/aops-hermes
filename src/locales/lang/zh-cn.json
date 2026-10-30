@@ -372,7 +372,7 @@
     "clusterCount": "集群数量",
     "cveRisk": "CVE风险",
     "domainUnSync": "未同步业务域",
-    "domianSync": "业务域同步率",
+    "domainSync": "业务域同步率",
     "hostCount": "主机数量"
   },
   "execution": {
