@@ -208,7 +208,7 @@
       "selectDoc": "Please select file"
     },
     "refresh": "Refresh",
-    "result": "Result: [0]",
+    "result": "Result: {0}",
     "seconds": "s",
     "selectDoc": "Select",
     "selectItems": "{count} item has been selected",
