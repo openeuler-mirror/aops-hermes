@@ -224,7 +224,7 @@ const getDomainConfLog: MockMethod = {
             {
               author: 'user_name <user_email>',
               changeId: 'ce523b2abc06fb9d4319d95b89d329257bb5169e',
-              changeReason: '    Add the conf in aops domian, the path including : /etc/yum.repos.d/openEuler.repo',
+              changeReason: '    Add the conf in aops domain, the path including : /etc/yum.repos.d/openEuler.repo',
               date: 'Tue Apr 16 19:30:24 2024 +0800',
               postValue:
                 '{\n    "OS": {\n        "name": "OS",\n        "baseurl": "http://repo.huaweicloud.com/openeuler/openEuler-22.03-LTS-SP2/OS/$basearch/",\n        "enabled": "1",\n        "gpgcheck": "1",\n        "gpgkey": "http://repo.huaweicloud.com/openeuler/openEuler-22.03-LTS-SP2/OS/$basearch/RPM-GPG-KEY-openEuler"\n    },\n    "everything": {\n        "name": "everything",\n        "baseurl": "http://repo.huaweicloud.com/openeuler/openEuler-22.03-LTS-SP2/everything/$basearch/",\n        "enabled": "1",\n        "gpgcheck": "1",\n        "gpgkey": "http://repo.huaweicloud.com/openeuler/openEuler-22.03-LTS-SP2/everything/$basearch/RPM-GPG-KEY-openEuler"\n    },\n    "EPOL": {\n        "name": "EPOL",\n        "baseurl": "http://repo.huaweicloud.com/openeuler/openEuler-22.03-LTS-SP2/EPOL/main/$basearch/",\n        "enabled": "1",\n        "gpgcheck": "1",\n        "gpgkey": "http://repo.huaweicloud.com/openeuler/openEuler-22.03-LTS-SP2/OS/$basearch/RPM-GPG-KEY-openEuler"\n    },\n    "debuginfo": {\n        "name": "debuginfo",\n        "baseurl": "http://repo.huaweicloud.com/openeuler/openEuler-22.03-LTS-SP2/debuginfo/$basearch/",\n        "enabled": "1",\n        "gpgcheck": "1",\n        "gpgkey": "http://repo.huaweicloud.com/openeuler/openEuler-22.03-LTS-SP2/debuginfo/$basearch/RPM-GPG-KEY-openEuler"\n    },\n    "source": {\n        "name": "source",\n        "baseurl": "http://repo.huaweicloud.com/openeuler/openEuler-22.03-LTS-SP2/source/",\n        "enabled": "1",\n        "gpgcheck": "1",\n        "gpgkey": "http://repo.huaweicloud.com/openeuler/openEuler-22.03-LTS-SP2/source/RPM-GPG-KEY-openEuler"\n    },\n    "update": {\n        "name": "update",\n        "baseurl": "http://repo.huaweicloud.com/openeuler/openEuler-22.03-LTS-SP2/update/$basearch/",\n        "enabled": "1",\n        "gpgcheck": "1",\n        "gpgkey": "http://repo.huaweicloud.com/openeuler/openEuler-22.03-LTS-SP2/OS/$basearch/RPM-GPG-KEY-openEuler"\n    },\n    "update-source": {\n        "name": "update-source",\n        "baseurl": "http://repo.huaweicloud.com/openeuler/openEuler-22.03-LTS-SP2/update/source/",\n        "enabled": "1",\n        "gpgcheck": "1",\n        "gpgkey": "http://repo.huaweicloud.com/openeuler/openEuler-22.03-LTS-SP2/source/RPM-GPG-KEY-openEuler"\n    }\n}\n',
@@ -233,7 +233,7 @@ const getDomainConfLog: MockMethod = {
             {
               author: 'user_name <user_email>',
               changeId: '24d6ea11ae9d81c566075021e28814dd0f0b585d',
-              changeReason: '    Add the conf in aops domian, the path including : /etc/yum.repos.d/openEuler.repo',
+              changeReason: '    Add the conf in aops domain, the path including : /etc/yum.repos.d/openEuler.repo',
               date: 'Sat Apr 13 15:20:01 2024 +0800',
               postValue: '',
               preValue:
