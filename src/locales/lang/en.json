@@ -372,7 +372,7 @@
     "clusterCount": "Clusters",
     "cveRisk": "CVE",
     "domainUnSync": "Domain Unsync",
-    "domianSync": "Domain Sync",
+    "domainSync": "Domain Sync",
     "hostCount": "Hosts"
   },
   "execution": {

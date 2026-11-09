@@ -189,7 +189,7 @@ onBeforeUnmount(() => {
               <div class="dash-sync-card-desc">
                 <span class="small-title">
                   <a-badge status="processing" />
-                  {{ $t('dashboard.domianSync') }}
+                  {{ $t('dashboard.domainSync') }}
                 </span>
                 <span class="data-number">{{ Math.round(domainSyncStatistic.syncRate * 100) }}%</span>
               </div>
